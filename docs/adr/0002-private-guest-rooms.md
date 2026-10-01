@@ -1,0 +1,3 @@
+# Private guest rooms for small games
+
+The first version uses invitation-only rooms with guest names, supports two to four players per match, and lets participants start successive matches in the same room. Anyone with the invitation link can join while a seat is available. Participants have equal room permissions; there is no host role initially. A room participant persists across matches, while each match has its own player seat and game state. A random credential stored in the browser lets a guest reclaim their room participant after reconnecting, without creating an account. This keeps the room separate from any one match; cross-device recovery remains outside the initial scope.

@@ -1,0 +1,3 @@
+# Persisted sessions can resume after disconnects
+
+Rooms, their participants' saved decklists, and the active match are persisted so a disconnected guest can return and continue. A Room remains until a participant closes it or it expires after inactivity; the expiration interval will be configurable and selected during implementation. The active match is saved as its current state with a revision number; the game does not keep a full action history or completed-match history initially. Starting another match replaces the prior active match. This supports recovery and synchronization without requiring replay or event-sourced storage.

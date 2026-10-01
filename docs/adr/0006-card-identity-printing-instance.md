@@ -1,0 +1,3 @@
+# Separate card definition, printing, card instance, and game object
+
+The catalog models a card's rules identity separately from its set-specific printing and artwork. Each copy created from a Deck Entry for a Match is a stable Card Instance that references the shared Card Definition, its chosen Card Printing, and its owner. The current rules representation is a separate Game Object: under [Comprehensive Rules section 400.7](https://magic.wizards.com/en/rules), moving between Zones generally creates a new object, with rule-specific exceptions. A Game Object's controller can differ from the Card Instance's owner. Decklist entries preserve a requested printing when specified and use a default printing when they identify only a card name.
