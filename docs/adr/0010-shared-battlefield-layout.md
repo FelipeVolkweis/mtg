@@ -1,3 +1,3 @@
 # Shared Battlefield layout is presentation state
 
-The Battlefield has one shared visual arrangement for all participants, and a card's position is saved independently from its gameplay state. This lets the spatial tabletop synchronize on drag release and leaves room to introduce category-based layouts later without changing card rules behavior.
+The Battlefield has one shared visual arrangement for all participants, and a card's position is saved independently from its gameplay state. This lets the spatial tabletop synchronize on drag release without changing card rules behavior. The arrangement has one Player Area per Match Player, without creating separate Battlefield Zones. Cards can be placed freely within an area; when a permanent changes Controller, its position moves to the new Controller's area. Each viewer can see their own area at the bottom and control their local zoom and pan without changing the shared card arrangement.

@@ -108,11 +108,10 @@ export function initialPosition(
   index = 0,
 ): TablePoint {
   const area = playerAreas(count, 0).find((entry) => entry.seat === seat)!;
-  const columns = Math.max(1, Math.floor((area.width - 120) / 98) + 1);
-  const rows = Math.max(1, Math.floor((area.height - 244) / 50) + 1);
-  const slot = index % (columns * rows);
+  const availableX = Math.max(1, area.width - 120);
+  const availableY = Math.max(1, area.height - 244);
   return {
-    x: area.x + 24 + (slot % columns) * 98,
-    y: area.y + 112 + Math.floor(slot / columns) * 50,
+    x: area.x + 24 + ((index * 107) % availableX),
+    y: area.y + 112 + ((index * 61) % availableY),
   };
 }

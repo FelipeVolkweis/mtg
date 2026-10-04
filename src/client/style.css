@@ -935,6 +935,12 @@ body:has(.tabletop) {
   font-size: 10px;
   margin-left: auto;
 }
+.hand-actions form {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
 .hand-actions input {
   width: 48px;
   padding: 2px;

@@ -399,12 +399,9 @@ export class MatchService {
           match.zones.find((zone) => zone.id === object.zoneId)?.kind ===
             "battlefield"
         ) {
-          const seat = match.players.find(
-            (entry) => entry.id === patch.controllerId,
-          )!.seat;
-          match.layout.positions[object.id] = initialPosition(
-            match.players.length,
-            seat,
+          match.layout.positions[object.id] = this.initialPositionForController(
+            match,
+            patch.controllerId,
             Object.values(match.objects).filter(
               (entry) =>
                 entry.zoneId === object.zoneId &&
@@ -530,10 +527,9 @@ export class MatchService {
         match.objects[object.id] = object;
         zone.insert(object.id);
         if (zone.state.kind === "battlefield")
-          match.layout.positions[object.id] = initialPosition(
-            match.players.length,
-            match.players.find((entry) => entry.id === object.controllerId)!
-              .seat,
+          match.layout.positions[object.id] = this.initialPositionForController(
+            match,
+            object.controllerId,
             Object.keys(match.layout.positions).length,
           );
         break;
@@ -611,10 +607,9 @@ export class MatchService {
         if (destination.state.kind === "battlefield")
           match.layout.positions[moved.id] =
             action.position ??
-            initialPosition(
-              match.players.length,
-              match.players.find((entry) => entry.id === moved.controllerId)!
-                .seat,
+            this.initialPositionForController(
+              match,
+              moved.controllerId,
               Object.keys(match.layout.positions).length,
             );
         break;
@@ -707,6 +702,16 @@ export class MatchService {
     if (!object) throw new Error("This Game Object has already moved.");
     zoneFor(match, object.zoneId).requireAccess(actorId);
     return object;
+  }
+  private initialPositionForController(
+    match: MatchState,
+    controllerId: string,
+    index: number,
+  ) {
+    const seat = match.players.find(
+      (player) => player.id === controllerId,
+    )!.seat;
+    return initialPosition(match.players.length, seat, index);
   }
   private requireIdentity(object: GameObject, actorId?: string) {
     if (!canInspectIdentity(object, actorId))

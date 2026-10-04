@@ -63,6 +63,13 @@ test("opening draw and mulligan change one revision while keeping the Hand priva
   await expect
     .poll(async () => (await snapshot(alice)).match?.players[0].mulliganCount)
     .toBe(2);
+  await alice.getByRole("button", { name: "Mulligan", exact: true }).click();
+  await expect
+    .poll(async () => (await snapshot(bob)).match?.players[0].mulliganCount)
+    .toBe(3);
+  await alice.getByLabel("Mulligan Count").fill("12");
+  await alice.getByRole("button", { name: "Save count" }).click();
+  await expect.poll(async () => (await snapshot(bob)).match?.players[0].mulliganCount).toBe(12);
   await Promise.all(contexts.map((context) => context.close()));
 });
 
@@ -116,6 +123,27 @@ for (const count of [1, 2, 3, 4]) {
       objectId: hand.objectIds![0],
       zoneId: match.zones.find((zone) => zone.kind === "battlefield")!.id,
     });
+    for (const page of pages) {
+      const cardBox = await page
+        .getByTestId("battlefield")
+        .getByRole("button", { name: "Island", exact: true })
+        .boundingBox();
+      const aliceArea = await page
+        .getByTestId("player-area-Alice")
+        .boundingBox();
+      expect(
+        cardBox &&
+          aliceArea &&
+          cardBox.x >= aliceArea.x &&
+          cardBox.x < aliceArea.x + aliceArea.width,
+      ).toBeTruthy();
+      expect(
+        cardBox &&
+          aliceArea &&
+          cardBox.y >= aliceArea.y &&
+          cardBox.y < aliceArea.y + aliceArea.height,
+      ).toBeTruthy();
+    }
     await pages[0].screenshot({
       path: testInfo.outputPath(`table-${count}-populated.png`),
     });
@@ -293,5 +321,114 @@ test("local navigation, card gestures, preview, and Zone drawer work without mov
   await expect(
     alice.getByRole("button", { name: "Close Zone drawer" }),
   ).toBeVisible();
+  const drawerBox = await alice.locator(".zone-drawer").boundingBox();
+  const from = await permanent.boundingBox();
+  await alice.mouse.move(from!.x + 12, from!.y + 12);
+  await alice.mouse.down();
+  await alice.mouse.move(drawerBox!.x + 60, drawerBox!.y + 160, { steps: 5 });
+  await alice.mouse.up();
+  await expect
+    .poll(
+      async () =>
+        (await snapshot(bob)).match!.zones.find(
+          (zone) =>
+            zone.kind === "graveyard" && zone.ownerId === before.players[0].id,
+        )?.count,
+    )
+    .toBe(1);
+  await Promise.all(contexts.map((context) => context.close()));
+});
+
+test("visible artwork follows the current face and failed images fall back to card text", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+  } = await table(browser);
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="280"><rect width="200" height="280" fill="#416e67"/></svg>';
+  await alice.route("https://cards.example.test/**", (route) =>
+    route.fulfill({ body: svg, contentType: "image/svg+xml" }),
+  );
+  await saveDeck(
+    alice,
+    "Art cards",
+    "1 Island (TST) 2\n1 Delver of Secrets (TST) 3",
+  );
+  await saveDeck(bob);
+  for (const page of [alice, bob])
+    await page.getByRole("button", { name: "Mark ready", exact: true }).click();
+  await alice.getByRole("button", { name: "Start Match", exact: true }).click();
+  await expect(alice.getByTestId("match")).toBeVisible();
+  let match = (await snapshot(alice)).match!;
+  const library = match.zones.find(
+    (zone) => zone.kind === "library" && zone.ownerId === match.players[0].id,
+  )!;
+  const battlefield = match.zones.find((zone) => zone.kind === "battlefield")!;
+  const island = Object.values(match.objects).find(
+    (object) =>
+      object.characteristics.name === "Island" && object.zoneId === library.id,
+  )!;
+  const delver = Object.values(match.objects).find(
+    (object) => object.characteristics.name === "Delver of Secrets",
+  )!;
+  match = await act(alice, {
+    type: "move",
+    objectId: island.id,
+    zoneId: battlefield.id,
+  });
+  await act(alice, {
+    type: "move",
+    objectId: delver.id,
+    zoneId: battlefield.id,
+  });
+  const artCard = alice
+    .getByTestId("battlefield")
+    .getByRole("button", { name: "Island", exact: true });
+  await expect(artCard.locator("img")).toHaveAttribute(
+    "src",
+    "https://cards.example.test/island.svg",
+  );
+  await expect
+    .poll(async () =>
+      artCard
+        .locator("img")
+        .evaluate((image: HTMLImageElement) => image.naturalWidth),
+    )
+    .toBeGreaterThan(0);
+  const delverCard = alice
+    .getByTestId("battlefield")
+    .getByRole("button", { name: "Delver of Secrets" });
+  await expect(delverCard.locator("img")).toHaveAttribute(
+    "src",
+    "https://cards.example.test/delver-front.svg",
+  );
+  const movedDelver = Object.values(
+    (await snapshot(alice)).match!.objects,
+  ).find((object) =>
+    object.cardInstanceIds?.includes(delver.cardInstanceIds![0]),
+  )!;
+  await act(alice, {
+    type: "patch-object",
+    objectId: movedDelver.id,
+    patch: { currentFace: 1 },
+  });
+  await expect(
+    alice
+      .getByTestId("battlefield")
+      .getByRole("button", { name: "Insectile Aberration" })
+      .locator("img"),
+  ).toHaveAttribute("src", "https://cards.example.test/delver-back.svg");
+  await alice.unroute("https://cards.example.test/**");
+  await alice.route("https://cards.example.test/**", (route) => route.abort());
+  await alice.reload();
+  await expect(
+    alice
+      .getByTestId("battlefield")
+      .getByRole("button", { name: "Island", exact: true })
+      .locator(".card-fallback"),
+  ).toContainText("Island");
+  await expect(bob.getByTestId("zone-hand-Alice")).not.toContainText("Island");
   await Promise.all(contexts.map((context) => context.close()));
 });

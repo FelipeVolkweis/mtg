@@ -25,6 +25,9 @@ A room participant's role in one match, including their seat and match-specific 
 **Life Total**:
 A Match Player's current life value. A Match sets a configurable starting value, and participants can adjust it manually during a Manual Match.
 
+**Mulligan Count**:
+The number of mulligans a Match Player has taken in the current Match.
+
 **Turn State**:
 The manually tracked active Match Player, turn number, current phase, and current step. It is shared Match state but does not restrict actions in a Manual Match.
 
@@ -172,8 +175,11 @@ The hidden Zone containing cards a player has drawn. Opponents can see its size 
 **Battlefield**:
 The shared play area containing cards in play, visible to all participants.
 
+**Player Area**:
+The portion of the shared Battlefield visually associated with a Match Player. It is not a separate Zone.
+
 **Battlefield Layout**:
-The shared visual arrangement of cards on the Battlefield, stored separately from gameplay state so the layout can change without changing rules behavior.
+The shared visual arrangement of cards across Player Areas on the Battlefield, stored separately from gameplay state so the layout can change without changing rules behavior.
 
 **Graveyard**:
 A player's public Zone for cards put there by game actions, including discards and cards that leave the Battlefield. Its order is preserved.

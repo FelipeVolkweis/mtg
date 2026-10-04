@@ -81,6 +81,9 @@ export function Tabletop({
     y: number;
     name: string;
   }>();
+  const [mulliganInput, setMulliganInput] = useState(
+    String(player?.mulliganCount ?? 0),
+  );
   const scale =
     Math.min(viewport.width / TABLE_WIDTH, viewport.height / TABLE_HEIGHT) *
     zoom;
@@ -92,6 +95,18 @@ export function Tabletop({
     (zone) => zone.kind === "library" && zone.ownerId === player?.id,
   );
   const drawer = match.zones.find((zone) => zone.id === drawerId);
+  function toggleTapped(object: ObjectView) {
+    action({
+      type: "patch-object",
+      objectId: object.id,
+      patch: { status: { ...object.status, tapped: !object.status.tapped } },
+    });
+  }
+
+  useEffect(
+    () => setMulliganInput(String(player?.mulliganCount ?? 0)),
+    [player?.mulliganCount],
+  );
 
   useEffect(() => {
     const target = viewportRef.current;
@@ -123,13 +138,7 @@ export function Tabletop({
         !busy &&
         !readOnly
       )
-        action({
-          type: "patch-object",
-          objectId: selection.id,
-          patch: {
-            status: { ...selection.status, tapped: !selection.status.tapped },
-          },
-        });
+        toggleTapped(selection);
     }
     function up(event: KeyboardEvent) {
       if (event.key === "Alt") setAlt(false);
@@ -259,14 +268,7 @@ export function Tabletop({
         onMouseEnter={() => setHovered(object.id)}
         onMouseLeave={() => setHovered(undefined)}
         onDoubleClick={() => {
-          if (spatial && !busy && !readOnly)
-            action({
-              type: "patch-object",
-              objectId: object.id,
-              patch: {
-                status: { ...object.status, tapped: !object.status.tapped },
-              },
-            });
+          if (spatial && !busy && !readOnly) toggleTapped(object);
         }}
       >
         {artwork ? (
@@ -499,18 +501,7 @@ export function Tabletop({
                     <strong>{selection.characteristics.name}</strong>
                     <button
                       disabled={busy}
-                      onClick={() =>
-                        action({
-                          type: "patch-object",
-                          objectId: selection.id,
-                          patch: {
-                            status: {
-                              ...selection.status,
-                              tapped: !selection.status.tapped,
-                            },
-                          },
-                        })
-                      }
+                      onClick={() => toggleTapped(selection)}
                     >
                       Toggle tap
                     </button>
@@ -604,22 +595,31 @@ export function Tabletop({
                     >
                       Shuffle Library
                     </button>
-                    <label>
-                      Mulligan Count{" "}
-                      <input
-                        type="number"
-                        min={0}
-                        max={1000}
-                        value={player.mulliganCount}
-                        onChange={(event) =>
-                          action({
-                            type: "mulligan-count",
-                            playerId: player.id,
-                            value: Number(event.target.value),
-                          })
-                        }
-                      />
-                    </label>
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        action({
+                          type: "mulligan-count",
+                          playerId: player.id,
+                          value: Number(mulliganInput),
+                        });
+                      }}
+                    >
+                      <label>
+                        Mulligan Count{" "}
+                        <input
+                          type="number"
+                          min={0}
+                          max={1000}
+                          required
+                          value={mulliganInput}
+                          onChange={(event) =>
+                            setMulliganInput(event.target.value)
+                          }
+                        />
+                      </label>
+                      <button disabled={busy}>Save count</button>
+                    </form>
                   </div>
                   <section
                     className="hand-cards"

@@ -22,6 +22,7 @@ export const fixtureCards = [
     colors: [],
     type_line: "Basic Land — Island",
     oracle_text: "",
+    image_uris: { normal: "https://cards.example.test/island.svg" },
   },
   {
     id: "10000000-0000-4000-8000-000000000003",
@@ -40,6 +41,7 @@ export const fixtureCards = [
           "At the beginning of your upkeep, look at the top card of your library.",
         power: "1",
         toughness: "1",
+        image_uris: { normal: "https://cards.example.test/delver-front.svg" },
       },
       {
         name: "Insectile Aberration",
@@ -48,6 +50,7 @@ export const fixtureCards = [
         oracle_text: "Flying",
         power: "3",
         toughness: "2",
+        image_uris: { normal: "https://cards.example.test/delver-back.svg" },
       },
     ],
   },
