@@ -26,9 +26,9 @@ function characteristics(
     colors: face.colors ?? [],
     colorIndicator: face.color_indicator,
     typeLine: face.type_line,
-    manaValue: face.cmc ?? card.cmc,
+    manaValue: face.cmc ?? (face === card ? card.cmc : undefined),
     ...parseTypes(face.type_line),
-    keywords: face.keywords ?? card.keywords,
+    keywords: face.keywords ?? (face === card ? card.keywords : []),
     rulesText: face.oracle_text ?? "",
     power: face.power,
     toughness: face.toughness,
@@ -106,8 +106,6 @@ function importedDefinition(
 
 @Injectable()
 export class CatalogService {
-  readCatalog = readCatalog;
-
   async importSet(code: string, source = new ScryfallSource()) {
     const setCode = code.trim().toLowerCase();
     const fetched = await source.fetchSet(setCode);
@@ -118,6 +116,7 @@ export class CatalogService {
     const catalog = structuredClone(current);
     const seen = new Set<string>();
     const candidates = new Map<string, SourceCard[]>();
+    const resolved: { card: SourceCard; oracleId: string }[] = [];
     for (const card of fetched.cards) {
       if (seen.has(card.id)) throw new Error(`Duplicate printing ${card.id}`);
       seen.add(card.id);
@@ -137,6 +136,7 @@ export class CatalogService {
         current.printings[card.id].definitionId !== oracleId
       )
         throw new Error(`Printing ${card.id} changed Oracle identity`);
+      resolved.push({ card, oracleId });
       const group = candidates.get(oracleId) ?? [];
       group.push(card);
       candidates.set(oracleId, group);
@@ -158,8 +158,7 @@ export class CatalogService {
         abilities: existing?.abilities ?? [],
       };
     }
-    for (const card of fetched.cards) {
-      const oracleId = card.oracle_id ?? identityMap[card.id];
+    for (const { card, oracleId } of resolved) {
       const artwork = (card.card_faces ?? [card])
         .map((face) => face.image_uris?.normal ?? card.image_uris?.normal)
         .filter((url): url is string => Boolean(url));
@@ -261,10 +260,16 @@ export class CatalogService {
   }
   async cards(query: string, status?: "unimplemented" | "implemented") {
     const catalog = await readCatalog();
+    const matchingNames = new Set(
+      Object.values(catalog.names)
+        .filter((entry) => key(entry.name).includes(key(query)))
+        .map((entry) => key(entry.canonicalName ?? entry.name)),
+    );
     return Object.values(catalog.definitions)
       .filter(
         (definition) =>
-          key(definition.canonicalName).includes(key(query)) &&
+          (key(definition.canonicalName).includes(key(query)) ||
+            matchingNames.has(key(definition.canonicalName))) &&
           (!status || definition.automationStatus === status),
       )
       .slice(0, 50)

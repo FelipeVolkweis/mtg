@@ -5,6 +5,7 @@ export const fixtureCards = [
     id: "10000000-0000-4000-8000-000000000001",
     oracle_id: "20000000-0000-4000-8000-000000000001",
     name: "Island",
+    flavor_name: "Echoing Isle",
     set: "tst",
     collector_number: "1",
     layout: "normal",
@@ -57,6 +58,7 @@ export const fixtureCards = [
       },
       {
         name: "Insectile Aberration",
+        keywords: ["Flying"],
         colors: ["U"],
         type_line: "Creature — Human Insect",
         oracle_text: "Flying",

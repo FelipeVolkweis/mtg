@@ -13,6 +13,7 @@ import type {
 } from "../../shared/model.js";
 import { Database } from "../storage/database.js";
 import { CatalogService } from "../catalog/catalog.service.js";
+import { readCatalog } from "../catalog/catalog-files.js";
 import { MatchService } from "../match/match.service.js";
 import { matchView } from "../match/match-view.js";
 
@@ -148,7 +149,7 @@ export class RoomService implements OnModuleInit {
         case "save-decklist": {
           const entries = this.catalog.resolveDecklist(
             command.text,
-            await this.catalog.readCatalog(),
+            await readCatalog(),
           );
           const existing = command.id
             ? participant.decklists.find(
@@ -226,7 +227,7 @@ export class RoomService implements OnModuleInit {
           else
             room.match = this.matches.create(
               room,
-              await this.catalog.readCatalog(),
+              await readCatalog(),
               command.startingLife,
             );
           break;
@@ -261,7 +262,7 @@ export class RoomService implements OnModuleInit {
           ) {
             room.match = this.matches.create(
               room,
-              await this.catalog.readCatalog(),
+              await readCatalog(),
               room.rematch.startingLife,
             );
             delete room.rematch;

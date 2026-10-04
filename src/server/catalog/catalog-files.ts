@@ -11,22 +11,53 @@ import {
 } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { z } from "zod";
-import { characteristicSchema, type Catalog } from "../../shared/model.js";
+import {
+  characteristicSchema,
+  zoneKinds,
+  type Catalog,
+} from "../../shared/model.js";
 import { nameKey } from "./card-names.js";
 
 const uuid = z.uuid();
+const abilityValue = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("integer"), value: z.number().int() }).strict(),
+  z.object({ kind: z.literal("boolean"), value: z.boolean() }).strict(),
+  z.object({ kind: z.literal("text"), value: z.string() }).strict(),
+  z.object({ kind: z.literal("reference"), value: z.string().min(1) }).strict(),
+  z
+    .object({
+      kind: z.literal("mana-symbols"),
+      symbols: z.array(z.string().regex(/^\{[^{}]+\}$/)).min(1),
+    })
+    .strict(),
+]);
 const primitive = z
   .object({
     primitive: z.string().min(1),
-    parameters: z.record(z.string(), z.json()).optional(),
+    parameters: z.record(z.string(), abilityValue).optional(),
   })
   .strict();
+const cost = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("mana"),
+      symbols: z.array(z.string().regex(/^\{[^{}]+\}$/)).min(1),
+    })
+    .strict(),
+  primitive.extend({ kind: z.literal("primitive") }),
+]);
 const ability = z
   .object({
     id: z.string().min(1),
     kind: z.enum(["static", "triggered", "activated", "spell"]),
+    origin: z.enum(["printed", "rules"]),
+    applicableZone: z.enum(zoneKinds).optional(),
     keyword: z.string().optional(),
-    costs: z.array(primitive).optional(),
+    trigger: z
+      .object({ kind: z.enum(["event", "state"]), condition: primitive })
+      .strict()
+      .optional(),
+    costs: z.array(cost).optional(),
     conditions: z.array(primitive).optional(),
     effects: z.array(primitive).optional(),
   })
@@ -75,6 +106,28 @@ async function json(path: string): Promise<unknown> {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
+async function catalogInode(root: string) {
+  try {
+    return (await stat(root)).ino;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    if (loaded?.root === root) return loaded.inode;
+    // A live directory swap normally finishes immediately. An interrupted one
+    // leaves the previous complete release at this deterministic backup path.
+    for (let retry = 0; retry < 5; retry++) {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      try {
+        return (await stat(root)).ino;
+      } catch (retryError) {
+        if ((retryError as NodeJS.ErrnoException).code !== "ENOENT")
+          throw retryError;
+      }
+    }
+    await rename(`${root}.previous`, root);
+    return (await stat(root)).ino;
+  }
+}
+
 async function records<T>(
   root: string,
   directory: string,
@@ -95,7 +148,7 @@ async function records<T>(
 
 let loaded: { root: string; inode: number; catalog: Catalog } | undefined;
 export async function readCatalog(root = catalogRoot()): Promise<Catalog> {
-  const inode = (await stat(root)).ino;
+  const inode = await catalogInode(root);
   if (loaded?.root === root && loaded.inode === inode) return loaded.catalog;
   const [definitions, printings, directory, importedSets] = await Promise.all([
     records(root, "definitions", definition),
@@ -141,7 +194,7 @@ export async function publishCatalog(catalog: Catalog, root = catalogRoot()) {
   const parent = dirname(root);
   await mkdir(parent, { recursive: true });
   const stage = await mkdtemp(join(parent, ".catalog-stage-"));
-  const backup = `${stage}-previous`;
+  const backup = `${root}.previous`;
   let moved = false;
   try {
     await cp(root, stage, { recursive: true });
@@ -162,6 +215,7 @@ export async function publishCatalog(catalog: Catalog, root = catalogRoot()) {
       put(stage, "sets.json", catalog.importedSets),
     ]);
     await readCatalog(stage);
+    await rm(backup, { recursive: true, force: true });
     await rename(root, backup);
     moved = true;
     await rename(stage, root);

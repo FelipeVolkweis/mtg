@@ -44,13 +44,25 @@ export interface CardDefinition {
 }
 export interface AbilityPrimitive {
   primitive: string;
-  parameters?: Record<string, unknown>;
+  parameters?: Record<string, AbilityValue>;
 }
+export type AbilityValue =
+  | { kind: "integer"; value: number }
+  | { kind: "boolean"; value: boolean }
+  | { kind: "text"; value: string }
+  | { kind: "reference"; value: string }
+  | { kind: "mana-symbols"; symbols: string[] };
+export type AbilityCost =
+  | { kind: "mana"; symbols: string[] }
+  | ({ kind: "primitive" } & AbilityPrimitive);
 export interface CardAbility {
   id: string;
   kind: "static" | "triggered" | "activated" | "spell";
+  origin: "printed" | "rules";
+  applicableZone?: ZoneKind;
   keyword?: string;
-  costs?: AbilityPrimitive[];
+  trigger?: { kind: "event" | "state"; condition: AbilityPrimitive };
+  costs?: AbilityCost[];
   conditions?: AbilityPrimitive[];
   effects?: AbilityPrimitive[];
 }

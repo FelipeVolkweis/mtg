@@ -2,7 +2,14 @@ import { expect, test } from "@playwright/test";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { cp, mkdtemp, readFile, writeFile, readdir } from "node:fs/promises";
+import {
+  cp,
+  mkdtemp,
+  readFile,
+  writeFile,
+  readdir,
+  rename,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -126,6 +133,8 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         { name: "Insectile Aberration", keywords: ["Flying"] },
       ],
     });
+    expect(delver.components[0].keywords).toEqual([]);
+    expect(delver.components[0]).not.toHaveProperty("manaValue");
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
       `${fixtureCards[4].oracle_id}.json`,
     );
@@ -152,6 +161,12 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         printings: [{ collectorNumber: "1" }, { collectorNumber: "2" }],
       },
     ]);
+    expect(
+      await (await request.get("/api/catalog/cards?q=Insectile")).json(),
+    ).toMatchObject([{ id: fixtureCards[2].oracle_id }]);
+    expect(
+      await (await request.get("/api/catalog/cards?q=Echoing%20Isle")).json(),
+    ).toMatchObject([{ id: fixtureCards[0].oracle_id }]);
     const before = await (await request.get("/api/catalog/sets")).json();
     const file = join(
       catalogRoot,
@@ -164,8 +179,17 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       {
         id: "ward-blight",
         kind: "triggered",
+        origin: "printed",
+        applicableZone: "battlefield",
         keyword: "Ward",
-        costs: [{ primitive: "blight", parameters: { amount: 2 } }],
+        trigger: { kind: "event", condition: { primitive: "becomes-target" } },
+        costs: [
+          {
+            kind: "primitive",
+            primitive: "blight",
+            parameters: { amount: { kind: "integer", value: 2 } },
+          },
+        ],
         effects: [{ primitive: "counter-spell" }],
       },
     ];
@@ -180,6 +204,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       {
         id: "haste",
         kind: "static",
+        origin: "printed",
         keyword: "Haste",
         effects: [{ primitive: "grant-haste" }],
       },
@@ -348,5 +373,28 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     await request.dispose();
     await app.stop();
     await new Promise<void>((resolve) => provider.close(() => resolve()));
+  }
+});
+
+test("an interrupted publication restores the last complete catalog on startup", async ({
+  playwright,
+}) => {
+  const root = await mkdtemp(join(tmpdir(), "mtg-catalog-recover-"));
+  await cp(process.env.CATALOG_ROOT!, root, { recursive: true });
+  await rename(root, `${root}.previous`);
+  const app = await startServer("mtg_catalog_recovery_test", 4321, {
+    CATALOG_ROOT: root,
+  });
+  const request = await playwright.request.newContext({ baseURL: app.origin });
+  try {
+    expect(await (await request.get("/api/catalog/sets")).json()).toMatchObject(
+      { sets: ["tst"], definitions: 5 },
+    );
+    expect(JSON.parse(await readFile(join(root, "sets.json"), "utf8"))).toEqual(
+      ["tst"],
+    );
+  } finally {
+    await request.dispose();
+    await app.stop();
   }
 });
