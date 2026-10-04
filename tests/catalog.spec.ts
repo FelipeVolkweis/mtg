@@ -18,14 +18,17 @@ import { startServer } from "./support/server";
 
 test("set-code import is local, idempotent and preserves the catalog when the provider fails", async ({
   playwright,
+  browser,
 }) => {
   const catalogRoot = await mkdtemp(join(tmpdir(), "mtg-catalog-import-"));
   await cp(resolve("catalog"), catalogRoot, { recursive: true });
   let failed = false;
   let legacyBulk = false;
   let truncatedBulk = false;
+  let providerCalls = 0;
   const cards: Record<string, unknown>[] = structuredClone(fixtureCards);
   const provider = createServer((req, res) => {
+    providerCalls++;
     res.setHeader("Content-Type", "application/json");
     if (failed) {
       res.writeHead(503);
@@ -62,17 +65,54 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     SCRYFALL_API_ORIGIN: `http://127.0.0.1:${address.port}`,
   };
   const importSet = () =>
-    promisify(execFile)(
-      process.execPath,
-      ["dist/server/catalog/import-cli.js", "tst"],
-      { env },
-    );
+    promisify(execFile)("npm", ["run", "catalog:import", "--", "tst"], { env });
   const app = await startServer("mtg_catalog_test", 4320, {
     CATALOG_ROOT: catalogRoot,
   });
   const request = await playwright.request.newContext({ baseURL: app.origin });
+  const context = await browser.newContext();
+  const page = await context.newPage();
   try {
+    await page.goto(app.origin);
+    await page.getByLabel("Your name").fill("Catalog player");
+    await page
+      .getByRole("button", { name: "Create Room", exact: true })
+      .click();
+    await expect(
+      page.getByRole("heading", { name: "Room lobby" }),
+    ).toBeVisible();
+    await page.getByLabel("Decklist name").fill("Before import");
+    await page.getByLabel("Decklist text").fill("1 Island");
+    await page
+      .getByRole("button", { name: "Save Decklist", exact: true })
+      .click();
+    await expect(page.getByRole("alert")).toContainText(
+      "not a canonical card name in the locally imported pool",
+    );
+    expect(providerCalls).toBe(0);
+    await page.getByRole("button", { name: "Dismiss error" }).click();
     await importSet();
+    const callsAfterImport = providerCalls;
+    failed = true;
+    await page.getByLabel("Decklist name").fill("After import");
+    await page
+      .getByRole("button", { name: "Save Decklist", exact: true })
+      .click();
+    await expect(
+      page
+        .getByLabel("Selected Decklist")
+        .getByRole("option", { name: "After import" }),
+    ).toBeAttached();
+    await page.getByLabel("Decklist name").fill("Unavailable name");
+    await page.getByLabel("Decklist text").fill("1 Black Lotus");
+    await page
+      .getByRole("button", { name: "Save Decklist", exact: true })
+      .click();
+    await expect(page.getByRole("alert")).toContainText(
+      "not a canonical card name in the locally imported pool",
+    );
+    expect(providerCalls).toBe(callsAfterImport);
+    failed = false;
     const island = JSON.parse(
       await readFile(
         join(
@@ -370,6 +410,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       automationStatus: "unimplemented",
     });
   } finally {
+    await context.close();
     await request.dispose();
     await app.stop();
     await new Promise<void>((resolve) => provider.close(() => resolve()));
