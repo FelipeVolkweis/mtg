@@ -1,0 +1,44 @@
+{
+  "name": "mtg-manual-tabletop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --tsconfig tsconfig.server.json watch src/server/main.ts",
+    "dev:client": "vite --host 0.0.0.0",
+    "build": "tsc -p tsconfig.server.json && vite build",
+    "start": "node dist/server/main.js",
+    "typecheck": "tsc --noEmit -p tsconfig.server.json && tsc --noEmit -p tsconfig.client.json && tsc --noEmit -p tsconfig.tests.json",
+    "test": "playwright test",
+    "catalog:import": "tsx --tsconfig tsconfig.server.json src/server/catalog/import-cli.ts",
+    "format": "prettier --write src tests playwright.config.ts vite.config.ts tsconfig*.json package.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "12.1.2",
+    "@nestjs/core": "12.1.2",
+    "@nestjs/platform-express": "12.1.2",
+    "@nestjs/platform-ws": "12.1.2",
+    "@nestjs/serve-static": "12.0.0",
+    "@nestjs/websockets": "12.1.2",
+    "pg": "8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "ws": "8.22.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.4",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/ws": "8.18.2",
+    "@vitejs/plugin-react": "6.1.1",
+    "prettier": "3.9.9",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.2"
+  }
+}

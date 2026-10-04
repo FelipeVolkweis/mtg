@@ -1,0 +1,7 @@
+.git
+node_modules
+dist
+.scratch
+test-results
+.test-data
+.env
