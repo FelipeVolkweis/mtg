@@ -9,8 +9,11 @@ class CatalogController {
   @Get("sets") sets() {
     return this.catalog.sets();
   }
-  @Get("cards") cards(@Query("q") query = "") {
-    return this.catalog.cards(query);
+  @Get("cards") cards(
+    @Query("q") query = "",
+    @Query("status") status?: "unimplemented" | "implemented",
+  ) {
+    return this.catalog.cards(query, status);
   }
   @Get("names") names(@Query("q") query = "") {
     return this.catalog.names(query);

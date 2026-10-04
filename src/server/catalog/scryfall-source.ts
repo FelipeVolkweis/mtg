@@ -10,6 +10,8 @@ const faceSchema = z.object({
   name: z.string().min(1),
   flavor_name: z.string().optional(),
   mana_cost: z.string().optional(),
+  cmc: z.number().nonnegative().optional(),
+  keywords: z.array(z.string()).optional(),
   colors: z.array(z.enum(["W", "U", "B", "R", "G"])).optional(),
   color_indicator: z.array(z.enum(["W", "U", "B", "R", "G"])).optional(),
   type_line: z.string().default(""),
@@ -22,10 +24,13 @@ const faceSchema = z.object({
 });
 export const sourceCardSchema = faceSchema.extend({
   id: z.string().uuid(),
-  set: z.string(),
-  collector_number: z.string(),
-  layout: z.string(),
-  color_identity: z.array(z.string()),
+  oracle_id: z.string().uuid().optional(),
+  set: z.string().min(2),
+  collector_number: z.string().min(1),
+  layout: z.string().min(1),
+  cmc: z.number().nonnegative(),
+  keywords: z.array(z.string()),
+  color_identity: z.array(z.enum(["W", "U", "B", "R", "G"])),
   card_faces: z.array(faceSchema).optional(),
 });
 export type SourceCard = z.infer<typeof sourceCardSchema>;

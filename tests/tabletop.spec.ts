@@ -18,6 +18,7 @@ test("Decklists are private, reusable and rejected as a whole for unavailable na
   for (const invalid of [
     "1 Black Lotus",
     "1 Insectile Aberration",
+    "1 Shared Name",
     "1 Island (BAD) 1",
     "1 Island\n1 Missing Card",
   ]) {
@@ -35,6 +36,11 @@ test("Decklists are private, reusable and rejected as a whole for unavailable na
     await alice.getByRole("button", { name: "Dismiss error" }).click();
   }
   await saveDeck(alice, "Exact artwork", "1 Island (TST) 2");
+  await saveDeck(
+    alice,
+    "Colliding name with exact printing",
+    "1 Shared Name (TST) 5",
+  );
   await alice.reload();
   await expect(
     alice
@@ -54,8 +60,19 @@ test("Decklists are private, reusable and rejected as a whole for unavailable na
   await alice.getByRole("button", { name: "Mark ready", exact: true }).click();
   await bob.getByRole("button", { name: "Start Match", exact: true }).click();
   await expect(alice.getByTestId("match")).toBeVisible();
-  expect(Object.values((await snapshot(alice)).match!.instances)).toMatchObject(
-    [{ printingId: "10000000-0000-4000-8000-000000000002" }],
+  const match = (await snapshot(alice)).match!;
+  expect(Object.values(match.instances)).toMatchObject([
+    {
+      definitionId: "20000000-0000-4000-8000-000000000001",
+      printingId: "10000000-0000-4000-8000-000000000002",
+    },
+  ]);
+  expect(Object.values(match.objects)).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        artwork: ["https://cards.example.test/island.svg"],
+      }),
+    ]),
   );
   await Promise.all(contexts.map((context) => context.close()));
 });

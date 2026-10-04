@@ -13,7 +13,7 @@ test("a server restart restores the persisted revision and private participant v
   ]);
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
   try {
-    await seedCatalog(server.databaseUrl);
+    await seedCatalog();
     await pages[0].goto(server.origin);
     await pages[0].getByLabel("Your name").fill("Alice");
     await pages[0]

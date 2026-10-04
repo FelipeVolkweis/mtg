@@ -2,15 +2,22 @@ import { expect, test } from "@playwright/test";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { cp, mkdtemp, readFile, writeFile, readdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 
 import { fixtureCards, catalogResponse } from "./support/catalog-fixture";
+import { startServer } from "./support/server";
 
 test("set-code import is local, idempotent and preserves the catalog when the provider fails", async ({
-  request,
+  playwright,
 }) => {
+  const catalogRoot = await mkdtemp(join(tmpdir(), "mtg-catalog-import-"));
+  await cp(resolve("catalog"), catalogRoot, { recursive: true });
   let failed = false;
   let legacyBulk = false;
   let truncatedBulk = false;
+  const cards: Record<string, unknown>[] = structuredClone(fixtureCards);
   const provider = createServer((req, res) => {
     res.setHeader("Content-Type", "application/json");
     if (failed) {
@@ -18,11 +25,13 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       res.end(JSON.stringify({ error: "offline" }));
       return;
     }
-    const response = catalogResponse(
-      req.url ?? "",
-      `http://${req.headers.host}`,
-      legacyBulk,
-    );
+    const response = req.url?.startsWith("/cards/search")
+      ? { data: cards, has_more: false }
+      : catalogResponse(
+          req.url ?? "",
+          `http://${req.headers.host}`,
+          legacyBulk,
+        );
     res.end(
       Buffer.isBuffer(response)
         ? truncatedBulk
@@ -39,6 +48,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     throw new Error("No provider address");
   const env = {
     ...process.env,
+    CATALOG_ROOT: catalogRoot,
     DATABASE_URL:
       process.env.TEST_DATABASE_URL ??
       "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",
@@ -50,12 +60,92 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       ["dist/server/catalog/import-cli.js", "tst"],
       { env },
     );
+  const app = await startServer("mtg_catalog_test", 4320, {
+    CATALOG_ROOT: catalogRoot,
+  });
+  const request = await playwright.request.newContext({ baseURL: app.origin });
   try {
     await importSet();
-    const cards = await (
+    const island = JSON.parse(
+      await readFile(
+        join(
+          catalogRoot,
+          "definitions",
+          "20000000-0000-4000-8000-000000000001.json",
+        ),
+        "utf8",
+      ),
+    );
+    expect(island).toMatchObject({
+      id: "20000000-0000-4000-8000-000000000001",
+      canonicalName: "Island",
+      automationStatus: "unimplemented",
+      abilities: [],
+    });
+    expect(island).toMatchObject({
+      defaultPrintingId: fixtureCards[0].id,
+      components: [
+        {
+          supertypes: ["Basic"],
+          types: ["Land"],
+          subtypes: ["Island"],
+          manaValue: 0,
+        },
+      ],
+    });
+    const printed = JSON.parse(
+      await readFile(
+        join(catalogRoot, "printings", `${fixtureCards[1].id}.json`),
+        "utf8",
+      ),
+    );
+    expect(printed).toEqual({
+      id: fixtureCards[1].id,
+      definitionId: island.id,
+      setCode: "tst",
+      collectorNumber: "2",
+      artwork: ["https://cards.example.test/island.svg"],
+    });
+    expect(await readdir(join(catalogRoot, "definitions"))).toContain(
+      `${fixtureCards[2].oracle_id}.json`,
+    );
+    const delver = JSON.parse(
+      await readFile(
+        join(catalogRoot, "definitions", `${fixtureCards[2].oracle_id}.json`),
+        "utf8",
+      ),
+    );
+    expect(delver).toMatchObject({
+      form: "transform",
+      components: [
+        {
+          name: "Delver of Secrets",
+          types: ["Creature"],
+          subtypes: ["Human", "Wizard"],
+        },
+        { name: "Insectile Aberration", keywords: ["Flying"] },
+      ],
+    });
+    expect(await readdir(join(catalogRoot, "definitions"))).toContain(
+      `${fixtureCards[4].oracle_id}.json`,
+    );
+    expect(await readdir(join(catalogRoot, "definitions"))).toContain(
+      `${fixtureCards[5].oracle_id}.json`,
+    );
+    expect(JSON.stringify(island)).not.toMatch(
+      /prices|edhrec_rank|purchase_uris/,
+    );
+    expect(
+      await (
+        await request.get(
+          "/api/catalog/cards?q=Shared%20Name&status=unimplemented",
+        )
+      ).json(),
+    ).toHaveLength(2);
+    const lookup = await (
       await request.get("/api/catalog/cards?q=Island")
     ).json();
-    expect(cards).toMatchObject([
+    expect(lookup).toMatchObject([
       {
         canonicalName: "Island",
         defaultPrintingId: fixtureCards[0].id,
@@ -63,19 +153,103 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       },
     ]);
     const before = await (await request.get("/api/catalog/sets")).json();
+    const file = join(
+      catalogRoot,
+      "definitions",
+      `${fixtureCards[4].oracle_id}.json`,
+    );
+    const authored = JSON.parse(await readFile(file, "utf8"));
+    authored.automationStatus = "implemented";
+    authored.abilities = [
+      {
+        id: "ward-blight",
+        kind: "triggered",
+        keyword: "Ward",
+        costs: [{ primitive: "blight", parameters: { amount: 2 } }],
+        effects: [{ primitive: "counter-spell" }],
+      },
+    ];
+    await writeFile(file, `${JSON.stringify(authored, null, 2)}\n`);
+    const unfinishedFile = join(
+      catalogRoot,
+      "definitions",
+      `${fixtureCards[5].oracle_id}.json`,
+    );
+    const unfinished = JSON.parse(await readFile(unfinishedFile, "utf8"));
+    unfinished.abilities = [
+      {
+        id: "haste",
+        kind: "static",
+        keyword: "Haste",
+        effects: [{ primitive: "grant-haste" }],
+      },
+    ];
+    await writeFile(unfinishedFile, `${JSON.stringify(unfinished, null, 2)}\n`);
+    const authoredBefore = await readFile(file, "utf8");
+    cards[4].oracle_text = "Ward—Blight 2. Updated wording.";
+    cards[4].image_uris = {
+      normal: "https://cards.example.test/shared-one-new.svg",
+    };
+    await importSet();
+    const refreshed = JSON.parse(await readFile(file, "utf8"));
+    expect(refreshed).toMatchObject({
+      oracleText: "Ward—Blight 2. Updated wording.",
+      automationStatus: "implemented",
+      abilities: authored.abilities,
+      components: [
+        {
+          supertypes: ["Legendary"],
+          types: ["Creature"],
+          subtypes: ["Human", "Wizard"],
+        },
+      ],
+    });
+    expect(JSON.parse(await readFile(unfinishedFile, "utf8"))).toMatchObject({
+      automationStatus: "unimplemented",
+      abilities: unfinished.abilities,
+    });
+    expect(
+      await (
+        await request.get(
+          "/api/catalog/cards?q=Shared%20Name&status=implemented",
+        )
+      ).json(),
+    ).toHaveLength(1);
+    expect(
+      await (
+        await request.get(
+          "/api/catalog/cards?q=Shared%20Name&status=unimplemented",
+        )
+      ).json(),
+    ).toHaveLength(1);
+    expect(await readFile(file, "utf8")).not.toEqual(authoredBefore);
+    expect(
+      JSON.parse(
+        await readFile(
+          join(catalogRoot, "printings", `${fixtureCards[4].id}.json`),
+          "utf8",
+        ),
+      ),
+    ).toMatchObject({
+      artwork: ["https://cards.example.test/shared-one-new.svg"],
+    });
+    const unchanged = await readFile(file, "utf8");
     legacyBulk = true;
     await importSet();
+    expect(await readFile(file, "utf8")).toEqual(unchanged);
     expect(await (await request.get("/api/catalog/sets")).json()).toEqual(
       before,
     );
     legacyBulk = false;
     truncatedBulk = true;
     await expect(importSet()).rejects.toThrow();
+    expect(await readFile(file, "utf8")).toEqual(unchanged);
     expect(await (await request.get("/api/catalog/sets")).json()).toEqual(
       before,
     );
     failed = true;
     await expect(importSet()).rejects.toThrow();
+    expect(await readFile(file, "utf8")).toEqual(unchanged);
     expect(await (await request.get("/api/catalog/sets")).json()).toEqual(
       before,
     );
@@ -122,7 +296,57 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     expect(
       await (await request.get("/api/catalog/cards?q=Black")).json(),
     ).toEqual([]);
+    failed = false;
+    truncatedBulk = false;
+    cards[0].oracle_id = "";
+    await expect(importSet()).rejects.toThrow();
+    expect(await readFile(file, "utf8")).toEqual(unchanged);
+    cards[0].oracle_id = fixtureCards[0].oracle_id;
+    cards[0].layout = "unsupported";
+    await expect(importSet()).rejects.toThrow();
+    expect(await readFile(file, "utf8")).toEqual(unchanged);
+    expect(await (await request.get("/api/catalog/sets")).json()).toEqual(
+      before,
+    );
+    cards[0].layout = fixtureCards[0].layout;
+    const mappedPrinting = "10000000-0000-4000-8000-000000000007";
+    const mappedOracle = "20000000-0000-4000-8000-000000000007";
+    cards.push({
+      ...cards[2],
+      id: mappedPrinting,
+      oracle_id: undefined,
+      name: "Mapped Front // Mapped Back",
+      layout: "reversible_card",
+      collector_number: "7",
+      card_faces: [
+        { ...fixtureCards[2].card_faces![0], name: "Mapped Front" },
+        { ...fixtureCards[2].card_faces![1], name: "Mapped Back" },
+      ],
+    });
+    await expect(importSet()).rejects.toThrow();
+    expect(await readdir(join(catalogRoot, "definitions"))).not.toContain(
+      `${mappedOracle}.json`,
+    );
+    await writeFile(
+      join(catalogRoot, "identity-map.json"),
+      `${JSON.stringify({ [mappedPrinting]: mappedOracle }, null, 2)}\n`,
+    );
+    await importSet();
+    expect(
+      JSON.parse(
+        await readFile(
+          join(catalogRoot, "definitions", `${mappedOracle}.json`),
+          "utf8",
+        ),
+      ),
+    ).toMatchObject({
+      id: mappedOracle,
+      form: "reversible_card",
+      automationStatus: "unimplemented",
+    });
   } finally {
+    await request.dispose();
+    await app.stop();
     await new Promise<void>((resolve) => provider.close(() => resolve()));
   }
 });

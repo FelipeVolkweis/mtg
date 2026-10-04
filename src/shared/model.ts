@@ -16,6 +16,11 @@ export const characteristicSchema = z
       .max(5)
       .optional(),
     typeLine: z.string().max(400).default(""),
+    manaValue: z.number().nonnegative().optional(),
+    supertypes: z.array(z.string()).optional(),
+    types: z.array(z.string()).optional(),
+    subtypes: z.array(z.string()).optional(),
+    keywords: z.array(z.string()).optional(),
     rulesText: text.default(""),
     power: z.string().max(100).optional(),
     toughness: z.string().max(100).optional(),
@@ -31,6 +36,23 @@ export interface CardDefinition {
   form: string;
   colorIdentity: string[];
   components: Characteristics[];
+  oracleText: string;
+  keywords: string[];
+  manaValue: number;
+  automationStatus: "unimplemented" | "implemented";
+  abilities: CardAbility[];
+}
+export interface AbilityPrimitive {
+  primitive: string;
+  parameters?: Record<string, unknown>;
+}
+export interface CardAbility {
+  id: string;
+  kind: "static" | "triggered" | "activated" | "spell";
+  keyword?: string;
+  costs?: AbilityPrimitive[];
+  conditions?: AbilityPrimitive[];
+  effects?: AbilityPrimitive[];
 }
 export interface CardPrinting {
   id: string;

@@ -1,4 +1,9 @@
 import { defineConfig } from "@playwright/test";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+process.env.CATALOG_ROOT ??= mkdtempSync(join(tmpdir(), "mtg-catalog-tests-"));
 
 export default defineConfig({
   testDir: "./tests",

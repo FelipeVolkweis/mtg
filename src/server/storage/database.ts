@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { Pool, PoolClient } from "pg";
-import type { Catalog, RoomState } from "../../shared/model.js";
+import type { RoomState } from "../../shared/model.js";
 
 @Injectable()
 export class Database implements OnModuleInit, OnModuleDestroy {
@@ -13,19 +13,7 @@ export class Database implements OnModuleInit, OnModuleDestroy {
     await this.pool.query(`
       CREATE TABLE IF NOT EXISTS rooms (invite text PRIMARY KEY, document jsonb NOT NULL, last_activity timestamptz NOT NULL);
       CREATE INDEX IF NOT EXISTS rooms_activity ON rooms(last_activity);
-      CREATE TABLE IF NOT EXISTS catalog (id integer PRIMARY KEY CHECK (id = 1), document jsonb NOT NULL);
     `);
-    await this.pool.query(
-      "INSERT INTO catalog (id, document) VALUES (1, $1) ON CONFLICT DO NOTHING",
-      [
-        JSON.stringify({
-          definitions: {},
-          printings: {},
-          names: {},
-          importedSets: [],
-        }),
-      ],
-    );
   }
 
   async transaction<T>(
@@ -43,16 +31,6 @@ export class Database implements OnModuleInit, OnModuleDestroy {
     } finally {
       client.release();
     }
-  }
-
-  async readCatalog(
-    client: PoolClient | Pool = this.pool,
-    lock = false,
-  ): Promise<Catalog> {
-    const result = await client.query<{ document: Catalog }>(
-      `SELECT document FROM catalog WHERE id = 1${lock ? " FOR UPDATE" : ""}`,
-    );
-    return result.rows[0].document;
   }
 
   async saveRoom(client: PoolClient, room: RoomState) {

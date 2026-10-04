@@ -148,7 +148,7 @@ export class RoomService implements OnModuleInit {
         case "save-decklist": {
           const entries = this.catalog.resolveDecklist(
             command.text,
-            await this.database.readCatalog(client),
+            await this.catalog.readCatalog(),
           );
           const existing = command.id
             ? participant.decklists.find(
@@ -226,7 +226,7 @@ export class RoomService implements OnModuleInit {
           else
             room.match = this.matches.create(
               room,
-              await this.database.readCatalog(client),
+              await this.catalog.readCatalog(),
               command.startingLife,
             );
           break;
@@ -261,7 +261,7 @@ export class RoomService implements OnModuleInit {
           ) {
             room.match = this.matches.create(
               room,
-              await this.database.readCatalog(client),
+              await this.catalog.readCatalog(),
               room.rematch.startingLife,
             );
             delete room.rematch;

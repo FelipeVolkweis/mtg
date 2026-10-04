@@ -2,8 +2,17 @@ import { createServer } from "node:http";
 import { promisify } from "node:util";
 import { execFile } from "node:child_process";
 import { catalogResponse } from "./support/catalog-fixture";
+import { cp, access } from "node:fs/promises";
+import { resolve } from "node:path";
+import { Pool } from "pg";
 
-export async function seedCatalog(databaseUrl: string) {
+export async function seedCatalog() {
+  const root = process.env.CATALOG_ROOT!;
+  try {
+    await access(resolve(root, "sets.json"));
+  } catch {
+    await cp(resolve("catalog"), root, { recursive: true });
+  }
   const provider = createServer((req, res) => {
     res.setHeader("Content-Type", "application/json");
     const response = catalogResponse(
@@ -25,7 +34,6 @@ export async function seedCatalog(databaseUrl: string) {
       {
         env: {
           ...process.env,
-          DATABASE_URL: databaseUrl,
           SCRYFALL_API_ORIGIN: `http://127.0.0.1:${address.port}`,
         },
       },
@@ -35,8 +43,15 @@ export async function seedCatalog(databaseUrl: string) {
   }
 }
 export default async function setup() {
-  await seedCatalog(
-    process.env.TEST_DATABASE_URL ??
+  const pool = new Pool({
+    connectionString:
+      process.env.TEST_DATABASE_URL ??
       "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",
-  );
+  });
+  try {
+    await pool.query("DROP TABLE IF EXISTS catalog");
+  } finally {
+    await pool.end();
+  }
+  await seedCatalog();
 }

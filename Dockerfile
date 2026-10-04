@@ -11,6 +11,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
+COPY catalog ./catalog
 COPY --from=build /app/package.json ./
 USER node
 EXPOSE 3000
