@@ -1,13 +1,13 @@
-# Rules automation: tickets 01–07
+# Rules automation: tickets 01–10
 
 Commander is available alongside the temporary Tabletop compatibility path. The
-first seven rules slices require two ready Room Participants, a selected legendary
+rules slices require two ready Room Participants, a selected legendary
 creature commander in each Decklist, exactly 100 cards, singleton nonbasic cards,
 compatible Color Identity, and complete authored automation support. The mono-U
 sample still contains unsupported cards and is deliberately rejected. Sai and
-Padeem satisfy commander eligibility; their full behavior belongs to later
-slices. Graaz cannot lead the unchanged blue Decklist. Solo automated practice,
-combat, triggers, commander tax and commander return choices belong to later
+Padeem satisfy commander eligibility; Sai is now fully supported, while Padeem
+awaits later slices. Graaz cannot lead the unchanged blue Decklist. Solo automated
+practice, combat, commander tax and commander return choices belong to later
 tickets. The existing Tabletop remains available until ticket 30 removes it.
 
 `MatchService.execute` is the server-owned gameplay command boundary. Transport,
@@ -79,3 +79,47 @@ and explanatory context. The progress queue and bindings stay server-private.
 Insufficient Library contents do not interrupt later instructions: the failed-draw
 checkpoint runs only after resolution completes. Browser reconnect tests restore
 both cards' choices from persisted Room state without repeating draws.
+
+
+Semantic entering, casting, and Zone-change events retain controllers, owners and
+pre-change effective characteristics. Battlefield-to-Graveyard events collect
+death triggers using the sources present before the move; other destinations do
+not count as deaths. Triggered Ability Game Objects capture their effect data and
+event context independently of their source. Event context is server-private and
+lasts with waiting triggers or their Stack objects, without an action history.
+
+Triggers wait throughout payment and suspended resolution. At a Priority
+checkpoint, state-based actions repeat until stable, then waiting triggers are
+placed in active-player/nonactive-player order. Each player orders their own
+simultaneous triggers from bottom to top through a persisted choice. Cancelling a
+cast retains completed mana activations and places their waiting triggers at the
+restored Priority opportunity. Browser coverage verifies trigger-order recovery.
+
+Shared Thopter and Myr descriptors create independent token Game Objects with
+explicit characteristics, an owner and controller, and no Card Instance.
+Thopters carry flying; combat enforcement comes with the later combat slices.
+Ichor Wellspring, Vedalken Archmage, Sai and Foundry of the Consuls have authored
+trigger, draw and token behavior.
+
+Active Continuous Effects retain their source ability, controller, applicability,
+filter and typed changes separately from printed Card Characteristics. A shared
+calculator applies characteristic-defining stats before additive bonuses and
+Counters, with live controlled-object counts and self/other exclusions. Player
+views show effective stats and Counters and omit hidden continuous sources.
+Chief of the Foundry, Master of Etherium and Steel Overseer are supported.
+Zero-toughness creatures leave at checkpoints after complete resolution, including
+simultaneous deaths; opposite stat counters cancel and departed tokens cease to
+exist. Pre-change effective values remain available in event context.
+
+Generic cost modifiers compose source-local affinity with source-based discounts
+using shared filters, count/sum expressions and chosen values. Etherium Sculptor,
+Foundry Inspector, Tamiyo's Logbook and Thoughtcast are supported. Costs lock after
+variables and targets are chosen and before payment; subsequent mana activations
+and source removals preserve that amount. Reductions clamp generic costs at zero
+and leave colored requirements unchanged. Both preproduced mana and production
+during payment use the same locked cost.
+
+Darksteel Juggernaut, Broodstar, Memory Guardian, Spire Golem and Thought Monitor
+retain their authored stat, affinity and available entry behavior but remain
+unimplemented pending flying, indestructible or attack requirements. The complete
+mono-U Decklist remains ineligible until the remaining slices are delivered.

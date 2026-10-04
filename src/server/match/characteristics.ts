@@ -1,0 +1,152 @@
+import type {
+  Catalog,
+  Characteristics,
+  GameObject,
+  MatchState,
+} from "../../shared/model.js";
+import type {
+  ActiveContinuousEffect,
+  ObjectFilter,
+  RulesValue,
+} from "../../shared/rules.js";
+
+export function matchesFilter(
+  match: MatchState,
+  object: GameObject,
+  filter: ObjectFilter,
+  playerId: string,
+  sourceId?: string,
+) {
+  const zone = match.zones.find((z) => z.id === object.zoneId)!;
+  const types = object.characteristics.types ?? [];
+  return (
+    zone.kind === filter.zone &&
+    !object.status.phasedOut &&
+    (zone.visibility !== "private" || zone.ownerId === playerId) &&
+    (!filter.controller || object.controllerId === playerId) &&
+    (!filter.self ||
+      (filter.self === "only"
+        ? object.id === sourceId
+        : object.id !== sourceId)) &&
+    (!filter.kind ||
+      (filter.kind === "spell"
+        ? object.kind === "card" && zone.kind === "stack"
+        : filter.kind === "permanent"
+          ? zone.kind === "battlefield"
+          : object.kind === "card")) &&
+    (!filter.types || filter.types.some((t) => types.includes(t))) &&
+    (!filter.allTypes || filter.allTypes.every((t) => types.includes(t))) &&
+    (!filter.subtypes ||
+      filter.subtypes.some((t) =>
+        object.characteristics.subtypes?.includes(t),
+      )) &&
+    (!filter.excludeTypes ||
+      filter.excludeTypes.every((t) => !types.includes(t))) &&
+    (!filter.untapped || !object.status.tapped)
+  );
+}
+
+export class CharacteristicsCalculator {
+  constructor(
+    readonly match: MatchState,
+    readonly catalog: Catalog,
+  ) {}
+  value(
+    value: RulesValue,
+    playerId: string,
+    sourceId?: string,
+    bindings: Record<string, number> = {},
+  ): number {
+    if (typeof value === "number") return value;
+    if ("count" in value)
+      return Object.values(this.match.objects).filter((o) =>
+        matchesFilter(this.match, o, value.count, playerId, sourceId),
+      ).length;
+    if ("sum" in value)
+      return value.sum.reduce<number>(
+        (sum, part) => sum + this.value(part, playerId, sourceId, bindings),
+        0,
+      );
+    const result = bindings[value.binding];
+    if (!Number.isSafeInteger(result) || result < 0)
+      throw new Error("Invalid quantity binding.");
+    return result;
+  }
+  active(): ActiveContinuousEffect[] {
+    return Object.values(this.match.objects).flatMap((source) => {
+      const card =
+        this.catalog.definitions[
+          this.match.instances[source.cardInstanceIds[0]]?.definitionId
+        ];
+      return (card?.abilities ?? []).flatMap((ability) => {
+        const effect = ability.rules?.continuous;
+        if (!effect || ability.kind !== "static" || source.status.phasedOut)
+          return [];
+        if (
+          !effect.characteristicDefining &&
+          this.match.zones.find((z) => z.id === source.zoneId)?.kind !==
+            "battlefield"
+        )
+          return [];
+        return [
+          {
+            sourceId: source.id,
+            abilityId: ability.id,
+            playerId: source.controllerId,
+            filter: effect.filter,
+            changes: effect.changes,
+            applicability: effect.characteristicDefining
+              ? ("characteristic-defining" as const)
+              : ("source-on-battlefield" as const),
+          },
+        ];
+      });
+    });
+  }
+  effective(object: GameObject): Characteristics {
+    const result = structuredClone(object.characteristics);
+    const changes = this.active().flatMap((effect) => {
+      const applies =
+        effect.applicability === "characteristic-defining"
+          ? effect.sourceId === object.id
+          : matchesFilter(
+              this.match,
+              object,
+              effect.filter,
+              effect.playerId,
+              effect.sourceId,
+            );
+      return applies
+        ? effect.changes.map((change) => ({ effect, change }))
+        : [];
+    });
+    // CR 613: characteristic-defining values precede additive modifications;
+    // counters contribute in the modification sublayer, after base values.
+    for (const { effect, change } of changes.filter(
+      (c) => c.change.kind === "define-stats",
+    )) {
+      result.power = String(
+        this.value(change.power, effect.playerId, effect.sourceId),
+      );
+      result.toughness = String(
+        this.value(change.toughness, effect.playerId, effect.sourceId),
+      );
+    }
+    for (const stat of ["power", "toughness"] as const) {
+      if (!/^-?\d+$/.test(result[stat] ?? "")) continue;
+      let amount = BigInt(result[stat]!);
+      for (const { effect, change } of changes.filter(
+        (c) => c.change.kind === "add-stats",
+      ))
+        amount += BigInt(
+          this.value(change[stat], effect.playerId, effect.sourceId),
+        );
+      for (const counter of object.counters) {
+        if (counter.kind === "+1/+1") amount += BigInt(counter.quantity);
+        if (counter.kind === "-1/-1") amount -= BigInt(counter.quantity);
+      }
+      result[stat] = amount.toString();
+    }
+    return result;
+  }
+}

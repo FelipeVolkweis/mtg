@@ -9,7 +9,7 @@
       "name": "Spire Golem",
       "manaCost": "{6}",
       "colors": [],
-      "typeLine": "Artifact Creature — Golem",
+      "typeLine": "Artifact Creature \u2014 Golem",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -35,5 +35,32 @@
   ],
   "manaValue": 6,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "subtypes": [
+                  "Island"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "keyword": "Affinity"
+    }
+  ]
 }

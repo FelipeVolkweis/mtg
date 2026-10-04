@@ -681,7 +681,7 @@ test("pending casts expose their private source and legal choices only to their 
   ).toBe("rejected");
 });
 
-test("Sai and Padeem are eligible commanders but unfinished behavior is rejected, and Graaz cannot lead blue cards", async () => {
+test("Sai is supported, Padeem remains unfinished, and Graaz cannot lead blue cards", async () => {
   const release = await readCatalog("catalog");
   for (const name of [
     "Sai, Master Thopterist",
@@ -697,6 +697,12 @@ test("Sai and Padeem are eligible commanders but unfinished behavior is rejected
       id: commander,
       defaultPrintingId: catalog.definitions[commander].defaultPrintingId,
     };
+    if (name === "Sai, Master Thopterist") {
+      expect(() =>
+        new MatchService().createCommander(room, catalog),
+      ).not.toThrow();
+      continue;
+    }
     expect(() => new MatchService().createCommander(room, catalog)).toThrow(
       name === "Graaz, Unstoppable Juggernaut"
         ? "Color Identity"
@@ -1383,4 +1389,613 @@ test("Commander setup accepts validated ordered cards and rejects unknown result
   expect(() => new MatchService().createCommander(room, catalog)).toThrow(
     "Unsupported cards: Pull from Tomorrow",
   );
+});
+
+test("Wellspring entry triggers draw privately after the permanent resolves", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const spell = seed("Ichor Wellspring", "hand");
+  match.rules!.mana[match.players[0].id].C = 2;
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const handCount = () =>
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+    )!.count;
+  const before = handCount();
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "accepted",
+  );
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const stack = view().zones.find((z) => z.kind === "stack")!;
+  expect(stack.count).toBe(1);
+  expect(view().objects[stack.objectIds![0]].kind).toBe("ability");
+  expect(handCount()).toBe(before - 1);
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(handCount()).toBe(before);
+  expect(
+    matchView(match, room.participants[1].id, catalog).zones.find(
+      (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+    )!.objectIds,
+  ).toBeUndefined();
+});
+
+test("artifact cast triggers keep their chosen Stack order across reconnects and tokens have no Card Instance", async () => {
+  const { match, command, seed, room, catalog, service } = await rulesGame();
+  seed("Sai, Master Thopterist", "battlefield");
+  seed("Vedalken Archmage", "battlefield");
+  const spell = seed("Sol Ring", "hand");
+  match.rules!.mana[match.players[0].id].C = 1;
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "pending",
+  );
+  const own = matchView(match, room.participants[0].id, catalog);
+  expect(own.rules!.pending!.kind).toBe("trigger-order");
+  expect(
+    matchView(match, room.participants[1].id, catalog).rules!.pending,
+  ).toBeUndefined();
+  const recovered = JSON.parse(JSON.stringify(match));
+  const pending = own.rules!.pending!;
+  const ids = pending.selectionOptions.order.objectIds;
+  const order = [...ids].sort((a, b) =>
+    pending.selectionOptions.order.labels![a].startsWith("Sai") ? -1 : 1,
+  );
+  const send = (
+    seat: number,
+    action: import("../src/shared/model").MatchAction,
+  ) => service.execute(recovered, room.participants[seat], action, catalog);
+  expect(
+    send(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { order: [ids[0], ids[0]] },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    send(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { order },
+    }).kind,
+  ).toBe("accepted");
+  expect(
+    send(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { order },
+    }).kind,
+  ).toBe("rejected");
+  const view = () => matchView(recovered, room.participants[0].id, catalog);
+  const stack = view().zones.find((z) => z.kind === "stack")!;
+  expect(
+    stack.objectIds!.map((id) => view().objects[id].characteristics.name),
+  ).toEqual([
+    "Sol Ring",
+    "Sai, Master Thopterist: artifact-cast",
+    "Vedalken Archmage: artifact-cast",
+  ]);
+  for (let i = 0; i < 2; i++) {
+    send(0, { type: "pass-priority" });
+    send(1, { type: "pass-priority" });
+  }
+  const thopter = Object.values(view().objects).find(
+    (o) => o.kind === "token",
+  )!;
+  expect(thopter.characteristics).toMatchObject({
+    name: "Thopter",
+    types: ["Artifact", "Creature"],
+    power: "1",
+    toughness: "1",
+    keywords: ["Flying"],
+    colors: [],
+  });
+  expect(thopter.cardInstanceIds).toEqual([]);
+  expect(thopter.ownerId).toBe(recovered.players[0].id);
+});
+
+test("Wellspring sacrificed during Sai payment triggers above the paid ability and both draw independently", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const sai = seed("Sai, Master Thopterist", "battlefield"),
+    well = seed("Ichor Wellspring", "battlefield"),
+    stone = seed("Mind Stone", "battlefield");
+  match.rules!.mana[match.players[0].id].U = 2;
+  expect(
+    command(0, {
+      type: "activate-ability",
+      objectId: sai.id,
+      abilityId: "draw",
+    }).kind,
+  ).toBe("pending");
+  const pending = matchView(match, room.participants[0].id, catalog).rules!
+    .pending!;
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { "1": [well.id, stone.id] },
+    }).kind,
+  ).toBe("accepted");
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const stack = view().zones.find((z) => z.kind === "stack")!;
+  expect(
+    stack.objectIds!.map((id) => view().objects[id].characteristics.name),
+  ).toEqual(["Sai, Master Thopterist: draw", "Ichor Wellspring: graveyard"]);
+  const before = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+  )!.count;
+  for (let i = 0; i < 2; i++) {
+    command(0, { type: "pass-priority" });
+    command(1, { type: "pass-priority" });
+  }
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+    )!.count,
+  ).toBe(before + 2);
+});
+
+test("continuous artifact bonuses, characteristic-defining counts and Overseer counters compose in player views", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const chief = seed("Chief of the Foundry", "battlefield"),
+    master = seed("Master of Etherium", "battlefield"),
+    overseer = seed("Steel Overseer", "battlefield");
+  seed("Sol Ring", "battlefield");
+  seed("Chief of the Foundry", "battlefield", 1);
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  expect(view().objects[master.id].characteristics).toMatchObject({
+    power: "5",
+    toughness: "5",
+  });
+  expect(view().objects[chief.id].characteristics).toMatchObject({
+    power: "3",
+    toughness: "4",
+  });
+  expect(
+    command(0, {
+      type: "activate-ability",
+      objectId: overseer.id,
+      abilityId: "counters",
+    }).kind,
+  ).toBe("accepted");
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(view().objects[master.id].characteristics).toMatchObject({
+    power: "6",
+    toughness: "6",
+  });
+  expect(view().objects[overseer.id].characteristics).toMatchObject({
+    power: "4",
+    toughness: "4",
+  });
+  expect(view().objects[overseer.id].counters).toEqual([
+    { kind: "+1/+1", quantity: "1" },
+  ]);
+  expect(view().objects[chief.id].components![0].power).toBe("2");
+});
+
+test("stacked artifact discounts and affinity reduce generic cost while preserving blue payment", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  seed("Etherium Sculptor", "battlefield");
+  seed("Foundry Inspector", "battlefield");
+  const archive = seed("Hedron Archive", "hand");
+  expect(command(0, { type: "cast-spell", objectId: archive.id }).kind).toBe(
+    "pending",
+  );
+  expect(
+    matchView(match, room.participants[0].id, catalog).rules!.pending!.totalCost
+      .generic,
+  ).toBe(2);
+});
+
+test("affinity preserves colored requirements, clamps generic mana and excludes opponents' artifacts", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  seed("Sol Ring", "battlefield");
+  seed("Mind Stone", "battlefield");
+  seed("Hedron Archive", "battlefield", 1);
+  const spell = seed("Thoughtcast", "hand");
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "pending",
+  );
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 2, U: 1 });
+  command(0, {
+    type: "cancel-procedure",
+    procedureId: view().rules!.pending!.id,
+  });
+  for (let i = 0; i < 4; i++) seed("Sol Ring", "battlefield");
+  const island = seed("Island", "battlefield");
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "pending",
+  );
+  const id = view().rules!.pending!.id;
+  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 0, U: 1 });
+  command(0, {
+    type: "activate-ability",
+    objectId: island.id,
+    abilityId: "intrinsic-Island",
+  });
+  expect(
+    command(0, { type: "rules-input", procedureId: id, confirm: true }).kind,
+  ).toBe("accepted");
+  const before = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+  )!.count;
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
+    )!.count,
+  ).toBe(before + 2);
+});
+
+test("Logbook's other-artifact discount stays locked when a mana source is sacrificed during payment", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const logbook = seed("Tamiyo's Logbook", "battlefield");
+  const lotus = seed("Mind Stone", "battlefield");
+  seed("Sol Ring", "battlefield");
+  seed("Mind Stone", "battlefield", 1);
+  catalog.definitions[
+    match.instances[lotus.cardInstanceIds[0]].definitionId
+  ].abilities = [
+    {
+      id: "mana",
+      kind: "activated",
+      origin: "rules",
+      rules: {
+        manaAbility: true,
+        costs: [{ kind: "sacrifice-source" }],
+        effects: [{ kind: "add-mana", quantity: 1, colors: ["U"] }],
+      },
+    },
+  ];
+  expect(
+    command(0, {
+      type: "activate-ability",
+      objectId: logbook.id,
+      abilityId: "draw",
+    }).kind,
+  ).toBe("pending");
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const id = view().rules!.pending!.id;
+  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 3, U: 1 });
+  command(0, {
+    type: "activate-ability",
+    objectId: lotus.id,
+    abilityId: "mana",
+    color: "U",
+  });
+  expect(view().objects[lotus.id]).toBeUndefined();
+  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 3, U: 1 });
+  expect(
+    command(0, { type: "rules-input", procedureId: id, confirm: true }).kind,
+  ).toBe("rejected");
+  expect(view().rules!.pending!.totalCost.generic).toBe(3);
+});
+
+test("Island affinity and chosen X are evaluated before the payment cost is locked", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  seed("Island", "battlefield");
+  seed("Island", "battlefield");
+  seed("Island", "battlefield", 1);
+  const golem = seed("Spire Golem", "hand");
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  command(0, { type: "cast-spell", objectId: golem.id });
+  expect(view().rules!.pending!.totalCost.generic).toBe(4);
+  command(0, {
+    type: "cancel-procedure",
+    procedureId: view().rules!.pending!.id,
+  });
+  const pull = seed("Pull from Tomorrow", "hand");
+  // A fixture composition exercises chosen X with a source-local generic modifier.
+  const definition =
+    catalog.definitions[match.instances[pull.cardInstanceIds[0]].definitionId];
+  definition.abilities.push({
+    id: "discount",
+    kind: "static",
+    origin: "rules",
+    rules: {
+      costs: [],
+      effects: [],
+      costModifiers: [
+        {
+          use: "cast",
+          scope: "source",
+          component: "generic",
+          amount: { sum: [1, { binding: "X" }] },
+        },
+      ],
+      chosenVariables: ["X"],
+    },
+  });
+  command(0, { type: "cast-spell", objectId: pull.id });
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: view().rules!.pending!.id,
+      variables: { X: 4 },
+    }).kind,
+  ).toBe("pending");
+  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 0, U: 2 });
+});
+
+test("removing a continuous source updates recipients and captured abilities survive Foundry sacrifice", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const sai = seed("Sai, Master Thopterist", "battlefield"),
+    chief = seed("Chief of the Foundry", "battlefield"),
+    overseer = seed("Steel Overseer", "battlefield"),
+    ring = seed("Sol Ring", "battlefield");
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  expect(view().objects[overseer.id].characteristics.power).toBe("2");
+  match.rules!.mana[match.players[0].id].U = 2;
+  command(0, { type: "activate-ability", objectId: sai.id, abilityId: "draw" });
+  command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { "1": [chief.id, ring.id] },
+  });
+  expect(view().objects[overseer.id].characteristics.power).toBe("1");
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const foundry = seed("Foundry of the Consuls", "battlefield");
+  match.rules!.mana[match.players[0].id].C = 5;
+  expect(
+    command(0, {
+      type: "activate-ability",
+      objectId: foundry.id,
+      abilityId: "tokens",
+    }).kind,
+  ).toBe("accepted");
+  expect(view().objects[foundry.id]).toBeUndefined();
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(
+    Object.values(view().objects).filter((o) => o.kind === "token"),
+  ).toHaveLength(2);
+});
+
+test("Myr token descriptors and state-based checks wait until the whole resolution completes", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const spell = seed("Thoughtcast", "hand");
+  const definition =
+    catalog.definitions[match.instances[spell.cardInstanceIds[0]].definitionId];
+  definition.abilities = [
+    {
+      id: "tokens",
+      kind: "spell",
+      origin: "rules",
+      rules: {
+        costs: [],
+        effects: [
+          { kind: "create-token", token: "myr", count: 1 },
+          {
+            kind: "add-counters",
+            counter: "-1/-1",
+            count: 1,
+            filter: {
+              zone: "battlefield",
+              controller: "you",
+              subtypes: ["Myr"],
+            },
+          },
+          {
+            kind: "add-counters",
+            counter: "+1/+1",
+            count: 1,
+            filter: {
+              zone: "battlefield",
+              controller: "you",
+              subtypes: ["Myr"],
+            },
+          },
+        ],
+      },
+    },
+  ];
+  match.rules!.mana[match.players[0].id] = {
+    W: 0,
+    U: 1,
+    B: 0,
+    R: 0,
+    G: 0,
+    C: 4,
+  };
+  command(0, { type: "cast-spell", objectId: spell.id });
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const view = matchView(match, room.participants[0].id, catalog);
+  const myr = Object.values(view.objects).find((o) => o.kind === "token")!;
+  expect(myr.characteristics).toMatchObject({
+    name: "Myr",
+    power: "1",
+    toughness: "1",
+    keywords: [],
+    colors: [],
+  });
+  expect(myr.cardInstanceIds).toEqual([]);
+});
+
+test("simultaneous triggers use active-player then nonactive-player order and state-based deaths retain both sources", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const first = seed("Vedalken Archmage", "battlefield"),
+    second = seed("Vedalken Archmage", "battlefield", 1);
+  const card =
+    catalog.definitions[match.instances[first.cardInstanceIds[0]].definitionId];
+  card.abilities = [
+    {
+      id: "death",
+      kind: "triggered",
+      origin: "rules",
+      rules: {
+        costs: [],
+        effects: [{ kind: "draw", count: 1 }],
+        trigger: {
+          event: "dies",
+          filter: { zone: "battlefield", self: "only" },
+        },
+      },
+    },
+  ];
+  const spell = seed("Thoughtcast", "hand");
+  catalog.definitions[
+    match.instances[spell.cardInstanceIds[0]].definitionId
+  ].abilities = [
+    {
+      id: "shrink",
+      kind: "spell",
+      origin: "rules",
+      rules: {
+        costs: [],
+        effects: [
+          {
+            kind: "add-counters",
+            counter: "-1/-1",
+            count: 2,
+            filter: { zone: "battlefield", types: ["Creature"] },
+          },
+        ],
+      },
+    },
+  ];
+  match.rules!.mana[match.players[0].id].U = 1;
+  match.rules!.mana[match.players[0].id].C = 4;
+  command(0, { type: "cast-spell", objectId: spell.id });
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  expect(view().objects[first.id]).toBeUndefined();
+  expect(view().objects[second.id]).toBeUndefined();
+  const stack = view().zones.find((z) => z.kind === "stack")!;
+  expect(stack.count).toBe(2);
+  expect(stack.objectIds!.map((id) => view().objects[id].controllerId)).toEqual(
+    [match.players[0].id, match.players[1].id],
+  );
+  const before = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === match.players[1].id,
+  )!.count;
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === match.players[1].id,
+    )!.count,
+  ).toBe(before + 1);
+});
+
+test("creatures with zero toughness die at checkpoints and hidden characteristic definitions do not leak", async () => {
+  const { match, command, seed, room, catalog } = await rulesGame();
+  const master = seed("Master of Etherium", "hand", 1);
+  const creature = seed("Silver Myr", "battlefield");
+  const spell = seed("Thoughtcast", "hand");
+  catalog.definitions[
+    match.instances[spell.cardInstanceIds[0]].definitionId
+  ].abilities = [
+    {
+      id: "shrink",
+      kind: "spell",
+      origin: "rules",
+      rules: {
+        costs: [],
+        effects: [
+          { kind: "create-token", token: "myr", count: 1 },
+          {
+            kind: "add-counters",
+            counter: "-1/-1",
+            count: 1,
+            filter: { zone: "battlefield", subtypes: ["Myr"] },
+          },
+        ],
+      },
+    },
+  ];
+  match.rules!.mana[match.players[0].id].U = 1;
+  match.rules!.mana[match.players[0].id].C = 4;
+  command(0, { type: "cast-spell", objectId: spell.id });
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const view = matchView(match, room.participants[0].id, catalog);
+  expect(view.objects[creature.id]).toBeUndefined();
+  expect(
+    Object.values(view.objects).filter((o) => o.kind === "token"),
+  ).toHaveLength(0);
+  expect(
+    view.rules!.continuousEffects?.some(
+      (effect) => effect.sourceId === master.id,
+    ),
+  ).toBe(false);
+});
+
+for (const name of [
+  "Darksteel Juggernaut",
+  "Broodstar",
+  "Memory Guardian",
+  "Spire Golem",
+  "Thought Monitor",
+]) {
+  test(`${name} retains partial data without promising complete automation`, async () => {
+    const release = await readCatalog("catalog");
+    const { room, catalog, commander } = commanderFixture();
+    const card = Object.values(release.definitions).find(
+      (c) => c.canonicalName === name,
+    )!;
+    expect(card.automationStatus).toBe("unimplemented");
+    expect(card.abilities.length).toBeGreaterThan(0);
+    catalog.definitions[card.id] = card;
+    room.participants[0].decklists[0].entries[1].quantity = 98;
+    room.participants[0].decklists[0].entries.push({
+      definitionId: card.id,
+      printingId: card.defaultPrintingId,
+      quantity: 1,
+    });
+    expect(() => new MatchService().createCommander(room, catalog)).toThrow(
+      "Unsupported cards",
+    );
+  });
+}
+
+test("triggers caused by mana payment wait until casting completes or is cancelled", async () => {
+  for (const cancel of [true, false]) {
+    const { match, command, seed, room, catalog } = await rulesGame();
+    const well = seed("Ichor Wellspring", "battlefield"),
+      spell = seed("Hedron Archive", "hand");
+    const definition =
+      catalog.definitions[
+        match.instances[well.cardInstanceIds[0]].definitionId
+      ];
+    definition.abilities.push({
+      id: "sacrifice-mana",
+      kind: "activated",
+      origin: "rules",
+      rules: {
+        costs: [{ kind: "sacrifice-source" }],
+        effects: [{ kind: "add-mana", quantity: 4, colors: ["C"] }],
+        manaAbility: true,
+      },
+    });
+    const view = () => matchView(match, room.participants[0].id, catalog);
+    command(0, { type: "cast-spell", objectId: spell.id });
+    const pendingId = view().rules!.pending!.id;
+    expect(
+      command(0, {
+        type: "activate-ability",
+        objectId: well.id,
+        abilityId: "sacrifice-mana",
+      }).kind,
+    ).toBe("pending");
+    expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+    expect(
+      command(
+        0,
+        cancel
+          ? { type: "cancel-procedure", procedureId: pendingId }
+          : { type: "rules-input", procedureId: pendingId, confirm: true },
+      ).kind,
+    ).toBe("accepted");
+    const stack = view().zones.find((z) => z.kind === "stack")!;
+    expect(stack.count).toBe(cancel ? 1 : 2);
+    expect(view().objects[stack.objectIds!.at(-1)!].characteristics.name).toBe(
+      "Ichor Wellspring: graveyard",
+    );
+    expect(view().rules!.mana[match.players[0].id].C).toBe(cancel ? 4 : 0);
+  }
 });

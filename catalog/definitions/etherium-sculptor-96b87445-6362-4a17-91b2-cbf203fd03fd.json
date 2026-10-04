@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Vedalken Artificer",
+      "typeLine": "Artifact Creature \u2014 Vedalken Artificer",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -33,6 +33,30 @@
   "oracleText": "Artifact spells you cast cost {1} less to cast.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "discount",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "controller",
+            "component": "generic",
+            "amount": 1,
+            "filter": {
+              "zone": "hand",
+              "types": [
+                "Artifact"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -23,6 +23,57 @@
   "oracleText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying.",
   "keywords": [],
   "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "tokens",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{5}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ]
 }

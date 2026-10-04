@@ -9,7 +9,7 @@
       "name": "Darksteel Juggernaut",
       "manaCost": "{5}",
       "colors": [],
-      "typeLine": "Artifact Creature — Juggernaut",
+      "typeLine": "Artifact Creature \u2014 Juggernaut",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -33,5 +33,45 @@
   ],
   "manaValue": 5,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "size",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "characteristicDefining": true,
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

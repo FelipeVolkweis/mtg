@@ -5,7 +5,6 @@ import type {
   RulesValue,
   SelectionOption,
 } from "../../shared/rules.js";
-import { moveObject } from "./game-objects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
 // The queue and bindings are Match data: each completed instruction is removed
@@ -16,11 +15,13 @@ export class Resolution {
     return this.engine.rules.resolving!;
   }
   value(value: RulesValue) {
-    const result =
-      typeof value === "number" ? value : this.progress.bindings[value.binding];
-    if (!Number.isSafeInteger(result) || result < 0 || result > 1000)
-      throw new Error("Invalid resolution quantity binding.");
-    return result;
+    return this.engine.value(
+      value,
+      this.progress.playerId,
+      this.engine.object(this.progress.sourceId).sourceObjectId ??
+        this.progress.sourceId,
+      this.progress.bindings,
+    );
   }
   option(effect: DiscardEffect, label: string): SelectionOption {
     const hand = this.engine.zone("hand", this.progress.playerId);
@@ -141,8 +142,7 @@ export class Resolution {
         "Choose the required number of eligible, distinct cards.",
       );
     for (const id of ids)
-      moveObject(
-        this.engine.match,
+      this.engine.move(
         id,
         this.engine.zone("graveyard", this.progress.playerId),
       );

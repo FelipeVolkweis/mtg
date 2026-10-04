@@ -9,7 +9,7 @@
       "name": "Steel Overseer",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact Creature — Construct",
+      "typeLine": "Artifact Creature \u2014 Construct",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -28,6 +28,34 @@
   "oracleText": "{T}: Put a +1/+1 counter on each artifact creature you control.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "counters",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "counter": "+1/+1",
+            "count": 1,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "allTypes": [
+                "Artifact",
+                "Creature"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

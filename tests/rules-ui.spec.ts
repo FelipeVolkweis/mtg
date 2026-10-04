@@ -344,3 +344,85 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
     }
   });
 }
+
+test("simultaneous trigger controls restore their order choice after reconnect and show effective stats", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await table(browser);
+  try {
+    for (const page of [alice, bob]) {
+      await saveDeck(
+        page,
+        "Supported Commander",
+        "99 Island (TST) 1\n1 Rules Commander",
+      );
+      await page.getByLabel("Match format").selectOption("commander");
+      await page
+        .getByLabel("Commander", { exact: true })
+        .selectOption({ label: "Rules Commander" });
+      await page
+        .getByRole("button", { name: "Mark ready", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Not ready", exact: true }),
+      ).toBeVisible();
+    }
+    await alice
+      .getByLabel("Starting player")
+      .selectOption((await snapshot(alice)).participantId);
+    await alice
+      .getByRole("button", { name: "Start Match", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Commander Match" }),
+    ).toBeVisible();
+    await seedRulesScenario(invitation.split("/").pop()!, "Sol Ring", true);
+    await alice.reload();
+    await bob.reload();
+    await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
+      "Power / Toughness: 2 / 2",
+    );
+    await alice
+      .getByRole("button", { name: "Cast Sol Ring", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Order simultaneous triggers" }),
+    ).toBeVisible();
+    const id = (await snapshot(alice)).match!.rules!.pending!.id;
+    await alice.reload();
+    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(id);
+    await expect(
+      bob.getByRole("heading", { name: "Order simultaneous triggers" }),
+    ).toHaveCount(0);
+    await alice
+      .getByLabel("Stack position 1 (bottom first)")
+      .selectOption({ label: "Sai, Master Thopterist: artifact-cast" });
+    await alice
+      .getByLabel("Stack position 2 (bottom first)")
+      .selectOption({ label: "Vedalken Archmage: artifact-cast" });
+    await alice.getByRole("button", { name: "Confirm trigger order" }).click();
+    await expect(alice.getByTestId("zone-stack-shared")).toContainText(
+      "Stack (3)",
+    );
+    for (let i = 0; i < 2; i++) {
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    }
+    await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
+      "Thopter",
+    );
+    await expect(alice.getByTestId("zone-stack-shared")).toContainText(
+      "Stack (1)",
+    );
+  } finally {
+    for (const context of contexts) await context.close();
+  }
+});

@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact — Book",
+      "typeLine": "Artifact \u2014 Book",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -29,6 +29,49 @@
   "oracleText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{5}",
+              "{U}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "costModifiers": [
+          {
+            "use": "activate",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ],
+                "self": "exclude"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

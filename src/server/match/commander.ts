@@ -30,7 +30,13 @@ function resolvingEffectSupported(
       resolvingEffectSupported(option.effect, allowMana),
     );
   return (
-    ["counter-target", "draw", "discard"].includes(effect.kind) ||
+    [
+      "counter-target",
+      "draw",
+      "discard",
+      "create-token",
+      "add-counters",
+    ].includes(effect.kind) ||
     (allowMana && effect.kind === "add-mana")
   );
 }
@@ -41,7 +47,7 @@ export function automationEligible(card: CardDefinition): boolean {
     card.form === "normal" &&
     card.keywords.every(
       (keyword) =>
-        keyword.toLowerCase() === "cycling" &&
+        ["cycling", "affinity"].includes(keyword.toLowerCase()) &&
         card.abilities.some(
           (ability) =>
             ability.keyword?.toLowerCase() === keyword.toLowerCase() &&
@@ -57,6 +63,13 @@ export function automationEligible(card: CardDefinition): boolean {
           ability.rules.effects.every((effect) =>
             resolvingEffectSupported(effect, true),
           )) ||
+          (ability.kind === "triggered" &&
+            !!ability.rules.trigger &&
+            !ability.rules.costs.length &&
+            !ability.rules.target &&
+            ability.rules.effects.every((effect) =>
+              resolvingEffectSupported(effect),
+            )) ||
           (ability.kind === "spell" &&
             !ability.rules.costs.length &&
             !ability.rules.manaAbility &&

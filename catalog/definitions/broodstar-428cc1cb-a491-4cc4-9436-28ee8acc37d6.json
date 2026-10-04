@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Creature — Beast",
+      "typeLine": "Creature \u2014 Beast",
       "manaValue": 10,
       "supertypes": [],
       "types": [
@@ -38,5 +38,71 @@
   ],
   "manaValue": 10,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "keyword": "Affinity"
+    },
+    {
+      "id": "size",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "characteristicDefining": true,
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

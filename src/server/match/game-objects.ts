@@ -61,6 +61,7 @@ export function moveObject(
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
+  fresh.ownerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;
   fresh.faceDown = object.faceDown;

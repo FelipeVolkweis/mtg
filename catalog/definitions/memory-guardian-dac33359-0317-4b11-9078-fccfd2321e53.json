@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Robot Artificer",
+      "typeLine": "Artifact Creature \u2014 Robot Artificer",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -40,5 +40,32 @@
   ],
   "manaValue": 5,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "keyword": "Affinity"
+    }
+  ]
 }

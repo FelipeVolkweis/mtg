@@ -31,6 +31,47 @@
     "Affinity"
   ],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "keyword": "Affinity"
+    },
+    {
+      "id": "draw",
+      "kind": "spell",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ]
 }

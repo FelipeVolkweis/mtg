@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Creature — Vedalken Wizard",
+      "typeLine": "Creature \u2014 Vedalken Wizard",
       "manaValue": 4,
       "supertypes": [],
       "types": [
@@ -32,6 +32,31 @@
   "oracleText": "Whenever you cast an artifact spell, draw a card.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "artifact-cast",
+      "kind": "triggered",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "cast",
+          "filter": {
+            "zone": "stack",
+            "types": [
+              "Artifact"
+            ],
+            "controller": "you"
+          }
+        }
+      }
+    }
+  ]
 }

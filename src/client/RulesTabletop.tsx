@@ -59,18 +59,50 @@ function Procedure({
   return (
     <section aria-label="Pending rules choice">
       <h2>
-        {pending.stage === "variable"
-          ? "Choose X"
-          : pending.kind === "resolve"
-            ? "Resolve spell or ability"
-            : pending.kind === "cleanup"
-              ? "Cleanup discard"
-              : pending.stage === "targets"
-                ? "Choose target"
-                : "Pay costs"}
+        {pending.kind === "trigger-order"
+          ? "Order simultaneous triggers"
+          : pending.stage === "variable"
+            ? "Choose X"
+            : pending.kind === "resolve"
+              ? "Resolve spell or ability"
+              : pending.kind === "cleanup"
+                ? "Cleanup discard"
+                : pending.stage === "targets"
+                  ? "Choose target"
+                  : "Pay costs"}
       </h2>
       {pending.context && <p>{pending.context}</p>}
-      {pending.stage === "variable" ? (
+      {pending.kind === "trigger-order" ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            act({ type: "rules-input", procedureId: pending.id, selections });
+          }}
+        >
+          {pending.selectionOptions.order.objectIds.map((_, index) => (
+            <label key={index}>
+              Stack position {index + 1} (bottom first)
+              <select
+                required
+                value={selections.order?.[index] ?? ""}
+                onChange={(event) => {
+                  const order = [...(selections.order ?? [])];
+                  order[index] = event.target.value;
+                  setSelections({ order });
+                }}
+              >
+                <option value="">Choose trigger</option>
+                {pending.selectionOptions.order.objectIds.map((id) => (
+                  <option key={id} value={id}>
+                    {pending.selectionOptions.order.labels?.[id]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+          <button>Confirm trigger order</button>
+        </form>
+      ) : pending.stage === "variable" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -197,15 +229,17 @@ function Procedure({
           </button>
         </>
       )}
-      {pending.kind !== "cleanup" && pending.kind !== "resolve" && (
-        <button
-          onClick={() =>
-            act({ type: "cancel-procedure", procedureId: pending.id })
-          }
-        >
-          Cancel procedure
-        </button>
-      )}
+      {pending.kind !== "cleanup" &&
+        pending.kind !== "resolve" &&
+        pending.kind !== "trigger-order" && (
+          <button
+            onClick={() =>
+              act({ type: "cancel-procedure", procedureId: pending.id })
+            }
+          >
+            Cancel procedure
+          </button>
+        )}
     </section>
   );
 }
@@ -356,6 +390,17 @@ export function RulesTabletop({
                           {object.characteristics.typeLine}
                         </p>
                         <p>{object.characteristics.rulesText}</p>
+                        {object.characteristics.power !== undefined && (
+                          <p>
+                            Power / Toughness: {object.characteristics.power} /{" "}
+                            {object.characteristics.toughness}
+                          </p>
+                        )}
+                        {object.counters.map((counter) => (
+                          <p key={counter.kind}>
+                            {counter.quantity} {counter.kind} counters
+                          </p>
+                        ))}
                       </article>
                     )
                   );

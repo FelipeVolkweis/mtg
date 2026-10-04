@@ -23,6 +23,49 @@
   "oracleText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "graveyard",
+      "kind": "triggered",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "dies",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ]
 }

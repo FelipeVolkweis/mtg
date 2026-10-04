@@ -9,7 +9,7 @@
       "name": "Chief of the Foundry",
       "manaCost": "{3}",
       "colors": [],
-      "typeLine": "Artifact Creature — Construct",
+      "typeLine": "Artifact Creature \u2014 Construct",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -28,6 +28,34 @@
   "oracleText": "Other artifact creatures you control get +1/+1.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "bonus",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "self": "exclude"
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": 1,
+              "toughness": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

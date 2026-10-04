@@ -97,6 +97,10 @@ export async function seedCatalog() {
     "Hedron Archive",
     "Pull from Tomorrow",
     "Thirst for Knowledge",
+    "Sai, Master Thopterist",
+    "Vedalken Archmage",
+    "Chief of the Foundry",
+    "Steel Overseer",
   ]) {
     const card = Object.values(release.definitions).find(
       (card) => card.canonicalName === name,

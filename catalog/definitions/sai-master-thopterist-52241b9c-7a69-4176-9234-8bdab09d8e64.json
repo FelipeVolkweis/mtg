@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Legendary Creature — Human Artificer",
+      "typeLine": "Legendary Creature \u2014 Human Artificer",
       "manaValue": 3,
       "supertypes": [
         "Legendary"
@@ -34,6 +34,65 @@
   "oracleText": "Whenever you cast an artifact spell, create a 1/1 colorless Thopter artifact creature token with flying.\n{1}{U}, Sacrifice two artifacts: Draw a card.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "artifact-cast",
+      "kind": "triggered",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "cast",
+          "filter": {
+            "zone": "stack",
+            "types": [
+              "Artifact"
+            ],
+            "controller": "you"
+          }
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}",
+              "{U}"
+            ]
+          },
+          {
+            "kind": "sacrifice",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "types": [
+                "Artifact"
+              ],
+              "controller": "you"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
 }

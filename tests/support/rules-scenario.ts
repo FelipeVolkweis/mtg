@@ -6,7 +6,11 @@ import type { RoomState, ZoneKind } from "../../src/shared/model";
 
 // Initial scenario construction is test-only. Assertions and every subsequent
 // action use the public player command/view protocol; no fixture command exists.
-export async function seedRulesScenario(invite: string, spellName?: string) {
+export async function seedRulesScenario(
+  invite: string,
+  spellName?: string,
+  synergies = false,
+) {
   const pool = new Pool({
     connectionString:
       process.env.TEST_DATABASE_URL ??
@@ -43,6 +47,12 @@ export async function seedRulesScenario(invite: string, spellName?: string) {
       zone.objectIds.push(object.id);
       match.rules!.controlledSinceTurn[object.id] = 0;
       return object;
+    }
+    if (synergies) {
+      add("Sai, Master Thopterist", "battlefield");
+      add("Vedalken Archmage", "battlefield");
+      add("Chief of the Foundry", "battlefield");
+      add("Steel Overseer", "battlefield");
     }
     const target = add(spellName ?? "Sol Ring", spellName ? "hand" : "stack");
     if (spellName) add("Mind Stone", "hand");

@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Vedalken Wizard",
+      "typeLine": "Artifact Creature \u2014 Vedalken Wizard",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -33,6 +33,73 @@
   "oracleText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "size",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "characteristicDefining": true,
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bonus",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "self": "exclude"
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": 1,
+              "toughness": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

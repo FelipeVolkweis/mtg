@@ -4,6 +4,7 @@ import type {
   MatchView,
   ObjectView,
 } from "../../shared/model.js";
+import { CharacteristicsCalculator } from "./characteristics.js";
 import { RulesEngine } from "./rules-engine.js";
 import { zoneFor } from "./zones.js";
 import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
@@ -47,6 +48,12 @@ export function matchView(
             : object.cardInstanceIds;
           objects[objectId] = {
             ...visibleObject,
+            characteristics:
+              match.rules && catalog
+                ? new CharacteristicsCalculator(match, catalog).effective(
+                    object,
+                  )
+                : object.characteristics,
             cardInstanceIds,
             hidden: false,
             melded: !!meldParts,
@@ -69,6 +76,10 @@ export function matchView(
   const copiableValues: MatchView["copiableValues"] = {};
   for (const object of Object.values(objects)) {
     if (object.hidden) continue;
+    if (object.resolution) {
+      const { event, ...resolution } = object.resolution;
+      object.resolution = resolution;
+    }
     object.links = object.links?.map((link) => ({
       ...link,
       objectIds: link.objectIds.filter((id) => !!objects[id]),
@@ -97,6 +108,9 @@ export function matchView(
           const {
             pending,
             resolving,
+            waitingTriggers,
+            continuousEffects,
+            priorityAfterTriggers,
             controlledSinceTurn,
             turnStarted,
             ...rules
@@ -105,6 +119,15 @@ export function matchView(
           return {
             rules: {
               ...rules,
+              continuousEffects: engine
+                ? new CharacteristicsCalculator(match, catalog!)
+                    .active()
+                    .filter(
+                      (effect) =>
+                        objects[effect.sourceId] &&
+                        !objects[effect.sourceId].hidden,
+                    )
+                : [],
               waiting: pending
                 ? { playerId: pending.playerId, kind: pending.kind }
                 : undefined,

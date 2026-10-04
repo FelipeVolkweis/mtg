@@ -8,6 +8,7 @@ import type {
   MatchState,
   Participant,
   ZoneKind,
+  ZoneState,
 } from "../../shared/model.js";
 import {
   manaTypes,
@@ -21,6 +22,9 @@ import {
 import { gameObject, moveObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
+import { CharacteristicsCalculator, matchesFilter } from "./characteristics.js";
+import { tokenCharacteristics } from "./tokens.js";
+import { Triggers } from "./triggers.js";
 import { Resolution } from "./resolution.js";
 
 export const emptyMana = (): ManaPool => ({
@@ -72,10 +76,12 @@ export class RulesEngine {
         action.type === "cancel-procedure" &&
         action.procedureId === pending.id &&
         pending.kind !== "cleanup" &&
-        pending.kind !== "resolve"
-      )
+        pending.kind !== "resolve" &&
+        pending.kind !== "trigger-order"
+      ) {
         delete this.rules.pending;
-      else
+        this.priority(player.id);
+      } else
         throw new Error(
           "Complete the current procedure using its latest identifier.",
         );
@@ -134,7 +140,8 @@ export class RulesEngine {
   }
   priority(playerId = this.match.turn.activePlayerId) {
     this.checkpoint();
-    this.match.priority = { playerId, passedPlayerIds: [] };
+    this.rules.priorityAfterTriggers = playerId;
+    new Triggers(this).flush();
   }
   pass(playerId: string) {
     const priority = this.match.priority!;
@@ -237,7 +244,8 @@ export class RulesEngine {
   selectionOptions(
     pending: PendingProcedure,
   ): Record<string, { count: number; objectIds: string[] }> {
-    if (pending.kind === "resolve") return pending.options ?? {};
+    if (pending.kind === "resolve" || pending.kind === "trigger-order")
+      return pending.options ?? {};
     if (pending.kind === "cleanup")
       return {
         discard: {
@@ -301,25 +309,84 @@ export class RulesEngine {
     );
     const fresh = moveObject(this.match, object.id, this.zone("battlefield"));
     fresh.status.tapped = !!tapped;
+    this.emit("enter", fresh);
     return fresh;
   }
-  matches(object: GameObject, filter: ObjectFilter, playerId: string) {
-    const zone = this.match.zones.find((z) => z.id === object.zoneId)!;
-    const types = object.characteristics.types ?? [];
-    return (
-      zone.kind === filter.zone &&
-      (zone.visibility !== "private" || zone.ownerId === playerId) &&
-      (!filter.controller || object.controllerId === playerId) &&
-      (!filter.kind ||
-        (filter.kind === "spell"
-          ? object.kind === "card" && zone.kind === "stack"
-          : filter.kind === "permanent"
-            ? zone.kind === "battlefield"
-            : object.kind === "card")) &&
-      (!filter.types || filter.types.some((type) => types.includes(type))) &&
-      (!filter.excludeTypes ||
-        filter.excludeTypes.every((type) => !types.includes(type))) &&
-      (!filter.untapped || !object.status.tapped)
+  battlefieldSources() {
+    return Object.values(this.match.objects).filter(
+      (o) => o.zoneId === this.zone("battlefield").id && !o.status.phasedOut,
+    );
+  }
+  emit(kind: "enter" | "cast", object: GameObject) {
+    new Triggers(this).collect(
+      {
+        kind,
+        sourceId: object.id,
+        affectedId: object.id,
+        controllerId: object.controllerId,
+        ownerId:
+          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
+          object.controllerId,
+        after: this.effective(object),
+      },
+      object,
+      this.battlefieldSources(),
+    );
+  }
+  move(
+    id: string,
+    destination: ZoneState,
+    snapshotSources?: GameObject[],
+    snapshotCharacteristics?: import("../../shared/model.js").Characteristics,
+  ) {
+    const object = this.object(id),
+      from = this.match.zones.find((z) => z.id === object.zoneId)!;
+    const sources = snapshotSources ?? this.battlefieldSources();
+    const before = snapshotCharacteristics ?? this.effective(object);
+    const fresh = moveObject(this.match, id, destination);
+    new Triggers(this).collect(
+      {
+        kind: "zone-change",
+        sourceId: id,
+        affectedId: fresh.id,
+        controllerId: object.controllerId,
+        ownerId:
+          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
+          object.controllerId,
+        from: from.kind,
+        to: destination.kind,
+        before,
+        after: this.effective(fresh),
+      },
+      object,
+      sources,
+    );
+    return fresh;
+  }
+  matches(
+    object: GameObject,
+    filter: ObjectFilter,
+    playerId: string,
+    sourceId?: string,
+  ) {
+    return matchesFilter(this.match, object, filter, playerId, sourceId);
+  }
+  effective(object: GameObject) {
+    return new CharacteristicsCalculator(this.match, this.catalog).effective(
+      object,
+    );
+  }
+  value(
+    value: import("../../shared/rules.js").RulesValue,
+    playerId: string,
+    sourceId?: string,
+    bindings?: Record<string, number>,
+  ) {
+    return new CharacteristicsCalculator(this.match, this.catalog).value(
+      value,
+      playerId,
+      sourceId,
+      bindings,
     );
   }
   legalTargets(playerId: string, filter: ObjectFilter) {
@@ -403,6 +470,8 @@ export class RulesEngine {
       throw new Error("No legal targets are available.");
     if (symbols.includes("{X}") && !ability.chosenVariables?.includes("X"))
       throw new Error("Variable mana costs require an authored chosen value.");
+    if (!ability.chosenVariables?.length && !ability.target)
+      this.lockCost(this.rules.pending);
     if (!ability.target && !ability.chosenVariables?.length)
       this.tryComplete(playerId);
   }
@@ -458,6 +527,7 @@ export class RulesEngine {
         ),
       ),
     };
+    if (!ability.target) this.lockCost(procedure);
     if (ability.manaAbility) {
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
@@ -474,6 +544,10 @@ export class RulesEngine {
     action: Extract<MatchAction, { type: "rules-input" }>,
   ) {
     const pending = this.rules.pending!;
+    if (pending.kind === "trigger-order") {
+      new Triggers(this).answer(action);
+      return;
+    }
     if (pending.kind === "resolve") {
       new Resolution(this).answer(action);
       return;
@@ -495,6 +569,7 @@ export class RulesEngine {
         ) ?? [];
       pending.totalCost.generic +=
         symbols.filter((symbol) => symbol === "{X}").length * value;
+      if (!pending.ability?.target) this.lockCost(pending);
       pending.stage = pending.ability?.target ? "targets" : "payment";
       pending.id = randomUUID();
       return;
@@ -510,8 +585,7 @@ export class RulesEngine {
         ids.some((id) => !hand.objectIds.includes(id))
       )
         throw new Error("Choose the required cards to discard for cleanup.");
-      for (const id of ids)
-        moveObject(this.match, id, this.zone("graveyard", playerId));
+      for (const id of ids) this.move(id, this.zone("graveyard", playerId));
       delete this.rules.pending;
       this.nextTurn();
       return;
@@ -528,6 +602,7 @@ export class RulesEngine {
       )
         throw new Error("Choose one legal target.");
       pending.targetIds = targets;
+      this.lockCost(pending);
       pending.stage = "payment";
     }
     if (
@@ -562,6 +637,7 @@ export class RulesEngine {
         additionalCosts: [],
         manaSpent: this.lastManaSpent,
       };
+      this.emit("cast", spell);
     } else {
       const object = gameObject("ability", this.zone("stack").id, playerId, {
         name: `${this.lastSourceName}: ${pending.abilityId}`,
@@ -582,6 +658,40 @@ export class RulesEngine {
     delete this.rules.pending;
     this.priority(playerId);
     return true;
+  }
+  lockCost(pending: PendingProcedure) {
+    const target = this.object(pending.sourceId!);
+    let reduction = 0;
+    for (const source of Object.values(this.match.objects)) {
+      if (source.status.phasedOut || source.controllerId !== pending.playerId)
+        continue;
+      for (const ability of this.definition(source)?.abilities ?? []) {
+        for (const modifier of ability.rules?.costModifiers ?? []) {
+          if (modifier.use !== pending.kind) continue;
+          if (
+            modifier.scope === "source"
+              ? source.id !== target.id
+              : source.zoneId !== this.zone("battlefield").id
+          )
+            continue;
+          if (
+            modifier.filter &&
+            !this.matches(target, modifier.filter, pending.playerId, source.id)
+          )
+            continue;
+          reduction += this.value(
+            modifier.amount,
+            pending.playerId,
+            source.id,
+            pending.variables,
+          );
+        }
+      }
+    }
+    pending.totalCost.generic = Math.max(
+      0,
+      pending.totalCost.generic - reduction,
+    );
   }
   lastManaSpent: ManaType[] = [];
   lastSourceName = "";
@@ -692,7 +802,7 @@ export class RulesEngine {
         cost.kind === "sacrifice-source" ||
         cost.kind === "discard-source"
       )
-        moveObject(this.match, source.id, this.zone("graveyard", playerId));
+        this.move(source.id, this.zone("graveyard", playerId));
       else if (
         cost.kind === "tap" ||
         cost.kind === "sacrifice" ||
@@ -700,7 +810,7 @@ export class RulesEngine {
       )
         for (const id of pending.selections[String(index)] ?? []) {
           if (cost.kind === "tap") this.object(id).status.tapped = true;
-          else moveObject(this.match, id, this.zone("graveyard", playerId));
+          else this.move(id, this.zone("graveyard", playerId));
         }
     }
     return true;
@@ -732,6 +842,37 @@ export class RulesEngine {
             restriction: structuredClone(effect.restriction),
           });
         }
+      } else if (effect.kind === "add-counters") {
+        for (const object of Object.values(this.match.objects).filter((o) =>
+          this.matches(o, effect.filter, playerId),
+        )) {
+          const counter = object.counters.find(
+            (c) => c.kind === effect.counter,
+          );
+          if (counter)
+            counter.quantity = (
+              BigInt(counter.quantity) + BigInt(effect.count)
+            ).toString();
+          else
+            object.counters.push({
+              kind: effect.counter,
+              quantity: String(effect.count),
+            });
+        }
+      } else if (effect.kind === "create-token") {
+        for (let i = 0; i < effect.count; i++) {
+          const token = gameObject(
+            "token",
+            this.zone("battlefield").id,
+            playerId,
+            tokenCharacteristics[effect.token],
+          );
+          token.ownerId = playerId;
+          this.match.objects[token.id] = token;
+          this.zone("battlefield").objectIds.push(token.id);
+          this.rules.controlledSinceTurn[token.id] = this.match.turn.number;
+          this.emit("enter", token);
+        }
       } else if (effect.kind === "counter-target") {
         const target = this.match.objects[targets[0]];
         if (target && !target.cannotBeCountered) this.toGraveyard(target);
@@ -748,7 +889,7 @@ export class RulesEngine {
         1,
       );
       delete this.match.objects[object.id];
-    } else moveObject(this.match, object.id, this.zone("graveyard", ownerId));
+    } else this.move(object.id, this.zone("graveyard", ownerId));
   }
   resolve() {
     const stack = this.zone("stack"),
@@ -862,6 +1003,61 @@ export class RulesEngine {
     this.beginTurn();
   }
   checkpoint() {
+    let changed: boolean;
+    do {
+      changed = false;
+      const dying = this.battlefieldSources().filter((object) => {
+        const effective = this.effective(object);
+        return (
+          effective.types?.includes("Creature") &&
+          /^-?\d+$/.test(effective.toughness ?? "") &&
+          BigInt(effective.toughness!) <= 0n
+        );
+      });
+      // Determine the whole set before moving anything: these deaths are simultaneous.
+      const sources = structuredClone(this.battlefieldSources());
+      const before = new Map(
+        dying.map((object) => [object.id, this.effective(object)]),
+      );
+      for (const object of dying) {
+        this.move(
+          object.id,
+          this.zone(
+            "graveyard",
+            this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
+              object.ownerId ??
+              object.controllerId,
+          ),
+          sources,
+          before.get(object.id),
+        );
+        changed = true;
+      }
+      for (const token of Object.values(this.match.objects).filter(
+        (o) => o.kind === "token" && o.zoneId !== this.zone("battlefield").id,
+      )) {
+        const zone = this.match.zones.find((z) => z.id === token.zoneId)!;
+        zone.objectIds.splice(zone.objectIds.indexOf(token.id), 1);
+        delete this.match.objects[token.id];
+      }
+    } while (changed);
+    this.rules.continuousEffects = new CharacteristicsCalculator(
+      this.match,
+      this.catalog,
+    ).active();
+    for (const object of this.battlefieldSources()) {
+      const plus = object.counters.find((c) => c.kind === "+1/+1");
+      const minus = object.counters.find((c) => c.kind === "-1/-1");
+      if (plus && minus) {
+        const common =
+          BigInt(plus.quantity) < BigInt(minus.quantity)
+            ? BigInt(plus.quantity)
+            : BigInt(minus.quantity);
+        plus.quantity = (BigInt(plus.quantity) - common).toString();
+        minus.quantity = (BigInt(minus.quantity) - common).toString();
+        object.counters = object.counters.filter((c) => c.quantity !== "0");
+      }
+    }
     for (const player of this.match.players)
       if (
         BigInt(player.life) <= 0n ||

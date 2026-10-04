@@ -18,6 +18,9 @@ export const objectFilterSchema = z
   .object({
     zone: z.enum(["battlefield", "hand", "stack"]),
     kind: z.enum(["card", "spell", "permanent"]).optional(),
+    subtypes: z.array(z.string().min(1)).optional(),
+    allTypes: z.array(z.string().min(1)).optional(),
+    self: z.enum(["only", "exclude"]).optional(),
     controller: z.literal("you").optional(),
     types: z.array(z.string().min(1)).optional(),
     excludeTypes: z.array(z.string().min(1)).optional(),
@@ -48,11 +51,44 @@ export const rulesCostSchema = z.discriminatedUnion("kind", [
     })
     .strict(),
 ]);
-const valueSchema = z.union([
-  z.number().int().nonnegative().max(1000),
-  z.object({ binding: z.string().min(1) }).strict(),
+export type RulesValue =
+  | number
+  | { binding: string }
+  | { count: ObjectFilter }
+  | { sum: RulesValue[] };
+export const valueSchema: z.ZodType<RulesValue> = z.lazy(() =>
+  z.union([
+    z.number().int().nonnegative().max(1000),
+    z.object({ binding: z.string().min(1) }).strict(),
+    z.object({ count: objectFilterSchema }).strict(),
+    z.object({ sum: z.array(valueSchema).min(1).max(20) }).strict(),
+  ]),
+);
+export const continuousChangeSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("define-stats"),
+      power: valueSchema,
+      toughness: valueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("add-stats"),
+      power: valueSchema,
+      toughness: valueSchema,
+    })
+    .strict(),
 ]);
-export type RulesValue = z.infer<typeof valueSchema>;
+export type ContinuousChange = z.infer<typeof continuousChangeSchema>;
+export interface ActiveContinuousEffect {
+  sourceId: string;
+  abilityId: string;
+  playerId: string;
+  filter: ObjectFilter;
+  changes: ContinuousChange[];
+  applicability: "source-on-battlefield" | "characteristic-defining";
+}
 const discardSchema = z
   .object({
     kind: z.literal("discard"),
@@ -63,6 +99,21 @@ const discardSchema = z
   .strict();
 const primitiveEffectSchema = z.discriminatedUnion("kind", [
   discardSchema,
+  z
+    .object({
+      kind: z.literal("add-counters"),
+      filter: objectFilterSchema,
+      counter: z.enum(["+1/+1", "-1/-1"]),
+      count: z.number().int().min(1).max(100),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("create-token"),
+      token: z.enum(["thopter", "myr"]),
+      count: z.number().int().min(1).max(100),
+    })
+    .strict(),
   z
     .object({
       kind: z.literal("draw"),
@@ -151,13 +202,49 @@ export const rulesAbilitySchema = z
     chosenVariables: z.array(z.literal("X")).max(1).optional(),
     costs: z.array(rulesCostSchema).max(100).default([]),
     effects: z.array(rulesEffectSchema).max(100).default([]),
+    costModifiers: z
+      .array(
+        z
+          .object({
+            use: z.enum(["cast", "activate"]),
+            scope: z.enum(["source", "controller"]),
+            component: z.literal("generic"),
+            filter: objectFilterSchema.optional(),
+            amount: valueSchema,
+          })
+          .strict(),
+      )
+      .max(20)
+      .optional(),
+    continuous: z
+      .object({
+        filter: objectFilterSchema,
+        changes: z.array(continuousChangeSchema).min(1).max(20),
+        characteristicDefining: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
     target: objectFilterSchema.optional(),
+    trigger: z
+      .object({
+        event: z.enum(["enter", "cast", "dies"]),
+        filter: objectFilterSchema,
+      })
+      .strict()
+      .optional(),
     manaAbility: z.boolean().optional(),
   })
   .strict()
   .superRefine((ability, ctx) => {
     const invalid = (message: string) =>
       ctx.addIssue({ code: "custom", message });
+    const checkValue = (value: RulesValue, available: Set<string>) => {
+      if (typeof value === "number") return;
+      if ("binding" in value && !available.has(value.binding))
+        invalid("Unknown quantity binding.");
+      if ("sum" in value)
+        for (const term of value.sum) checkValue(term, available);
+    };
     const check = (effects: RulesEffect[], available: Set<string>) => {
       for (const effect of effects) {
         if (effect.kind === "sequence") check(effect.effects, available);
@@ -175,11 +262,7 @@ export const rulesAbilitySchema = z
           for (const option of effect.options)
             check([option.effect], new Set(available));
         } else if (effect.kind === "draw" || effect.kind === "discard") {
-          if (
-            typeof effect.count !== "number" &&
-            !available.has(effect.count.binding)
-          )
-            invalid("Unknown quantity binding.");
+          checkValue(effect.count, available);
           if (effect.bind) {
             if (available.has(effect.bind))
               invalid("Result bindings must be unique.");
@@ -189,7 +272,20 @@ export const rulesAbilitySchema = z
           invalid("Counter effects require a target declaration.");
       }
     };
-    check(ability.effects, new Set(ability.chosenVariables ?? []));
+    const available = new Set(ability.chosenVariables ?? []);
+    check(ability.effects, new Set(available));
+    for (const modifier of ability.costModifiers ?? [])
+      checkValue(modifier.amount, available);
+    for (const change of ability.continuous?.changes ?? []) {
+      checkValue(change.power, available);
+      checkValue(change.toughness, available);
+    }
+    if (
+      ability.continuous?.characteristicDefining &&
+      (ability.continuous.filter.self !== "only" ||
+        ability.continuous.changes.some((c) => c.kind !== "define-stats"))
+    )
+      invalid("Characteristic definitions must define only their own stats.");
 
     if (
       ability.manaAbility &&
@@ -214,7 +310,7 @@ export type RulesCost = z.infer<typeof rulesCostSchema>;
 export interface PendingProcedure {
   id: string;
   playerId: string;
-  kind: "cast" | "activate" | "cleanup" | "resolve";
+  kind: "cast" | "activate" | "cleanup" | "resolve" | "trigger-order";
   stage: "variable" | "targets" | "payment" | "selection";
   variables?: Record<string, number>;
   context?: string;
@@ -233,6 +329,7 @@ export interface SelectionOption {
   objectIds: string[];
   label?: string;
   types?: string[];
+  labels?: Record<string, string>;
 }
 export interface ResolutionProgress {
   sourceId: string;
@@ -242,6 +339,9 @@ export interface ResolutionProgress {
   choices?: Record<string, DiscardEffect>;
 }
 export interface RulesState {
+  continuousEffects?: ActiveContinuousEffect[];
+  waitingTriggers?: WaitingTrigger[];
+  priorityAfterTriggers?: string;
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
   pending?: PendingProcedure;
@@ -253,4 +353,25 @@ export interface RulesState {
   controlledSinceTurn: Record<string, number>;
   turnStarted: Record<string, number>;
   commanders: Record<string, { instanceId: string; colorIdentity: string[] }>;
+}
+
+export interface SemanticEvent {
+  kind: "enter" | "cast" | "zone-change";
+  sourceId: string;
+  affectedId: string;
+  controllerId: string;
+  ownerId: string;
+  from?: import("./model.js").ZoneKind;
+  to?: import("./model.js").ZoneKind;
+  before?: import("./model.js").Characteristics;
+  after: import("./model.js").Characteristics;
+}
+export interface WaitingTrigger {
+  id: string;
+  playerId: string;
+  sourceId: string;
+  abilityId: string;
+  sourceName: string;
+  ability: RulesAbility;
+  event: SemanticEvent;
 }

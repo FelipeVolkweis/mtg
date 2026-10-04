@@ -285,10 +285,12 @@ export interface GameObject {
   meldParts?: GameObject[];
   resolution?: {
     ability: RulesAbility;
+    event?: import("./rules.js").SemanticEvent;
     targetIds: string[];
     color?: import("./rules.js").ManaType;
   };
   cannotBeCountered?: boolean;
+  ownerId?: string;
 }
 export interface MatchState {
   id: string;
@@ -371,7 +373,12 @@ export interface MatchView extends Omit<
 > {
   rules?: Omit<
     RulesState,
-    "pending" | "controlledSinceTurn" | "turnStarted"
+    | "pending"
+    | "resolving"
+    | "waitingTriggers"
+    | "priorityAfterTriggers"
+    | "controlledSinceTurn"
+    | "turnStarted"
   > & {
     waiting?: { playerId: string; kind: string };
     pending?: import("./rules.js").PendingProcedure & {
