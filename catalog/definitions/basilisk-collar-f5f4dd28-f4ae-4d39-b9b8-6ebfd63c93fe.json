@@ -1,0 +1,34 @@
+{
+  "id": "f5f4dd28-f4ae-4d39-b9b8-6ebfd63c93fe",
+  "canonicalName": "Basilisk Collar",
+  "defaultPrintingId": "cd35c8ca-a456-45b5-b018-98027a56c719",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Basilisk Collar",
+      "manaCost": "{1}",
+      "colors": [],
+      "typeLine": "Artifact — Equipment",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "keywords": [
+        "Equip"
+      ],
+      "rulesText": "Equipped creature has deathtouch and lifelink. (Any amount of damage it deals to a creature is enough to destroy it. Damage dealt by this creature also causes you to gain that much life.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
+    }
+  ],
+  "oracleText": "Equipped creature has deathtouch and lifelink. (Any amount of damage it deals to a creature is enough to destroy it. Damage dealt by this creature also causes you to gain that much life.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+  "keywords": [
+    "Equip"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

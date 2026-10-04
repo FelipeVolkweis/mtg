@@ -1,0 +1,31 @@
+{
+  "id": "64e29bfc-9313-4e8c-808c-bc27f6b018a6",
+  "canonicalName": "Bloodfell Caves",
+  "defaultPrintingId": "8b90dc92-cb66-41d9-89f9-2b6e3cfc8082",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Bloodfell Caves",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {R}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {R}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

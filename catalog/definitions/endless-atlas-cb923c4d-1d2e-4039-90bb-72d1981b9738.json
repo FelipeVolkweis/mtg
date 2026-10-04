@@ -1,0 +1,28 @@
+{
+  "id": "cb923c4d-1d2e-4039-90bb-72d1981b9738",
+  "canonicalName": "Endless Atlas",
+  "defaultPrintingId": "1718ebac-641f-4115-bb13-d58732cf3464",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Endless Atlas",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{2}, {T}: Draw a card. Activate only if you control three or more lands with the same name."
+    }
+  ],
+  "oracleText": "{2}, {T}: Draw a card. Activate only if you control three or more lands with the same name.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

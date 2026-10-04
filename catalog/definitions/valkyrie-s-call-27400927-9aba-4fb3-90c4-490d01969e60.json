@@ -1,0 +1,32 @@
+{
+  "id": "27400927-9aba-4fb3-90c4-490d01969e60",
+  "canonicalName": "Valkyrie's Call",
+  "defaultPrintingId": "0e1f1ff2-fa8f-4d38-b631-2d6e08e614c8",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Valkyrie's Call",
+      "manaCost": "{3}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Whenever a nontoken, non-Angel creature you control dies, return that card to the battlefield under its owner's control with a +1/+1 counter on it. It has flying and is an Angel in addition to its other types."
+    }
+  ],
+  "oracleText": "Whenever a nontoken, non-Angel creature you control dies, return that card to the battlefield under its owner's control with a +1/+1 counter on it. It has flying and is an Angel in addition to its other types.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

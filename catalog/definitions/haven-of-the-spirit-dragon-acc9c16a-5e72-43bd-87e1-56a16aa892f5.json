@@ -1,0 +1,28 @@
+{
+  "id": "acc9c16a-5e72-43bd-87e1-56a16aa892f5",
+  "canonicalName": "Haven of the Spirit Dragon",
+  "defaultPrintingId": "3ef1e028-2c7a-4bd3-8859-1aa5fd26abbc",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Haven of the Spirit Dragon",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a Dragon creature spell.\n{2}, {T}, Sacrifice this land: Return target Dragon creature card or Ugin planeswalker card from your graveyard to your hand."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a Dragon creature spell.\n{2}, {T}, Sacrifice this land: Return target Dragon creature card or Ugin planeswalker card from your graveyard to your hand.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

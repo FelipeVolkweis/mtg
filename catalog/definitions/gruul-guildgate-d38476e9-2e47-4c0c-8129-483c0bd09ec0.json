@@ -1,0 +1,33 @@
+{
+  "id": "d38476e9-2e47-4c0c-8129-483c0bd09ec0",
+  "canonicalName": "Gruul Guildgate",
+  "defaultPrintingId": "3ab6c240-c97d-4a5c-bc39-860c2d9901c2",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Gruul Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {R} or {G}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {R} or {G}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

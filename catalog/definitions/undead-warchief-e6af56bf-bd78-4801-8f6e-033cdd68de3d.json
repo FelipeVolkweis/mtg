@@ -1,0 +1,36 @@
+{
+  "id": "e6af56bf-bd78-4801-8f6e-033cdd68de3d",
+  "canonicalName": "Undead Warchief",
+  "defaultPrintingId": "f9139c01-ab89-445f-b564-dce1abf2c79f",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Undead Warchief",
+      "manaCost": "{2}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "Zombie spells you cast cost {1} less to cast.\nZombie creatures you control get +2/+1.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Zombie spells you cast cost {1} less to cast.\nZombie creatures you control get +2/+1.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

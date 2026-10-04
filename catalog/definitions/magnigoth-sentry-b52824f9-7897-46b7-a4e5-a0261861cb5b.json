@@ -1,0 +1,40 @@
+{
+  "id": "b52824f9-7897-46b7-a4e5-a0261861cb5b",
+  "canonicalName": "Magnigoth Sentry",
+  "defaultPrintingId": "5624e610-c4c0-4103-a32b-0f1264030a7a",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Magnigoth Sentry",
+      "manaCost": "{3}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Treefolk",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Treefolk"
+      ],
+      "keywords": [
+        "Reach"
+      ],
+      "rulesText": "Reach (This creature can block creatures with flying.)",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Reach (This creature can block creatures with flying.)",
+  "keywords": [
+    "Reach"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

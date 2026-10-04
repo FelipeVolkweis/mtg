@@ -1,0 +1,45 @@
+{
+  "id": "71cb48e2-2328-471c-a04a-7b6461f378f4",
+  "canonicalName": "Sarkhan, Dragon Ascendant",
+  "defaultPrintingId": "af6826db-29c2-446d-8a76-1faf87535c25",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Sarkhan, Dragon Ascendant",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Human Druid",
+      "manaValue": 2,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Druid"
+      ],
+      "keywords": [
+        "Behold",
+        "Treasure"
+      ],
+      "rulesText": "When Sarkhan enters, you may behold a Dragon. If you do, create a Treasure token. (To behold a Dragon, choose a Dragon you control or reveal a Dragon card from your hand.)\nWhenever a Dragon you control enters, put a +1/+1 counter on Sarkhan. Until end of turn, Sarkhan becomes a Dragon in addition to his other types and gains flying.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When Sarkhan enters, you may behold a Dragon. If you do, create a Treasure token. (To behold a Dragon, choose a Dragon you control or reveal a Dragon card from your hand.)\nWhenever a Dragon you control enters, put a +1/+1 counter on Sarkhan. Until end of turn, Sarkhan becomes a Dragon in addition to his other types and gains flying.",
+  "keywords": [
+    "Behold",
+    "Treasure"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

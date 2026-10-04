@@ -1,0 +1,37 @@
+{
+  "id": "6e2c2423-d854-4478-99e6-64f29851f026",
+  "canonicalName": "Elvish Archdruid",
+  "defaultPrintingId": "341da856-7414-403b-b2e3-4bebd58a5aa4",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Elvish Archdruid",
+      "manaCost": "{1}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Druid",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Druid"
+      ],
+      "keywords": [],
+      "rulesText": "Other Elf creatures you control get +1/+1.\n{T}: Add {G} for each Elf you control.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Other Elf creatures you control get +1/+1.\n{T}: Add {G} for each Elf you control.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

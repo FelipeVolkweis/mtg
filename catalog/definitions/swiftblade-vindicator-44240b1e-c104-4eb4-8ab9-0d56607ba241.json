@@ -1,0 +1,47 @@
+{
+  "id": "44240b1e-c104-4eb4-8ab9-0d56607ba241",
+  "canonicalName": "Swiftblade Vindicator",
+  "defaultPrintingId": "f94618ec-000c-4371-b925-05ff82bfe221",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Swiftblade Vindicator",
+      "manaCost": "{R}{W}",
+      "colors": [
+        "R",
+        "W"
+      ],
+      "typeLine": "Creature — Human Soldier",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "keywords": [
+        "Vigilance",
+        "Trample",
+        "Double strike"
+      ],
+      "rulesText": "Double strike (This creature deals both first-strike and regular combat damage.)\nVigilance (Attacking doesn't cause this creature to tap.)\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Double strike (This creature deals both first-strike and regular combat damage.)\nVigilance (Attacking doesn't cause this creature to tap.)\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+  "keywords": [
+    "Vigilance",
+    "Trample",
+    "Double strike"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

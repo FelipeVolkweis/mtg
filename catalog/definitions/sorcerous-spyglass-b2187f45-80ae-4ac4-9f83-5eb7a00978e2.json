@@ -1,0 +1,28 @@
+{
+  "id": "b2187f45-80ae-4ac4-9f83-5eb7a00978e2",
+  "canonicalName": "Sorcerous Spyglass",
+  "defaultPrintingId": "0f99356b-eed0-4d92-818b-80754bcb75f3",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Sorcerous Spyglass",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "As this artifact enters, look at an opponent's hand, then choose any card name.\nActivated abilities of sources with the chosen name can't be activated unless they're mana abilities."
+    }
+  ],
+  "oracleText": "As this artifact enters, look at an opponent's hand, then choose any card name.\nActivated abilities of sources with the chosen name can't be activated unless they're mana abilities.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

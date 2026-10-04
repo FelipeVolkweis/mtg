@@ -1,0 +1,43 @@
+{
+  "id": "fd505c02-c59e-476d-8e88-35da862ddc23",
+  "canonicalName": "Bloodthirsty Conqueror",
+  "defaultPrintingId": "ce860ed4-a5bd-4347-9eab-dd716ea84db1",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Bloodthirsty Conqueror",
+      "manaCost": "{3}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Knight",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Knight"
+      ],
+      "keywords": [
+        "Deathtouch",
+        "Flying"
+      ],
+      "rulesText": "Flying, deathtouch\nWhenever an opponent loses life, you gain that much life. (Damage causes loss of life.)",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying, deathtouch\nWhenever an opponent loses life, you gain that much life. (Damage causes loss of life.)",
+  "keywords": [
+    "Deathtouch",
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

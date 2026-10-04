@@ -1,0 +1,36 @@
+{
+  "id": "3f372107-6c52-4f1f-8bf0-7b3fa21b2cae",
+  "canonicalName": "Lord of the Accursed",
+  "defaultPrintingId": "1992d081-a3f9-4349-bc71-770372af2adf",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Lord of the Accursed",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "Other Zombies you control get +1/+1.\n{1}{B}, {T}: All Zombies gain menace until end of turn.",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Other Zombies you control get +1/+1.\n{1}{B}, {T}: All Zombies gain menace until end of turn.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

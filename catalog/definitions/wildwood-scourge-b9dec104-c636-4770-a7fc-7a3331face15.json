@@ -1,0 +1,36 @@
+{
+  "id": "b9dec104-c636-4770-a7fc-7a3331face15",
+  "canonicalName": "Wildwood Scourge",
+  "defaultPrintingId": "36359fb6-fb8c-4382-8555-e348422f116c",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Wildwood Scourge",
+      "manaCost": "{X}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Hydra",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Hydra"
+      ],
+      "keywords": [],
+      "rulesText": "This creature enters with X +1/+1 counters on it.\nWhenever one or more +1/+1 counters are put on another non-Hydra creature you control, put a +1/+1 counter on this creature.",
+      "power": "0",
+      "toughness": "0"
+    }
+  ],
+  "oracleText": "This creature enters with X +1/+1 counters on it.\nWhenever one or more +1/+1 counters are put on another non-Hydra creature you control, put a +1/+1 counter on this creature.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

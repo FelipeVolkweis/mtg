@@ -1,0 +1,32 @@
+{
+  "id": "bb8cccc8-e56f-42fa-a0d7-fc889b5e1c7b",
+  "canonicalName": "Boltwave",
+  "defaultPrintingId": "8d1ec351-5e70-4eb2-b590-6bff94ef8178",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Boltwave",
+      "manaCost": "{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Boltwave deals 3 damage to each opponent."
+    }
+  ],
+  "oracleText": "Boltwave deals 3 damage to each opponent.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "837182db-1bf3-4a2c-bd01-1af9d9873561",
+  "canonicalName": "Unsummon",
+  "defaultPrintingId": "2815d8e6-3668-4b9d-abe6-eca6a500707d",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Unsummon",
+      "manaCost": "{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Return target creature to its owner's hand."
+    }
+  ],
+  "oracleText": "Return target creature to its owner's hand.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

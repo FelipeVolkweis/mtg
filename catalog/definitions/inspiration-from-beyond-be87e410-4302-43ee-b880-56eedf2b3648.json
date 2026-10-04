@@ -1,0 +1,38 @@
+{
+  "id": "be87e410-4302-43ee-b880-56eedf2b3648",
+  "canonicalName": "Inspiration from Beyond",
+  "defaultPrintingId": "b636fe95-664f-4fb1-aab9-28856edeccd6",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Inspiration from Beyond",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flashback",
+        "Mill"
+      ],
+      "rulesText": "Mill three cards, then return an instant or sorcery card from your graveyard to your hand.\nFlashback {5}{U}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+    }
+  ],
+  "oracleText": "Mill three cards, then return an instant or sorcery card from your graveyard to your hand.\nFlashback {5}{U}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+  "keywords": [
+    "Flashback",
+    "Mill"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,38 @@
+{
+  "id": "3ddcaee9-a11e-477a-bd19-f5ee10512549",
+  "canonicalName": "Midnight Snack",
+  "defaultPrintingId": "c9b7543f-2a45-4db6-b560-d15507a58c91",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Midnight Snack",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Food",
+        "Raid"
+      ],
+      "rulesText": "Raid — At the beginning of your end step, if you attacked this turn, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")\n{2}{B}, Sacrifice this enchantment: Target opponent loses X life, where X is the amount of life you gained this turn."
+    }
+  ],
+  "oracleText": "Raid — At the beginning of your end step, if you attacked this turn, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")\n{2}{B}, Sacrifice this enchantment: Target opponent loses X life, where X is the amount of life you gained this turn.",
+  "keywords": [
+    "Food",
+    "Raid"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

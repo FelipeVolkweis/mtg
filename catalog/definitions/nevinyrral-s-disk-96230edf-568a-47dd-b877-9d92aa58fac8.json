@@ -1,0 +1,28 @@
+{
+  "id": "96230edf-568a-47dd-b877-9d92aa58fac8",
+  "canonicalName": "Nevinyrral's Disk",
+  "defaultPrintingId": "a8d65c8e-984b-4cc2-8dc4-c8a7dd65be71",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Nevinyrral's Disk",
+      "manaCost": "{4}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This artifact enters tapped.\n{1}, {T}: Destroy all artifacts, creatures, and enchantments."
+    }
+  ],
+  "oracleText": "This artifact enters tapped.\n{1}, {T}: Destroy all artifacts, creatures, and enchantments.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

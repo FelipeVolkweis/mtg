@@ -1,0 +1,40 @@
+{
+  "id": "cb97da84-1d13-4795-b68a-2bf111a50067",
+  "canonicalName": "Herald of Faith",
+  "defaultPrintingId": "2e1705da-dc35-4bcb-82d4-b77712e79af3",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Herald of Faith",
+      "manaCost": "{3}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever this creature attacks, you gain 2 life.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever this creature attacks, you gain 2 life.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

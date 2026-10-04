@@ -1,0 +1,40 @@
+{
+  "id": "b3f2265b-dd65-4b74-8b74-35ee0b147617",
+  "canonicalName": "Managorger Hydra",
+  "defaultPrintingId": "50d4b86b-0868-4c25-a52d-8c1d40698682",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Managorger Hydra",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Hydra",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Hydra"
+      ],
+      "keywords": [
+        "Trample"
+      ],
+      "rulesText": "Trample\nWhenever a player casts a spell, put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Trample\nWhenever a player casts a spell, put a +1/+1 counter on this creature.",
+  "keywords": [
+    "Trample"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

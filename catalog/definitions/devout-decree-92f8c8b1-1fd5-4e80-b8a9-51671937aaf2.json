@@ -1,0 +1,36 @@
+{
+  "id": "92f8c8b1-1fd5-4e80-b8a9-51671937aaf2",
+  "canonicalName": "Devout Decree",
+  "defaultPrintingId": "d174cb01-b1cf-444c-a893-cc61ddf88b8c",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Devout Decree",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Scry"
+      ],
+      "rulesText": "Exile target creature or planeswalker that's black or red. Scry 1. (Look at the top card of your library. You may put that card on the bottom.)"
+    }
+  ],
+  "oracleText": "Exile target creature or planeswalker that's black or red. Scry 1. (Look at the top card of your library. You may put that card on the bottom.)",
+  "keywords": [
+    "Scry"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

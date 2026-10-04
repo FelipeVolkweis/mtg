@@ -1,0 +1,28 @@
+{
+  "id": "9a02a9a7-39d9-4763-85d3-747a0540b60b",
+  "canonicalName": "Gilded Lotus",
+  "defaultPrintingId": "aa5e88f1-0ddf-45d7-bbd0-baa88d121867",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Gilded Lotus",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add three mana of any one color."
+    }
+  ],
+  "oracleText": "{T}: Add three mana of any one color.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

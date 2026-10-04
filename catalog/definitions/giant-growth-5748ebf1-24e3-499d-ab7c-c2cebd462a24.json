@@ -1,0 +1,32 @@
+{
+  "id": "5748ebf1-24e3-499d-ab7c-c2cebd462a24",
+  "canonicalName": "Giant Growth",
+  "defaultPrintingId": "bd0bf74e-14c1-4428-88d8-2181a080b5d0",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Giant Growth",
+      "manaCost": "{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target creature gets +3/+3 until end of turn."
+    }
+  ],
+  "oracleText": "Target creature gets +3/+3 until end of turn.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

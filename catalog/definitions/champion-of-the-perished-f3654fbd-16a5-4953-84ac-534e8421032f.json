@@ -1,0 +1,36 @@
+{
+  "id": "f3654fbd-16a5-4953-84ac-534e8421032f",
+  "canonicalName": "Champion of the Perished",
+  "defaultPrintingId": "d3bfa5bc-bcb9-4649-96b8-3cded84a25a2",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Champion of the Perished",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever another Zombie you control enters, put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Whenever another Zombie you control enters, put a +1/+1 counter on this creature.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "a7e97fa9-4b72-4548-b854-5be5f18a6f1a",
+  "canonicalName": "Disenchant",
+  "defaultPrintingId": "7ac43e16-8b14-46f2-877a-600ea918766b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Disenchant",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target artifact or enchantment."
+    }
+  ],
+  "oracleText": "Destroy target artifact or enchantment.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

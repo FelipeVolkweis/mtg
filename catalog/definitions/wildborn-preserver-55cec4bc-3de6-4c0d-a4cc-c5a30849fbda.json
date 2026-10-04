@@ -1,0 +1,43 @@
+{
+  "id": "55cec4bc-3de6-4c0d-a4cc-c5a30849fbda",
+  "canonicalName": "Wildborn Preserver",
+  "defaultPrintingId": "8a249d1c-a5fe-48e5-bd9b-e50d8eea391b",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Wildborn Preserver",
+      "manaCost": "{1}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Archer",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Archer"
+      ],
+      "keywords": [
+        "Reach",
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nReach (This creature can block creatures with flying.)\nWhenever another non-Human creature you control enters, you may pay {X}. When you do, put X +1/+1 counters on this creature.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nReach (This creature can block creatures with flying.)\nWhenever another non-Human creature you control enters, you may pay {X}. When you do, put X +1/+1 counters on this creature.",
+  "keywords": [
+    "Reach",
+    "Flash"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

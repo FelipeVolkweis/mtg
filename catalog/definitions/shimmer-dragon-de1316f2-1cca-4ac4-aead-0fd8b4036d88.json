@@ -1,0 +1,40 @@
+{
+  "id": "de1316f2-1cca-4ac4-aead-0fd8b4036d88",
+  "canonicalName": "Shimmer Dragon",
+  "defaultPrintingId": "826201fc-f7cb-43b5-988a-6b668d19fc2f",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Shimmer Dragon",
+      "manaCost": "{4}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nAs long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)\nTap two untapped artifacts you control: Draw a card.",
+      "power": "5",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flying\nAs long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)\nTap two untapped artifacts you control: Draw a card.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

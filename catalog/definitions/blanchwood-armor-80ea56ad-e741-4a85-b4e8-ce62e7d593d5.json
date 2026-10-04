@@ -1,0 +1,38 @@
+{
+  "id": "80ea56ad-e741-4a85-b4e8-ce62e7d593d5",
+  "canonicalName": "Blanchwood Armor",
+  "defaultPrintingId": "1fd7ec1a-dafa-42ca-bc25-f6848fb03f60",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Blanchwood Armor",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Enchantment — Aura",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Aura"
+      ],
+      "keywords": [
+        "Enchant"
+      ],
+      "rulesText": "Enchant creature\nEnchanted creature gets +1/+1 for each Forest you control."
+    }
+  ],
+  "oracleText": "Enchant creature\nEnchanted creature gets +1/+1 for each Forest you control.",
+  "keywords": [
+    "Enchant"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

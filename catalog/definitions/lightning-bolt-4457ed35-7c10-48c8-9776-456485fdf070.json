@@ -1,0 +1,32 @@
+{
+  "id": "4457ed35-7c10-48c8-9776-456485fdf070",
+  "canonicalName": "Lightning Bolt",
+  "defaultPrintingId": "0852f9f3-d7ef-4d31-93e3-93bc7c5a4ec9",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Lightning Bolt",
+      "manaCost": "{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Lightning Bolt deals 3 damage to any target."
+    }
+  ],
+  "oracleText": "Lightning Bolt deals 3 damage to any target.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

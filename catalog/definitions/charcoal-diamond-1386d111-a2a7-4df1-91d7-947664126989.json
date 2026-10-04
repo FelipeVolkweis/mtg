@@ -1,0 +1,30 @@
+{
+  "id": "1386d111-a2a7-4df1-91d7-947664126989",
+  "canonicalName": "Charcoal Diamond",
+  "defaultPrintingId": "970593fe-747f-48d3-a964-e18a1fa2cf0f",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Charcoal Diamond",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This artifact enters tapped.\n{T}: Add {B}."
+    }
+  ],
+  "oracleText": "This artifact enters tapped.\n{T}: Add {B}.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

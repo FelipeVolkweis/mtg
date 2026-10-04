@@ -1,0 +1,41 @@
+{
+  "id": "03ebc100-68ac-4d53-adc2-d537212f7d31",
+  "canonicalName": "Venom Connoisseur",
+  "defaultPrintingId": "90f8d876-3697-4359-9f2b-6053682b556c",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Venom Connoisseur",
+      "manaCost": "{1}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Human Druid",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Druid"
+      ],
+      "keywords": [
+        "Alliance"
+      ],
+      "rulesText": "Alliance — Whenever another creature you control enters, this creature gains deathtouch until end of turn. If this is the second time this ability has resolved this turn, all creatures you control gain deathtouch until end of turn.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Alliance — Whenever another creature you control enters, this creature gains deathtouch until end of turn. If this is the second time this ability has resolved this turn, all creatures you control gain deathtouch until end of turn.",
+  "keywords": [
+    "Alliance"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

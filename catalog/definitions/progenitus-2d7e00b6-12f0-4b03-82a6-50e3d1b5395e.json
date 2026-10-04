@@ -1,0 +1,51 @@
+{
+  "id": "2d7e00b6-12f0-4b03-82a6-50e3d1b5395e",
+  "canonicalName": "Progenitus",
+  "defaultPrintingId": "e77fbc87-d78e-4602-baa0-da9b0d464dfb",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "G",
+    "R",
+    "U",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Progenitus",
+      "manaCost": "{W}{W}{U}{U}{B}{B}{R}{R}{G}{G}",
+      "colors": [
+        "B",
+        "G",
+        "R",
+        "U",
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Hydra Avatar",
+      "manaValue": 10,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Hydra",
+        "Avatar"
+      ],
+      "keywords": [
+        "Protection"
+      ],
+      "rulesText": "Protection from everything\nIf Progenitus would be put into a graveyard from anywhere, reveal Progenitus and shuffle it into its owner's library instead.",
+      "power": "10",
+      "toughness": "10"
+    }
+  ],
+  "oracleText": "Protection from everything\nIf Progenitus would be put into a graveyard from anywhere, reveal Progenitus and shuffle it into its owner's library instead.",
+  "keywords": [
+    "Protection"
+  ],
+  "manaValue": 10,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

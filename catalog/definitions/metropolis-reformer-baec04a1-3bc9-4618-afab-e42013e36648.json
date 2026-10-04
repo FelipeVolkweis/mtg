@@ -1,0 +1,43 @@
+{
+  "id": "baec04a1-3bc9-4618-afab-e42013e36648",
+  "canonicalName": "Metropolis Reformer",
+  "defaultPrintingId": "2ea3aa21-0999-4178-928a-5216b66b1a24",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Metropolis Reformer",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel Cleric",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel",
+        "Cleric"
+      ],
+      "keywords": [
+        "Flying",
+        "Vigilance"
+      ],
+      "rulesText": "Flying, vigilance\nYou have hexproof.\nWhenever this creature is dealt damage, you gain that much life.",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying, vigilance\nYou have hexproof.\nWhenever this creature is dealt damage, you gain that much life.",
+  "keywords": [
+    "Flying",
+    "Vigilance"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

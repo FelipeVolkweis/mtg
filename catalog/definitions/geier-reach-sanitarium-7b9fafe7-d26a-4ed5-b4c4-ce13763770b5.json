@@ -1,0 +1,30 @@
+{
+  "id": "7b9fafe7-d26a-4ed5-b4c4-ce13763770b5",
+  "canonicalName": "Geier Reach Sanitarium",
+  "defaultPrintingId": "6f5b3931-580a-4471-9b5d-25bcf5803a73",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Geier Reach Sanitarium",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Legendary Land",
+      "manaValue": 0,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{2}, {T}: Each player draws a card, then discards a card."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{2}, {T}: Each player draws a card, then discards a card.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

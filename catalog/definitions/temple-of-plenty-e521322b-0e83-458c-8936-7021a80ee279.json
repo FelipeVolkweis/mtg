@@ -1,0 +1,35 @@
+{
+  "id": "e521322b-0e83-458c-8936-7021a80ee279",
+  "canonicalName": "Temple of Plenty",
+  "defaultPrintingId": "69762774-c8e1-42de-90b3-5a4d50f5d84d",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Temple of Plenty",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Scry"
+      ],
+      "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {W}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {W}.",
+  "keywords": [
+    "Scry"
+  ],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

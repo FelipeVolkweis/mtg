@@ -1,0 +1,32 @@
+{
+  "id": "1cb0610b-a731-42c2-b93f-0a29f63cebf4",
+  "canonicalName": "Thrill of Possibility",
+  "defaultPrintingId": "780cc325-cd53-49a6-bfb5-edaf1a01ea7d",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Thrill of Possibility",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "As an additional cost to cast this spell, discard a card.\nDraw two cards."
+    }
+  ],
+  "oracleText": "As an additional cost to cast this spell, discard a card.\nDraw two cards.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

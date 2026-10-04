@@ -1,0 +1,32 @@
+{
+  "id": "2625fa9c-638c-46d3-966b-1166f440186f",
+  "canonicalName": "Goblin Firebomb",
+  "defaultPrintingId": "55ab3f99-9541-4100-818c-5d9e916791e4",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Goblin Firebomb",
+      "manaCost": "{1}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash\n{7}, {T}, Sacrifice this artifact: Destroy target permanent."
+    }
+  ],
+  "oracleText": "Flash\n{7}, {T}, Sacrifice this artifact: Destroy target permanent.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

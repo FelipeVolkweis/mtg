@@ -1,0 +1,43 @@
+{
+  "id": "a8fdbcdf-479d-4582-9ad5-9fbd4c740c29",
+  "canonicalName": "Spectral Sailor",
+  "defaultPrintingId": "5ef30b6c-0806-4bf6-9a84-c2aea8d84cf1",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Spectral Sailor",
+      "manaCost": "{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Spirit Pirate",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Spirit",
+        "Pirate"
+      ],
+      "keywords": [
+        "Flying",
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\n{3}{U}: Draw a card.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\n{3}{U}: Draw a card.",
+  "keywords": [
+    "Flying",
+    "Flash"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

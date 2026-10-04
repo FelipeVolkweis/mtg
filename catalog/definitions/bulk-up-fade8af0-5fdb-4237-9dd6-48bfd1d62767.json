@@ -1,0 +1,38 @@
+{
+  "id": "fade8af0-5fdb-4237-9dd6-48bfd1d62767",
+  "canonicalName": "Bulk Up",
+  "defaultPrintingId": "977dcc50-da10-4281-b522-9240c1204f5d",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Bulk Up",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flashback",
+        "Double"
+      ],
+      "rulesText": "Double target creature's power until end of turn.\nFlashback {4}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+    }
+  ],
+  "oracleText": "Double target creature's power until end of turn.\nFlashback {4}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+  "keywords": [
+    "Flashback",
+    "Double"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

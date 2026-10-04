@@ -1,0 +1,32 @@
+{
+  "id": "58916455-844c-4d97-908f-8205bdc117c0",
+  "canonicalName": "Exorcise",
+  "defaultPrintingId": "be5b4b1d-fd4e-4783-9393-85e08d9ae0df",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Exorcise",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Exile target artifact, enchantment, or creature with power 4 or greater."
+    }
+  ],
+  "oracleText": "Exile target artifact, enchantment, or creature with power 4 or greater.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

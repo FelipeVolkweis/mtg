@@ -1,0 +1,28 @@
+{
+  "id": "6ad8011d-3471-4369-9d68-b264cc027487",
+  "canonicalName": "Sol Ring",
+  "defaultPrintingId": "4f152dd9-2b35-45b2-90fe-8c71d0634226",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Sol Ring",
+      "manaCost": "{1}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}{C}."
+    }
+  ],
+  "oracleText": "{T}: Add {C}{C}.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

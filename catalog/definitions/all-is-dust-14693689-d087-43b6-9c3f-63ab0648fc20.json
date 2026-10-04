@@ -1,0 +1,31 @@
+{
+  "id": "14693689-d087-43b6-9c3f-63ab0648fc20",
+  "canonicalName": "All Is Dust",
+  "defaultPrintingId": "8764ca43-bbbb-43b5-895b-c7049cc76580",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "All Is Dust",
+      "manaCost": "{7}",
+      "colors": [],
+      "typeLine": "Kindred Sorcery — Eldrazi",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Kindred",
+        "Sorcery"
+      ],
+      "subtypes": [
+        "Eldrazi"
+      ],
+      "keywords": [],
+      "rulesText": "Each player sacrifices all permanents they control that are one or more colors."
+    }
+  ],
+  "oracleText": "Each player sacrifices all permanents they control that are one or more colors.",
+  "keywords": [],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

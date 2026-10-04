@@ -1,0 +1,32 @@
+{
+  "id": "fb694e7e-f66e-4958-b6ed-aa74bc9ac43e",
+  "canonicalName": "Sure Strike",
+  "defaultPrintingId": "5de6a1e4-5c66-43e6-9f2a-2635bdab03f6",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Sure Strike",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target creature gets +3/+0 and gains first strike until end of turn. (It deals combat damage before creatures without first strike.)"
+    }
+  ],
+  "oracleText": "Target creature gets +3/+0 and gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

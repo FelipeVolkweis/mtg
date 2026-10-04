@@ -1,0 +1,36 @@
+{
+  "id": "16f75a65-d067-4f79-81b9-833c373cf4d2",
+  "canonicalName": "Cryptbreaker",
+  "defaultPrintingId": "c9d70cc4-379d-41db-8eb0-10643d2aafd1",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Cryptbreaker",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "{1}{B}, {T}, Discard a card: Create a 2/2 black Zombie creature token.\nTap three untapped Zombies you control: You draw a card and lose 1 life.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "{1}{B}, {T}, Discard a card: Create a 2/2 black Zombie creature token.\nTap three untapped Zombies you control: You draw a card and lose 1 life.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "5e316864-d55c-496f-8f46-773567896864",
+  "canonicalName": "Broken Wings",
+  "defaultPrintingId": "61f9cbeb-cc9c-4562-be65-8a77053faefe",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Broken Wings",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target artifact, enchantment, or creature with flying."
+    }
+  ],
+  "oracleText": "Destroy target artifact, enchantment, or creature with flying.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "7b0767b8-b504-456e-93bd-218502f73b3d",
+  "canonicalName": "Palladium Myr",
+  "defaultPrintingId": "3679933e-6880-41e3-b9e0-43d002722d4e",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Palladium Myr",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Myr",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Myr"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}{C}.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{T}: Add {C}{C}.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

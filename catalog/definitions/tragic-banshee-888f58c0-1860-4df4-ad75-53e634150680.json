@@ -1,0 +1,40 @@
+{
+  "id": "888f58c0-1860-4df4-ad75-53e634150680",
+  "canonicalName": "Tragic Banshee",
+  "defaultPrintingId": "30df3e33-2f17-4067-99f1-5db6b0f41fd4",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Tragic Banshee",
+      "manaCost": "{4}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Spirit",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Spirit"
+      ],
+      "keywords": [
+        "Morbid"
+      ],
+      "rulesText": "Morbid — When this creature enters, target creature an opponent controls gets -1/-1 until end of turn. If a creature died this turn, that creature gets -13/-13 until end of turn instead.",
+      "power": "5",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Morbid — When this creature enters, target creature an opponent controls gets -1/-1 until end of turn. If a creature died this turn, that creature gets -13/-13 until end of turn instead.",
+  "keywords": [
+    "Morbid"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

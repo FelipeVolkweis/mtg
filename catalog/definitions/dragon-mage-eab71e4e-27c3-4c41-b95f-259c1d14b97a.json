@@ -1,0 +1,41 @@
+{
+  "id": "eab71e4e-27c3-4c41-b95f-259c1d14b97a",
+  "canonicalName": "Dragon Mage",
+  "defaultPrintingId": "5525cfde-a92b-4fb5-8f15-a05efebecd3d",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Dragon Mage",
+      "manaCost": "{5}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon Wizard",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon",
+        "Wizard"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever this creature deals combat damage to a player, each player discards their hand, then draws seven cards.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\nWhenever this creature deals combat damage to a player, each player discards their hand, then draws seven cards.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

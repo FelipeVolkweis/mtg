@@ -1,0 +1,44 @@
+{
+  "id": "dac33359-0317-4b11-9078-fccfd2321e53",
+  "canonicalName": "Memory Guardian",
+  "defaultPrintingId": "ce1aa5e5-a3b7-4a9d-9afd-b7c52aa2364c",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Memory Guardian",
+      "manaCost": "{4}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Robot Artificer",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Robot",
+        "Artificer"
+      ],
+      "keywords": [
+        "Flying",
+        "Affinity"
+      ],
+      "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying",
+      "power": "3",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying",
+  "keywords": [
+    "Flying",
+    "Affinity"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

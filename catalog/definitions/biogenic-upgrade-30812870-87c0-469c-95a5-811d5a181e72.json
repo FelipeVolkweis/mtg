@@ -1,0 +1,36 @@
+{
+  "id": "30812870-87c0-469c-95a5-811d5a181e72",
+  "canonicalName": "Biogenic Upgrade",
+  "defaultPrintingId": "ef20af5e-1ffe-426a-805a-ca4a6a122260",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Biogenic Upgrade",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Double"
+      ],
+      "rulesText": "Distribute three +1/+1 counters among one, two, or three target creatures, then double the number of +1/+1 counters on each of those creatures."
+    }
+  ],
+  "oracleText": "Distribute three +1/+1 counters among one, two, or three target creatures, then double the number of +1/+1 counters on each of those creatures.",
+  "keywords": [
+    "Double"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

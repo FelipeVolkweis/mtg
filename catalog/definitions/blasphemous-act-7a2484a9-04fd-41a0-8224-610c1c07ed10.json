@@ -1,0 +1,32 @@
+{
+  "id": "7a2484a9-04fd-41a0-8224-610c1c07ed10",
+  "canonicalName": "Blasphemous Act",
+  "defaultPrintingId": "40ca082c-22e2-4edd-b4c2-a07032d4e360",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Blasphemous Act",
+      "manaCost": "{8}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 9,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature."
+    }
+  ],
+  "oracleText": "This spell costs {1} less to cast for each creature on the battlefield.\nBlasphemous Act deals 13 damage to each creature.",
+  "keywords": [],
+  "manaValue": 9,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "1b26a54f-6c27-4940-b77e-2a66175c5eff",
+  "canonicalName": "Grasp of Fate",
+  "defaultPrintingId": "808b7b00-7072-4587-8383-2bf64a9bb38b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Grasp of Fate",
+      "manaCost": "{1}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "When this enchantment enters, for each opponent, exile up to one target nonland permanent that player controls until this enchantment leaves the battlefield. (Those permanents return under their owners' control.)"
+    }
+  ],
+  "oracleText": "When this enchantment enters, for each opponent, exile up to one target nonland permanent that player controls until this enchantment leaves the battlefield. (Those permanents return under their owners' control.)",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

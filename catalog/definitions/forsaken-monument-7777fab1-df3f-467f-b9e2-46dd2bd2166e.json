@@ -1,0 +1,30 @@
+{
+  "id": "7777fab1-df3f-467f-b9e2-46dd2bd2166e",
+  "canonicalName": "Forsaken Monument",
+  "defaultPrintingId": "5f9e232e-39d0-4890-b935-98a1c14ef344",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Forsaken Monument",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Legendary Artifact",
+      "manaValue": 5,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Colorless creatures you control get +2/+2.\nWhenever you tap a permanent for {C}, add an additional {C}.\nWhenever you cast a colorless spell, you gain 2 life."
+    }
+  ],
+  "oracleText": "Colorless creatures you control get +2/+2.\nWhenever you tap a permanent for {C}, add an additional {C}.\nWhenever you cast a colorless spell, you gain 2 life.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

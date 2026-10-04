@@ -1,0 +1,40 @@
+{
+  "id": "635fe908-6f58-4c9e-ac55-0775a7c6f278",
+  "canonicalName": "Angel of Vitality",
+  "defaultPrintingId": "dbb38f33-9f51-48cb-9f69-9a62f2c4b907",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Angel of Vitality",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nIf you would gain life, you gain that much life plus 1 instead.\nThis creature gets +2/+2 as long as you have 25 or more life.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flying\nIf you would gain life, you gain that much life plus 1 instead.\nThis creature gets +2/+2 as long as you have 25 or more life.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

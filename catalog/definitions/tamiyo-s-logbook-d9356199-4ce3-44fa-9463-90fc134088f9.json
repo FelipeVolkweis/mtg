@@ -1,0 +1,34 @@
+{
+  "id": "d9356199-4ce3-44fa-9463-90fc134088f9",
+  "canonicalName": "Tamiyo's Logbook",
+  "defaultPrintingId": "e5cef092-de95-4cc6-9426-908ca0b44c95",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Tamiyo's Logbook",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact — Book",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Book"
+      ],
+      "keywords": [],
+      "rulesText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control."
+    }
+  ],
+  "oracleText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

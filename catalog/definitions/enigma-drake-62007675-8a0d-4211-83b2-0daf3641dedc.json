@@ -1,0 +1,42 @@
+{
+  "id": "62007675-8a0d-4211-83b2-0daf3641dedc",
+  "canonicalName": "Enigma Drake",
+  "defaultPrintingId": "13ce1338-5a46-4d96-a991-d5fa8d4330ae",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Enigma Drake",
+      "manaCost": "{1}{U}{R}",
+      "colors": [
+        "R",
+        "U"
+      ],
+      "typeLine": "Creature — Drake",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Drake"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nEnigma Drake's power is equal to the number of instant and sorcery cards in your graveyard.",
+      "power": "*",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nEnigma Drake's power is equal to the number of instant and sorcery cards in your graveyard.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

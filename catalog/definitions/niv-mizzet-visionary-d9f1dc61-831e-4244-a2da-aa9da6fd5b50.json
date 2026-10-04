@@ -1,0 +1,45 @@
+{
+  "id": "d9f1dc61-831e-4244-a2da-aa9da6fd5b50",
+  "canonicalName": "Niv-Mizzet, Visionary",
+  "defaultPrintingId": "7a69a618-d588-4745-8ede-0ff0a9f356f1",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Niv-Mizzet, Visionary",
+      "manaCost": "{4}{U}{R}",
+      "colors": [
+        "R",
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Dragon Wizard",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon",
+        "Wizard"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nYou have no maximum hand size.\nWhenever a source you control deals noncombat damage to an opponent, you draw that many cards.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\nYou have no maximum hand size.\nWhenever a source you control deals noncombat damage to an opponent, you draw that many cards.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

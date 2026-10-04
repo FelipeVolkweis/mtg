@@ -1,0 +1,43 @@
+{
+  "id": "5951f734-05d3-41ad-94ee-19bd310077d2",
+  "canonicalName": "Skyship Buccaneer",
+  "defaultPrintingId": "62958fc3-55dc-4b97-a070-490d6ed27820",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Skyship Buccaneer",
+      "manaCost": "{3}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Human Pirate",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Pirate"
+      ],
+      "keywords": [
+        "Flying",
+        "Raid"
+      ],
+      "rulesText": "Flying\nRaid — When this creature enters, if you attacked this turn, draw a card.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nRaid — When this creature enters, if you attacked this turn, draw a card.",
+  "keywords": [
+    "Flying",
+    "Raid"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

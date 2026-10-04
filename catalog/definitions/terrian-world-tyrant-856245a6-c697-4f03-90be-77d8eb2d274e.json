@@ -1,0 +1,39 @@
+{
+  "id": "856245a6-c697-4f03-90be-77d8eb2d274e",
+  "canonicalName": "Terrian, World Tyrant",
+  "defaultPrintingId": "d2066390-7947-425c-ab6e-933b56f6a47a",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Terrian, World Tyrant",
+      "manaCost": "{2}{G}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Creature — Dinosaur Ooze",
+      "manaValue": 5,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dinosaur",
+        "Ooze"
+      ],
+      "keywords": [],
+      "rulesText": "",
+      "power": "9",
+      "toughness": "7"
+    }
+  ],
+  "oracleText": "",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

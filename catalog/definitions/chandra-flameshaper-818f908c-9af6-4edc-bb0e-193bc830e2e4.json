@@ -1,0 +1,37 @@
+{
+  "id": "818f908c-9af6-4edc-bb0e-193bc830e2e4",
+  "canonicalName": "Chandra, Flameshaper",
+  "defaultPrintingId": "a22d21ec-0fb3-4574-a803-6442ec13167e",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Chandra, Flameshaper",
+      "manaCost": "{5}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Planeswalker — Chandra",
+      "manaValue": 7,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Planeswalker"
+      ],
+      "subtypes": [
+        "Chandra"
+      ],
+      "keywords": [],
+      "rulesText": "+2: Add {R}{R}{R}. Exile the top three cards of your library. Choose one. You may play that card this turn.\n+1: Create a token that's a copy of target creature you control, except it has haste and \"At the beginning of the end step, sacrifice this token.\"\n−4: Chandra deals 8 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+      "loyalty": "6"
+    }
+  ],
+  "oracleText": "+2: Add {R}{R}{R}. Exile the top three cards of your library. Choose one. You may play that card this turn.\n+1: Create a token that's a copy of target creature you control, except it has haste and \"At the beginning of the end step, sacrifice this token.\"\n−4: Chandra deals 8 damage divided as you choose among any number of target creatures and/or planeswalkers.",
+  "keywords": [],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

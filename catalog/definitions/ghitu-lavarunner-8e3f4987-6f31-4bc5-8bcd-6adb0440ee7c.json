@@ -1,0 +1,37 @@
+{
+  "id": "8e3f4987-6f31-4bc5-8bcd-6adb0440ee7c",
+  "canonicalName": "Ghitu Lavarunner",
+  "defaultPrintingId": "8940d76d-c09f-4d72-a037-439c70ee8d9d",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Ghitu Lavarunner",
+      "manaCost": "{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Human Wizard",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Wizard"
+      ],
+      "keywords": [],
+      "rulesText": "As long as there are two or more instant and/or sorcery cards in your graveyard, this creature gets +1/+0 and has haste. (It can attack and {T} as soon as it comes under your control.)",
+      "power": "1",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "As long as there are two or more instant and/or sorcery cards in your graveyard, this creature gets +1/+0 and has haste. (It can attack and {T} as soon as it comes under your control.)",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

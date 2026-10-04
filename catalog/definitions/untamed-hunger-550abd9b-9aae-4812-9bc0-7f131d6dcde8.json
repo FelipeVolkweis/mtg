@@ -1,0 +1,38 @@
+{
+  "id": "550abd9b-9aae-4812-9bc0-7f131d6dcde8",
+  "canonicalName": "Untamed Hunger",
+  "defaultPrintingId": "05937911-897b-4638-9536-2e463884f453",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Untamed Hunger",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Enchantment — Aura",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Aura"
+      ],
+      "keywords": [
+        "Enchant"
+      ],
+      "rulesText": "Enchant creature\nEnchanted creature gets +2/+1 and has menace. (It can't be blocked except by two or more creatures.)"
+    }
+  ],
+  "oracleText": "Enchant creature\nEnchanted creature gets +2/+1 and has menace. (It can't be blocked except by two or more creatures.)",
+  "keywords": [
+    "Enchant"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

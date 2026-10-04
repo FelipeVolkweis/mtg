@@ -1,0 +1,32 @@
+{
+  "id": "a69a24d0-ca58-4a44-8af1-a3bd1608d2f9",
+  "canonicalName": "Raise the Past",
+  "defaultPrintingId": "6c6be129-56da-4fe7-a6bd-6a1d402c09e1",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Raise the Past",
+      "manaCost": "{2}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Return all creature cards with mana value 2 or less from your graveyard to the battlefield."
+    }
+  ],
+  "oracleText": "Return all creature cards with mana value 2 or less from your graveyard to the battlefield.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

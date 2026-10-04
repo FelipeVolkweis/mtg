@@ -1,0 +1,33 @@
+{
+  "id": "fa2da325-6859-45bb-b185-35526b01bcc1",
+  "canonicalName": "Golgari Guildgate",
+  "defaultPrintingId": "92d4646c-a375-4835-aa58-8bb77d1a5abf",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Golgari Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {B} or {G}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {B} or {G}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

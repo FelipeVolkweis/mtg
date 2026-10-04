@@ -1,0 +1,42 @@
+{
+  "id": "c744b5f4-fbcf-48b8-9d60-5e9c6ac297e0",
+  "canonicalName": "Trygon Predator",
+  "defaultPrintingId": "cdb88a22-8086-4bf7-89e8-cce929440dd8",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Trygon Predator",
+      "manaCost": "{1}{G}{U}",
+      "colors": [
+        "G",
+        "U"
+      ],
+      "typeLine": "Creature — Beast",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Beast"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever this creature deals combat damage to a player, you may destroy target artifact or enchantment that player controls.",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever this creature deals combat damage to a player, you may destroy target artifact or enchantment that player controls.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

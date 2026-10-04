@@ -1,0 +1,36 @@
+{
+  "id": "ad01df89-29fe-44c7-a133-91425f8ff09c",
+  "canonicalName": "Fake Your Own Death",
+  "defaultPrintingId": "693635a6-df50-44c5-9598-0c79b45d4df4",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Fake Your Own Death",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Treasure"
+      ],
+      "rulesText": "Until end of turn, target creature gets +2/+0 and gains \"When this creature dies, return it to the battlefield tapped under its owner's control and you create a Treasure token.\" (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+    }
+  ],
+  "oracleText": "Until end of turn, target creature gets +2/+0 and gains \"When this creature dies, return it to the battlefield tapped under its owner's control and you create a Treasure token.\" (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+  "keywords": [
+    "Treasure"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

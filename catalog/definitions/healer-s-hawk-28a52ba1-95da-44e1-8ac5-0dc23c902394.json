@@ -1,0 +1,42 @@
+{
+  "id": "28a52ba1-95da-44e1-8ac5-0dc23c902394",
+  "canonicalName": "Healer's Hawk",
+  "defaultPrintingId": "069cfaa5-bba4-4503-b54e-b98fa9f0a0fc",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Healer's Hawk",
+      "manaCost": "{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Bird",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Bird"
+      ],
+      "keywords": [
+        "Flying",
+        "Lifelink"
+      ],
+      "rulesText": "Flying\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flying\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+  "keywords": [
+    "Flying",
+    "Lifelink"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

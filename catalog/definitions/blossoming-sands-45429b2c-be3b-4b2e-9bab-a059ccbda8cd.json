@@ -1,0 +1,31 @@
+{
+  "id": "45429b2c-be3b-4b2e-9bab-a059ccbda8cd",
+  "canonicalName": "Blossoming Sands",
+  "defaultPrintingId": "37676ed8-588c-4bca-8065-874b74d84807",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Blossoming Sands",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {W}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {W}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

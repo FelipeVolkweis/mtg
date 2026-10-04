@@ -1,0 +1,42 @@
+{
+  "id": "f6abdf34-cfdc-465c-b067-cdebb659406e",
+  "canonicalName": "Elfsworn Giant",
+  "defaultPrintingId": "5128a5be-ffa6-4998-8488-872d80b24cb2",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Elfsworn Giant",
+      "manaCost": "{3}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Giant",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Giant"
+      ],
+      "keywords": [
+        "Reach",
+        "Landfall"
+      ],
+      "rulesText": "Reach (This creature can block creatures with flying.)\nLandfall — Whenever a land you control enters, create a 1/1 green Elf Warrior creature token.",
+      "power": "5",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Reach (This creature can block creatures with flying.)\nLandfall — Whenever a land you control enters, create a 1/1 green Elf Warrior creature token.",
+  "keywords": [
+    "Reach",
+    "Landfall"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

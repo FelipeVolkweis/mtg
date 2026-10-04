@@ -1,0 +1,39 @@
+{
+  "id": "dfec65a0-6fb6-463d-aa62-e84a427db217",
+  "canonicalName": "Arahbo, the First Fang",
+  "defaultPrintingId": "524a5d93-26ed-436d-a437-dc9460acce98",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Arahbo, the First Fang",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Cat Avatar",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Avatar"
+      ],
+      "keywords": [],
+      "rulesText": "Other Cats you control get +1/+1.\nWhenever Arahbo or another nontoken Cat you control enters, create a 1/1 white Cat creature token.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Other Cats you control get +1/+1.\nWhenever Arahbo or another nontoken Cat you control enters, create a 1/1 white Cat creature token.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

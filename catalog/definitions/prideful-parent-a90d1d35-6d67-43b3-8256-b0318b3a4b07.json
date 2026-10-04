@@ -1,0 +1,40 @@
+{
+  "id": "a90d1d35-6d67-43b3-8256-b0318b3a4b07",
+  "canonicalName": "Prideful Parent",
+  "defaultPrintingId": "b742117a-8a72-43b9-b05d-274829d138a2",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Prideful Parent",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Cat",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat"
+      ],
+      "keywords": [
+        "Vigilance"
+      ],
+      "rulesText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhen this creature enters, create a 1/1 white Cat creature token.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhen this creature enters, create a 1/1 white Cat creature token.",
+  "keywords": [
+    "Vigilance"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

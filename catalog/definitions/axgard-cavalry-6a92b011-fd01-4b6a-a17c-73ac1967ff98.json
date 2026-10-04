@@ -1,0 +1,37 @@
+{
+  "id": "6a92b011-fd01-4b6a-a17c-73ac1967ff98",
+  "canonicalName": "Axgard Cavalry",
+  "defaultPrintingId": "fe3cc41a-adae-4c9b-b4d3-03f3ca862fed",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Axgard Cavalry",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dwarf Berserker",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dwarf",
+        "Berserker"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Target creature gains haste until end of turn. (It can attack and {T} this turn.)",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{T}: Target creature gains haste until end of turn. (It can attack and {T} this turn.)",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

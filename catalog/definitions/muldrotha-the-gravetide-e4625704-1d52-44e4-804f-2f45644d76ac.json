@@ -1,0 +1,43 @@
+{
+  "id": "e4625704-1d52-44e4-804f-2f45644d76ac",
+  "canonicalName": "Muldrotha, the Gravetide",
+  "defaultPrintingId": "51710b19-68e3-4853-901f-e618bde61161",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "G",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Muldrotha, the Gravetide",
+      "manaCost": "{3}{B}{G}{U}",
+      "colors": [
+        "B",
+        "G",
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Elemental Avatar",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elemental",
+        "Avatar"
+      ],
+      "keywords": [],
+      "rulesText": "During each of your turns, you may play a land and cast a permanent spell of each permanent type from your graveyard. (If a card has multiple permanent types, choose one as you play it.)",
+      "power": "6",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "During each of your turns, you may play a land and cast a permanent spell of each permanent type from your graveyard. (If a card has multiple permanent types, choose one as you play it.)",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

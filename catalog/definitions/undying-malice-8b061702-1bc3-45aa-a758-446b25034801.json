@@ -1,0 +1,32 @@
+{
+  "id": "8b061702-1bc3-45aa-a758-446b25034801",
+  "canonicalName": "Undying Malice",
+  "defaultPrintingId": "97b3cf11-e352-4ee1-8c03-13898f576ef9",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Undying Malice",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Until end of turn, target creature gains \"When this creature dies, return it to the battlefield tapped under its owner's control with a +1/+1 counter on it.\""
+    }
+  ],
+  "oracleText": "Until end of turn, target creature gains \"When this creature dies, return it to the battlefield tapped under its owner's control with a +1/+1 counter on it.\"",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

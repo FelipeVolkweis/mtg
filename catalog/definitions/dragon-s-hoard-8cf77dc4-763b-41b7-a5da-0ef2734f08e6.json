@@ -1,0 +1,28 @@
+{
+  "id": "8cf77dc4-763b-41b7-a5da-0ef2734f08e6",
+  "canonicalName": "Dragon's Hoard",
+  "defaultPrintingId": "851de21b-7eec-4e6c-91c0-0b81533533a9",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Dragon's Hoard",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Whenever a Dragon you control enters, put a gold counter on this artifact.\n{T}, Remove a gold counter from this artifact: Draw a card.\n{T}: Add one mana of any color."
+    }
+  ],
+  "oracleText": "Whenever a Dragon you control enters, put a gold counter on this artifact.\n{T}, Remove a gold counter from this artifact: Draw a card.\n{T}: Add one mana of any color.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

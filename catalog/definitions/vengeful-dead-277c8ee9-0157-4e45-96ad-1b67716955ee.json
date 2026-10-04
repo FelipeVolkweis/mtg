@@ -1,0 +1,36 @@
+{
+  "id": "277c8ee9-0157-4e45-96ad-1b67716955ee",
+  "canonicalName": "Vengeful Dead",
+  "defaultPrintingId": "81197564-19bb-423d-87d4-3d83deac85a2",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Vengeful Dead",
+      "manaCost": "{3}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever this creature or another Zombie dies, each opponent loses 1 life.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Whenever this creature or another Zombie dies, each opponent loses 1 life.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

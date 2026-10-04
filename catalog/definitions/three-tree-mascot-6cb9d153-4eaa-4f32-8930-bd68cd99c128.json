@@ -1,0 +1,37 @@
+{
+  "id": "6cb9d153-4eaa-4f32-8930-bd68cd99c128",
+  "canonicalName": "Three Tree Mascot",
+  "defaultPrintingId": "40b8bf3a-1cb5-4ce2-ac25-9410f17130de",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Three Tree Mascot",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Shapeshifter",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Shapeshifter"
+      ],
+      "keywords": [
+        "Changeling"
+      ],
+      "rulesText": "Changeling (This card is every creature type.)\n{1}: Add one mana of any color. Activate only once each turn.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Changeling (This card is every creature type.)\n{1}: Add one mana of any color. Activate only once each turn.",
+  "keywords": [
+    "Changeling"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

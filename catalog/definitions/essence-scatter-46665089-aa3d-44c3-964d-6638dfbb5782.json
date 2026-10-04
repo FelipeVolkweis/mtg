@@ -1,0 +1,32 @@
+{
+  "id": "46665089-aa3d-44c3-964d-6638dfbb5782",
+  "canonicalName": "Essence Scatter",
+  "defaultPrintingId": "dd05c850-f91e-4ffb-b4cc-8418d49dad90",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Essence Scatter",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Counter target creature spell."
+    }
+  ],
+  "oracleText": "Counter target creature spell.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

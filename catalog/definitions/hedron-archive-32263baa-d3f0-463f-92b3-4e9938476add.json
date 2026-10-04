@@ -1,0 +1,28 @@
+{
+  "id": "32263baa-d3f0-463f-92b3-4e9938476add",
+  "canonicalName": "Hedron Archive",
+  "defaultPrintingId": "068a365c-157c-4af4-9b17-4854d696c19d",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Hedron Archive",
+      "manaCost": "{4}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}{C}.\n{2}, {T}, Sacrifice this artifact: Draw two cards."
+    }
+  ],
+  "oracleText": "{T}: Add {C}{C}.\n{2}, {T}, Sacrifice this artifact: Draw two cards.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

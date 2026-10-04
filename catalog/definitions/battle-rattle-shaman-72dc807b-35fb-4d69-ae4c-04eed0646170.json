@@ -1,0 +1,37 @@
+{
+  "id": "72dc807b-35fb-4d69-ae4c-04eed0646170",
+  "canonicalName": "Battle-Rattle Shaman",
+  "defaultPrintingId": "fee05f7e-d4da-4a72-8140-d505eecbdd32",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Battle-Rattle Shaman",
+      "manaCost": "{3}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Goblin Shaman",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Goblin",
+        "Shaman"
+      ],
+      "keywords": [],
+      "rulesText": "At the beginning of combat on your turn, you may have target creature get +2/+0 until end of turn.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "At the beginning of combat on your turn, you may have target creature get +2/+0 until end of turn.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

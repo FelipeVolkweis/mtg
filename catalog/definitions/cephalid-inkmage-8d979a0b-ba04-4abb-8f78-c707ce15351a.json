@@ -1,0 +1,43 @@
+{
+  "id": "8d979a0b-ba04-4abb-8f78-c707ce15351a",
+  "canonicalName": "Cephalid Inkmage",
+  "defaultPrintingId": "b7e47680-18c7-4ffb-aac4-c5db6e7095ba",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Cephalid Inkmage",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Octopus Wizard",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Octopus",
+        "Wizard"
+      ],
+      "keywords": [
+        "Surveil",
+        "Threshold"
+      ],
+      "rulesText": "When this creature enters, surveil 3. (Look at the top three cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)\nThreshold — This creature can't be blocked as long as there are seven or more cards in your graveyard.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, surveil 3. (Look at the top three cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)\nThreshold — This creature can't be blocked as long as there are seven or more cards in your graveyard.",
+  "keywords": [
+    "Surveil",
+    "Threshold"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "645ab3c7-ee1d-4dd0-811f-2dc7f7c7e792",
+  "canonicalName": "Grow from the Ashes",
+  "defaultPrintingId": "42525f8a-aee7-4811-8f05-471b559c2c4a",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Grow from the Ashes",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Kicker"
+      ],
+      "rulesText": "Kicker {2} (You may pay an additional {2} as you cast this spell.)\nSearch your library for a basic land card, put it onto the battlefield, then shuffle. If this spell was kicked, instead search your library for two basic land cards, put them onto the battlefield, then shuffle."
+    }
+  ],
+  "oracleText": "Kicker {2} (You may pay an additional {2} as you cast this spell.)\nSearch your library for a basic land card, put it onto the battlefield, then shuffle. If this spell was kicked, instead search your library for two basic land cards, put them onto the battlefield, then shuffle.",
+  "keywords": [
+    "Kicker"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

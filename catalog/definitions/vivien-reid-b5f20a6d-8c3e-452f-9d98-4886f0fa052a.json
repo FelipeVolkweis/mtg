@@ -1,0 +1,37 @@
+{
+  "id": "b5f20a6d-8c3e-452f-9d98-4886f0fa052a",
+  "canonicalName": "Vivien Reid",
+  "defaultPrintingId": "38769247-42a1-4571-9071-6d59fe28650a",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Vivien Reid",
+      "manaCost": "{3}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Planeswalker — Vivien",
+      "manaValue": 5,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Planeswalker"
+      ],
+      "subtypes": [
+        "Vivien"
+      ],
+      "keywords": [],
+      "rulesText": "+1: Look at the top four cards of your library. You may reveal a creature or land card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\n−3: Destroy target artifact, enchantment, or creature with flying.\n−8: You get an emblem with \"Creatures you control get +2/+2 and have vigilance, trample, and indestructible.\"",
+      "loyalty": "5"
+    }
+  ],
+  "oracleText": "+1: Look at the top four cards of your library. You may reveal a creature or land card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\n−3: Destroy target artifact, enchantment, or creature with flying.\n−8: You get an emblem with \"Creatures you control get +2/+2 and have vigilance, trample, and indestructible.\"",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

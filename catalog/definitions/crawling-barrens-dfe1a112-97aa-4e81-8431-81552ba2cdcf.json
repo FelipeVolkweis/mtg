@@ -1,0 +1,28 @@
+{
+  "id": "dfe1a112-97aa-4e81-8431-81552ba2cdcf",
+  "canonicalName": "Crawling Barrens",
+  "defaultPrintingId": "ac2aff0e-1319-4d3b-903c-fa1ce3db7602",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Crawling Barrens",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{4}: Put two +1/+1 counters on this land. Then you may have it become a 0/0 Elemental creature until end of turn. It's still a land."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{4}: Put two +1/+1 counters on this land. Then you may have it become a 0/0 Elemental creature until end of turn. It's still a land.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

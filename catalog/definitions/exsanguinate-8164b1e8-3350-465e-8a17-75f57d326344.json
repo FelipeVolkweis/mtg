@@ -1,0 +1,32 @@
+{
+  "id": "8164b1e8-3350-465e-8a17-75f57d326344",
+  "canonicalName": "Exsanguinate",
+  "defaultPrintingId": "f11d7311-4066-4a5d-ba28-9857fa707a0b",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Exsanguinate",
+      "manaCost": "{X}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Each opponent loses X life. You gain life equal to the life lost this way."
+    }
+  ],
+  "oracleText": "Each opponent loses X life. You gain life equal to the life lost this way.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

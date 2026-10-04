@@ -1,0 +1,32 @@
+{
+  "id": "b36271cb-cda2-434a-a580-6050dc460409",
+  "canonicalName": "Fleeting Distraction",
+  "defaultPrintingId": "c0b86a7b-4912-43a7-ab89-c3432385baa1",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Fleeting Distraction",
+      "manaCost": "{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target creature gets -1/-0 until end of turn.\nDraw a card."
+    }
+  ],
+  "oracleText": "Target creature gets -1/-0 until end of turn.\nDraw a card.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

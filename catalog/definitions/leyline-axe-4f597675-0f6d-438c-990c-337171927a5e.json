@@ -1,0 +1,34 @@
+{
+  "id": "4f597675-0f6d-438c-990c-337171927a5e",
+  "canonicalName": "Leyline Axe",
+  "defaultPrintingId": "b9c03336-a321-4c06-94d1-809f328fabd8",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Leyline Axe",
+      "manaCost": "{4}",
+      "colors": [],
+      "typeLine": "Artifact — Equipment",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "keywords": [
+        "Equip"
+      ],
+      "rulesText": "If this card is in your opening hand, you may begin the game with it on the battlefield.\nEquipped creature gets +1/+1 and has double strike and trample.\nEquip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)"
+    }
+  ],
+  "oracleText": "If this card is in your opening hand, you may begin the game with it on the battlefield.\nEquipped creature gets +1/+1 and has double strike and trample.\nEquip {3} ({3}: Attach to target creature you control. Equip only as a sorcery.)",
+  "keywords": [
+    "Equip"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

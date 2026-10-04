@@ -1,0 +1,30 @@
+{
+  "id": "a0802918-e18a-4716-befb-96ae6667f2f3",
+  "canonicalName": "Infernal Idol",
+  "defaultPrintingId": "21a72531-329c-43fd-adc1-a671b3b1edc4",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Infernal Idol",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {B}.\n{1}{B}{B}, {T}, Sacrifice this artifact: You draw two cards and lose 2 life."
+    }
+  ],
+  "oracleText": "{T}: Add {B}.\n{1}{B}{B}, {T}, Sacrifice this artifact: You draw two cards and lose 2 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

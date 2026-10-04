@@ -1,0 +1,36 @@
+{
+  "id": "7c340a39-4ee0-4ba1-bb66-6674f8020fda",
+  "canonicalName": "Gratuitous Violence",
+  "defaultPrintingId": "e89024c5-eef5-468c-92b4-e53dd212909c",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Gratuitous Violence",
+      "manaCost": "{2}{R}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Double"
+      ],
+      "rulesText": "If a creature you control would deal damage to a permanent or player, it deals double that damage instead."
+    }
+  ],
+  "oracleText": "If a creature you control would deal damage to a permanent or player, it deals double that damage instead.",
+  "keywords": [
+    "Double"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

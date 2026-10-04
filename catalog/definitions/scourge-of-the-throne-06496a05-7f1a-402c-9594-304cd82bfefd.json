@@ -1,0 +1,42 @@
+{
+  "id": "06496a05-7f1a-402c-9594-304cd82bfefd",
+  "canonicalName": "Scourge of the Throne",
+  "defaultPrintingId": "b54f99f7-f579-466d-93b5-a856268b3851",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Scourge of the Throne",
+      "manaCost": "{4}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying",
+        "Dethrone"
+      ],
+      "rulesText": "Flying\nDethrone (Whenever this creature attacks the player with the most life or tied for most life, put a +1/+1 counter on it.)\nWhenever this creature attacks for the first time each turn, if it's attacking the player with the most life or tied for most life, untap all attacking creatures. After this phase, there is an additional combat phase.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\nDethrone (Whenever this creature attacks the player with the most life or tied for most life, put a +1/+1 counter on it.)\nWhenever this creature attacks for the first time each turn, if it's attacking the player with the most life or tied for most life, untap all attacking creatures. After this phase, there is an additional combat phase.",
+  "keywords": [
+    "Flying",
+    "Dethrone"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

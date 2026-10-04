@@ -1,0 +1,45 @@
+{
+  "id": "974a46f9-aa84-4b34-bee5-c635166e5841",
+  "canonicalName": "Josu Vess, Lich Knight",
+  "defaultPrintingId": "1f7bcaf9-4e36-4f23-b63f-f70fe5c9dd6f",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Josu Vess, Lich Knight",
+      "manaCost": "{2}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Legendary Creature — Zombie Knight",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie",
+        "Knight"
+      ],
+      "keywords": [
+        "Menace",
+        "Kicker"
+      ],
+      "rulesText": "Kicker {5}{B} (You may pay an additional {5}{B} as you cast this spell.)\nMenace\nWhen Josu Vess enters, if he was kicked, create eight 2/2 black Zombie Knight creature tokens with menace.",
+      "power": "4",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Kicker {5}{B} (You may pay an additional {5}{B} as you cast this spell.)\nMenace\nWhen Josu Vess enters, if he was kicked, create eight 2/2 black Zombie Knight creature tokens with menace.",
+  "keywords": [
+    "Menace",
+    "Kicker"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

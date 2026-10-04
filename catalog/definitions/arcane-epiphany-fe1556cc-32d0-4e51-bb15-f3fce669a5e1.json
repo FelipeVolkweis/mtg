@@ -1,0 +1,32 @@
+{
+  "id": "fe1556cc-32d0-4e51-bb15-f3fce669a5e1",
+  "canonicalName": "Arcane Epiphany",
+  "defaultPrintingId": "06431793-5dfe-4cbf-990b-4bcc960d1f31",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Arcane Epiphany",
+      "manaCost": "{3}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This spell costs {1} less to cast if you control a Wizard.\nDraw three cards."
+    }
+  ],
+  "oracleText": "This spell costs {1} less to cast if you control a Wizard.\nDraw three cards.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

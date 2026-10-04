@@ -1,0 +1,37 @@
+{
+  "id": "3a940dfa-a026-4969-8981-ef90cdfbe9ef",
+  "canonicalName": "Ornithopter of Paradise",
+  "defaultPrintingId": "9e5c677e-397d-4a0c-994e-2f35eadb8a33",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Ornithopter of Paradise",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Thopter",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Thopter"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\n{T}: Add one mana of any color.",
+      "power": "0",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flying\n{T}: Add one mana of any color.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

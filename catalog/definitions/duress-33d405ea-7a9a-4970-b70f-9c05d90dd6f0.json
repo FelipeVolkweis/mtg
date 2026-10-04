@@ -1,0 +1,32 @@
+{
+  "id": "33d405ea-7a9a-4970-b70f-9c05d90dd6f0",
+  "canonicalName": "Duress",
+  "defaultPrintingId": "34c3a894-ee75-4db9-a69f-711bb3cc150a",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Duress",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target opponent reveals their hand. You choose a noncreature, nonland card from it. That player discards that card."
+    }
+  ],
+  "oracleText": "Target opponent reveals their hand. You choose a noncreature, nonland card from it. That player discards that card.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

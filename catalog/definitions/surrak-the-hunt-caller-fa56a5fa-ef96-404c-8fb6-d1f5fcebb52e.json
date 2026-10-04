@@ -1,0 +1,43 @@
+{
+  "id": "fa56a5fa-ef96-404c-8fb6-d1f5fcebb52e",
+  "canonicalName": "Surrak, the Hunt Caller",
+  "defaultPrintingId": "a1864bc3-d829-4146-ba4e-87736b0daa41",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Surrak, the Hunt Caller",
+      "manaCost": "{2}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Creature — Human Warrior",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Warrior"
+      ],
+      "keywords": [
+        "Formidable"
+      ],
+      "rulesText": "Formidable — At the beginning of combat on your turn, if creatures you control have total power 8 or greater, target creature you control gains haste until end of turn. (It can attack and {T} no matter when it came under your control.)",
+      "power": "5",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Formidable — At the beginning of combat on your turn, if creatures you control have total power 8 or greater, target creature you control gains haste until end of turn. (It can attack and {T} no matter when it came under your control.)",
+  "keywords": [
+    "Formidable"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

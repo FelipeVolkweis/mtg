@@ -1,0 +1,37 @@
+{
+  "id": "68cc5065-0514-4adf-885f-da554e1db00a",
+  "canonicalName": "Abyssal Harvester",
+  "defaultPrintingId": "f2e0f538-5825-47e9-883c-3ec6fd5b25ea",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Abyssal Harvester",
+      "manaCost": "{1}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Demon Warlock",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Demon",
+        "Warlock"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Exile target creature card from a graveyard that was put there this turn. Create a token that's a copy of it, except it's a Nightmare in addition to its other types. Then exile all other Nightmare tokens you control.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{T}: Exile target creature card from a graveyard that was put there this turn. Create a token that's a copy of it, except it's a Nightmare in addition to its other types. Then exile all other Nightmare tokens you control.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "bf4268e6-170a-445b-b215-718f7494ae28",
+  "canonicalName": "Volley Veteran",
+  "defaultPrintingId": "7fc914fe-e699-4a21-aa09-f3573d020b87",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Volley Veteran",
+      "manaCost": "{3}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Goblin Warrior",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Goblin",
+        "Warrior"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, it deals damage to target creature an opponent controls equal to the number of Goblins you control.",
+      "power": "4",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, it deals damage to target creature an opponent controls equal to the number of Goblins you control.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

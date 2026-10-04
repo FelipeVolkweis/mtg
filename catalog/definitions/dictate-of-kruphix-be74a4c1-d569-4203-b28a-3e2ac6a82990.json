@@ -1,0 +1,36 @@
+{
+  "id": "be74a4c1-d569-4203-b28a-3e2ac6a82990",
+  "canonicalName": "Dictate of Kruphix",
+  "defaultPrintingId": "b5e4087b-e692-4eb2-bb59-ff2a001d6dd4",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Dictate of Kruphix",
+      "manaCost": "{1}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nAt the beginning of each player's draw step, that player draws an additional card."
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nAt the beginning of each player's draw step, that player draws an additional card.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

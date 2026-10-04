@@ -1,0 +1,37 @@
+{
+  "id": "7e497f6b-69e1-4fab-bb04-f687c99a8310",
+  "canonicalName": "Skyknight Squire",
+  "defaultPrintingId": "fcfe4e62-c153-47b8-8e09-cedaf91f53d8",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Skyknight Squire",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Cat Scout",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Scout"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever another creature you control enters, put a +1/+1 counter on this creature.\nAs long as this creature has three or more +1/+1 counters on it, it has flying and is a Knight in addition to its other types.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Whenever another creature you control enters, put a +1/+1 counter on this creature.\nAs long as this creature has three or more +1/+1 counters on it, it has flying and is a Knight in addition to its other types.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

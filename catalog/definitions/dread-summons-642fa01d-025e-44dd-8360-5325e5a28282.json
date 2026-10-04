@@ -1,0 +1,36 @@
+{
+  "id": "642fa01d-025e-44dd-8360-5325e5a28282",
+  "canonicalName": "Dread Summons",
+  "defaultPrintingId": "dfb5dd33-6e5b-4d78-92fa-678c9f01c606",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Dread Summons",
+      "manaCost": "{X}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Mill"
+      ],
+      "rulesText": "Each player mills X cards. For each creature card put into a graveyard this way, you create a tapped 2/2 black Zombie creature token. (To mill a card, a player puts the top card of their library into their graveyard.)"
+    }
+  ],
+  "oracleText": "Each player mills X cards. For each creature card put into a graveyard this way, you create a tapped 2/2 black Zombie creature token. (To mill a card, a player puts the top card of their library into their graveyard.)",
+  "keywords": [
+    "Mill"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

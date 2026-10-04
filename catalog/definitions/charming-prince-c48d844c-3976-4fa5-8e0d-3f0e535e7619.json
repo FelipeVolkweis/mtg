@@ -1,0 +1,41 @@
+{
+  "id": "c48d844c-3976-4fa5-8e0d-3f0e535e7619",
+  "canonicalName": "Charming Prince",
+  "defaultPrintingId": "aa7b47e1-7e32-4f2f-aecf-bac7ca197081",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Charming Prince",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Noble",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Noble"
+      ],
+      "keywords": [
+        "Scry"
+      ],
+      "rulesText": "When this creature enters, choose one —\n• Scry 2.\n• You gain 3 life.\n• Exile another target creature you own. Return it to the battlefield under your control at the beginning of the next end step.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, choose one —\n• Scry 2.\n• You gain 3 life.\n• Exile another target creature you own. Return it to the battlefield under your control at the beginning of the next end step.",
+  "keywords": [
+    "Scry"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

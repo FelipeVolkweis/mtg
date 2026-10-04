@@ -1,0 +1,32 @@
+{
+  "id": "cf09b0af-3cf1-4486-8f65-8cfd2410314a",
+  "canonicalName": "Deathmark",
+  "defaultPrintingId": "42592d75-593e-4719-b13b-bca374017e79",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Deathmark",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target green or white creature."
+    }
+  ],
+  "oracleText": "Destroy target green or white creature.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "f5d32e5f-066b-42cf-8dd1-072a96275313",
+  "canonicalName": "Harmless Offering",
+  "defaultPrintingId": "47082081-bf52-4914-bac2-ace398beff56",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Harmless Offering",
+      "manaCost": "{2}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target opponent gains control of target permanent you control."
+    }
+  ],
+  "oracleText": "Target opponent gains control of target permanent you control.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

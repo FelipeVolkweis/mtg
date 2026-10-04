@@ -1,0 +1,42 @@
+{
+  "id": "d4246e4d-390d-4925-a5a8-89cd096a237c",
+  "canonicalName": "Sphinx of the Final Word",
+  "defaultPrintingId": "6071239e-0b85-4c54-bef8-d9456eb8d8fc",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Sphinx of the Final Word",
+      "manaCost": "{5}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Sphinx",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Sphinx"
+      ],
+      "keywords": [
+        "Flying",
+        "Hexproof"
+      ],
+      "rulesText": "This spell can't be countered.\nFlying\nHexproof (This creature can't be the target of spells or abilities your opponents control.)\nInstant and sorcery spells you control can't be countered.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "This spell can't be countered.\nFlying\nHexproof (This creature can't be the target of spells or abilities your opponents control.)\nInstant and sorcery spells you control can't be countered.",
+  "keywords": [
+    "Flying",
+    "Hexproof"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

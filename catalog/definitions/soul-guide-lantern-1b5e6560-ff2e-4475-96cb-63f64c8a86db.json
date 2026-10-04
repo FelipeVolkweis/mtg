@@ -1,0 +1,28 @@
+{
+  "id": "1b5e6560-ff2e-4475-96cb-63f64c8a86db",
+  "canonicalName": "Soul-Guide Lantern",
+  "defaultPrintingId": "b005223d-aa57-4238-8c25-290141851177",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Soul-Guide Lantern",
+      "manaCost": "{1}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "When this artifact enters, exile target card from a graveyard.\n{T}, Sacrifice this artifact: Exile each opponent's graveyard.\n{1}, {T}, Sacrifice this artifact: Draw a card."
+    }
+  ],
+  "oracleText": "When this artifact enters, exile target card from a graveyard.\n{T}, Sacrifice this artifact: Exile each opponent's graveyard.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

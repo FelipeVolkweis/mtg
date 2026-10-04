@@ -1,0 +1,40 @@
+{
+  "id": "32083c9f-04c6-4b6f-9e24-cc8f3cae3e3e",
+  "canonicalName": "Dungrove Elder",
+  "defaultPrintingId": "528fc1b2-62c9-4d83-bb43-58a59713a62b",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Dungrove Elder",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Treefolk",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Treefolk"
+      ],
+      "keywords": [
+        "Hexproof"
+      ],
+      "rulesText": "Hexproof (This creature can't be the target of spells or abilities your opponents control.)\nDungrove Elder's power and toughness are each equal to the number of Forests you control.",
+      "power": "*",
+      "toughness": "*"
+    }
+  ],
+  "oracleText": "Hexproof (This creature can't be the target of spells or abilities your opponents control.)\nDungrove Elder's power and toughness are each equal to the number of Forests you control.",
+  "keywords": [
+    "Hexproof"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "93088b0c-d158-473a-9c06-aa2f344a9868",
+  "canonicalName": "Bloodtithe Collector",
+  "defaultPrintingId": "37931135-100d-4a23-a6e3-baf90fb259ee",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Bloodtithe Collector",
+      "manaCost": "{4}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Noble",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Noble"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhen this creature enters, if an opponent lost life this turn, each opponent discards a card.",
+      "power": "3",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nWhen this creature enters, if an opponent lost life this turn, each opponent discards a card.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

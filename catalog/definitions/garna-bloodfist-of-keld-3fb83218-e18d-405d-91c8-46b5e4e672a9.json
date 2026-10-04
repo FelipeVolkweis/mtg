@@ -1,0 +1,41 @@
+{
+  "id": "3fb83218-e18d-405d-91c8-46b5e4e672a9",
+  "canonicalName": "Garna, Bloodfist of Keld",
+  "defaultPrintingId": "5d7fcd03-fffe-467a-88a5-e583e32afd7a",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Garna, Bloodfist of Keld",
+      "manaCost": "{1}{B}{R}{R}",
+      "colors": [
+        "B",
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Human Berserker",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Berserker"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever another creature you control dies, draw a card if it was attacking. Otherwise, Garna deals 1 damage to each opponent.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Whenever another creature you control dies, draw a card if it was attacking. Otherwise, Garna deals 1 damage to each opponent.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

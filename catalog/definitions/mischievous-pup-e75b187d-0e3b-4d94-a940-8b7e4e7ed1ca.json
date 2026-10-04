@@ -1,0 +1,40 @@
+{
+  "id": "e75b187d-0e3b-4d94-a940-8b7e4e7ed1ca",
+  "canonicalName": "Mischievous Pup",
+  "defaultPrintingId": "7214d984-6400-44d7-bde6-57d96b606e78",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Mischievous Pup",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Dog",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dog"
+      ],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, return up to one other target permanent you control to its owner's hand.",
+      "power": "3",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, return up to one other target permanent you control to its owner's hand.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

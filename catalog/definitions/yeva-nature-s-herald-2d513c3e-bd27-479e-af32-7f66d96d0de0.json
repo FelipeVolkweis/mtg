@@ -1,0 +1,43 @@
+{
+  "id": "2d513c3e-bd27-479e-af32-7f66d96d0de0",
+  "canonicalName": "Yeva, Nature's Herald",
+  "defaultPrintingId": "15f742a6-7dbe-4d13-b25b-0b5a50f4550f",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Yeva, Nature's Herald",
+      "manaCost": "{2}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Creature — Elf Shaman",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Shaman"
+      ],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nYou may cast green creature spells as though they had flash.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nYou may cast green creature spells as though they had flash.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

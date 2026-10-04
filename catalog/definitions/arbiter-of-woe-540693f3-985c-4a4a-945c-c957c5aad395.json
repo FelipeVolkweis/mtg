@@ -1,0 +1,40 @@
+{
+  "id": "540693f3-985c-4a4a-945c-c957c5aad395",
+  "canonicalName": "Arbiter of Woe",
+  "defaultPrintingId": "b2496c4a-df03-4583-bd76-f98ed5cb61ee",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Arbiter of Woe",
+      "manaCost": "{4}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Demon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Demon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "As an additional cost to cast this spell, sacrifice a creature.\nFlying\nWhen this creature enters, each opponent discards a card and loses 2 life. You draw a card and gain 2 life.",
+      "power": "5",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "As an additional cost to cast this spell, sacrifice a creature.\nFlying\nWhen this creature enters, each opponent discards a card and loses 2 life. You draw a card and gain 2 life.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "3644f316-f9a3-46c9-9b1e-747f86cf4ead",
+  "canonicalName": "Buried Ruin",
+  "defaultPrintingId": "1e57d7ee-78d8-4e02-b3a8-a4b16ec0cdaf",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Buried Ruin",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

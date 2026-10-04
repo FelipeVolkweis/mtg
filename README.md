@@ -15,7 +15,7 @@ docker compose up -d db
 npm start
 ```
 
-Open [localhost:3000](http://localhost:3000), choose a guest name, and share the Room invitation. The importer writes `catalog/definitions/<oracle-id>.json`, `catalog/printings/<printing-id>.json`, `catalog/names.json`, and `catalog/sets.json`. Review and commit those files with the application revision before release. Import another set with the same command to grow the available pool. The importer also populates the independent full Card Name Directory from Scryfall's compressed bulk data and current name index; allow time for that download. Every fetched page and card must validate before the released catalog is replaced. An unchanged re-import produces no catalog diff.
+Open [localhost:3000](http://localhost:3000), choose a guest name, and share the Room invitation. The importer writes `catalog/definitions/<canonical-name-slug>-<oracle-id>.json`, `catalog/printings/<printing-id>.json`, `catalog/names.json`, and `catalog/sets.json`. Review and commit those files with the application revision before release. Import another set with the same command to grow the available pool. The importer also populates the independent full Card Name Directory from Scryfall's compressed bulk data and current name index; allow time for that download. Every fetched page and card must validate before the released catalog is replaced. An unchanged re-import produces no catalog diff.
 
 Run `npm run catalog:import -- SET` in the checkout whenever you want to add a set; for example, `npm run catalog:import -- fdn`. Saving a Decklist only reads the JSON already in `catalog/`. It never runs the importer or requests cards from Scryfall. A card that has not been imported is rejected when the Decklist is saved.
 
@@ -29,7 +29,7 @@ For development, run `npm run dev` and `npm run dev:client` in separate terminal
 docker compose up --build -d
 ```
 
-Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Room and Match state only and lives in a persistent Compose volume. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
+Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. After importing more sets into a running Compose checkout, run `docker compose up -d --build app` so the app serves the new catalog. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Room and Match state only and lives in a persistent Compose volume. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
 
 ## Decklists and play
 

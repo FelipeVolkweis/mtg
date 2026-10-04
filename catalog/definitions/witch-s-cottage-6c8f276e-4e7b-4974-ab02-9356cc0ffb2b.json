@@ -1,0 +1,32 @@
+{
+  "id": "6c8f276e-4e7b-4974-ab02-9356cc0ffb2b",
+  "canonicalName": "Witch's Cottage",
+  "defaultPrintingId": "316398d0-cf0a-43ed-a419-aaf0ea44b9c1",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Witch's Cottage",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Swamp",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Swamp"
+      ],
+      "keywords": [],
+      "rulesText": "({T}: Add {B}.)\nThis land enters tapped unless you control three or more other Swamps.\nWhen this land enters untapped, you may put target creature card from your graveyard on top of your library."
+    }
+  ],
+  "oracleText": "({T}: Add {B}.)\nThis land enters tapped unless you control three or more other Swamps.\nWhen this land enters untapped, you may put target creature card from your graveyard on top of your library.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

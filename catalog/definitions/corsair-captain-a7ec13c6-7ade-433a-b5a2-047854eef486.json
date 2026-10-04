@@ -1,0 +1,41 @@
+{
+  "id": "a7ec13c6-7ade-433a-b5a2-047854eef486",
+  "canonicalName": "Corsair Captain",
+  "defaultPrintingId": "d5017dbc-07fd-45ea-9629-7c584144e8be",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Corsair Captain",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Human Pirate",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Pirate"
+      ],
+      "keywords": [
+        "Treasure"
+      ],
+      "rulesText": "When this creature enters, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nOther Pirates you control get +1/+1.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nOther Pirates you control get +1/+1.",
+  "keywords": [
+    "Treasure"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

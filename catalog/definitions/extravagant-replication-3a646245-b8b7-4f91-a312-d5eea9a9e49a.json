@@ -1,0 +1,32 @@
+{
+  "id": "3a646245-b8b7-4f91-a312-d5eea9a9e49a",
+  "canonicalName": "Extravagant Replication",
+  "defaultPrintingId": "6a41dfae-bc7e-4105-8f7e-fd0109197ad8",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Extravagant Replication",
+      "manaCost": "{4}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "At the beginning of your upkeep, create a token that's a copy of another target nonland permanent you control."
+    }
+  ],
+  "oracleText": "At the beginning of your upkeep, create a token that's a copy of another target nonland permanent you control.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

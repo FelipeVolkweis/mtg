@@ -1,0 +1,30 @@
+{
+  "id": "940ba435-7abc-40f8-a5af-c1c653b3284e",
+  "canonicalName": "Bontu's Monument",
+  "defaultPrintingId": "b4d4daca-34ef-4a5a-97e6-21f7f6a2f481",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Bontu's Monument",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Legendary Artifact",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Black creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, each opponent loses 1 life and you gain 1 life."
+    }
+  ],
+  "oracleText": "Black creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, each opponent loses 1 life and you gain 1 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

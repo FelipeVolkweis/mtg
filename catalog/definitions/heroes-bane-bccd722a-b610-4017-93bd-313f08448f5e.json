@@ -1,0 +1,36 @@
+{
+  "id": "bccd722a-b610-4017-93bd-313f08448f5e",
+  "canonicalName": "Heroes' Bane",
+  "defaultPrintingId": "7f83195c-5150-4763-a2e1-5b109d185d55",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Heroes' Bane",
+      "manaCost": "{3}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Hydra",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Hydra"
+      ],
+      "keywords": [],
+      "rulesText": "This creature enters with four +1/+1 counters on it.\n{2}{G}{G}: Put X +1/+1 counters on this creature, where X is its power.",
+      "power": "0",
+      "toughness": "0"
+    }
+  ],
+  "oracleText": "This creature enters with four +1/+1 counters on it.\n{2}{G}{G}: Put X +1/+1 counters on this creature, where X is its power.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

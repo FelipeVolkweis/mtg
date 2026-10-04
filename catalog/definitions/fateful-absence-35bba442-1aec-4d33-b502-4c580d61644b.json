@@ -1,0 +1,36 @@
+{
+  "id": "35bba442-1aec-4d33-b502-4c580d61644b",
+  "canonicalName": "Fateful Absence",
+  "defaultPrintingId": "168a41be-fa21-4d09-baf8-af3afd516d9b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Fateful Absence",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Investigate"
+      ],
+      "rulesText": "Destroy target creature or planeswalker. Its controller investigates. (They create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")"
+    }
+  ],
+  "oracleText": "Destroy target creature or planeswalker. Its controller investigates. (They create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+  "keywords": [
+    "Investigate"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

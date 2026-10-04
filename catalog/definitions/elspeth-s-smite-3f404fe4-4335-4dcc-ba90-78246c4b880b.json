@@ -1,0 +1,32 @@
+{
+  "id": "3f404fe4-4335-4dcc-ba90-78246c4b880b",
+  "canonicalName": "Elspeth's Smite",
+  "defaultPrintingId": "b405a442-cf6f-4c0b-9950-f208b30c052e",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Elspeth's Smite",
+      "manaCost": "{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Elspeth's Smite deals 3 damage to target attacking or blocking creature. If that creature would die this turn, exile it instead."
+    }
+  ],
+  "oracleText": "Elspeth's Smite deals 3 damage to target attacking or blocking creature. If that creature would die this turn, exile it instead.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

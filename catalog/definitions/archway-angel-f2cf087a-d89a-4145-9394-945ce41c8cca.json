@@ -1,0 +1,40 @@
+{
+  "id": "f2cf087a-d89a-4145-9394-945ce41c8cca",
+  "canonicalName": "Archway Angel",
+  "defaultPrintingId": "2c3ff489-bdd7-4aeb-8130-3c234d0dd3dd",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Archway Angel",
+      "manaCost": "{5}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhen this creature enters, you gain 2 life for each Gate you control.",
+      "power": "3",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nWhen this creature enters, you gain 2 life for each Gate you control.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

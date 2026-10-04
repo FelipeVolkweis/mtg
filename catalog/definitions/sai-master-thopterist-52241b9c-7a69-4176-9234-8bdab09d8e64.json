@@ -1,0 +1,39 @@
+{
+  "id": "52241b9c-7a69-4176-9234-8bdab09d8e64",
+  "canonicalName": "Sai, Master Thopterist",
+  "defaultPrintingId": "5650587a-27a5-4d68-97e2-5745627bd094",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Sai, Master Thopterist",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Human Artificer",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Artificer"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever you cast an artifact spell, create a 1/1 colorless Thopter artifact creature token with flying.\n{1}{U}, Sacrifice two artifacts: Draw a card.",
+      "power": "1",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Whenever you cast an artifact spell, create a 1/1 colorless Thopter artifact creature token with flying.\n{1}{U}, Sacrifice two artifacts: Draw a card.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

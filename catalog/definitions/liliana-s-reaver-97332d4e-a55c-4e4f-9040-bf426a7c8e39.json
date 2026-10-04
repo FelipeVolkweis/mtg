@@ -1,0 +1,40 @@
+{
+  "id": "97332d4e-a55c-4e4f-9040-bf426a7c8e39",
+  "canonicalName": "Liliana's Reaver",
+  "defaultPrintingId": "2ee81094-87e3-45a2-8ad8-2610ca52d357",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Liliana's Reaver",
+      "manaCost": "{2}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [
+        "Deathtouch"
+      ],
+      "rulesText": "Deathtouch\nWhenever this creature deals combat damage to a player, that player discards a card and you create a tapped 2/2 black Zombie creature token.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Deathtouch\nWhenever this creature deals combat damage to a player, that player discards a card and you create a tapped 2/2 black Zombie creature token.",
+  "keywords": [
+    "Deathtouch"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

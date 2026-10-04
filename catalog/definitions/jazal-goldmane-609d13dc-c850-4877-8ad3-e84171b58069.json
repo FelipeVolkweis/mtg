@@ -1,0 +1,43 @@
+{
+  "id": "609d13dc-c850-4877-8ad3-e84171b58069",
+  "canonicalName": "Jazal Goldmane",
+  "defaultPrintingId": "5aa8f635-c638-4207-8631-f6b5185f8696",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Jazal Goldmane",
+      "manaCost": "{2}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Cat Warrior",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Warrior"
+      ],
+      "keywords": [
+        "First strike"
+      ],
+      "rulesText": "First strike (This creature deals combat damage before creatures without first strike.)\n{3}{W}{W}: Attacking creatures you control get +X/+X until end of turn, where X is the number of attacking creatures.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\n{3}{W}{W}: Attacking creatures you control get +X/+X until end of turn, where X is the number of attacking creatures.",
+  "keywords": [
+    "First strike"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,48 @@
+{
+  "id": "a15547d0-bbcb-41ee-a9ae-8325a9e7fe1f",
+  "canonicalName": "Sire of Seven Deaths",
+  "defaultPrintingId": "8d8432a7-1c8a-4cfb-947c-ecf9791063eb",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Sire of Seven Deaths",
+      "manaCost": "{7}",
+      "colors": [],
+      "typeLine": "Creature — Eldrazi",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Eldrazi"
+      ],
+      "keywords": [
+        "Lifelink",
+        "Reach",
+        "Vigilance",
+        "First strike",
+        "Trample",
+        "Menace",
+        "Ward"
+      ],
+      "rulesText": "Reach, first strike\nVigilance, menace\nTrample, lifelink\nWard—Pay 7 life.",
+      "power": "7",
+      "toughness": "7"
+    }
+  ],
+  "oracleText": "Reach, first strike\nVigilance, menace\nTrample, lifelink\nWard—Pay 7 life.",
+  "keywords": [
+    "Lifelink",
+    "Reach",
+    "Vigilance",
+    "First strike",
+    "Trample",
+    "Menace",
+    "Ward"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

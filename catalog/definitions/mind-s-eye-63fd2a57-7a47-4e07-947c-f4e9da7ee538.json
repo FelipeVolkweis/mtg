@@ -1,0 +1,28 @@
+{
+  "id": "63fd2a57-7a47-4e07-947c-f4e9da7ee538",
+  "canonicalName": "Mind's Eye",
+  "defaultPrintingId": "b3390599-8fa6-4962-b762-f558a75945cc",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Mind's Eye",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Whenever an opponent draws a card, you may pay {1}. If you do, draw a card."
+    }
+  ],
+  "oracleText": "Whenever an opponent draws a card, you may pay {1}. If you do, draw a card.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

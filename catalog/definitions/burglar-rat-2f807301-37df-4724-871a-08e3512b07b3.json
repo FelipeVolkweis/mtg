@@ -1,0 +1,36 @@
+{
+  "id": "2f807301-37df-4724-871a-08e3512b07b3",
+  "canonicalName": "Burglar Rat",
+  "defaultPrintingId": "de1c8758-ce3d-49cf-8173-c0eb46f5e7bc",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Burglar Rat",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Rat",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Rat"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, each opponent discards a card.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature enters, each opponent discards a card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

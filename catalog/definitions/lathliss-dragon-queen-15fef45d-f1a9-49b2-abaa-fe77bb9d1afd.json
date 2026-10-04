@@ -1,0 +1,42 @@
+{
+  "id": "15fef45d-f1a9-49b2-abaa-fe77bb9d1afd",
+  "canonicalName": "Lathliss, Dragon Queen",
+  "defaultPrintingId": "8a17ec4e-b508-41af-803b-32acd863e598",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Lathliss, Dragon Queen",
+      "manaCost": "{4}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever another nontoken Dragon you control enters, create a 5/5 red Dragon creature token with flying.\n{1}{R}: Dragons you control get +1/+0 until end of turn.",
+      "power": "6",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flying\nWhenever another nontoken Dragon you control enters, create a 5/5 red Dragon creature token with flying.\n{1}{R}: Dragons you control get +1/+0 until end of turn.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

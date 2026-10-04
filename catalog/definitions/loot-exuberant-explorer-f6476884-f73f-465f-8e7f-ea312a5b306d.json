@@ -1,0 +1,39 @@
+{
+  "id": "f6476884-f73f-465f-8e7f-ea312a5b306d",
+  "canonicalName": "Loot, Exuberant Explorer",
+  "defaultPrintingId": "b3efa417-b093-4924-9ff3-be9c43c963a1",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Loot, Exuberant Explorer",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Creature — Beast Noble",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Beast",
+        "Noble"
+      ],
+      "keywords": [],
+      "rulesText": "You may play an additional land on each of your turns.\n{4}{G}{G}, {T}: Look at the top six cards of your library. You may reveal a creature card with mana value less than or equal to the number of lands you control from among them and put it onto the battlefield. Put the rest on the bottom in a random order.",
+      "power": "1",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "You may play an additional land on each of your turns.\n{4}{G}{G}, {T}: Look at the top six cards of your library. You may reveal a creature card with mana value less than or equal to the number of lands you control from among them and put it onto the battlefield. Put the rest on the bottom in a random order.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

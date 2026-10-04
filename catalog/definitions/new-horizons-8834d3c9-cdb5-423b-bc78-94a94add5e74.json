@@ -1,0 +1,38 @@
+{
+  "id": "8834d3c9-cdb5-423b-bc78-94a94add5e74",
+  "canonicalName": "New Horizons",
+  "defaultPrintingId": "86b3923c-c35c-4eb2-9dd3-b15c13778ecf",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "New Horizons",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Enchantment — Aura",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Aura"
+      ],
+      "keywords": [
+        "Enchant"
+      ],
+      "rulesText": "Enchant land\nWhen this Aura enters, put a +1/+1 counter on target creature you control.\nEnchanted land has \"{T}: Add two mana of any one color.\""
+    }
+  ],
+  "oracleText": "Enchant land\nWhen this Aura enters, put a +1/+1 counter on target creature you control.\nEnchanted land has \"{T}: Add two mana of any one color.\"",
+  "keywords": [
+    "Enchant"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,42 @@
+{
+  "id": "473da1b6-232b-4428-a66d-30262246b47a",
+  "canonicalName": "Emeria Shepherd",
+  "defaultPrintingId": "08ef3822-592f-456f-823d-a4d5cc85ddf9",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Emeria Shepherd",
+      "manaCost": "{5}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Landfall",
+        "Flying"
+      ],
+      "rulesText": "Flying\nLandfall — Whenever a land you control enters, you may return target nonland permanent card from your graveyard to your hand. If that land is a Plains, you may return that nonland permanent card to the battlefield instead.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nLandfall — Whenever a land you control enters, you may return target nonland permanent card from your graveyard to your hand. If that land is a Plains, you may return that nonland permanent card to the battlefield instead.",
+  "keywords": [
+    "Landfall",
+    "Flying"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

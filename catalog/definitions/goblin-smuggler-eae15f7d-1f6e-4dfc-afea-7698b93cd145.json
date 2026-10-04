@@ -1,0 +1,41 @@
+{
+  "id": "eae15f7d-1f6e-4dfc-afea-7698b93cd145",
+  "canonicalName": "Goblin Smuggler",
+  "defaultPrintingId": "5837ccf1-9bac-4afb-bcc9-82c5f3c0e8e2",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Goblin Smuggler",
+      "manaCost": "{2}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Goblin Rogue",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Goblin",
+        "Rogue"
+      ],
+      "keywords": [
+        "Haste"
+      ],
+      "rulesText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\n{T}: Another target creature with power 2 or less can't be blocked this turn.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\n{T}: Another target creature with power 2 or less can't be blocked this turn.",
+  "keywords": [
+    "Haste"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

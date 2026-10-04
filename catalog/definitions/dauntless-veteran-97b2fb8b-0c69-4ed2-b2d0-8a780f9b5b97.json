@@ -1,0 +1,37 @@
+{
+  "id": "97b2fb8b-0c69-4ed2-b2d0-8a780f9b5b97",
+  "canonicalName": "Dauntless Veteran",
+  "defaultPrintingId": "7a136f26-ac66-407f-b389-357222d2c4a2",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Dauntless Veteran",
+      "manaCost": "{1}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Soldier",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever this creature attacks, creatures you control get +1/+1 until end of turn.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Whenever this creature attacks, creatures you control get +1/+1 until end of turn.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

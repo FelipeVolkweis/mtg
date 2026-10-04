@@ -1,0 +1,41 @@
+{
+  "id": "42081a57-b521-45c2-928d-0a0a4641818d",
+  "canonicalName": "Storm Fleet Spy",
+  "defaultPrintingId": "f6c5206e-63db-44c0-86ab-f645cd358b3b",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Storm Fleet Spy",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Human Pirate",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Pirate"
+      ],
+      "keywords": [
+        "Raid"
+      ],
+      "rulesText": "Raid — When this creature enters, if you attacked this turn, draw a card.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Raid — When this creature enters, if you attacked this turn, draw a card.",
+  "keywords": [
+    "Raid"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

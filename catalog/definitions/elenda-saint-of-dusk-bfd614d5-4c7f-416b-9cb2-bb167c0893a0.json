@@ -1,0 +1,49 @@
+{
+  "id": "bfd614d5-4c7f-416b-9cb2-bb167c0893a0",
+  "canonicalName": "Elenda, Saint of Dusk",
+  "defaultPrintingId": "24955f5f-093c-4d33-b0c1-911cd36032ce",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Elenda, Saint of Dusk",
+      "manaCost": "{2}{W}{B}",
+      "colors": [
+        "B",
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Vampire Knight",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Knight"
+      ],
+      "keywords": [
+        "Lifelink",
+        "Hexproof from",
+        "Hexproof"
+      ],
+      "rulesText": "Lifelink, hexproof from instants\nAs long as your life total is greater than your starting life total, Elenda gets +1/+1 and has menace. Elenda gets an additional +5/+5 as long as your life total is at least 10 greater than your starting life total.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Lifelink, hexproof from instants\nAs long as your life total is greater than your starting life total, Elenda gets +1/+1 and has menace. Elenda gets an additional +5/+5 as long as your life total is at least 10 greater than your starting life total.",
+  "keywords": [
+    "Lifelink",
+    "Hexproof from",
+    "Hexproof"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

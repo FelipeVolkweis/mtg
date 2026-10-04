@@ -1,0 +1,32 @@
+{
+  "id": "1489551f-5714-471b-a0e6-f40bc3085afc",
+  "canonicalName": "Moment of Craving",
+  "defaultPrintingId": "3627f9fb-b828-49cd-887d-e2ab3ef43dfb",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Moment of Craving",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target creature gets -2/-2 until end of turn. You gain 2 life."
+    }
+  ],
+  "oracleText": "Target creature gets -2/-2 until end of turn. You gain 2 life.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

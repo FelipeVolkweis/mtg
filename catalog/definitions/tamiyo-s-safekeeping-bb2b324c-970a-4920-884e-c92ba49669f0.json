@@ -1,0 +1,32 @@
+{
+  "id": "bb2b324c-970a-4920-884e-c92ba49669f0",
+  "canonicalName": "Tamiyo's Safekeeping",
+  "defaultPrintingId": "1d167110-e5dd-409f-8744-016c26a14f1d",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Tamiyo's Safekeeping",
+      "manaCost": "{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target permanent you control gains hexproof and indestructible until end of turn. You gain 2 life. (A permanent with hexproof and indestructible can't be the target of spells or abilities your opponents control. Damage and effects that say \"destroy\" don't destroy it.)"
+    }
+  ],
+  "oracleText": "Target permanent you control gains hexproof and indestructible until end of turn. You gain 2 life. (A permanent with hexproof and indestructible can't be the target of spells or abilities your opponents control. Damage and effects that say \"destroy\" don't destroy it.)",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

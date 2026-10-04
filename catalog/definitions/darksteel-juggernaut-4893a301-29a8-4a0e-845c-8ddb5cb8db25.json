@@ -1,0 +1,37 @@
+{
+  "id": "4893a301-29a8-4a0e-845c-8ddb5cb8db25",
+  "canonicalName": "Darksteel Juggernaut",
+  "defaultPrintingId": "79202c72-ffb3-4b00-811f-01814e117689",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Darksteel Juggernaut",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Juggernaut",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Juggernaut"
+      ],
+      "keywords": [
+        "Indestructible"
+      ],
+      "rulesText": "Indestructible\nDarksteel Juggernaut's power and toughness are each equal to the number of artifacts you control.\nThis creature attacks each combat if able.",
+      "power": "*",
+      "toughness": "*"
+    }
+  ],
+  "oracleText": "Indestructible\nDarksteel Juggernaut's power and toughness are each equal to the number of artifacts you control.\nThis creature attacks each combat if able.",
+  "keywords": [
+    "Indestructible"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

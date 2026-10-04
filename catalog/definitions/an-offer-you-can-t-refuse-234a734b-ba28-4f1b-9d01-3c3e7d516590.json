@@ -1,0 +1,36 @@
+{
+  "id": "234a734b-ba28-4f1b-9d01-3c3e7d516590",
+  "canonicalName": "An Offer You Can't Refuse",
+  "defaultPrintingId": "a829747f-cf9b-4d81-ba66-9f0630ed4565",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "An Offer You Can't Refuse",
+      "manaCost": "{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Treasure"
+      ],
+      "rulesText": "Counter target noncreature spell. Its controller creates two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+    }
+  ],
+  "oracleText": "Counter target noncreature spell. Its controller creates two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+  "keywords": [
+    "Treasure"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

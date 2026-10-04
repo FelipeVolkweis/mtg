@@ -1,0 +1,33 @@
+{
+  "id": "1f91297a-ec2b-4ea8-9198-aa1daac20ff8",
+  "canonicalName": "Metallic Mimic",
+  "defaultPrintingId": "97021da6-7008-4271-a83b-459e5c9691fa",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Metallic Mimic",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Shapeshifter",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Shapeshifter"
+      ],
+      "keywords": [],
+      "rulesText": "As this creature enters, choose a creature type.\nThis creature is the chosen type in addition to its other types.\nEach other creature you control of the chosen type enters with an additional +1/+1 counter on it.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "As this creature enters, choose a creature type.\nThis creature is the chosen type in addition to its other types.\nEach other creature you control of the chosen type enters with an additional +1/+1 counter on it.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

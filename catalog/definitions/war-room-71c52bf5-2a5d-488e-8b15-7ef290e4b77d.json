@@ -1,0 +1,28 @@
+{
+  "id": "71c52bf5-2a5d-488e-8b15-7ef290e4b77d",
+  "canonicalName": "War Room",
+  "defaultPrintingId": "b2593c45-585f-4eaf-bb08-e91a4fc2d425",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "War Room",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

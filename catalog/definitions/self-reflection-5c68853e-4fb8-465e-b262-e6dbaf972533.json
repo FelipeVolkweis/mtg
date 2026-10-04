@@ -1,0 +1,36 @@
+{
+  "id": "5c68853e-4fb8-465e-b262-e6dbaf972533",
+  "canonicalName": "Self-Reflection",
+  "defaultPrintingId": "e1e6abc9-25b2-4d51-b519-2525079eab51",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Self-Reflection",
+      "manaCost": "{4}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flashback"
+      ],
+      "rulesText": "Create a token that's a copy of target creature you control.\nFlashback {3}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+    }
+  ],
+  "oracleText": "Create a token that's a copy of target creature you control.\nFlashback {3}{U} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+  "keywords": [
+    "Flashback"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

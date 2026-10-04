@@ -1,0 +1,32 @@
+{
+  "id": "5d4ed768-0a37-4604-8121-43920ed9fb4a",
+  "canonicalName": "Launch Mishap",
+  "defaultPrintingId": "803c058c-4ccc-40cd-a74d-1bda5a4c453b",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Launch Mishap",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying."
+    }
+  ],
+  "oracleText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

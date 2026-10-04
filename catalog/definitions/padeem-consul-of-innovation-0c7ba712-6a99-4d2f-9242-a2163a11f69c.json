@@ -1,0 +1,39 @@
+{
+  "id": "0c7ba712-6a99-4d2f-9242-a2163a11f69c",
+  "canonicalName": "Padeem, Consul of Innovation",
+  "defaultPrintingId": "6303997b-784d-4710-9c56-a92b7d5a8786",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Padeem, Consul of Innovation",
+      "manaCost": "{3}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Vedalken Artificer",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vedalken",
+        "Artificer"
+      ],
+      "keywords": [],
+      "rulesText": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+      "power": "1",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

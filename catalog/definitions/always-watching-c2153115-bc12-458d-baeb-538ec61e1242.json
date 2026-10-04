@@ -1,0 +1,32 @@
+{
+  "id": "c2153115-bc12-458d-baeb-538ec61e1242",
+  "canonicalName": "Always Watching",
+  "defaultPrintingId": "1c9a58d6-e1d8-4f9a-816f-d5ba7c84ca3e",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Always Watching",
+      "manaCost": "{1}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Nontoken creatures you control get +1/+1 and have vigilance."
+    }
+  ],
+  "oracleText": "Nontoken creatures you control get +1/+1 and have vigilance.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

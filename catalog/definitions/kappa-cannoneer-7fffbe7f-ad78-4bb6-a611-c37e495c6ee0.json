@@ -1,0 +1,44 @@
+{
+  "id": "7fffbe7f-ad78-4bb6-a611-c37e495c6ee0",
+  "canonicalName": "Kappa Cannoneer",
+  "defaultPrintingId": "d644be98-83df-4546-a448-247f40299993",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Kappa Cannoneer",
+      "manaCost": "{5}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Turtle Warrior",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Turtle",
+        "Warrior"
+      ],
+      "keywords": [
+        "Improvise",
+        "Ward"
+      ],
+      "rulesText": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nWard {4}\nWhenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nWard {4}\nWhenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
+  "keywords": [
+    "Improvise",
+    "Ward"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

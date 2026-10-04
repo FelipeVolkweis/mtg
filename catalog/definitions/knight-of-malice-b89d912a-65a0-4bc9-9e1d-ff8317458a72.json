@@ -1,0 +1,45 @@
+{
+  "id": "b89d912a-65a0-4bc9-9e1d-ff8317458a72",
+  "canonicalName": "Knight of Malice",
+  "defaultPrintingId": "bb678e10-e5a4-4143-8e49-7b523118674e",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Knight of Malice",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Human Knight",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Knight"
+      ],
+      "keywords": [
+        "Hexproof from",
+        "Hexproof",
+        "First strike"
+      ],
+      "rulesText": "First strike (This creature deals combat damage before creatures without first strike.)\nHexproof from white (This creature can't be the target of white spells or abilities your opponents control.)\nThis creature gets +1/+0 as long as any player controls a white permanent.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nHexproof from white (This creature can't be the target of white spells or abilities your opponents control.)\nThis creature gets +1/+0 as long as any player controls a white permanent.",
+  "keywords": [
+    "Hexproof from",
+    "Hexproof",
+    "First strike"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

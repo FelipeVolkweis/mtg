@@ -1,0 +1,37 @@
+{
+  "id": "788a4896-3414-40bf-b391-d2efea2fb5f9",
+  "canonicalName": "Springbloom Druid",
+  "defaultPrintingId": "17d67b88-3f76-401f-b04a-f2bcaab4aa97",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Springbloom Druid",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Druid",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Druid"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, you may sacrifice a land. If you do, search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature enters, you may sacrifice a land. If you do, search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

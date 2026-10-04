@@ -1,0 +1,32 @@
+{
+  "id": "939e6f71-185e-41f2-9d54-72cce06f1dce",
+  "canonicalName": "Thirst for Knowledge",
+  "defaultPrintingId": "f784f025-2798-4112-9768-39c8e3572b25",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Thirst for Knowledge",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Draw three cards. Then discard two cards unless you discard an artifact card."
+    }
+  ],
+  "oracleText": "Draw three cards. Then discard two cards unless you discard an artifact card.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

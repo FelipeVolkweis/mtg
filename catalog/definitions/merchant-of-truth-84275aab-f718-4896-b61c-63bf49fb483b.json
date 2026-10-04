@@ -1,0 +1,43 @@
+{
+  "id": "84275aab-f718-4896-b61c-63bf49fb483b",
+  "canonicalName": "Merchant of Truth",
+  "defaultPrintingId": "45cb7d19-0cdb-4e6a-b1ba-59c74306105b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Merchant of Truth",
+      "manaCost": "{2}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel Detective",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel",
+        "Detective"
+      ],
+      "keywords": [
+        "Flying",
+        "Investigate"
+      ],
+      "rulesText": "Flying\nWhenever a nontoken creature you control dies, investigate.\nClues you control have exalted. (Whenever a creature you control attacks alone, that creature gets +1/+1 until end of turn for each instance of exalted among permanents you control.)",
+      "power": "2",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\nWhenever a nontoken creature you control dies, investigate.\nClues you control have exalted. (Whenever a creature you control attacks alone, that creature gets +1/+1 until end of turn for each instance of exalted among permanents you control.)",
+  "keywords": [
+    "Flying",
+    "Investigate"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

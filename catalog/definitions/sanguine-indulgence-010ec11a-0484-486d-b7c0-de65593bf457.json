@@ -1,0 +1,32 @@
+{
+  "id": "010ec11a-0484-486d-b7c0-de65593bf457",
+  "canonicalName": "Sanguine Indulgence",
+  "defaultPrintingId": "03a26ca7-b26f-4b86-a060-712f15f4bf7f",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Sanguine Indulgence",
+      "manaCost": "{3}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This spell costs {3} less to cast if you've gained 3 or more life this turn.\nReturn up to two target creature cards from your graveyard to your hand."
+    }
+  ],
+  "oracleText": "This spell costs {3} less to cast if you've gained 3 or more life this turn.\nReturn up to two target creature cards from your graveyard to your hand.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

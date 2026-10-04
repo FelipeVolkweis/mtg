@@ -1,0 +1,40 @@
+{
+  "id": "1ae339fd-8e64-4e3a-8e27-e4993932ba62",
+  "canonicalName": "Gnarlback Rhino",
+  "defaultPrintingId": "6b638f3d-7eb6-4675-9538-4a87a7f75c43",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Gnarlback Rhino",
+      "manaCost": "{2}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Rhino",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Rhino"
+      ],
+      "keywords": [
+        "Trample"
+      ],
+      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever you cast a spell that targets this creature, draw a card.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever you cast a spell that targets this creature, draw a card.",
+  "keywords": [
+    "Trample"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

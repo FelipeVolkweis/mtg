@@ -1,0 +1,51 @@
+{
+  "id": "7da0e5de-3e4c-420a-8685-991206100b9d",
+  "canonicalName": "Zetalpa, Primal Dawn",
+  "defaultPrintingId": "694df80e-77d1-4455-b6f1-58d212267d76",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Zetalpa, Primal Dawn",
+      "manaCost": "{6}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Elder Dinosaur",
+      "manaValue": 8,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elder",
+        "Dinosaur"
+      ],
+      "keywords": [
+        "Flying",
+        "Indestructible",
+        "Vigilance",
+        "Trample",
+        "Double strike"
+      ],
+      "rulesText": "Flying, double strike, vigilance, trample, indestructible",
+      "power": "4",
+      "toughness": "8"
+    }
+  ],
+  "oracleText": "Flying, double strike, vigilance, trample, indestructible",
+  "keywords": [
+    "Flying",
+    "Indestructible",
+    "Vigilance",
+    "Trample",
+    "Double strike"
+  ],
+  "manaValue": 8,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

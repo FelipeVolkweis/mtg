@@ -1,0 +1,32 @@
+{
+  "id": "87bd0fdb-c5b9-46ea-9858-1a870960351f",
+  "canonicalName": "Invoke the Divine",
+  "defaultPrintingId": "2d9d2b52-8f33-4936-927a-4c71ddd8acb8",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Invoke the Divine",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target artifact or enchantment. You gain 4 life."
+    }
+  ],
+  "oracleText": "Destroy target artifact or enchantment. You gain 4 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

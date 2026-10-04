@@ -1,0 +1,33 @@
+{
+  "id": "75b235d3-595a-4859-be45-9559d8445db5",
+  "canonicalName": "Selesnya Guildgate",
+  "defaultPrintingId": "6718d4e7-768e-473f-8064-a68422e977f6",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Selesnya Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {G} or {W}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {G} or {W}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

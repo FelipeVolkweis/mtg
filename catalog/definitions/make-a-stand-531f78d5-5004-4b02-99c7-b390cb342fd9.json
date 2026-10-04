@@ -1,0 +1,32 @@
+{
+  "id": "531f78d5-5004-4b02-99c7-b390cb342fd9",
+  "canonicalName": "Make a Stand",
+  "defaultPrintingId": "9c26415d-9e98-480b-9e30-b3aed00d5f3d",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Make a Stand",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Creatures you control get +1/+0 and gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)"
+    }
+  ],
+  "oracleText": "Creatures you control get +1/+0 and gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

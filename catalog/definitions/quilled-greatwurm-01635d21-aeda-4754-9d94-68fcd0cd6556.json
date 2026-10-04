@@ -1,0 +1,40 @@
+{
+  "id": "01635d21-aeda-4754-9d94-68fcd0cd6556",
+  "canonicalName": "Quilled Greatwurm",
+  "defaultPrintingId": "31b60531-3d33-4e66-923a-29008716b15c",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Quilled Greatwurm",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Wurm",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Wurm"
+      ],
+      "keywords": [
+        "Trample"
+      ],
+      "rulesText": "Trample\nWhenever a creature you control deals combat damage during your turn, put that many +1/+1 counters on it. (It must survive to get the counters.)\nYou may cast this card from your graveyard by removing six counters from among creatures you control in addition to paying its other costs.",
+      "power": "7",
+      "toughness": "7"
+    }
+  ],
+  "oracleText": "Trample\nWhenever a creature you control deals combat damage during your turn, put that many +1/+1 counters on it. (It must survive to get the counters.)\nYou may cast this card from your graveyard by removing six counters from among creatures you control in addition to paying its other costs.",
+  "keywords": [
+    "Trample"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

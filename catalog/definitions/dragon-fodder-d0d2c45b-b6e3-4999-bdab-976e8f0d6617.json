@@ -1,0 +1,32 @@
+{
+  "id": "d0d2c45b-b6e3-4999-bdab-976e8f0d6617",
+  "canonicalName": "Dragon Fodder",
+  "defaultPrintingId": "f9abe517-f601-4784-8d62-2350bd755146",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Dragon Fodder",
+      "manaCost": "{1}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Create two 1/1 red Goblin creature tokens."
+    }
+  ],
+  "oracleText": "Create two 1/1 red Goblin creature tokens.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

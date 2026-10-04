@@ -1,0 +1,31 @@
+{
+  "id": "2f4ad084-2062-44c0-9975-15f100204531",
+  "canonicalName": "Swiftwater Cliffs",
+  "defaultPrintingId": "fb88667d-7088-4889-960f-317486ebe856",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Swiftwater Cliffs",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {U} or {R}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {U} or {R}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

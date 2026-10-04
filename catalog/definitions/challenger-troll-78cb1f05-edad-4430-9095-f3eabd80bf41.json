@@ -1,0 +1,36 @@
+{
+  "id": "78cb1f05-edad-4430-9095-f3eabd80bf41",
+  "canonicalName": "Challenger Troll",
+  "defaultPrintingId": "eae3c792-cc9c-4442-a15a-7bab50a30dff",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Challenger Troll",
+      "manaCost": "{4}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Troll",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Troll"
+      ],
+      "keywords": [],
+      "rulesText": "Each creature you control with power 4 or greater can't be blocked by more than one creature.",
+      "power": "6",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Each creature you control with power 4 or greater can't be blocked by more than one creature.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

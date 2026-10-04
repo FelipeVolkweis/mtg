@@ -1,0 +1,32 @@
+{
+  "id": "4d67e2a7-4aa7-44cc-853b-500d7aac046d",
+  "canonicalName": "Cursed Mirror",
+  "defaultPrintingId": "e69eef8f-f3fe-49fd-a567-6425c8f30d4c",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Cursed Mirror",
+      "manaCost": "{2}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Artifact",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {R}.\nAs this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste."
+    }
+  ],
+  "oracleText": "{T}: Add {R}.\nAs this artifact enters, you may have it become a copy of any creature on the battlefield until end of turn, except it has haste.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

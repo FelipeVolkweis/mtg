@@ -1,0 +1,36 @@
+{
+  "id": "f81ca3a5-356d-4b5d-afc2-a33aa774816b",
+  "canonicalName": "Soul-Shackled Zombie",
+  "defaultPrintingId": "deea5690-6eb2-4353-b917-cbbf840e4e71",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Soul-Shackled Zombie",
+      "manaCost": "{3}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, exile up to two target cards from a single graveyard. If at least one creature card was exiled this way, each opponent loses 2 life and you gain 2 life.",
+      "power": "4",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, exile up to two target cards from a single graveyard. If at least one creature card was exiled this way, each opponent loses 2 life and you gain 2 life.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

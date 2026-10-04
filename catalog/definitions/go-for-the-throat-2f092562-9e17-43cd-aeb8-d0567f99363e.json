@@ -1,0 +1,32 @@
+{
+  "id": "2f092562-9e17-43cd-aeb8-d0567f99363e",
+  "canonicalName": "Go for the Throat",
+  "defaultPrintingId": "239015f1-02ba-49d0-b11e-1d9729e9d57e",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Go for the Throat",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target nonartifact creature."
+    }
+  ],
+  "oracleText": "Destroy target nonartifact creature.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

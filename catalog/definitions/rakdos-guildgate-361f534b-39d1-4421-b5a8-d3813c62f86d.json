@@ -1,0 +1,33 @@
+{
+  "id": "361f534b-39d1-4421-b5a8-d3813c62f86d",
+  "canonicalName": "Rakdos Guildgate",
+  "defaultPrintingId": "e1f01964-c610-4d0f-a2b4-f52e46dc50d2",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Rakdos Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {B} or {R}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {B} or {R}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

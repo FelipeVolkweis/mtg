@@ -1,0 +1,32 @@
+{
+  "id": "b75e667a-1ceb-445a-acf4-ae1fd2dae9e7",
+  "canonicalName": "Destroy Evil",
+  "defaultPrintingId": "c927db80-2711-4546-970e-7c2e89a0fb2f",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Destroy Evil",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Choose one —\n• Destroy target creature with toughness 4 or greater.\n• Destroy target enchantment."
+    }
+  ],
+  "oracleText": "Choose one —\n• Destroy target creature with toughness 4 or greater.\n• Destroy target enchantment.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

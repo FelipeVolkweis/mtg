@@ -1,0 +1,32 @@
+{
+  "id": "eb1dfa29-7371-4cb6-bfa2-16f7820b69be",
+  "canonicalName": "Refute",
+  "defaultPrintingId": "38806934-dd9c-4ad4-a59c-a16dce03a14a",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Refute",
+      "manaCost": "{1}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Counter target spell. Draw a card, then discard a card."
+    }
+  ],
+  "oracleText": "Counter target spell. Draw a card, then discard a card.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

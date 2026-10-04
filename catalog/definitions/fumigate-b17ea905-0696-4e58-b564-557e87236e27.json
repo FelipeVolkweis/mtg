@@ -1,0 +1,32 @@
+{
+  "id": "b17ea905-0696-4e58-b564-557e87236e27",
+  "canonicalName": "Fumigate",
+  "defaultPrintingId": "e2c1e655-1883-428f-abe8-69c011cfbd4b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Fumigate",
+      "manaCost": "{3}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy all creatures. You gain 1 life for each creature destroyed this way."
+    }
+  ],
+  "oracleText": "Destroy all creatures. You gain 1 life for each creature destroyed this way.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

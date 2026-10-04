@@ -1,0 +1,41 @@
+{
+  "id": "c1e456b6-5d2b-4c42-9464-54a8f9f8f3ba",
+  "canonicalName": "Whisperer of the Wilds",
+  "defaultPrintingId": "50d5f384-5a9e-4151-b3cf-2d68e6fa85f6",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Whisperer of the Wilds",
+      "manaCost": "{1}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Human Shaman",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Shaman"
+      ],
+      "keywords": [
+        "Ferocious"
+      ],
+      "rulesText": "{T}: Add {G}.\nFerocious — {T}: Add {G}{G}. Activate only if you control a creature with power 4 or greater.",
+      "power": "0",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{T}: Add {G}.\nFerocious — {T}: Add {G}{G}. Activate only if you control a creature with power 4 or greater.",
+  "keywords": [
+    "Ferocious"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,45 @@
+{
+  "id": "0715e860-3b3b-4331-9718-207973e94fee",
+  "canonicalName": "Tatyova, Benthic Druid",
+  "defaultPrintingId": "eabc978a-0666-472d-bdc6-d4b29d29eca4",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Tatyova, Benthic Druid",
+      "manaCost": "{3}{G}{U}",
+      "colors": [
+        "G",
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Merfolk Druid",
+      "manaValue": 5,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Merfolk",
+        "Druid"
+      ],
+      "keywords": [
+        "Landfall"
+      ],
+      "rulesText": "Landfall — Whenever a land you control enters, you gain 1 life and draw a card.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Landfall — Whenever a land you control enters, you gain 1 life and draw a card.",
+  "keywords": [
+    "Landfall"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

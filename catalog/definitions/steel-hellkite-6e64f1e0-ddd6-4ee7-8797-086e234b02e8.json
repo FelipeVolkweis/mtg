@@ -1,0 +1,37 @@
+{
+  "id": "6e64f1e0-ddd6-4ee7-8797-086e234b02e8",
+  "canonicalName": "Steel Hellkite",
+  "defaultPrintingId": "7ce14b48-34db-4308-8f5a-7b62d0e97d0e",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Steel Hellkite",
+      "manaCost": "{6}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

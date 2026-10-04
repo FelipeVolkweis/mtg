@@ -68,6 +68,7 @@ function parseTypes(line: string) {
 
 const supportedLayouts = new Set([
   "normal",
+  "saga",
   "transform",
   "modal_dfc",
   "split",
@@ -75,6 +76,7 @@ const supportedLayouts = new Set([
   "room",
   "flip",
 ]);
+const singleFaceLayouts = new Set(["normal", "saga"]);
 function importedDefinition(
   card: SourceCard,
   oracleId: string,
@@ -82,8 +84,8 @@ function importedDefinition(
 ) {
   if (
     !supportedLayouts.has(card.layout) ||
-    (card.layout !== "normal" && !card.card_faces?.length) ||
-    (card.layout === "normal" && card.card_faces?.length)
+    (!singleFaceLayouts.has(card.layout) && !card.card_faces?.length) ||
+    (singleFaceLayouts.has(card.layout) && card.card_faces?.length)
   )
     throw new Error(`Unsupported card form: ${card.layout} (${card.name})`);
   const faces = card.card_faces ?? [card];

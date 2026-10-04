@@ -1,0 +1,42 @@
+{
+  "id": "08d1a5d1-141d-48e3-ac22-c2529191cb13",
+  "canonicalName": "Reya Dawnbringer",
+  "defaultPrintingId": "8384c346-17f5-458f-bd56-6b0f04d6f375",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Reya Dawnbringer",
+      "manaCost": "{6}{W}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Legendary Creature — Angel",
+      "manaValue": 9,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nAt the beginning of your upkeep, you may return target creature card from your graveyard to the battlefield.",
+      "power": "4",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flying\nAt the beginning of your upkeep, you may return target creature card from your graveyard to the battlefield.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 9,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

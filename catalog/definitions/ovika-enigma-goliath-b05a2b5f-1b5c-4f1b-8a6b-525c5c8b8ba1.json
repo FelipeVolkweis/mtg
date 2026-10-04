@@ -1,0 +1,47 @@
+{
+  "id": "b05a2b5f-1b5c-4f1b-8a6b-525c5c8b8ba1",
+  "canonicalName": "Ovika, Enigma Goliath",
+  "defaultPrintingId": "54819d7a-eec6-49e6-a0bb-d9d07d42b4a6",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Ovika, Enigma Goliath",
+      "manaCost": "{5}{U}{R}",
+      "colors": [
+        "R",
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Phyrexian Nightmare",
+      "manaValue": 7,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Nightmare"
+      ],
+      "keywords": [
+        "Flying",
+        "Ward"
+      ],
+      "rulesText": "Flying\nWard—{3}, Pay 3 life.\nWhenever you cast a noncreature spell, create X 1/1 red Phyrexian Goblin creature tokens, where X is the mana value of that spell. They gain haste until end of turn.",
+      "power": "6",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flying\nWard—{3}, Pay 3 life.\nWhenever you cast a noncreature spell, create X 1/1 red Phyrexian Goblin creature tokens, where X is the mana value of that spell. They gain haste until end of turn.",
+  "keywords": [
+    "Flying",
+    "Ward"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,40 @@
+{
+  "id": "60b03a44-a7bd-48fa-8c8f-1704aed02cd7",
+  "canonicalName": "Ancestor Dragon",
+  "defaultPrintingId": "df43d9d4-3fef-4a56-8b38-d52824117201",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Ancestor Dragon",
+      "manaCost": "{4}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever one or more creatures you control attack, you gain 1 life for each attacking creature.",
+      "power": "5",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flying\nWhenever one or more creatures you control attack, you gain 1 life for each attacking creature.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

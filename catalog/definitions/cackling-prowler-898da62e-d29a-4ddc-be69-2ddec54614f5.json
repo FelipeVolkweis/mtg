@@ -1,0 +1,43 @@
+{
+  "id": "898da62e-d29a-4ddc-be69-2ddec54614f5",
+  "canonicalName": "Cackling Prowler",
+  "defaultPrintingId": "1bd8e971-c075-4203-8d83-c28f22d4f9b9",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Cackling Prowler",
+      "manaCost": "{3}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Hyena Rogue",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Hyena",
+        "Rogue"
+      ],
+      "keywords": [
+        "Ward",
+        "Morbid"
+      ],
+      "rulesText": "Ward {2} (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays {2}.)\nMorbid — At the beginning of your end step, if a creature died this turn, put a +1/+1 counter on this creature.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Ward {2} (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays {2}.)\nMorbid — At the beginning of your end step, if a creature died this turn, put a +1/+1 counter on this creature.",
+  "keywords": [
+    "Ward",
+    "Morbid"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

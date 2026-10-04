@@ -1,0 +1,37 @@
+{
+  "id": "4cdbc466-42fc-471f-beab-397caec18101",
+  "canonicalName": "Vengeful Bloodwitch",
+  "defaultPrintingId": "bd0c12dd-f138-45c0-9614-d83a1d8e8399",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Vengeful Bloodwitch",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Warlock",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Warlock"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever this creature or another creature you control dies, target opponent loses 1 life and you gain 1 life.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Whenever this creature or another creature you control dies, target opponent loses 1 life and you gain 1 life.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

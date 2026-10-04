@@ -1,0 +1,36 @@
+{
+  "id": "38f3b157-0df4-409b-89cc-086e1531cd5b",
+  "canonicalName": "Gray Merchant of Asphodel",
+  "defaultPrintingId": "58251ceb-aadb-4e1f-b1f1-428e5f94e7bc",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Gray Merchant of Asphodel",
+      "manaCost": "{3}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way. (Each {B} in the mana costs of permanents you control counts toward your devotion to black.)",
+      "power": "2",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "When this creature enters, each opponent loses X life, where X is your devotion to black. You gain life equal to the life lost this way. (Each {B} in the mana costs of permanents you control counts toward your devotion to black.)",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

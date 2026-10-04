@@ -1,0 +1,41 @@
+{
+  "id": "73b60c2c-7c74-4554-8861-daa0d6fc22b4",
+  "canonicalName": "Burrog Befuddler",
+  "defaultPrintingId": "c5f11ea2-cd4c-417a-804c-3df80d9ddd5f",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Burrog Befuddler",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Frog Wizard",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Frog",
+        "Wizard"
+      ],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, target creature an opponent controls gets -1/-0 until end of turn.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, target creature an opponent controls gets -1/-0 until end of turn.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

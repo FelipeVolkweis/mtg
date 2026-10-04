@@ -1,0 +1,40 @@
+{
+  "id": "84ee74e9-b3e3-4f47-8b3c-5c1a70f5cad6",
+  "canonicalName": "Seraph of the Sword",
+  "defaultPrintingId": "3dbfbdba-52d0-4b49-8c86-8f1686e2285b",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Seraph of the Sword",
+      "manaCost": "{3}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nPrevent all combat damage that would be dealt to this creature.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nPrevent all combat damage that would be dealt to this creature.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

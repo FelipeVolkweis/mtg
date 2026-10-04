@@ -1,0 +1,34 @@
+{
+  "id": "8dec6fcf-1254-4b1b-ba23-7a3e492a7241",
+  "canonicalName": "Secluded Steppe",
+  "defaultPrintingId": "095bbeb1-edf4-485e-bd2f-2b8f48b7aaa3",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Secluded Steppe",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Cycling"
+      ],
+      "rulesText": "This land enters tapped.\n{T}: Add {W}.\nCycling {W} ({W}, Discard this card: Draw a card.)"
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {W}.\nCycling {W} ({W}, Discard this card: Draw a card.)",
+  "keywords": [
+    "Cycling"
+  ],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

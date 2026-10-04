@@ -1,0 +1,34 @@
+{
+  "id": "2876e74f-a242-4995-9702-0b737a1ab67a",
+  "canonicalName": "Psychosis Crawler",
+  "defaultPrintingId": "450a680b-a2fb-495b-b22e-8c799a495fdf",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Psychosis Crawler",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Phyrexian Horror",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Horror"
+      ],
+      "keywords": [],
+      "rulesText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
+      "power": "*",
+      "toughness": "*"
+    }
+  ],
+  "oracleText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

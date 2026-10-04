@@ -1,0 +1,37 @@
+{
+  "id": "0e13c283-f462-441f-a8a5-0c75a59ff1d9",
+  "canonicalName": "Infernal Vessel",
+  "defaultPrintingId": "877b6330-2d0b-4f2f-a848-f10b06fb4ef5",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Infernal Vessel",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Human Cleric",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature dies, if it wasn't a Demon, return it to the battlefield under its owner's control with two +1/+1 counters on it. It's a Demon in addition to its other types.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature dies, if it wasn't a Demon, return it to the battlefield under its owner's control with two +1/+1 counters on it. It's a Demon in addition to its other types.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

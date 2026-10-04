@@ -1,0 +1,33 @@
+{
+  "id": "52d14717-0cbc-4d7e-b546-54ea91580338",
+  "canonicalName": "Dimir Guildgate",
+  "defaultPrintingId": "f9b8a159-5e58-4432-8ecd-62f39afa96da",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Dimir Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {U} or {B}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {U} or {B}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "774dce79-67e0-4820-8013-c7a7347993ce",
+  "canonicalName": "Cathar Commando",
+  "defaultPrintingId": "19cf024d-edb6-4a79-8676-73f8db0cdf1f",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Cathar Commando",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Soldier",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash\n{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
+      "power": "3",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flash\n{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "032ec6e2-6cc3-4a97-9cc7-3233f5e11904",
+  "canonicalName": "Reclamation Sage",
+  "defaultPrintingId": "1918ea65-ab7f-4d40-97fd-a656c892a2a1",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Reclamation Sage",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Shaman",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Shaman"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, you may destroy target artifact or enchantment.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature enters, you may destroy target artifact or enchantment.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

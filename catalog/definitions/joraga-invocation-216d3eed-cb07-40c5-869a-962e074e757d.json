@@ -1,0 +1,32 @@
+{
+  "id": "216d3eed-cb07-40c5-869a-962e074e757d",
+  "canonicalName": "Joraga Invocation",
+  "defaultPrintingId": "01ceca57-65f4-4f99-bd14-9fe5f86c1f62",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Joraga Invocation",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Each creature you control gets +3/+3 until end of turn and must be blocked this turn if able."
+    }
+  ],
+  "oracleText": "Each creature you control gets +3/+3 until end of turn and must be blocked this turn if able.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

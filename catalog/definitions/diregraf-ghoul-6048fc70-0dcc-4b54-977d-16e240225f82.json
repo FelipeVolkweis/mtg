@@ -1,0 +1,36 @@
+{
+  "id": "6048fc70-0dcc-4b54-977d-16e240225f82",
+  "canonicalName": "Diregraf Ghoul",
+  "defaultPrintingId": "4682012c-d7e0-4257-b538-3de497507464",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Diregraf Ghoul",
+      "manaCost": "{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "This creature enters tapped.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "This creature enters tapped.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

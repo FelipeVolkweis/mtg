@@ -1,0 +1,37 @@
+{
+  "id": "d373dc71-5196-43a0-8cc5-67e2a591aad0",
+  "canonicalName": "Twinblade Paladin",
+  "defaultPrintingId": "5cd9e73d-de8d-486f-bbbd-a2f5d3f8f686",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Twinblade Paladin",
+      "manaCost": "{3}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Knight",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Knight"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever you gain life, put a +1/+1 counter on this creature.\nAs long as you have 25 or more life, this creature has double strike. (It deals both first-strike and regular combat damage.)",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Whenever you gain life, put a +1/+1 counter on this creature.\nAs long as you have 25 or more life, this creature has double strike. (It deals both first-strike and regular combat damage.)",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "5049da27-f38b-4fe6-a387-51510bd1f44e",
+  "canonicalName": "Nine-Lives Familiar",
+  "defaultPrintingId": "988c23f6-59fe-49f9-a9ce-9881dccb7033",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Nine-Lives Familiar",
+      "manaCost": "{1}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Cat",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat"
+      ],
+      "keywords": [],
+      "rulesText": "This creature enters with eight revival counters on it if you cast it.\nWhen this creature dies, if it had a revival counter on it, return it to the battlefield with one fewer revival counter on it at the beginning of the next end step.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "This creature enters with eight revival counters on it if you cast it.\nWhen this creature dies, if it had a revival counter on it, return it to the battlefield with one fewer revival counter on it at the beginning of the next end step.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

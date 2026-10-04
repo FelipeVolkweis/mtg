@@ -1,0 +1,41 @@
+{
+  "id": "ac675899-25bb-4f06-9c8c-bf188024495f",
+  "canonicalName": "Firemane Commando",
+  "defaultPrintingId": "62cef25e-0a24-43f8-9d88-53f9d38c854f",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Firemane Commando",
+      "manaCost": "{3}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel Soldier",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel",
+        "Soldier"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever you attack with two or more creatures, draw a card.\nWhenever another player attacks with two or more creatures, they draw a card if none of those creatures attacked you.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever you attack with two or more creatures, draw a card.\nWhenever another player attacks with two or more creatures, they draw a card if none of those creatures attacked you.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

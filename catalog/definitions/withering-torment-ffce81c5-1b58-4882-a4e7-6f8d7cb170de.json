@@ -1,0 +1,32 @@
+{
+  "id": "ffce81c5-1b58-4882-a4e7-6f8d7cb170de",
+  "canonicalName": "Withering Torment",
+  "defaultPrintingId": "0868f94e-235d-4f65-a7af-8aacd58dd61e",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Withering Torment",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target creature or enchantment. You lose 2 life."
+    }
+  ],
+  "oracleText": "Destroy target creature or enchantment. You lose 2 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

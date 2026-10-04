@@ -1,0 +1,40 @@
+{
+  "id": "722e23d5-4f2a-43cd-bbd5-baf56b76e68d",
+  "canonicalName": "Parapet Thrasher",
+  "defaultPrintingId": "93d8b962-2fe8-4323-a760-144979818f2c",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Parapet Thrasher",
+      "manaCost": "{2}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever one or more Dragons you control deal combat damage to an opponent, choose one that hasn't been chosen this turn —\n• Destroy target artifact that opponent controls.\n• This creature deals 4 damage to each other opponent.\n• Exile the top card of your library. You may play it this turn.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever one or more Dragons you control deal combat damage to an opponent, choose one that hasn't been chosen this turn —\n• Destroy target artifact that opponent controls.\n• This creature deals 4 damage to each other opponent.\n• Exile the top card of your library. You may play it this turn.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "749683c9-8cc0-4e8e-8d90-adda5e5f4e93",
+  "canonicalName": "Hidetsugu's Second Rite",
+  "defaultPrintingId": "609421da-8d89-4365-b18b-778832d91482",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Hidetsugu's Second Rite",
+      "manaCost": "{3}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "If target player has exactly 10 life, Hidetsugu's Second Rite deals 10 damage to that player."
+    }
+  ],
+  "oracleText": "If target player has exactly 10 life, Hidetsugu's Second Rite deals 10 damage to that player.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

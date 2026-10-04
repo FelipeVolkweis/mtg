@@ -1,0 +1,38 @@
+{
+  "id": "befb211f-37ca-4083-98d4-9ff1f28be3f2",
+  "canonicalName": "Goreclaw, Terror of Qal Sisma",
+  "defaultPrintingId": "c7091f2e-1a10-48f0-881a-405b43634556",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Goreclaw, Terror of Qal Sisma",
+      "manaCost": "{3}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Legendary Creature — Bear",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Bear"
+      ],
+      "keywords": [],
+      "rulesText": "Creature spells you cast with power 4 or greater cost {2} less to cast.\nWhenever Goreclaw attacks, each creature you control with power 4 or greater gets +1/+1 and gains trample until end of turn.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Creature spells you cast with power 4 or greater cost {2} less to cast.\nWhenever Goreclaw attacks, each creature you control with power 4 or greater gets +1/+1 and gains trample until end of turn.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

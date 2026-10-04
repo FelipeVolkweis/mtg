@@ -118,7 +118,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         join(
           catalogRoot,
           "definitions",
-          "20000000-0000-4000-8000-000000000001.json",
+          "island-20000000-0000-4000-8000-000000000001.json",
         ),
         "utf8",
       ),
@@ -154,11 +154,15 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       artwork: ["https://cards.example.test/island.svg"],
     });
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
-      `${fixtureCards[2].oracle_id}.json`,
+      `delver-of-secrets-${fixtureCards[2].oracle_id}.json`,
     );
     const delver = JSON.parse(
       await readFile(
-        join(catalogRoot, "definitions", `${fixtureCards[2].oracle_id}.json`),
+        join(
+          catalogRoot,
+          "definitions",
+          `delver-of-secrets-${fixtureCards[2].oracle_id}.json`,
+        ),
         "utf8",
       ),
     );
@@ -176,10 +180,10 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     expect(delver.components[0].keywords).toEqual([]);
     expect(delver.components[0]).not.toHaveProperty("manaValue");
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
-      `${fixtureCards[4].oracle_id}.json`,
+      `shared-name-${fixtureCards[4].oracle_id}.json`,
     );
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
-      `${fixtureCards[5].oracle_id}.json`,
+      `shared-name-${fixtureCards[5].oracle_id}.json`,
     );
     expect(JSON.stringify(island)).not.toMatch(
       /prices|edhrec_rank|purchase_uris/,
@@ -211,7 +215,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     const file = join(
       catalogRoot,
       "definitions",
-      `${fixtureCards[4].oracle_id}.json`,
+      `shared-name-${fixtureCards[4].oracle_id}.json`,
     );
     const authored = JSON.parse(await readFile(file, "utf8"));
     authored.automationStatus = "implemented";
@@ -237,7 +241,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     const unfinishedFile = join(
       catalogRoot,
       "definitions",
-      `${fixtureCards[5].oracle_id}.json`,
+      `shared-name-${fixtureCards[5].oracle_id}.json`,
     );
     const unfinished = JSON.parse(await readFile(unfinishedFile, "utf8"));
     unfinished.abilities = [
@@ -390,7 +394,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     });
     await expect(importSet()).rejects.toThrow();
     expect(await readdir(join(catalogRoot, "definitions"))).not.toContain(
-      `${mappedOracle}.json`,
+      `mapped-front-${mappedOracle}.json`,
     );
     await writeFile(
       join(catalogRoot, "identity-map.json"),
@@ -400,7 +404,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     expect(
       JSON.parse(
         await readFile(
-          join(catalogRoot, "definitions", `${mappedOracle}.json`),
+          join(catalogRoot, "definitions", `mapped-front-${mappedOracle}.json`),
           "utf8",
         ),
       ),
@@ -408,6 +412,26 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       id: mappedOracle,
       form: "reversible_card",
       automationStatus: "unimplemented",
+    });
+    cards[4].name = "Æther // Shared Card";
+    await importSet();
+    expect(await readdir(join(catalogRoot, "definitions"))).not.toContain(
+      `shared-name-${fixtureCards[4].oracle_id}.json`,
+    );
+    expect(
+      JSON.parse(
+        await readFile(
+          join(
+            catalogRoot,
+            "definitions",
+            `æther-shared-card-${fixtureCards[4].oracle_id}.json`,
+          ),
+          "utf8",
+        ),
+      ),
+    ).toMatchObject({
+      id: fixtureCards[4].oracle_id,
+      abilities: authored.abilities,
     });
   } finally {
     await context.close();

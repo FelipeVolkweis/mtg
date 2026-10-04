@@ -1,0 +1,45 @@
+{
+  "id": "3ed41d2d-211b-4013-8562-8c64d54cc43a",
+  "canonicalName": "Ramos, Dragon Engine",
+  "defaultPrintingId": "8f95f753-bbaa-4282-9cd9-f1737136fc9e",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "G",
+    "R",
+    "U",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Ramos, Dragon Engine",
+      "manaCost": "{6}",
+      "colors": [],
+      "typeLine": "Legendary Artifact Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever you cast a spell, put a +1/+1 counter on Ramos for each of that spell's colors.\nRemove five +1/+1 counters from Ramos: Add {W}{W}{U}{U}{B}{B}{R}{R}{G}{G}. Activate only once each turn.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nWhenever you cast a spell, put a +1/+1 counter on Ramos for each of that spell's colors.\nRemove five +1/+1 counters from Ramos: Add {W}{W}{U}{U}{B}{B}{R}{R}{G}{G}. Activate only once each turn.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

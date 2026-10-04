@@ -1,0 +1,36 @@
+{
+  "id": "4a7a55a3-568c-4c31-9460-5b94dc0121d8",
+  "canonicalName": "Hungry Ghoul",
+  "defaultPrintingId": "790f9433-7565-4f7f-88e8-8af762ea0296",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Hungry Ghoul",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "{1}, Sacrifice another creature: Put a +1/+1 counter on this creature.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{1}, Sacrifice another creature: Put a +1/+1 counter on this creature.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

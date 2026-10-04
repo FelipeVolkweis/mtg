@@ -1,0 +1,45 @@
+{
+  "id": "bbfd0de0-3558-4833-bae4-8efae44b7fff",
+  "canonicalName": "Dreadwing Scavenger",
+  "defaultPrintingId": "e24d838b-ab48-410a-9a50-dbfea5da089b",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Dreadwing Scavenger",
+      "manaCost": "{1}{U}{B}",
+      "colors": [
+        "B",
+        "U"
+      ],
+      "typeLine": "Creature — Nightmare Bird",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Nightmare",
+        "Bird"
+      ],
+      "keywords": [
+        "Flying",
+        "Threshold"
+      ],
+      "rulesText": "Flying\nWhenever this creature enters or attacks, draw a card, then discard a card.\nThreshold — This creature gets +1/+1 and has deathtouch as long as there are seven or more cards in your graveyard.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flying\nWhenever this creature enters or attacks, draw a card, then discard a card.\nThreshold — This creature gets +1/+1 and has deathtouch as long as there are seven or more cards in your graveyard.",
+  "keywords": [
+    "Flying",
+    "Threshold"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

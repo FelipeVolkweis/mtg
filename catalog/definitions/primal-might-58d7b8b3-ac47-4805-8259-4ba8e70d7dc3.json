@@ -1,0 +1,36 @@
+{
+  "id": "58d7b8b3-ac47-4805-8259-4ba8e70d7dc3",
+  "canonicalName": "Primal Might",
+  "defaultPrintingId": "69b3f7b9-9499-4883-b5c5-c5474e470b21",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Primal Might",
+      "manaCost": "{X}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Fight"
+      ],
+      "rulesText": "Target creature you control gets +X/+X until end of turn. Then it fights up to one target creature you don't control. (Each deals damage equal to its power to the other.)"
+    }
+  ],
+  "oracleText": "Target creature you control gets +X/+X until end of turn. Then it fights up to one target creature you don't control. (Each deals damage equal to its power to the other.)",
+  "keywords": [
+    "Fight"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "1d60c80d-9a95-4051-bbf7-02ca51ee1be2",
+  "canonicalName": "Scrawling Crawler",
+  "defaultPrintingId": "09565ec6-dbb0-4ec8-bd75-781400f0dbe0",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Scrawling Crawler",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Phyrexian Construct",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Phyrexian",
+        "Construct"
+      ],
+      "keywords": [],
+      "rulesText": "At the beginning of your upkeep, each player draws a card.\nWhenever an opponent draws a card, that player loses 1 life.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "At the beginning of your upkeep, each player draws a card.\nWhenever an opponent draws a card, that player loses 1 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

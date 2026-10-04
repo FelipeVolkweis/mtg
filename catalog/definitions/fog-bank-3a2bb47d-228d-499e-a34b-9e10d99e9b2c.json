@@ -1,0 +1,42 @@
+{
+  "id": "3a2bb47d-228d-499e-a34b-9e10d99e9b2c",
+  "canonicalName": "Fog Bank",
+  "defaultPrintingId": "18748b1d-4161-482c-a726-8762b4c1819c",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Fog Bank",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Wall",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Wall"
+      ],
+      "keywords": [
+        "Flying",
+        "Defender"
+      ],
+      "rulesText": "Defender (This creature can't attack.)\nFlying\nPrevent all combat damage that would be dealt to and dealt by this creature.",
+      "power": "0",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Defender (This creature can't attack.)\nFlying\nPrevent all combat damage that would be dealt to and dealt by this creature.",
+  "keywords": [
+    "Flying",
+    "Defender"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

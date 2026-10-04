@@ -1,0 +1,32 @@
+{
+  "id": "cc187110-1148-4090-bbb8-e205694a39f5",
+  "canonicalName": "Counterspell",
+  "defaultPrintingId": "83390164-f00b-4be1-9cec-5de088c9debc",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Counterspell",
+      "manaCost": "{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Counter target spell."
+    }
+  ],
+  "oracleText": "Counter target spell.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

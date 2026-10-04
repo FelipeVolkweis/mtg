@@ -1,0 +1,40 @@
+{
+  "id": "6d37ba4b-ff56-4eec-9dc2-2d7f357dc9c9",
+  "canonicalName": "Youthful Valkyrie",
+  "defaultPrintingId": "9577d16a-e6ed-4d98-b90f-2abfc9b9586a",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Youthful Valkyrie",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever another Angel you control enters, put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever another Angel you control enters, put a +1/+1 counter on this creature.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

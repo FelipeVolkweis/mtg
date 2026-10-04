@@ -1,0 +1,37 @@
+{
+  "id": "814b87fe-2a75-4ff2-8637-7e69e3fb285b",
+  "canonicalName": "Marauding Blight-Priest",
+  "defaultPrintingId": "5f70dafc-c638-4ec0-ab5b-62998f752720",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Marauding Blight-Priest",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Cleric",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Cleric"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever you gain life, each opponent loses 1 life.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Whenever you gain life, each opponent loses 1 life.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

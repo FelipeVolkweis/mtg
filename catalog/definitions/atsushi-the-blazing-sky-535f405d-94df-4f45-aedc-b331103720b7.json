@@ -1,0 +1,47 @@
+{
+  "id": "535f405d-94df-4f45-aedc-b331103720b7",
+  "canonicalName": "Atsushi, the Blazing Sky",
+  "defaultPrintingId": "bedb57f3-bda8-4eba-ba4d-895e38f882f2",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Atsushi, the Blazing Sky",
+      "manaCost": "{2}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Dragon Spirit",
+      "manaValue": 4,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon",
+        "Spirit"
+      ],
+      "keywords": [
+        "Flying",
+        "Treasure",
+        "Trample"
+      ],
+      "rulesText": "Flying, trample\nWhen Atsushi dies, choose one —\n• Exile the top two cards of your library. Until the end of your next turn, you may play those cards.\n• Create three Treasure tokens.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying, trample\nWhen Atsushi dies, choose one —\n• Exile the top two cards of your library. Until the end of your next turn, you may play those cards.\n• Create three Treasure tokens.",
+  "keywords": [
+    "Flying",
+    "Treasure",
+    "Trample"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

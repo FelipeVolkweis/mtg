@@ -1,0 +1,31 @@
+{
+  "id": "5d641bf6-0f93-4189-8dc1-ec7ea446dade",
+  "canonicalName": "Tranquil Cove",
+  "defaultPrintingId": "7c9cabca-5bcc-4b97-b2ac-a345ad3ee43c",
+  "form": "normal",
+  "colorIdentity": [
+    "U",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Tranquil Cove",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {U}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {U}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

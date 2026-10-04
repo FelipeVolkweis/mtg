@@ -1,0 +1,36 @@
+{
+  "id": "17042684-7af4-43a6-88c7-885032cfb27c",
+  "canonicalName": "Adventuring Gear",
+  "defaultPrintingId": "361f9b99-5b5d-40da-b4b9-5ad90f6280ee",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Adventuring Gear",
+      "manaCost": "{1}",
+      "colors": [],
+      "typeLine": "Artifact — Equipment",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "keywords": [
+        "Equip",
+        "Landfall"
+      ],
+      "rulesText": "Landfall — Whenever a land you control enters, equipped creature gets +2/+2 until end of turn.\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)"
+    }
+  ],
+  "oracleText": "Landfall — Whenever a land you control enters, equipped creature gets +2/+2 until end of turn.\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+  "keywords": [
+    "Equip",
+    "Landfall"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

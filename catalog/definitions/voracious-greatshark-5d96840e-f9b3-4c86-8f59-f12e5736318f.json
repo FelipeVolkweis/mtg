@@ -1,0 +1,40 @@
+{
+  "id": "5d96840e-f9b3-4c86-8f59-f12e5736318f",
+  "canonicalName": "Voracious Greatshark",
+  "defaultPrintingId": "c27b40dd-9b2a-4a99-a984-ee9cfdb091a1",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Voracious Greatshark",
+      "manaCost": "{3}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Shark",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Shark"
+      ],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, counter target artifact or creature spell.",
+      "power": "5",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, counter target artifact or creature spell.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

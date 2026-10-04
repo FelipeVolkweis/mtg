@@ -1,0 +1,28 @@
+{
+  "id": "b2eb7a64-a307-4a78-a25d-63fb3ae1e237",
+  "canonicalName": "Cryptic Caves",
+  "defaultPrintingId": "9d126c8f-a3df-497c-aad5-a448c55f51cc",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Cryptic Caves",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this land: Draw a card. Activate only if you control five or more lands."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this land: Draw a card. Activate only if you control five or more lands.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

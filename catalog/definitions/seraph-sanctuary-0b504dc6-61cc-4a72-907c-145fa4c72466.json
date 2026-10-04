@@ -1,0 +1,28 @@
+{
+  "id": "0b504dc6-61cc-4a72-907c-145fa4c72466",
+  "canonicalName": "Seraph Sanctuary",
+  "defaultPrintingId": "cef8e044-6cc0-4988-9d5f-bf9a0ab1c66f",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Seraph Sanctuary",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "When this land enters, you gain 1 life.\nWhenever an Angel you control enters, you gain 1 life.\n{T}: Add {C}."
+    }
+  ],
+  "oracleText": "When this land enters, you gain 1 life.\nWhenever an Angel you control enters, you gain 1 life.\n{T}: Add {C}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

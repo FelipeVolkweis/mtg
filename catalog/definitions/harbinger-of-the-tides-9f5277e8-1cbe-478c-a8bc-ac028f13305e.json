@@ -1,0 +1,37 @@
+{
+  "id": "9f5277e8-1cbe-478c-a8bc-ac028f13305e",
+  "canonicalName": "Harbinger of the Tides",
+  "defaultPrintingId": "9ca4f70d-ec17-49a4-8968-598ecdbe8243",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Harbinger of the Tides",
+      "manaCost": "{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Merfolk Wizard",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Merfolk",
+        "Wizard"
+      ],
+      "keywords": [],
+      "rulesText": "You may cast this spell as though it had flash if you pay {2} more to cast it. (You may cast it any time you could cast an instant.)\nWhen this creature enters, you may return target tapped creature an opponent controls to its owner's hand.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "You may cast this spell as though it had flash if you pay {2} more to cast it. (You may cast it any time you could cast an instant.)\nWhen this creature enters, you may return target tapped creature an opponent controls to its owner's hand.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

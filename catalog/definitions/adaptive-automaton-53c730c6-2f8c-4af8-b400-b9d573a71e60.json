@@ -1,0 +1,33 @@
+{
+  "id": "53c730c6-2f8c-4af8-b400-b9d573a71e60",
+  "canonicalName": "Adaptive Automaton",
+  "defaultPrintingId": "e35e614c-51a9-4d5c-b7fa-1a0a87108785",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Adaptive Automaton",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Construct",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "keywords": [],
+      "rulesText": "As this creature enters, choose a creature type.\nThis creature is the chosen type in addition to its other types.\nOther creatures you control of the chosen type get +1/+1.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "As this creature enters, choose a creature type.\nThis creature is the chosen type in addition to its other types.\nOther creatures you control of the chosen type get +1/+1.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

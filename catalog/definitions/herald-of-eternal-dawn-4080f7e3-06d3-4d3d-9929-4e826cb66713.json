@@ -1,0 +1,42 @@
+{
+  "id": "4080f7e3-06d3-4d3d-9929-4e826cb66713",
+  "canonicalName": "Herald of Eternal Dawn",
+  "defaultPrintingId": "bdcddceb-6b5e-4c19-9069-457c3736932d",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Herald of Eternal Dawn",
+      "manaCost": "{4}{W}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying",
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\nYou can't lose the game and your opponents can't win the game.",
+      "power": "6",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\nYou can't lose the game and your opponents can't win the game.",
+  "keywords": [
+    "Flying",
+    "Flash"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

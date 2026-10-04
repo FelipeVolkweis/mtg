@@ -1,0 +1,32 @@
+{
+  "id": "01546b7d-a233-4176-8843-d732074dc5b6",
+  "canonicalName": "Doubling Season",
+  "defaultPrintingId": "f2c4f80e-84a0-463b-82c3-5c6503809351",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Doubling Season",
+      "manaCost": "{4}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "If an effect would create one or more tokens under your control, it creates twice that many of those tokens instead.\nIf an effect would put one or more counters on a permanent you control, it puts twice that many of those counters on that permanent instead."
+    }
+  ],
+  "oracleText": "If an effect would create one or more tokens under your control, it creates twice that many of those tokens instead.\nIf an effect would put one or more counters on a permanent you control, it puts twice that many of those counters on that permanent instead.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

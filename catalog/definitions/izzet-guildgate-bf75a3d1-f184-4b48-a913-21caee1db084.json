@@ -1,0 +1,33 @@
+{
+  "id": "bf75a3d1-f184-4b48-a913-21caee1db084",
+  "canonicalName": "Izzet Guildgate",
+  "defaultPrintingId": "db9e6fc9-813d-4a71-8a68-8e0f83fa945d",
+  "form": "normal",
+  "colorIdentity": [
+    "R",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Izzet Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {U} or {R}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {U} or {R}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "d23c3613-bc5e-4fc5-939c-62a090c53a79",
+  "canonicalName": "Uncharted Haven",
+  "defaultPrintingId": "172cd5b7-98fc-4add-b858-a0b3dfb75c19",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Uncharted Haven",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color."
+    }
+  ],
+  "oracleText": "This land enters tapped. As it enters, choose a color.\n{T}: Add one mana of the chosen color.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

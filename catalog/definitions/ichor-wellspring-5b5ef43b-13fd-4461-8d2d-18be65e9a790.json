@@ -1,0 +1,28 @@
+{
+  "id": "5b5ef43b-13fd-4461-8d2d-18be65e9a790",
+  "canonicalName": "Ichor Wellspring",
+  "defaultPrintingId": "c904cd73-b3bf-4fbd-a0a0-1b2aaaf880b0",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Ichor Wellspring",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
+    }
+  ],
+  "oracleText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

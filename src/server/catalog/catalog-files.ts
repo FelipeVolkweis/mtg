@@ -128,10 +128,26 @@ async function catalogInode(root: string) {
   }
 }
 
+function definitionFilename(card: { id: string; canonicalName: string }) {
+  const parts = Array.from(
+    card.canonicalName
+      .normalize("NFKD")
+      .replace(/\p{M}/gu, "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, "-")
+      .replace(/^-|-$/g, ""),
+  );
+  while (Buffer.byteLength(parts.join("")) > 180) parts.pop();
+  const slug = parts.join("").replace(/-$/g, "") || "card";
+  return `${slug}-${card.id}.json`;
+}
+
 async function records<T>(
   root: string,
   directory: string,
   schema: z.ZodType<T>,
+  filename: (record: T & { id: string }) => string = (record) =>
+    `${record.id}.json`,
 ): Promise<Record<string, T>> {
   const result: Record<string, T> = {};
   for (const file of await readdir(join(root, directory))) {
@@ -139,7 +155,7 @@ async function records<T>(
     const record = schema.parse(
       await json(join(root, directory, file)),
     ) as T & { id: string };
-    if (file !== `${record.id}.json` || result[record.id])
+    if (file !== filename(record) || result[record.id])
       throw new Error(`Invalid ${directory} filename or duplicate: ${file}`);
     result[record.id] = record;
   }
@@ -151,7 +167,7 @@ export async function readCatalog(root = catalogRoot()): Promise<Catalog> {
   const inode = await catalogInode(root);
   if (loaded?.root === root && loaded.inode === inode) return loaded.catalog;
   const [definitions, printings, directory, importedSets] = await Promise.all([
-    records(root, "definitions", definition),
+    records(root, "definitions", definition, definitionFilename),
     records(root, "printings", printing),
     json(join(root, "names.json")).then((value) => names.parse(value)),
     json(join(root, "sets.json")).then((value) => sets.parse(value)),
@@ -198,9 +214,14 @@ export async function publishCatalog(catalog: Catalog, root = catalogRoot()) {
   let moved = false;
   try {
     await cp(root, stage, { recursive: true });
+    await Promise.all(
+      (await readdir(join(stage, "definitions")))
+        .filter((file) => file.endsWith(".json"))
+        .map((file) => rm(join(stage, "definitions", file))),
+    );
     await Promise.all([
       ...Object.values(catalog.definitions).map((card) =>
-        put(stage, `definitions/${card.id}.json`, card),
+        put(stage, `definitions/${definitionFilename(card)}`, card),
       ),
       ...Object.values(catalog.printings).map((card) =>
         put(stage, `printings/${card.id}.json`, card),

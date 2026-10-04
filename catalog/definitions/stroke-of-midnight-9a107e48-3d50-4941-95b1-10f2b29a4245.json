@@ -1,0 +1,32 @@
+{
+  "id": "9a107e48-3d50-4941-95b1-10f2b29a4245",
+  "canonicalName": "Stroke of Midnight",
+  "defaultPrintingId": "ab135925-d924-456d-851a-6ccdaaf27271",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Stroke of Midnight",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target nonland permanent. Its controller creates a 1/1 white Human creature token."
+    }
+  ],
+  "oracleText": "Destroy target nonland permanent. Its controller creates a 1/1 white Human creature token.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

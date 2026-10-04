@@ -1,0 +1,36 @@
+{
+  "id": "04c7f4fe-2098-4311-866d-6733c08d5178",
+  "canonicalName": "Nettlecyst",
+  "defaultPrintingId": "91ef92af-de6b-4dc4-81ab-8e527cb96fdd",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Nettlecyst",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact — Equipment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "keywords": [
+        "Equip",
+        "Living weapon"
+      ],
+      "rulesText": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)\nEquipped creature gets +1/+1 for each artifact and/or enchantment you control.\nEquip {2}"
+    }
+  ],
+  "oracleText": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)\nEquipped creature gets +1/+1 for each artifact and/or enchantment you control.\nEquip {2}",
+  "keywords": [
+    "Equip",
+    "Living weapon"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

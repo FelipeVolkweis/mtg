@@ -1,0 +1,37 @@
+{
+  "id": "2091eb7e-2357-4ef8-b15e-1e6f82176340",
+  "canonicalName": "Mold Adder",
+  "defaultPrintingId": "48d665cd-a2c6-4b81-8032-379e476b5ea5",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Mold Adder",
+      "manaCost": "{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Fungus Snake",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Fungus",
+        "Snake"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever an opponent casts a blue or black spell, you may put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Whenever an opponent casts a blue or black spell, you may put a +1/+1 counter on this creature.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

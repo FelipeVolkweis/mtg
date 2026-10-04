@@ -1,0 +1,32 @@
+{
+  "id": "d13f0907-de39-4a90-940a-831740d7aa9b",
+  "canonicalName": "Pilfer",
+  "defaultPrintingId": "8c7c88b5-6d09-453b-b9c1-7dcbba8f1080",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Pilfer",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Target opponent reveals their hand. You choose a nonland card from it. That player discards that card."
+    }
+  ],
+  "oracleText": "Target opponent reveals their hand. You choose a nonland card from it. That player discards that card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

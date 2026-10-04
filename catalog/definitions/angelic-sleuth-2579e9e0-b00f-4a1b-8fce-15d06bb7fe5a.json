@@ -1,0 +1,43 @@
+{
+  "id": "2579e9e0-b00f-4a1b-8fce-15d06bb7fe5a",
+  "canonicalName": "Angelic Sleuth",
+  "defaultPrintingId": "68905611-fb68-421a-84b6-b41e379a6361",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Angelic Sleuth",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel Advisor",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel",
+        "Advisor"
+      ],
+      "keywords": [
+        "Flying",
+        "Investigate"
+      ],
+      "rulesText": "Flying\nWhenever another permanent you control leaves the battlefield, if it had counters on it, investigate. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nWhenever another permanent you control leaves the battlefield, if it had counters on it, investigate. (Create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+  "keywords": [
+    "Flying",
+    "Investigate"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

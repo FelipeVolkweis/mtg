@@ -1,0 +1,44 @@
+{
+  "id": "ba5055ce-6809-47a4-bee6-fb97a5b60f8a",
+  "canonicalName": "Research Thief",
+  "defaultPrintingId": "f6287354-4503-43c6-bfc0-39efb6179428",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Research Thief",
+      "manaCost": "{4}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Moonfolk Wizard",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Moonfolk",
+        "Wizard"
+      ],
+      "keywords": [
+        "Flying",
+        "Flash"
+      ],
+      "rulesText": "Flash\nFlying\nWhenever an artifact creature you control deals combat damage to a player, draw a card.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flash\nFlying\nWhenever an artifact creature you control deals combat damage to a player, draw a card.",
+  "keywords": [
+    "Flying",
+    "Flash"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

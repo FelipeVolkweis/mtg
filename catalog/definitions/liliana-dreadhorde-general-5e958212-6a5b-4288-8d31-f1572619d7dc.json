@@ -1,0 +1,37 @@
+{
+  "id": "5e958212-6a5b-4288-8d31-f1572619d7dc",
+  "canonicalName": "Liliana, Dreadhorde General",
+  "defaultPrintingId": "cb28d217-795e-4320-a032-cd713f7ecc8a",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Liliana, Dreadhorde General",
+      "manaCost": "{4}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Legendary Planeswalker — Liliana",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Planeswalker"
+      ],
+      "subtypes": [
+        "Liliana"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever a creature you control dies, draw a card.\n+1: Create a 2/2 black Zombie creature token.\n−4: Each player sacrifices two creatures of their choice.\n−9: Each opponent chooses a permanent they control of each permanent type and sacrifices the rest.",
+      "loyalty": "6"
+    }
+  ],
+  "oracleText": "Whenever a creature you control dies, draw a card.\n+1: Create a 2/2 black Zombie creature token.\n−4: Each player sacrifices two creatures of their choice.\n−9: Each opponent chooses a permanent they control of each permanent type and sacrifices the rest.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

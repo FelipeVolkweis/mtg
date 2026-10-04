@@ -1,0 +1,45 @@
+{
+  "id": "7b51a979-47e0-4b98-8ec5-8064c83422e1",
+  "canonicalName": "Knight of Grace",
+  "defaultPrintingId": "4efb8633-0a70-4ddc-80af-42508ec75cff",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Knight of Grace",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Knight",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Knight"
+      ],
+      "keywords": [
+        "Hexproof from",
+        "Hexproof",
+        "First strike"
+      ],
+      "rulesText": "First strike (This creature deals combat damage before creatures without first strike.)\nHexproof from black (This creature can't be the target of black spells or abilities your opponents control.)\nThis creature gets +1/+0 as long as any player controls a black permanent.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nHexproof from black (This creature can't be the target of black spells or abilities your opponents control.)\nThis creature gets +1/+0 as long as any player controls a black permanent.",
+  "keywords": [
+    "Hexproof from",
+    "Hexproof",
+    "First strike"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

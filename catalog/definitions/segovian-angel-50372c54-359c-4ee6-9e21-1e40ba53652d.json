@@ -1,0 +1,42 @@
+{
+  "id": "50372c54-359c-4ee6-9e21-1e40ba53652d",
+  "canonicalName": "Segovian Angel",
+  "defaultPrintingId": "675c227e-3da0-452c-aea2-5c9a7c55f5ca",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Segovian Angel",
+      "manaCost": "{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying",
+        "Vigilance"
+      ],
+      "rulesText": "Flying, vigilance",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flying, vigilance",
+  "keywords": [
+    "Flying",
+    "Vigilance"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

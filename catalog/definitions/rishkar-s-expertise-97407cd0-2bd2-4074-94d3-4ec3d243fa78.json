@@ -1,0 +1,32 @@
+{
+  "id": "97407cd0-2bd2-4074-94d3-4ec3d243fa78",
+  "canonicalName": "Rishkar's Expertise",
+  "defaultPrintingId": "c2354a0a-1fb6-4de3-bcc9-df5565b3ceba",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Rishkar's Expertise",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Draw cards equal to the greatest power among creatures you control.\nYou may cast a spell with mana value 5 or less from your hand without paying its mana cost."
+    }
+  ],
+  "oracleText": "Draw cards equal to the greatest power among creatures you control.\nYou may cast a spell with mana value 5 or less from your hand without paying its mana cost.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

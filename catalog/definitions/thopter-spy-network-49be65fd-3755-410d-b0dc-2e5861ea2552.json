@@ -1,0 +1,32 @@
+{
+  "id": "49be65fd-3755-410d-b0dc-2e5861ea2552",
+  "canonicalName": "Thopter Spy Network",
+  "defaultPrintingId": "8628d622-d682-4264-87d7-ad8434bb4328",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Thopter Spy Network",
+      "manaCost": "{2}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "At the beginning of your upkeep, if you control an artifact, create a 1/1 colorless Thopter artifact creature token with flying.\nWhenever one or more artifact creatures you control deal combat damage to a player, draw a card."
+    }
+  ],
+  "oracleText": "At the beginning of your upkeep, if you control an artifact, create a 1/1 colorless Thopter artifact creature token with flying.\nWhenever one or more artifact creatures you control deal combat damage to a player, draw a card.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

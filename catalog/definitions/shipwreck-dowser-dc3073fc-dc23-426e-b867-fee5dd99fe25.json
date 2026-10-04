@@ -1,0 +1,41 @@
+{
+  "id": "dc3073fc-dc23-426e-b867-fee5dd99fe25",
+  "canonicalName": "Shipwreck Dowser",
+  "defaultPrintingId": "1f20fe3d-792a-4030-a25c-e81b48b2bcb4",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Shipwreck Dowser",
+      "manaCost": "{3}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Merfolk Wizard",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Merfolk",
+        "Wizard"
+      ],
+      "keywords": [
+        "Prowess"
+      ],
+      "rulesText": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhen this creature enters, return target instant or sorcery card from your graveyard to your hand.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhen this creature enters, return target instant or sorcery card from your graveyard to your hand.",
+  "keywords": [
+    "Prowess"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

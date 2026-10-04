@@ -1,0 +1,40 @@
+{
+  "id": "711eea87-0fa3-46e0-a42b-fa5a86455f04",
+  "canonicalName": "Shivan Dragon",
+  "defaultPrintingId": "702c4781-670b-49ae-b511-90ed119841b0",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Shivan Dragon",
+      "manaCost": "{4}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\n{R}: This creature gets +1/+0 until end of turn.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "18f22960-87ec-43cd-82ea-ec5cabf49ad3",
+  "canonicalName": "Foundry Inspector",
+  "defaultPrintingId": "9ff34a25-85f9-40a4-a3fd-c27148bf7429",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Foundry Inspector",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Construct",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "keywords": [],
+      "rulesText": "Artifact spells you cast cost {1} less to cast.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Artifact spells you cast cost {1} less to cast.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "4fb00dbe-1f82-4ba6-b18c-97e816d10d3a",
+  "canonicalName": "Patchwork Banner",
+  "defaultPrintingId": "205c527c-0055-4d2a-86b1-18d1c58a898d",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Patchwork Banner",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "As this artifact enters, choose a creature type.\nCreatures you control of the chosen type get +1/+1.\n{T}: Add one mana of any color."
+    }
+  ],
+  "oracleText": "As this artifact enters, choose a creature type.\nCreatures you control of the chosen type get +1/+1.\n{T}: Add one mana of any color.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

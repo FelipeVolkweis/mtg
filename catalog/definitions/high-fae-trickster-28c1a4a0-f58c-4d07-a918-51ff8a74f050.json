@@ -1,0 +1,43 @@
+{
+  "id": "28c1a4a0-f58c-4d07-a918-51ff8a74f050",
+  "canonicalName": "High Fae Trickster",
+  "defaultPrintingId": "7f1b93ea-1ec1-4010-9343-765742f5088b",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "High Fae Trickster",
+      "manaCost": "{3}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Faerie Wizard",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Faerie",
+        "Wizard"
+      ],
+      "keywords": [
+        "Flying",
+        "Flash"
+      ],
+      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\nYou may cast spells as though they had flash.",
+      "power": "4",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nFlying\nYou may cast spells as though they had flash.",
+  "keywords": [
+    "Flying",
+    "Flash"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

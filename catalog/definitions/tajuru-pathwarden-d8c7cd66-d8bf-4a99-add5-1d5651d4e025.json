@@ -1,0 +1,44 @@
+{
+  "id": "d8c7cd66-d8bf-4a99-add5-1d5651d4e025",
+  "canonicalName": "Tajuru Pathwarden",
+  "defaultPrintingId": "da20a0d3-2022-4dea-84c8-85adc5a974f8",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Tajuru Pathwarden",
+      "manaCost": "{4}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Warrior Ally",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Warrior",
+        "Ally"
+      ],
+      "keywords": [
+        "Vigilance",
+        "Trample"
+      ],
+      "rulesText": "Vigilance (Attacking doesn't cause this creature to tap.)\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+      "power": "5",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+  "keywords": [
+    "Vigilance",
+    "Trample"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

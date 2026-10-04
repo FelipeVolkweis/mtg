@@ -1,0 +1,28 @@
+{
+  "id": "3c0f99b8-0222-4fac-932a-eb5d77826564",
+  "canonicalName": "Soulstone Sanctuary",
+  "defaultPrintingId": "642553a7-6d0f-483d-a873-3a703786db42",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Soulstone Sanctuary",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{4}: This land becomes a 3/3 creature with vigilance and all creature types. It's still a land."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{4}: This land becomes a 3/3 creature with vigilance and all creature types. It's still a land.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,40 @@
+{
+  "id": "a51ec70d-1356-4403-a858-b99445bac54a",
+  "canonicalName": "Predator Ooze",
+  "defaultPrintingId": "333b3cca-ebbf-4ceb-a6a5-3d49cb2e143a",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Predator Ooze",
+      "manaCost": "{G}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Ooze",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Ooze"
+      ],
+      "keywords": [
+        "Indestructible"
+      ],
+      "rulesText": "Indestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nWhenever this creature attacks, put a +1/+1 counter on it.\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Indestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nWhenever this creature attacks, put a +1/+1 counter on it.\nWhenever a creature dealt damage by this creature this turn dies, put a +1/+1 counter on this creature.",
+  "keywords": [
+    "Indestructible"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

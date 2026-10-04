@@ -1,0 +1,36 @@
+{
+  "id": "b3c69bf4-880f-4198-a67c-87d23d9c3d41",
+  "canonicalName": "Homunculus Horde",
+  "defaultPrintingId": "470c4d03-340a-4e0e-a59f-f19d05497785",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Homunculus Horde",
+      "manaCost": "{3}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Homunculus",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Homunculus"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever you draw your second card each turn, create a token that's a copy of this creature.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Whenever you draw your second card each turn, create a token that's a copy of this creature.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

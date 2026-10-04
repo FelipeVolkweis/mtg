@@ -1,0 +1,28 @@
+{
+  "id": "6db442e5-fbcc-4456-a4c5-bea1aee3fc8e",
+  "canonicalName": "Radiant Fountain",
+  "defaultPrintingId": "9ab17fb1-98ed-4c8e-985d-a453d236095d",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Radiant Fountain",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "When this land enters, you gain 2 life.\n{T}: Add {C}."
+    }
+  ],
+  "oracleText": "When this land enters, you gain 2 life.\n{T}: Add {C}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

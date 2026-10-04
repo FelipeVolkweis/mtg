@@ -1,0 +1,36 @@
+{
+  "id": "dda4b515-49c0-43fe-9f6a-36defa326bb1",
+  "canonicalName": "Maalfeld Twins",
+  "defaultPrintingId": "c166df8f-9508-427a-8ec7-bc8541b6ed88",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Maalfeld Twins",
+      "manaCost": "{5}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature dies, create two 2/2 black Zombie creature tokens.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "When this creature dies, create two 2/2 black Zombie creature tokens.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

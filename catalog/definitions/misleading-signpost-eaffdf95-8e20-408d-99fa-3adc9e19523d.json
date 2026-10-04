@@ -1,0 +1,36 @@
+{
+  "id": "eaffdf95-8e20-408d-99fa-3adc9e19523d",
+  "canonicalName": "Misleading Signpost",
+  "defaultPrintingId": "74774cba-89b9-43c3-9648-df5a5e28a71b",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Misleading Signpost",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flash"
+      ],
+      "rulesText": "Flash\nWhen this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)\n{T}: Add {U}."
+    }
+  ],
+  "oracleText": "Flash\nWhen this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)\n{T}: Add {U}.",
+  "keywords": [
+    "Flash"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

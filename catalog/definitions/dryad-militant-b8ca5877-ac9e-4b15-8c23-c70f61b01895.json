@@ -1,0 +1,39 @@
+{
+  "id": "b8ca5877-ac9e-4b15-8c23-c70f61b01895",
+  "canonicalName": "Dryad Militant",
+  "defaultPrintingId": "8fb36712-26e9-4ec7-8946-626bb7094c15",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Dryad Militant",
+      "manaCost": "{G/W}",
+      "colors": [
+        "G",
+        "W"
+      ],
+      "typeLine": "Creature — Dryad Soldier",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dryad",
+        "Soldier"
+      ],
+      "keywords": [],
+      "rulesText": "({G/W} can be paid with either {G} or {W}.)\nIf an instant or sorcery card would be put into a graveyard from anywhere, exile it instead.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "({G/W} can be paid with either {G} or {W}.)\nIf an instant or sorcery card would be put into a graveyard from anywhere, exile it instead.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
+  "canonicalName": "Negate",
+  "defaultPrintingId": "40b33b38-8591-4e0c-8f3a-0249da977821",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Negate",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Counter target noncreature spell."
+    }
+  ],
+  "oracleText": "Counter target noncreature spell.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

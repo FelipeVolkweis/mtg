@@ -1,0 +1,41 @@
+{
+  "id": "b753d7dd-4c6b-4472-a009-671572f927eb",
+  "canonicalName": "Vampire Interloper",
+  "defaultPrintingId": "ac01d4eb-10ec-4bda-aa9b-04c74dabfcaf",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Vampire Interloper",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Scout",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Scout"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nThis creature can't block.",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flying\nThis creature can't block.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

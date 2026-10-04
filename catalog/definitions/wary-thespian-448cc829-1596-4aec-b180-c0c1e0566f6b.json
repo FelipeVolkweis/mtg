@@ -1,0 +1,41 @@
+{
+  "id": "448cc829-1596-4aec-b180-c0c1e0566f6b",
+  "canonicalName": "Wary Thespian",
+  "defaultPrintingId": "a3d62d04-0974-4cb5-9a35-5e996c6456e2",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Wary Thespian",
+      "manaCost": "{1}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Cat Druid",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cat",
+        "Druid"
+      ],
+      "keywords": [
+        "Surveil"
+      ],
+      "rulesText": "When this creature enters or dies, surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
+      "power": "3",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature enters or dies, surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
+  "keywords": [
+    "Surveil"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

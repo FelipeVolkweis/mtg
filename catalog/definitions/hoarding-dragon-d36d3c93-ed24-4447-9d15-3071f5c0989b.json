@@ -1,0 +1,40 @@
+{
+  "id": "d36d3c93-ed24-4447-9d15-3071f5c0989b",
+  "canonicalName": "Hoarding Dragon",
+  "defaultPrintingId": "c3a35b3b-0c92-4b40-8210-86a5b5f275eb",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Hoarding Dragon",
+      "manaCost": "{3}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhen this creature enters, you may search your library for an artifact card, exile it, then shuffle.\nWhen this creature dies, you may put the exiled card into its owner's hand.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nWhen this creature enters, you may search your library for an artifact card, exile it, then shuffle.\nWhen this creature dies, you may put the exiled card into its owner's hand.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

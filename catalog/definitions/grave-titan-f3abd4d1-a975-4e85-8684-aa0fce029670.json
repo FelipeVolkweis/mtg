@@ -1,0 +1,40 @@
+{
+  "id": "f3abd4d1-a975-4e85-8684-aa0fce029670",
+  "canonicalName": "Grave Titan",
+  "defaultPrintingId": "5bde28a1-635f-48f8-bed8-444921d5912c",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Grave Titan",
+      "manaCost": "{4}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Giant",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Giant"
+      ],
+      "keywords": [
+        "Deathtouch"
+      ],
+      "rulesText": "Deathtouch\nWhenever this creature enters or attacks, create two 2/2 black Zombie creature tokens.",
+      "power": "6",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "Deathtouch\nWhenever this creature enters or attacks, create two 2/2 black Zombie creature tokens.",
+  "keywords": [
+    "Deathtouch"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "16ab9451-f3da-4f61-8e2b-d9c84e0e5428",
+  "canonicalName": "Crackling Cyclops",
+  "defaultPrintingId": "6e5b899a-52f7-471b-ad50-4fa6566758fd",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Crackling Cyclops",
+      "manaCost": "{2}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Cyclops Wizard",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Cyclops",
+        "Wizard"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever you cast a noncreature spell, this creature gets +3/+0 until end of turn.",
+      "power": "0",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Whenever you cast a noncreature spell, this creature gets +3/+0 until end of turn.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

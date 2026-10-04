@@ -1,0 +1,43 @@
+{
+  "id": "4de0ccab-bb5d-4c7c-827e-36aa1d00b182",
+  "canonicalName": "Drake Hatcher",
+  "defaultPrintingId": "bcaf4196-6bf3-47fa-b5c7-0e77f45cf820",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Drake Hatcher",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Human Wizard",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Wizard"
+      ],
+      "keywords": [
+        "Prowess",
+        "Vigilance"
+      ],
+      "rulesText": "Vigilance, prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhenever this creature deals combat damage to a player, put that many incubation counters on it.\nRemove three incubation counters from this creature: Create a 2/2 blue Drake creature token with flying.",
+      "power": "1",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Vigilance, prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhenever this creature deals combat damage to a player, put that many incubation counters on it.\nRemove three incubation counters from this creature: Create a 2/2 blue Drake creature token with flying.",
+  "keywords": [
+    "Prowess",
+    "Vigilance"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

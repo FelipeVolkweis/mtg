@@ -1,0 +1,32 @@
+{
+  "id": "07792d72-d5db-41b9-871c-e720e12ce659",
+  "canonicalName": "Cemetery Recruitment",
+  "defaultPrintingId": "69c60f2e-b313-4139-9708-1a0e0f1ca63e",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Cemetery Recruitment",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Return target creature card from your graveyard to your hand. If it's a Zombie card, draw a card."
+    }
+  ],
+  "oracleText": "Return target creature card from your graveyard to your hand. If it's a Zombie card, draw a card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

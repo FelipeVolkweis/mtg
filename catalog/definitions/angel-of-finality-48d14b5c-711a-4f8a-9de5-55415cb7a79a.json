@@ -1,0 +1,40 @@
+{
+  "id": "48d14b5c-711a-4f8a-9de5-55415cb7a79a",
+  "canonicalName": "Angel of Finality",
+  "defaultPrintingId": "ed1e014c-8cf9-4193-ac8e-86a7b2311f59",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Angel of Finality",
+      "manaCost": "{3}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Angel",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Angel"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhen this creature enters, exile target player's graveyard.",
+      "power": "3",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nWhen this creature enters, exile target player's graveyard.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

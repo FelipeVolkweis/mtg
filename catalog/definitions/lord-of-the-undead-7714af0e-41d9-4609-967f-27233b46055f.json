@@ -1,0 +1,36 @@
+{
+  "id": "7714af0e-41d9-4609-967f-27233b46055f",
+  "canonicalName": "Lord of the Undead",
+  "defaultPrintingId": "09a16104-26d5-422e-b86d-6c008ac2c903",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Lord of the Undead",
+      "manaCost": "{1}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie"
+      ],
+      "keywords": [],
+      "rulesText": "Other Zombie creatures get +1/+1.\n{1}{B}, {T}: Return target Zombie card from your graveyard to your hand.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Other Zombie creatures get +1/+1.\n{1}{B}, {T}: Return target Zombie card from your graveyard to your hand.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

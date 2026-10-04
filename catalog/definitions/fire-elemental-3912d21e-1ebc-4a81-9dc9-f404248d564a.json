@@ -1,0 +1,36 @@
+{
+  "id": "3912d21e-1ebc-4a81-9dc9-f404248d564a",
+  "canonicalName": "Fire Elemental",
+  "defaultPrintingId": "dc506f58-048d-49cc-ad8c-2eb851b08bb6",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Fire Elemental",
+      "manaCost": "{3}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Elemental",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elemental"
+      ],
+      "keywords": [],
+      "rulesText": "",
+      "power": "5",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "290faa28-450e-4797-9a8f-642d8af3f82a",
+  "canonicalName": "Run Away Together",
+  "defaultPrintingId": "e598eb7b-10dc-49e6-ac60-2fefa987173e",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Run Away Together",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Choose two target creatures controlled by different players. Return those creatures to their owners' hands."
+    }
+  ],
+  "oracleText": "Choose two target creatures controlled by different players. Return those creatures to their owners' hands.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

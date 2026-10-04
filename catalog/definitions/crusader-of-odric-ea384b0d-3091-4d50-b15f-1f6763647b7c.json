@@ -1,0 +1,37 @@
+{
+  "id": "ea384b0d-3091-4d50-b15f-1f6763647b7c",
+  "canonicalName": "Crusader of Odric",
+  "defaultPrintingId": "2fd0400a-ef3e-4b03-9852-63e28304da53",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Crusader of Odric",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Soldier",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Soldier"
+      ],
+      "keywords": [],
+      "rulesText": "Crusader of Odric's power and toughness are each equal to the number of creatures you control.",
+      "power": "*",
+      "toughness": "*"
+    }
+  ],
+  "oracleText": "Crusader of Odric's power and toughness are each equal to the number of creatures you control.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

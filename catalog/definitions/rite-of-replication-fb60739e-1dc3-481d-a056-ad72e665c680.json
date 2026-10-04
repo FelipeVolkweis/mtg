@@ -1,0 +1,36 @@
+{
+  "id": "fb60739e-1dc3-481d-a056-ad72e665c680",
+  "canonicalName": "Rite of Replication",
+  "defaultPrintingId": "fe98958d-30ee-4a47-aacc-064e02d109b3",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Rite of Replication",
+      "manaCost": "{2}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Kicker"
+      ],
+      "rulesText": "Kicker {5} (You may pay an additional {5} as you cast this spell.)\nCreate a token that's a copy of target creature. If this spell was kicked, create five of those tokens instead."
+    }
+  ],
+  "oracleText": "Kicker {5} (You may pay an additional {5} as you cast this spell.)\nCreate a token that's a copy of target creature. If this spell was kicked, create five of those tokens instead.",
+  "keywords": [
+    "Kicker"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

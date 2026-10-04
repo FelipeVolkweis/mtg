@@ -1,0 +1,28 @@
+{
+  "id": "05899372-9784-4bdb-9c28-504c71fed906",
+  "canonicalName": "Witch's Clinic",
+  "defaultPrintingId": "60461a4f-a337-46b0-908f-fbd7479c235a",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Witch's Clinic",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{2}, {T}: Target commander gains lifelink until end of turn."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{2}, {T}: Target commander gains lifelink until end of turn.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

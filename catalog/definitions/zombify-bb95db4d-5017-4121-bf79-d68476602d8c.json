@@ -1,0 +1,32 @@
+{
+  "id": "bb95db4d-5017-4121-bf79-d68476602d8c",
+  "canonicalName": "Zombify",
+  "defaultPrintingId": "dc798e6f-13c4-457c-b052-b7b65bc83cfe",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Zombify",
+      "manaCost": "{3}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Return target creature card from your graveyard to the battlefield."
+    }
+  ],
+  "oracleText": "Return target creature card from your graveyard to the battlefield.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

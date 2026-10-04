@@ -1,0 +1,32 @@
+{
+  "id": "b1544f21-7e98-461b-aed5-e748b0168c52",
+  "canonicalName": "Swords to Plowshares",
+  "defaultPrintingId": "36959f2b-75b5-4d68-b193-ada980822fd9",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Swords to Plowshares",
+      "manaCost": "{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Exile target creature. Its controller gains life equal to its power."
+    }
+  ],
+  "oracleText": "Exile target creature. Its controller gains life equal to its power.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

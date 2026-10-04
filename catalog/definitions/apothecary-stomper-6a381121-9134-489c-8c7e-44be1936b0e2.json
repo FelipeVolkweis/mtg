@@ -1,0 +1,40 @@
+{
+  "id": "6a381121-9134-489c-8c7e-44be1936b0e2",
+  "canonicalName": "Apothecary Stomper",
+  "defaultPrintingId": "680b7b0c-0e1b-46ce-9917-9fc6e05aa148",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Apothecary Stomper",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elephant",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elephant"
+      ],
+      "keywords": [
+        "Vigilance"
+      ],
+      "rulesText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhen this creature enters, choose one —\n• Put two +1/+1 counters on target creature you control.\n• You gain 4 life.",
+      "power": "4",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhen this creature enters, choose one —\n• Put two +1/+1 counters on target creature you control.\n• You gain 4 life.",
+  "keywords": [
+    "Vigilance"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

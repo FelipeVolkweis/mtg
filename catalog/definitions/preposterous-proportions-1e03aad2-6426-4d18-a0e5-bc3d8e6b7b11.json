@@ -1,0 +1,32 @@
+{
+  "id": "1e03aad2-6426-4d18-a0e5-bc3d8e6b7b11",
+  "canonicalName": "Preposterous Proportions",
+  "defaultPrintingId": "acb65189-60e4-42e0-9fb1-da6b716b91d7",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Preposterous Proportions",
+      "manaCost": "{5}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Creatures you control get +10/+10 and gain vigilance until end of turn."
+    }
+  ],
+  "oracleText": "Creatures you control get +10/+10 and gain vigilance until end of turn.",
+  "keywords": [],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

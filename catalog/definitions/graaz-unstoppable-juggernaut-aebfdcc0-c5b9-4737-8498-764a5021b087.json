@@ -1,0 +1,35 @@
+{
+  "id": "aebfdcc0-c5b9-4737-8498-764a5021b087",
+  "canonicalName": "Graaz, Unstoppable Juggernaut",
+  "defaultPrintingId": "08947a4e-03cd-4e02-8eba-8f4087fad414",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Graaz, Unstoppable Juggernaut",
+      "manaCost": "{8}",
+      "colors": [],
+      "typeLine": "Legendary Artifact Creature — Juggernaut",
+      "manaValue": 8,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Juggernaut"
+      ],
+      "keywords": [],
+      "rulesText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
+      "power": "7",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
+  "keywords": [],
+  "manaValue": 8,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

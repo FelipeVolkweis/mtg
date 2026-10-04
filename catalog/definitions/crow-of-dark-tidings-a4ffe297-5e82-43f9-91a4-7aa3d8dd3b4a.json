@@ -1,0 +1,43 @@
+{
+  "id": "a4ffe297-5e82-43f9-91a4-7aa3d8dd3b4a",
+  "canonicalName": "Crow of Dark Tidings",
+  "defaultPrintingId": "2cd74e93-064a-42d7-8e6e-c413912a08cd",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Crow of Dark Tidings",
+      "manaCost": "{2}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie Bird",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie",
+        "Bird"
+      ],
+      "keywords": [
+        "Flying",
+        "Mill"
+      ],
+      "rulesText": "Flying\nWhen this creature enters or dies, mill two cards. (Put the top two cards of your library into your graveyard.)",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Flying\nWhen this creature enters or dies, mill two cards. (Put the top two cards of your library into your graveyard.)",
+  "keywords": [
+    "Flying",
+    "Mill"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

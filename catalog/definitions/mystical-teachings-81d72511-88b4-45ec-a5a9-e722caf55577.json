@@ -1,0 +1,37 @@
+{
+  "id": "81d72511-88b4-45ec-a5a9-e722caf55577",
+  "canonicalName": "Mystical Teachings",
+  "defaultPrintingId": "3f88eacf-5c7b-4a35-86f0-af3b0516d4c2",
+  "form": "normal",
+  "colorIdentity": [
+    "B",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Mystical Teachings",
+      "manaCost": "{3}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Flashback"
+      ],
+      "rulesText": "Search your library for an instant card or a card with flash, reveal it, put it into your hand, then shuffle.\nFlashback {5}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+    }
+  ],
+  "oracleText": "Search your library for an instant card or a card with flash, reveal it, put it into your hand, then shuffle.\nFlashback {5}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
+  "keywords": [
+    "Flashback"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

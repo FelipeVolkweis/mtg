@@ -1,0 +1,36 @@
+{
+  "id": "d1d171de-1c6d-4fb9-817a-9c689c709f3d",
+  "canonicalName": "Shamanic Revelation",
+  "defaultPrintingId": "db3b5708-9f41-48f7-99b5-cb30b191ee71",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Shamanic Revelation",
+      "manaCost": "{3}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Ferocious"
+      ],
+      "rulesText": "Draw a card for each creature you control.\nFerocious — You gain 4 life for each creature you control with power 4 or greater."
+    }
+  ],
+  "oracleText": "Draw a card for each creature you control.\nFerocious — You gain 4 life for each creature you control with power 4 or greater.",
+  "keywords": [
+    "Ferocious"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

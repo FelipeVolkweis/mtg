@@ -1,0 +1,40 @@
+{
+  "id": "b94c233e-11d3-4556-a1da-bd193e58b663",
+  "canonicalName": "Tempest Djinn",
+  "defaultPrintingId": "3de55b97-059c-4d7b-afd0-44fd8380df4c",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Tempest Djinn",
+      "manaCost": "{U}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Djinn",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Djinn"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nThis creature gets +1/+0 for each basic Island you control.",
+      "power": "0",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Flying\nThis creature gets +1/+0 for each basic Island you control.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

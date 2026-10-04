@@ -1,0 +1,37 @@
+{
+  "id": "ea86abfa-6cab-4ef0-8463-34136fc25b59",
+  "canonicalName": "Duplicant",
+  "defaultPrintingId": "74e04402-dbc3-4646-9857-fc42ecd8cc43",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Duplicant",
+      "manaCost": "{6}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Shapeshifter",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Shapeshifter"
+      ],
+      "keywords": [
+        "Imprint"
+      ],
+      "rulesText": "Imprint — When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
+      "power": "2",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "Imprint — When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
+  "keywords": [
+    "Imprint"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

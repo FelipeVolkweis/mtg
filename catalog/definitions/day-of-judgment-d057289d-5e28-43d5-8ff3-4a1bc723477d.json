@@ -1,0 +1,32 @@
+{
+  "id": "d057289d-5e28-43d5-8ff3-4a1bc723477d",
+  "canonicalName": "Day of Judgment",
+  "defaultPrintingId": "3b3307b6-e597-4f2c-8ad8-f8602e0ac461",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Day of Judgment",
+      "manaCost": "{2}{W}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy all creatures."
+    }
+  ],
+  "oracleText": "Destroy all creatures.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

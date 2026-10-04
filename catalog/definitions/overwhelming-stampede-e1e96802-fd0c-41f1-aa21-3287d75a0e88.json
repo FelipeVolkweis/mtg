@@ -1,0 +1,32 @@
+{
+  "id": "e1e96802-fd0c-41f1-aa21-3287d75a0e88",
+  "canonicalName": "Overwhelming Stampede",
+  "defaultPrintingId": "2dd48f09-e9c7-4e93-b811-2158ae24c9fc",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Overwhelming Stampede",
+      "manaCost": "{3}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Until end of turn, creatures you control gain trample and get +X/+X, where X is the greatest power among creatures you control."
+    }
+  ],
+  "oracleText": "Until end of turn, creatures you control gain trample and get +X/+X, where X is the greatest power among creatures you control.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

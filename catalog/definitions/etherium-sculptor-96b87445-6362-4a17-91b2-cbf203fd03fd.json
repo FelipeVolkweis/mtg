@@ -1,0 +1,38 @@
+{
+  "id": "96b87445-6362-4a17-91b2-cbf203fd03fd",
+  "canonicalName": "Etherium Sculptor",
+  "defaultPrintingId": "438aca09-34c2-4dac-8008-1862109443b5",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Etherium Sculptor",
+      "manaCost": "{1}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Vedalken Artificer",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Vedalken",
+        "Artificer"
+      ],
+      "keywords": [],
+      "rulesText": "Artifact spells you cast cost {1} less to cast.",
+      "power": "1",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Artifact spells you cast cost {1} less to cast.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,43 @@
+{
+  "id": "1729c6f2-2452-4fbc-a1bc-3e625f2ad8e1",
+  "canonicalName": "Sun-Blessed Healer",
+  "defaultPrintingId": "323d029e-9a88-4188-b3a4-38ef32cffc9f",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Sun-Blessed Healer",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Human Cleric",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Cleric"
+      ],
+      "keywords": [
+        "Lifelink",
+        "Kicker"
+      ],
+      "rulesText": "Kicker {1}{W} (You may pay an additional {1}{W} as you cast this spell.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nWhen this creature enters, if it was kicked, return target nonland permanent card with mana value 2 or less from your graveyard to the battlefield.",
+      "power": "3",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Kicker {1}{W} (You may pay an additional {1}{W} as you cast this spell.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nWhen this creature enters, if it was kicked, return target nonland permanent card with mana value 2 or less from your graveyard to the battlefield.",
+  "keywords": [
+    "Lifelink",
+    "Kicker"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

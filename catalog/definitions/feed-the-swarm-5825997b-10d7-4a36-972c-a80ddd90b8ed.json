@@ -1,0 +1,32 @@
+{
+  "id": "5825997b-10d7-4a36-972c-a80ddd90b8ed",
+  "canonicalName": "Feed the Swarm",
+  "defaultPrintingId": "e66d4541-160c-4137-98e7-0eaa692c7d7a",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Feed the Swarm",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value."
+    }
+  ],
+  "oracleText": "Destroy target creature or enchantment an opponent controls. You lose life equal to that permanent's mana value.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

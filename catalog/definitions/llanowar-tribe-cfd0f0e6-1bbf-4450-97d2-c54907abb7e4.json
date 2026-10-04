@@ -1,0 +1,37 @@
+{
+  "id": "cfd0f0e6-1bbf-4450-97d2-c54907abb7e4",
+  "canonicalName": "Llanowar Tribe",
+  "defaultPrintingId": "9a373b9d-1c4c-4335-b7f8-30c5d6fef559",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Llanowar Tribe",
+      "manaCost": "{G}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Druid",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Druid"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Add {G}{G}{G}.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "{T}: Add {G}{G}{G}.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

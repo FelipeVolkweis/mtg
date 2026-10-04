@@ -1,0 +1,41 @@
+{
+  "id": "6781f8ae-2a86-4e3d-bc43-48809c9d6c26",
+  "canonicalName": "Gatekeeper of Malakir",
+  "defaultPrintingId": "58c45158-7858-409e-ab37-8a9a66ad8714",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Gatekeeper of Malakir",
+      "manaCost": "{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Warrior",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Warrior"
+      ],
+      "keywords": [
+        "Kicker"
+      ],
+      "rulesText": "Kicker {B} (You may pay an additional {B} as you cast this spell.)\nWhen this creature enters, if it was kicked, target player sacrifices a creature of their choice.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Kicker {B} (You may pay an additional {B} as you cast this spell.)\nWhen this creature enters, if it was kicked, target player sacrifices a creature of their choice.",
+  "keywords": [
+    "Kicker"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

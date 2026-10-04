@@ -1,0 +1,36 @@
+{
+  "id": "5104053a-d394-4b00-82a4-60fd9f051a6e",
+  "canonicalName": "Fierce Empath",
+  "defaultPrintingId": "28a1dd7f-2e42-4062-a941-b489b98a49fc",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Fierce Empath",
+      "manaCost": "{2}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, you may search your library for a creature card with mana value 6 or greater, reveal it, put it into your hand, then shuffle.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "When this creature enters, you may search your library for a creature card with mana value 6 or greater, reveal it, put it into your hand, then shuffle.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

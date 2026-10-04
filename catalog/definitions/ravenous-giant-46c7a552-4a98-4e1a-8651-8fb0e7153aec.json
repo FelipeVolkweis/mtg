@@ -1,0 +1,36 @@
+{
+  "id": "46c7a552-4a98-4e1a-8651-8fb0e7153aec",
+  "canonicalName": "Ravenous Giant",
+  "defaultPrintingId": "050b70c4-9086-4db4-8e65-f9bb5f67cf1b",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Ravenous Giant",
+      "manaCost": "{2}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Giant",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Giant"
+      ],
+      "keywords": [],
+      "rulesText": "At the beginning of your upkeep, this creature deals 1 damage to you.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "At the beginning of your upkeep, this creature deals 1 damage to you.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

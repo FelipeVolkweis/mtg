@@ -1,0 +1,39 @@
+{
+  "id": "3d04aa8c-7bff-42c6-bed3-0b18d2cb1529",
+  "canonicalName": "Nogi, Draco-Zealot",
+  "defaultPrintingId": "f09f83af-c6fc-4512-a256-fd1993d4c055",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Nogi, Draco-Zealot",
+      "manaCost": "{1}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Kobold Shaman",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Kobold",
+        "Shaman"
+      ],
+      "keywords": [],
+      "rulesText": "Dragon spells you cast cost {1} less to cast.\nWhenever Nogi attacks, if you control three or more Dragons, until end of turn, Nogi becomes a Dragon with base power and toughness 5/5 and gains flying.",
+      "power": "3",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Dragon spells you cast cost {1} less to cast.\nWhenever Nogi attacks, if you control three or more Dragons, until end of turn, Nogi becomes a Dragon with base power and toughness 5/5 and gains flying.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,32 @@
+{
+  "id": "5097f4e6-50af-4641-909f-db44abf0ce32",
+  "canonicalName": "Rite of the Dragoncaller",
+  "defaultPrintingId": "673e4561-8dfd-46db-b492-878009666ac7",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Rite of the Dragoncaller",
+      "manaCost": "{4}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Enchantment",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Whenever you cast an instant or sorcery spell, create a 5/5 red Dragon creature token with flying."
+    }
+  ],
+  "oracleText": "Whenever you cast an instant or sorcery spell, create a 5/5 red Dragon creature token with flying.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,38 @@
+{
+  "id": "da46786e-28df-4638-ab3d-121011d2f150",
+  "canonicalName": "Master Transmuter",
+  "defaultPrintingId": "300fe2eb-fcaf-4888-9e44-a1718ac16f6c",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Master Transmuter",
+      "manaCost": "{3}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Human Artificer",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Artificer"
+      ],
+      "keywords": [],
+      "rulesText": "{U}, {T}, Return an artifact you control to its owner's hand: You may put an artifact card from your hand onto the battlefield.",
+      "power": "1",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "{U}, {T}, Return an artifact you control to its owner's hand: You may put an artifact card from your hand onto the battlefield.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

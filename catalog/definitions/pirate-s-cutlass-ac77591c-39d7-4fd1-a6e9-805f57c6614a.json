@@ -1,0 +1,34 @@
+{
+  "id": "ac77591c-39d7-4fd1-a6e9-805f57c6614a",
+  "canonicalName": "Pirate's Cutlass",
+  "defaultPrintingId": "d9d20aef-d35b-4353-a241-e6cfa9730975",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Pirate's Cutlass",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact — Equipment",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Equipment"
+      ],
+      "keywords": [
+        "Equip"
+      ],
+      "rulesText": "When this Equipment enters, attach it to target Pirate you control.\nEquipped creature gets +2/+1.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
+    }
+  ],
+  "oracleText": "When this Equipment enters, attach it to target Pirate you control.\nEquipped creature gets +2/+1.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
+  "keywords": [
+    "Equip"
+  ],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

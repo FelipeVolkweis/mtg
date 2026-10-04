@@ -1,0 +1,34 @@
+{
+  "id": "800fb917-8898-4eba-9f94-aec6e9d75236",
+  "canonicalName": "Mazemind Tome",
+  "defaultPrintingId": "fbae0603-fdc3-488a-8917-08edf0884e1d",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Mazemind Tome",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact — Book",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [
+        "Book"
+      ],
+      "keywords": [
+        "Scry"
+      ],
+      "rulesText": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{2}, {T}, Put a page counter on this artifact: Draw a card.\nWhen there are four or more page counters on this artifact, exile it. If you do, you gain 4 life."
+    }
+  ],
+  "oracleText": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{2}, {T}, Put a page counter on this artifact: Draw a card.\nWhen there are four or more page counters on this artifact, exile it. If you do, you gain 4 life.",
+  "keywords": [
+    "Scry"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,40 @@
+{
+  "id": "b9d0f2e1-62c2-44fd-ad38-471daf17bb0a",
+  "canonicalName": "Tolarian Terror",
+  "defaultPrintingId": "2569d4f3-55ed-4f99-9592-34c7df0aab72",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Tolarian Terror",
+      "manaCost": "{6}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Serpent",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Serpent"
+      ],
+      "keywords": [
+        "Ward"
+      ],
+      "rulesText": "This spell costs {1} less to cast for each instant and sorcery card in your graveyard.\nWard {2} (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays {2}.)",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "This spell costs {1} less to cast for each instant and sorcery card in your graveyard.\nWard {2} (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays {2}.)",
+  "keywords": [
+    "Ward"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

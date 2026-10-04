@@ -1,0 +1,28 @@
+{
+  "id": "8cf38025-5821-45a0-9483-266353b7e82d",
+  "canonicalName": "Vanquisher's Banner",
+  "defaultPrintingId": "8eae5f95-909e-4de7-b767-8a16bdba5ede",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Vanquisher's Banner",
+      "manaCost": "{5}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "As this artifact enters, choose a creature type.\nCreatures you control of the chosen type get +1/+1.\nWhenever you cast a creature spell of the chosen type, draw a card."
+    }
+  ],
+  "oracleText": "As this artifact enters, choose a creature type.\nCreatures you control of the chosen type get +1/+1.\nWhenever you cast a creature spell of the chosen type, draw a card.",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

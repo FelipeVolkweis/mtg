@@ -1,0 +1,36 @@
+{
+  "id": "fb7070ab-c234-4d54-8cdc-caf106bf24a6",
+  "canonicalName": "Mild-Mannered Librarian",
+  "defaultPrintingId": "5389663a-fe25-41b9-8c92-1f4d7721ffc2",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Mild-Mannered Librarian",
+      "manaCost": "{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Human",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human"
+      ],
+      "keywords": [],
+      "rulesText": "{3}{G}: This creature becomes a Werewolf. Put two +1/+1 counters on it and you draw a card. Activate only once.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "{3}{G}: This creature becomes a Werewolf. Put two +1/+1 counters on it and you draw a card. Activate only once.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

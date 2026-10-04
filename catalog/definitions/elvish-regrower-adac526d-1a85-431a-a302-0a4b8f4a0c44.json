@@ -1,0 +1,37 @@
+{
+  "id": "adac526d-1a85-431a-a302-0a4b8f4a0c44",
+  "canonicalName": "Elvish Regrower",
+  "defaultPrintingId": "2694e3cd-26ed-4a10-ae55-fb84d7800253",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Elvish Regrower",
+      "manaCost": "{2}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Druid",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Druid"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, return target permanent card from your graveyard to your hand.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "When this creature enters, return target permanent card from your graveyard to your hand.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

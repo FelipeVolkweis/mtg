@@ -1,0 +1,42 @@
+{
+  "id": "80686908-abb5-4728-a5f6-71baca27f467",
+  "canonicalName": "Curious Altisaur",
+  "defaultPrintingId": "d5c8619f-753b-472f-a6cd-00bd9e897279",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Curious Altisaur",
+      "manaCost": "{3}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Dinosaur",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dinosaur"
+      ],
+      "keywords": [
+        "Reach",
+        "Vigilance"
+      ],
+      "rulesText": "Reach, vigilance\nWhenever a Dinosaur you control deals combat damage to a player, draw a card.",
+      "power": "2",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Reach, vigilance\nWhenever a Dinosaur you control deals combat damage to a player, draw a card.",
+  "keywords": [
+    "Reach",
+    "Vigilance"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

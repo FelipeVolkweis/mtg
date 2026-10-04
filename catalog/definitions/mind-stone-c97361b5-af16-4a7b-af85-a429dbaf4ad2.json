@@ -1,0 +1,28 @@
+{
+  "id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
+  "canonicalName": "Mind Stone",
+  "defaultPrintingId": "62901ae9-98dd-466b-8358-f5abd765b3c0",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Mind Stone",
+      "manaCost": "{2}",
+      "colors": [],
+      "typeLine": "Artifact",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Artifact"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

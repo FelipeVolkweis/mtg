@@ -1,0 +1,28 @@
+{
+  "id": "a75445d3-1303-4bb5-89ad-26ea93fecd48",
+  "canonicalName": "Evolving Wilds",
+  "defaultPrintingId": "3a0b9356-5b91-4542-8802-f0f7275238e1",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Evolving Wilds",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle."
+    }
+  ],
+  "oracleText": "{T}, Sacrifice this land: Search your library for a basic land card, put it onto the battlefield tapped, then shuffle.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

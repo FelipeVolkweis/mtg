@@ -1,0 +1,28 @@
+{
+  "id": "0498ea14-53d9-4655-a616-0ff3cf73de4e",
+  "canonicalName": "Foundry of the Consuls",
+  "defaultPrintingId": "0087b1ea-beba-49e6-924c-b792c473a8ce",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Foundry of the Consuls",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying."
+    }
+  ],
+  "oracleText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "8dc067bf-f78f-4ac4-b6e7-b305c42cf0bc",
+  "canonicalName": "Darksteel Citadel",
+  "defaultPrintingId": "b379ba64-adf5-4a64-9f28-ace36f1b887b",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Darksteel Citadel",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Artifact Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Indestructible"
+      ],
+      "rulesText": "Indestructible\n{T}: Add {C}."
+    }
+  ],
+  "oracleText": "Indestructible\n{T}: Add {C}.",
+  "keywords": [
+    "Indestructible"
+  ],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,39 @@
+{
+  "id": "388168b3-ec68-4af2-b88c-6a5ec88c15f6",
+  "canonicalName": "Ayara, First of Locthwain",
+  "defaultPrintingId": "58c50444-3660-4039-ae18-278b92d32132",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Ayara, First of Locthwain",
+      "manaCost": "{B}{B}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Legendary Creature — Elf Noble",
+      "manaValue": 3,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Noble"
+      ],
+      "keywords": [],
+      "rulesText": "Whenever Ayara or another black creature you control enters, each opponent loses 1 life and you gain 1 life.\n{T}, Sacrifice another black creature: Draw a card.",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Whenever Ayara or another black creature you control enters, each opponent loses 1 life and you gain 1 life.\n{T}, Sacrifice another black creature: Draw a card.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

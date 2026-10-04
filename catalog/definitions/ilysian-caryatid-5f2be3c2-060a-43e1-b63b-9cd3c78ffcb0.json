@@ -1,0 +1,36 @@
+{
+  "id": "5f2be3c2-060a-43e1-b63b-9cd3c78ffcb0",
+  "canonicalName": "Ilysian Caryatid",
+  "defaultPrintingId": "c9dfb2e5-3ffe-4559-bdcb-50b98d4f16c6",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Ilysian Caryatid",
+      "manaCost": "{1}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Plant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Plant"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Add one mana of any color. If you control a creature with power 4 or greater, add two mana of any one color instead.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "{T}: Add one mana of any color. If you control a creature with power 4 or greater, add two mana of any one color instead.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

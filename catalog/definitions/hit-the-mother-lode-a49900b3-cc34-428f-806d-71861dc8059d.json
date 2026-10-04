@@ -1,0 +1,38 @@
+{
+  "id": "a49900b3-cc34-428f-806d-71861dc8059d",
+  "canonicalName": "Hit the Mother Lode",
+  "defaultPrintingId": "a636f0ea-d605-453c-8b10-c0ecfeffd573",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Hit the Mother Lode",
+      "manaCost": "{4}{R}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 7,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Treasure",
+        "Discover"
+      ],
+      "rulesText": "Discover 10. If the discovered card's mana value is less than 10, create a number of tapped Treasure tokens equal to the difference. (To discover 10, exile cards from the top of your library until you exile a nonland card with mana value 10 or less. Cast it without paying its mana cost or put it into your hand. Put the rest on the bottom in a random order.)"
+    }
+  ],
+  "oracleText": "Discover 10. If the discovered card's mana value is less than 10, create a number of tapped Treasure tokens equal to the difference. (To discover 10, exile cards from the top of your library until you exile a nonland card with mana value 10 or less. Cast it without paying its mana cost or put it into your hand. Put the rest on the bottom in a random order.)",
+  "keywords": [
+    "Treasure",
+    "Discover"
+  ],
+  "manaValue": 7,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

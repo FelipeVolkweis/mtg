@@ -1,0 +1,37 @@
+{
+  "id": "3c1619bd-db5e-4df6-a196-0a9d62374f6d",
+  "canonicalName": "Hare Apparent",
+  "defaultPrintingId": "9fc6f0e9-eb5f-4bc0-b3d7-756644b66d12",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Hare Apparent",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Creature — Rabbit Noble",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Rabbit",
+        "Noble"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, create a number of 1/1 white Rabbit creature tokens equal to the number of other creatures you control named Hare Apparent.\nA deck can have any number of cards named Hare Apparent.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, create a number of 1/1 white Rabbit creature tokens equal to the number of other creatures you control named Hare Apparent.\nA deck can have any number of cards named Hare Apparent.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

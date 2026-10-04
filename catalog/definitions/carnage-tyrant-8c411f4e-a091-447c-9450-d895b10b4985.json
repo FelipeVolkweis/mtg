@@ -1,0 +1,42 @@
+{
+  "id": "8c411f4e-a091-447c-9450-d895b10b4985",
+  "canonicalName": "Carnage Tyrant",
+  "defaultPrintingId": "fb56d3be-40e8-42fc-9d07-c3effe757052",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Carnage Tyrant",
+      "manaCost": "{4}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Dinosaur",
+      "manaValue": 6,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dinosaur"
+      ],
+      "keywords": [
+        "Hexproof",
+        "Trample"
+      ],
+      "rulesText": "This spell can't be countered.\nTrample, hexproof",
+      "power": "7",
+      "toughness": "6"
+    }
+  ],
+  "oracleText": "This spell can't be countered.\nTrample, hexproof",
+  "keywords": [
+    "Hexproof",
+    "Trample"
+  ],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

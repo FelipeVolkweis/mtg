@@ -1,0 +1,37 @@
+{
+  "id": "386c5895-9713-4c28-9ba8-8ca0caa06c13",
+  "canonicalName": "Gate Colossus",
+  "defaultPrintingId": "bc49d9cb-8c7a-4a8f-96ea-bbe6ade8ae00",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Gate Colossus",
+      "manaCost": "{8}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Construct",
+      "manaValue": 8,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "keywords": [
+        "Affinity"
+      ],
+      "rulesText": "Affinity for Gates (This spell costs {1} less to cast for each Gate you control.)\nThis creature can't be blocked by creatures with power 2 or less.\nWhenever a Gate you control enters, you may put this card from your graveyard on top of your library.",
+      "power": "8",
+      "toughness": "8"
+    }
+  ],
+  "oracleText": "Affinity for Gates (This spell costs {1} less to cast for each Gate you control.)\nThis creature can't be blocked by creatures with power 2 or less.\nWhenever a Gate you control enters, you may put this card from your graveyard on top of your library.",
+  "keywords": [
+    "Affinity"
+  ],
+  "manaValue": 8,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

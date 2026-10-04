@@ -1,0 +1,43 @@
+{
+  "id": "f7f435bc-1716-4412-9505-a1f2f2d83d08",
+  "canonicalName": "Dragonhawk, Fate's Tempest",
+  "defaultPrintingId": "6bd51655-2e3a-4b92-92af-bc4781ba680f",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Dragonhawk, Fate's Tempest",
+      "manaCost": "{3}{R}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Bird Dragon",
+      "manaValue": 5,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Bird",
+        "Dragon"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nWhenever Dragonhawk enters or attacks, exile the top X cards of your library, where X is the number of creatures you control with power 4 or greater. You may play those cards until your next end step. At the beginning of your next end step, Dragonhawk deals 2 damage to each opponent for each of those cards that are still exiled.",
+      "power": "5",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Flying\nWhenever Dragonhawk enters or attacks, exile the top X cards of your library, where X is the number of creatures you control with power 4 or greater. You may play those cards until your next end step. At the beginning of your next end step, Dragonhawk deals 2 damage to each opponent for each of those cards that are still exiled.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

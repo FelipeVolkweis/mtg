@@ -1,0 +1,28 @@
+{
+  "id": "79ba18fd-f184-43c1-86df-56ee18ce806c",
+  "canonicalName": "Secluded Courtyard",
+  "defaultPrintingId": "d13373d2-139b-48c7-a8c9-828cefc4f150",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Secluded Courtyard",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "As this land enters, choose a creature type.\n{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type or activate an ability of a creature source of the chosen type."
+    }
+  ],
+  "oracleText": "As this land enters, choose a creature type.\n{T}: Add {C}.\n{T}: Add one mana of any color. Spend this mana only to cast a creature spell of the chosen type or activate an ability of a creature source of the chosen type.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

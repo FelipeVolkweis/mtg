@@ -1,0 +1,38 @@
+{
+  "id": "181e6b3e-c33e-49e7-acb8-67473289a856",
+  "canonicalName": "Master of Etherium",
+  "defaultPrintingId": "b5b7a5df-c926-45ea-af5a-008abc1f0f28",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Master of Etherium",
+      "manaCost": "{2}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Artifact Creature — Vedalken Wizard",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Vedalken",
+        "Wizard"
+      ],
+      "keywords": [],
+      "rulesText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
+      "power": "*",
+      "toughness": "*"
+    }
+  ],
+  "oracleText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

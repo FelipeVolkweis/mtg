@@ -1,0 +1,40 @@
+{
+  "id": "80bb9ce4-1f3c-42ca-b75f-9a6b2f42073b",
+  "canonicalName": "Ripjaw Raptor",
+  "defaultPrintingId": "0b384383-c069-40ab-b078-04d00c103963",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Ripjaw Raptor",
+      "manaCost": "{2}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Dinosaur",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dinosaur"
+      ],
+      "keywords": [
+        "Enrage"
+      ],
+      "rulesText": "Enrage — Whenever this creature is dealt damage, draw a card.",
+      "power": "4",
+      "toughness": "5"
+    }
+  ],
+  "oracleText": "Enrage — Whenever this creature is dealt damage, draw a card.",
+  "keywords": [
+    "Enrage"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

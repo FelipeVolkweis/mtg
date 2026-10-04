@@ -1,0 +1,32 @@
+{
+  "id": "e341478e-c3f8-45d9-9430-abe3a58fa2fc",
+  "canonicalName": "Deadly Riposte",
+  "defaultPrintingId": "65f5804a-075b-41d8-9639-785cad5c0974",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Deadly Riposte",
+      "manaCost": "{1}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Deadly Riposte deals 3 damage to target tapped creature and you gain 2 life."
+    }
+  ],
+  "oracleText": "Deadly Riposte deals 3 damage to target tapped creature and you gain 2 life.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

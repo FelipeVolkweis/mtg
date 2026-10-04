@@ -1,0 +1,32 @@
+{
+  "id": "b1a23235-3076-475c-a68a-db29cf2a9dba",
+  "canonicalName": "Pull from Tomorrow",
+  "defaultPrintingId": "99d9d3a9-442b-485c-88e7-91de7278bde9",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Pull from Tomorrow",
+      "manaCost": "{X}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Instant",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Instant"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Draw X cards, then discard a card."
+    }
+  ],
+  "oracleText": "Draw X cards, then discard a card.",
+  "keywords": [],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,44 @@
+{
+  "id": "86d76078-9af3-45a7-90d6-72946afdc78b",
+  "canonicalName": "Goldlust Triad",
+  "defaultPrintingId": "6b6e8aec-de61-4404-b4c8-d8eecc7d92b2",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Goldlust Triad",
+      "manaCost": "{4}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Dragon",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Dragon"
+      ],
+      "keywords": [
+        "Myriad",
+        "Flying",
+        "Treasure"
+      ],
+      "rulesText": "Flying\nMyriad (Whenever this creature attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)\nWhenever this creature deals combat damage to a player, create a Treasure token.",
+      "power": "4",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Flying\nMyriad (Whenever this creature attacks, for each opponent other than defending player, you may create a token copy that's tapped and attacking that player or a planeswalker they control. Exile the tokens at end of combat.)\nWhenever this creature deals combat damage to a player, create a Treasure token.",
+  "keywords": [
+    "Myriad",
+    "Flying",
+    "Treasure"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

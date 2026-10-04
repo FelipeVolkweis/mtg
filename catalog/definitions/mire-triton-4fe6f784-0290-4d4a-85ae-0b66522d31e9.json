@@ -1,0 +1,43 @@
+{
+  "id": "4fe6f784-0290-4d4a-85ae-0b66522d31e9",
+  "canonicalName": "Mire Triton",
+  "defaultPrintingId": "22dc3c27-78ca-42fd-b434-15a813c07eed",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Mire Triton",
+      "manaCost": "{1}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Zombie Merfolk",
+      "manaValue": 2,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Zombie",
+        "Merfolk"
+      ],
+      "keywords": [
+        "Mill",
+        "Deathtouch"
+      ],
+      "rulesText": "Deathtouch\nWhen this creature enters, mill two cards and you gain 2 life. (To mill two cards, put the top two cards of your library into your graveyard.)",
+      "power": "2",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Deathtouch\nWhen this creature enters, mill two cards and you gain 2 life. (To mill two cards, put the top two cards of your library into your graveyard.)",
+  "keywords": [
+    "Mill",
+    "Deathtouch"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

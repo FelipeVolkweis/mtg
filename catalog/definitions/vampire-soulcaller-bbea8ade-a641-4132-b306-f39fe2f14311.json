@@ -1,0 +1,41 @@
+{
+  "id": "bbea8ade-a641-4132-b306-f39fe2f14311",
+  "canonicalName": "Vampire Soulcaller",
+  "defaultPrintingId": "4734e3fe-7cd7-4045-983f-f89eae9396fa",
+  "form": "normal",
+  "colorIdentity": [
+    "B"
+  ],
+  "components": [
+    {
+      "name": "Vampire Soulcaller",
+      "manaCost": "{4}{B}",
+      "colors": [
+        "B"
+      ],
+      "typeLine": "Creature — Vampire Warlock",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Vampire",
+        "Warlock"
+      ],
+      "keywords": [
+        "Flying"
+      ],
+      "rulesText": "Flying\nThis creature can't block.\nWhen this creature enters, return target creature card from your graveyard to your hand.",
+      "power": "3",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Flying\nThis creature can't block.\nWhen this creature enters, return target creature card from your graveyard to your hand.",
+  "keywords": [
+    "Flying"
+  ],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

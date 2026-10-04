@@ -1,0 +1,38 @@
+{
+  "id": "7060f2c8-fca0-4b7a-bddf-37682f434596",
+  "canonicalName": "Whirler Rogue",
+  "defaultPrintingId": "51505039-b6f6-4dd6-9a09-5494e030deff",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Whirler Rogue",
+      "manaCost": "{2}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Creature — Human Rogue Artificer",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Rogue",
+        "Artificer"
+      ],
+      "keywords": [],
+      "rulesText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
+      "power": "2",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
+  "keywords": [],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

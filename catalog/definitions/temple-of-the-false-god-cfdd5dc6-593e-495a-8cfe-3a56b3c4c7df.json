@@ -1,0 +1,28 @@
+{
+  "id": "cfdd5dc6-593e-495a-8cfe-3a56b3c4c7df",
+  "canonicalName": "Temple of the False God",
+  "defaultPrintingId": "6c68b939-8971-43ea-8ad6-8bca631e24dc",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Temple of the False God",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "{T}: Add {C}{C}. Activate only if you control five or more lands."
+    }
+  ],
+  "oracleText": "{T}: Add {C}{C}. Activate only if you control five or more lands.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

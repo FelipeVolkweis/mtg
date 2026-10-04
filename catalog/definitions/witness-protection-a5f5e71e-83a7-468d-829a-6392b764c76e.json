@@ -1,0 +1,38 @@
+{
+  "id": "a5f5e71e-83a7-468d-829a-6392b764c76e",
+  "canonicalName": "Witness Protection",
+  "defaultPrintingId": "f231e981-0069-43ce-ac1c-c85ced613e93",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Witness Protection",
+      "manaCost": "{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Enchantment — Aura",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Enchantment"
+      ],
+      "subtypes": [
+        "Aura"
+      ],
+      "keywords": [
+        "Enchant"
+      ],
+      "rulesText": "Enchant creature\nEnchanted creature loses all abilities and is a green and white Citizen creature with base power and toughness 1/1 named Legitimate Businessperson. (It loses all other colors, card types, creature types, and names.)"
+    }
+  ],
+  "oracleText": "Enchant creature\nEnchanted creature loses all abilities and is a green and white Citizen creature with base power and toughness 1/1 named Legitimate Businessperson. (It loses all other colors, card types, creature types, and names.)",
+  "keywords": [
+    "Enchant"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

@@ -1,0 +1,38 @@
+{
+  "id": "8a7183cc-161c-444d-a889-a17519c8061b",
+  "canonicalName": "Arcanis the Omnipotent",
+  "defaultPrintingId": "9d31e3e3-f398-4c0e-a2c9-4c614a4d41de",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Arcanis the Omnipotent",
+      "manaCost": "{3}{U}{U}{U}",
+      "colors": [
+        "U"
+      ],
+      "typeLine": "Legendary Creature — Wizard",
+      "manaValue": 6,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Wizard"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Draw three cards.\n{2}{U}{U}: Return Arcanis to its owner's hand.",
+      "power": "3",
+      "toughness": "4"
+    }
+  ],
+  "oracleText": "{T}: Draw three cards.\n{2}{U}{U}: Return Arcanis to its owner's hand.",
+  "keywords": [],
+  "manaValue": 6,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

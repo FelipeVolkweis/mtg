@@ -1,0 +1,36 @@
+{
+  "id": "7e86fb1e-9987-43ba-b59e-0cb03bbdedb6",
+  "canonicalName": "Involuntary Employment",
+  "defaultPrintingId": "f3ad3d62-2f24-4562-b3fa-809213dbc4a4",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Involuntary Employment",
+      "manaCost": "{3}{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 4,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Treasure"
+      ],
+      "rulesText": "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn. Create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+    }
+  ],
+  "oracleText": "Gain control of target creature until end of turn. Untap that creature. It gains haste until end of turn. Create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+  "keywords": [
+    "Treasure"
+  ],
+  "manaValue": 4,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

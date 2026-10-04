@@ -1,0 +1,32 @@
+{
+  "id": "8b5cffd5-5db3-4151-9275-d91387554412",
+  "canonicalName": "Cut a Deal",
+  "defaultPrintingId": "6db24e22-d0b6-4f27-9fff-fce027fadf15",
+  "form": "normal",
+  "colorIdentity": [
+    "W"
+  ],
+  "components": [
+    {
+      "name": "Cut a Deal",
+      "manaCost": "{2}{W}",
+      "colors": [
+        "W"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Each opponent draws a card, then you draw a card for each opponent who drew a card this way."
+    }
+  ],
+  "oracleText": "Each opponent draws a card, then you draw a card for each opponent who drew a card this way.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

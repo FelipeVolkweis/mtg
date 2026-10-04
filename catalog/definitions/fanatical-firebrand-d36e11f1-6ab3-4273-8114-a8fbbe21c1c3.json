@@ -1,0 +1,41 @@
+{
+  "id": "d36e11f1-6ab3-4273-8114-a8fbbe21c1c3",
+  "canonicalName": "Fanatical Firebrand",
+  "defaultPrintingId": "d1296316-7781-4e98-95e6-7020648be6a5",
+  "form": "normal",
+  "colorIdentity": [
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Fanatical Firebrand",
+      "manaCost": "{R}",
+      "colors": [
+        "R"
+      ],
+      "typeLine": "Creature — Goblin Pirate",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Goblin",
+        "Pirate"
+      ],
+      "keywords": [
+        "Haste"
+      ],
+      "rulesText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\n{T}, Sacrifice this creature: It deals 1 damage to any target.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\n{T}, Sacrifice this creature: It deals 1 damage to any target.",
+  "keywords": [
+    "Haste"
+  ],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

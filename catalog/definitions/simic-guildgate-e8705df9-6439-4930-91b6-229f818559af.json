@@ -1,0 +1,33 @@
+{
+  "id": "e8705df9-6439-4930-91b6-229f818559af",
+  "canonicalName": "Simic Guildgate",
+  "defaultPrintingId": "96590855-1ee5-4d69-9070-776e23f71976",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Simic Guildgate",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land — Gate",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [
+        "Gate"
+      ],
+      "keywords": [],
+      "rulesText": "This land enters tapped.\n{T}: Add {G} or {U}."
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {G} or {U}.",
+  "keywords": [],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

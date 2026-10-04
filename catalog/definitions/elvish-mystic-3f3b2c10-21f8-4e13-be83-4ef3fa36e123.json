@@ -1,0 +1,37 @@
+{
+  "id": "3f3b2c10-21f8-4e13-be83-4ef3fa36e123",
+  "canonicalName": "Elvish Mystic",
+  "defaultPrintingId": "4b8a8685-6f30-4fa1-959a-75ffb8cd7fb0",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Elvish Mystic",
+      "manaCost": "{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Creature — Elf Druid",
+      "manaValue": 1,
+      "supertypes": [],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Elf",
+        "Druid"
+      ],
+      "keywords": [],
+      "rulesText": "{T}: Add {G}.",
+      "power": "1",
+      "toughness": "1"
+    }
+  ],
+  "oracleText": "{T}: Add {G}.",
+  "keywords": [],
+  "manaValue": 1,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

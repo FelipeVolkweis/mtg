@@ -1,0 +1,45 @@
+{
+  "id": "5d1b0eee-3a7a-4f22-a40d-7658a368962a",
+  "canonicalName": "Ruby, Daring Tracker",
+  "defaultPrintingId": "fe3e7dd2-b66d-4218-9fde-f84bec26b7bf",
+  "form": "normal",
+  "colorIdentity": [
+    "G",
+    "R"
+  ],
+  "components": [
+    {
+      "name": "Ruby, Daring Tracker",
+      "manaCost": "{R}{G}",
+      "colors": [
+        "G",
+        "R"
+      ],
+      "typeLine": "Legendary Creature — Human Scout",
+      "manaValue": 2,
+      "supertypes": [
+        "Legendary"
+      ],
+      "types": [
+        "Creature"
+      ],
+      "subtypes": [
+        "Human",
+        "Scout"
+      ],
+      "keywords": [
+        "Haste"
+      ],
+      "rulesText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nWhenever Ruby attacks while you control a creature with power 4 or greater, Ruby gets +2/+2 until end of turn.\n{T}: Add {R} or {G}.",
+      "power": "1",
+      "toughness": "2"
+    }
+  ],
+  "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)\nWhenever Ruby attacks while you control a creature with power 4 or greater, Ruby gets +2/+2 until end of turn.\n{T}: Add {R} or {G}.",
+  "keywords": [
+    "Haste"
+  ],
+  "manaValue": 2,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

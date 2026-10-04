@@ -1,0 +1,33 @@
+{
+  "id": "4fdfa41a-75a5-4b36-8c9e-083e26d137e2",
+  "canonicalName": "Chief of the Foundry",
+  "defaultPrintingId": "19bdccb3-d85a-4b9a-9d5e-6f8add7a3c77",
+  "form": "normal",
+  "colorIdentity": [],
+  "components": [
+    {
+      "name": "Chief of the Foundry",
+      "manaCost": "{3}",
+      "colors": [],
+      "typeLine": "Artifact Creature — Construct",
+      "manaValue": 3,
+      "supertypes": [],
+      "types": [
+        "Artifact",
+        "Creature"
+      ],
+      "subtypes": [
+        "Construct"
+      ],
+      "keywords": [],
+      "rulesText": "Other artifact creatures you control get +1/+1.",
+      "power": "2",
+      "toughness": "3"
+    }
+  ],
+  "oracleText": "Other artifact creatures you control get +1/+1.",
+  "keywords": [],
+  "manaValue": 3,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

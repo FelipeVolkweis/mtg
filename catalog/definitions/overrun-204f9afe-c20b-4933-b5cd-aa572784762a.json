@@ -1,0 +1,32 @@
+{
+  "id": "204f9afe-c20b-4933-b5cd-aa572784762a",
+  "canonicalName": "Overrun",
+  "defaultPrintingId": "1d8e9cbb-8bf4-4a48-a58e-79deb3abdf7f",
+  "form": "normal",
+  "colorIdentity": [
+    "G"
+  ],
+  "components": [
+    {
+      "name": "Overrun",
+      "manaCost": "{2}{G}{G}{G}",
+      "colors": [
+        "G"
+      ],
+      "typeLine": "Sorcery",
+      "manaValue": 5,
+      "supertypes": [],
+      "types": [
+        "Sorcery"
+      ],
+      "subtypes": [],
+      "keywords": [],
+      "rulesText": "Creatures you control get +3/+3 and gain trample until end of turn. (Each of those creatures can deal excess combat damage to the player or planeswalker it's attacking.)"
+    }
+  ],
+  "oracleText": "Creatures you control get +3/+3 and gain trample until end of turn. (Each of those creatures can deal excess combat damage to the player or planeswalker it's attacking.)",
+  "keywords": [],
+  "manaValue": 5,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}

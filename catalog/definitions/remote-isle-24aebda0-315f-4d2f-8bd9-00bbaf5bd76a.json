@@ -1,0 +1,34 @@
+{
+  "id": "24aebda0-315f-4d2f-8bd9-00bbaf5bd76a",
+  "canonicalName": "Remote Isle",
+  "defaultPrintingId": "444425b6-8529-430d-b74c-407ce462ad92",
+  "form": "normal",
+  "colorIdentity": [
+    "U"
+  ],
+  "components": [
+    {
+      "name": "Remote Isle",
+      "manaCost": "",
+      "colors": [],
+      "typeLine": "Land",
+      "manaValue": 0,
+      "supertypes": [],
+      "types": [
+        "Land"
+      ],
+      "subtypes": [],
+      "keywords": [
+        "Cycling"
+      ],
+      "rulesText": "This land enters tapped.\n{T}: Add {U}.\nCycling {2} ({2}, Discard this card: Draw a card.)"
+    }
+  ],
+  "oracleText": "This land enters tapped.\n{T}: Add {U}.\nCycling {2} ({2}, Discard this card: Draw a card.)",
+  "keywords": [
+    "Cycling"
+  ],
+  "manaValue": 0,
+  "automationStatus": "unimplemented",
+  "abilities": []
+}
