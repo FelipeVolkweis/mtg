@@ -74,6 +74,22 @@ for (const playerCount of [2, 3, 4]) {
         page.getByRole("button", { name: "Not ready", exact: true }),
       ).toBeVisible();
     }
+    for (const page of pages)
+      await expect(
+        page.getByRole("button", { name: "Start solo Match", exact: true }),
+      ).toHaveCount(0);
+    if (playerCount === 2) {
+      const rejectedSoloStart = await exchange(pages[0], {
+        type: "start-solo",
+        startingLife: "20",
+      });
+      expect(rejectedSoloStart).toMatchObject({
+        event: "rejected",
+        data: {
+          message: "Only the sole ready participant can start a solo Match.",
+        },
+      });
+    }
     await pages[1].getByLabel("Starting life", { exact: true }).fill("40");
     await pages[1]
       .getByRole("button", { name: "Start Match", exact: true })
@@ -117,6 +133,135 @@ for (const playerCount of [2, 3, 4]) {
     await Promise.all(contexts.map((context) => context.close()));
   });
 }
+
+test("one ready participant can start a solo Match that guests can only observe", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+  } = await table(browser);
+  await saveDeck(alice);
+  await alice.getByRole("button", { name: "Mark ready", exact: true }).click();
+  await expect(
+    alice.getByRole("button", { name: "Start solo Match", exact: true }),
+  ).toBeVisible();
+  await expect(
+    alice.getByRole("button", { name: "Start Match", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    bob.getByRole("button", { name: "Start solo Match", exact: true }),
+  ).toHaveCount(0);
+  await expect(alice.locator(".start-match + .hint")).toContainText(
+    "1 ready. The ready participant can start a solo Match",
+  );
+
+  const unauthorizedStart = await exchange(bob, {
+    type: "start-solo",
+    startingLife: "20",
+  });
+  expect(unauthorizedStart).toMatchObject({
+    event: "rejected",
+    data: {
+      message: "Only the sole ready participant can start a solo Match.",
+    },
+  });
+  expect((await snapshot(bob)).match).toBeUndefined();
+
+  await alice
+    .getByRole("button", { name: "Start solo Match", exact: true })
+    .click();
+  await expect(alice.getByTestId("match")).toBeVisible();
+  await expect(bob.getByTestId("match")).toBeVisible();
+  let soloMatch = (await snapshot(alice)).match!;
+  expect(soloMatch.players.map((player) => player.name)).toEqual(["Alice"]);
+  expect(soloMatch.turn.order).toHaveLength(1);
+  const acceptedTurnOrder = await exchange(alice, {
+    type: "match-action",
+    matchId: soloMatch.id,
+    revision: soloMatch.revision,
+    action: { type: "turn", order: [soloMatch.players[0].id] },
+  });
+  expect(acceptedTurnOrder.event).toBe("view");
+  await expect(alice.getByTestId("match-revision")).toHaveText(
+    `Revision ${soloMatch.revision + 1}`,
+  );
+
+  await alice.getByRole("button", { name: "Draw one", exact: true }).click();
+  await expect(alice.getByTestId("zone-hand-Alice")).toContainText("1 card");
+  soloMatch = (await snapshot(bob)).match!;
+  const aliceHand = soloMatch.zones.find(
+    (zone) => zone.kind === "hand" && zone.ownerId === soloMatch.players[0].id,
+  )!;
+  expect(aliceHand).toMatchObject({ count: 1 });
+  expect(aliceHand).not.toHaveProperty("objectIds");
+
+  const unauthorizedMutation = await exchange(bob, {
+    type: "match-action",
+    matchId: soloMatch.id,
+    revision: soloMatch.revision,
+    action: {
+      type: "create-zone",
+      kind: "special",
+      name: "Unauthorized zone",
+      visibility: "public",
+    },
+  });
+  expect(unauthorizedMutation).toMatchObject({
+    event: "rejected",
+    data: { message: "Only the Match Player can change a solo Match." },
+  });
+  expect(
+    (await snapshot(alice)).match!.zones.some(
+      (zone) => zone.name === "Unauthorized zone",
+    ),
+  ).toBe(false);
+
+  await Promise.all(contexts.map((context) => context.close()));
+});
+
+test("solo Match replacement waits for every current Match Player to confirm", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+  } = await startTable(browser);
+  const originalMatchId = (await snapshot(alice)).match!.id;
+  await bob.getByText("Room lobby and Decklists", { exact: true }).click();
+  await bob.getByRole("button", { name: "Not ready", exact: true }).click();
+  await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+  await alice
+    .getByRole("button", { name: "Start solo Match", exact: true })
+    .click();
+
+  await expect(alice.getByText("New Match requested")).toBeVisible();
+  let view = await snapshot(alice);
+  expect(view.match!.id).toBe(originalMatchId);
+  expect(view.rematch!.confirmations).toHaveLength(0);
+
+  await alice
+    .getByRole("button", { name: "Confirm new Match", exact: true })
+    .click();
+  await expect
+    .poll(async () => (await snapshot(alice)).rematch!.confirmations.length)
+    .toBe(1);
+  view = await snapshot(alice);
+  expect(view.match!.id).toBe(originalMatchId);
+  expect(view.rematch!.confirmations).toHaveLength(1);
+
+  await bob
+    .getByRole("button", { name: "Confirm new Match", exact: true })
+    .click();
+  await expect
+    .poll(async () => (await snapshot(alice)).match!.id)
+    .not.toBe(originalMatchId);
+  view = await snapshot(alice);
+  expect(view.match!.players.map((player) => player.name)).toEqual(["Alice"]);
+  expect(view.rematch).toBeUndefined();
+
+  await Promise.all(contexts.map((context) => context.close()));
+});
 
 test("card drags commit on release and both participants receive ordered revisions and stale-action recovery", async ({
   browser,

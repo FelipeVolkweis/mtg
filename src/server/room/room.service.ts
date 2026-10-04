@@ -197,12 +197,23 @@ export class RoomService implements OnModuleInit {
           delete room.rematch;
           break;
         }
-        case "start": {
+        case "start":
+        case "start-solo": {
           const ready = room.participants.filter(
             (participant) =>
               participant.ready && participant.selectedDecklistId,
           );
-          if (ready.length < 2 || ready.length > 4)
+          if (
+            command.type === "start-solo" &&
+            (ready.length !== 1 || ready[0].id !== participant.id)
+          )
+            throw new TabletopError(
+              "Only the sole ready participant can start a solo Match.",
+            );
+          if (
+            command.type === "start" &&
+            (ready.length < 2 || ready.length > 4)
+          )
             throw new TabletopError(
               "Two to four participants must select Decklists and mark ready.",
             );
@@ -268,6 +279,13 @@ export class RoomService implements OnModuleInit {
           )
             throw new TabletopError(
               "This action is stale. The latest Match view has been restored; retry your action.",
+            );
+          if (
+            room.match.players.length === 1 &&
+            room.match.players[0].participantId !== participant.id
+          )
+            throw new TabletopError(
+              "Only the Match Player can change a solo Match.",
             );
           notice = this.matches.apply(room.match, participant, command.action);
           break;

@@ -1,20 +1,23 @@
 # Magic Tabletop
 
-Shared language for a multiplayer Magic tabletop game in which players manipulate cards and the rules are initially handled manually.
+Shared language for an invitation-only Magic tabletop where Room Participants manipulate cards and handle game rules manually.
 
 ## Language
 
 **Room**:
-An invitation-only online session in which two to four guest players can play successive matches together.
+An invitation-only online session in which up to four guest players can play successive Matches. A Match can be a solo Match with one Match Player or a multiplayer Match with two to four Match Players.
 
 **Guest player**:
 A person playing in a room under a chosen name, without a persistent account.
 
 **Room Participant**:
-A guest player's identity within a room, retained across successive matches. A participant who joins after a Match starts waits for the next Match rather than entering the active one. If the browser credential is unavailable, the participant reclaims this identity by providing their unique Room name while holding the Room's invitation link.
+A guest player's identity within a Room, retained across successive Matches. A participant who is not included when a Match starts waits for the next Match rather than entering the active one. If the browser credential is unavailable, the participant reclaims this identity by providing their unique Room name while holding the Room's invitation link.
 
 **Match**:
-One game of Magic played by the participants in a room.
+One game of Magic played by one or more Match Players in a Room.
+
+**Solo Match**:
+A Match with one Match Player, used to goldfish or test a Decklist without another opponent.
 
 **Match Player**:
 A room participant's role in one match, including their seat and match-specific state.

@@ -165,6 +165,7 @@ form label {
   display: flex;
   gap: 1rem;
   align-items: end;
+  flex-wrap: wrap;
   margin-top: 2rem;
 }
 .start-match label {

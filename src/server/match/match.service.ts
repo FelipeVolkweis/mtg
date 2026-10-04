@@ -50,9 +50,9 @@ export class MatchService {
     const participants = room.participants.filter(
       (participant) => participant.ready && participant.selectedDecklistId,
     );
-    if (participants.length < 2 || participants.length > 4)
+    if (participants.length < 1 || participants.length > 4)
       throw new Error(
-        "Two to four participants must select Decklists and mark ready.",
+        "One to four participants must select Decklists and mark ready.",
       );
     const match: MatchState = {
       id: randomUUID(),

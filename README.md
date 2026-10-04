@@ -1,6 +1,6 @@
 # Magic Tabletop
 
-An invitation-only browser tabletop for two to four guest players. Save private Decklists, start successive Manual Matches, and synchronize cards, life, turn markers, Counters, tokens, Stack abilities, and outcomes. PostgreSQL retains the current Room and Match snapshot; each browser receives only its permitted view.
+An invitation-only browser tabletop for goldfishing a Decklist or playing with two to four guest players. Save private Decklists, start successive Manual Matches, and synchronize cards, life, turn markers, Counters, tokens, Stack abilities, and outcomes. PostgreSQL retains the current Room and Match snapshot; each browser receives only its permitted view.
 
 ## Run locally
 

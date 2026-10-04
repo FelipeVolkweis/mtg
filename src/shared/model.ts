@@ -384,7 +384,7 @@ export const matchActionSchema = z.discriminatedUnion("type", [
       number: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).optional(),
       stepIndex: z.number().int().min(0).max(11).optional(),
       direction: z.enum(["next", "previous"]).optional(),
-      order: z.array(id).min(2).max(4).optional(),
+      order: z.array(id).min(1).max(4).optional(),
     })
     .strict(),
   z
@@ -480,6 +480,7 @@ export const roomCommandSchema = z.discriminatedUnion("type", [
     })
     .strict(),
   z.object({ type: z.literal("start"), startingLife: integer }).strict(),
+  z.object({ type: z.literal("start-solo"), startingLife: integer }).strict(),
   z.object({ type: z.literal("confirm-rematch"), proposalId: id }).strict(),
   z.object({ type: z.literal("cancel-rematch") }).strict(),
   z.object({ type: z.literal("close") }).strict(),

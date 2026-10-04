@@ -140,10 +140,21 @@ export function Lobby({
             >
               {view.match ? "Request new Match" : "Start Match"}
             </button>
+            {/* Keep solo start isolated so it can be commented out without changing multiplayer start. */}
+            {ready === 1 && participant.ready && (
+              <button
+                className="primary"
+                disabled={busy}
+                onClick={() => send({ type: "start-solo", startingLife })}
+              >
+                Start solo Match
+              </button>
+            )}
           </div>
           <p className="hint">
-            {ready} ready. Two to four ready participants play; other guests
-            wait for the next Match.
+            {ready === 1
+              ? "1 ready. The ready participant can start a solo Match, or wait for two to four ready participants to play; other guests wait for the next Match."
+              : `${ready} ready. Two to four ready participants play; other guests wait for the next Match.`}
           </p>
           {view.rematch && (
             <div className="rematch">

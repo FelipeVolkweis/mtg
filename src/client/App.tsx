@@ -171,8 +171,9 @@ export function App() {
             wherever you are.
           </h1>
           <p>
-            A private tabletop for two to four players. Play Magic your way,
-            with shared cards and room to make the rules yourselves.
+            A private tabletop for solo deck testing or two to four players.
+            Play Magic your way, with shared cards and room to make the rules
+            yourselves.
           </p>
           {session ? (
             <p role="status">{connection}…</p>
