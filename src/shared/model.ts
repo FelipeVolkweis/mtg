@@ -376,7 +376,7 @@ export interface MatchView extends Omit<
     waiting?: { playerId: string; kind: string };
     pending?: import("./rules.js").PendingProcedure & {
       legalTargetIds: string[];
-      selectionOptions: Record<string, { count: number; objectIds: string[] }>;
+      selectionOptions: Record<string, import("./rules.js").SelectionOption>;
     };
   };
   actions?: { label: string; action: MatchAction }[];
@@ -425,6 +425,9 @@ export const matchActionSchema = z.discriminatedUnion("type", [
       targetIds: z.array(id).max(100).optional(),
       selections: z.record(z.string(), z.array(id).max(100)).optional(),
       color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),
+      variables: z
+        .record(z.string(), z.number().int().nonnegative().max(1000))
+        .optional(),
       confirm: z.boolean().optional(),
     })
     .strict(),

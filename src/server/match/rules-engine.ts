@@ -21,6 +21,7 @@ import {
 import { gameObject, moveObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
+import { Resolution } from "./resolution.js";
 
 export const emptyMana = (): ManaPool => ({
   W: 0,
@@ -70,7 +71,8 @@ export class RulesEngine {
       else if (
         action.type === "cancel-procedure" &&
         action.procedureId === pending.id &&
-        pending.kind !== "cleanup"
+        pending.kind !== "cleanup" &&
+        pending.kind !== "resolve"
       )
         delete this.rules.pending;
       else
@@ -145,7 +147,6 @@ export class RulesEngine {
     }
     if (this.zone("stack").objectIds.length) {
       this.resolve();
-      this.priority();
       return;
     }
     this.advanceStep();
@@ -236,6 +237,7 @@ export class RulesEngine {
   selectionOptions(
     pending: PendingProcedure,
   ): Record<string, { count: number; objectIds: string[] }> {
+    if (pending.kind === "resolve") return pending.options ?? {};
     if (pending.kind === "cleanup")
       return {
         discard: {
@@ -375,24 +377,34 @@ export class RulesEngine {
       ) ?? [];
     if (spellAbilities.length > 1)
       throw new Error("This spell composition is not yet supported.");
-    const ability = spellAbilities[0]?.rules ?? { costs: [], effects: [] };
-    const symbols = source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
+    const ability = rulesAbilitySchema.parse(
+      spellAbilities[0]?.rules ?? { costs: [], effects: [] },
+    );
+    const symbols: string[] =
+      source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
     if (!source.characteristics.manaCost && !symbols.length)
       throw new Error("A spell without a mana cost cannot be cast normally.");
     this.rules.pending = {
       id: randomUUID(),
       playerId,
       kind: "cast",
-      stage: ability.target ? "targets" : "payment",
+      stage: ability.chosenVariables?.length
+        ? "variable"
+        : ability.target
+          ? "targets"
+          : "payment",
       sourceId: id,
       ability: structuredClone(ability),
       targetIds: [],
       selections: {},
-      totalCost: manaCost(symbols),
+      totalCost: manaCost(symbols.filter((symbol) => symbol !== "{X}")),
     };
     if (ability.target && !this.legalTargets(playerId, ability.target).length)
       throw new Error("No legal targets are available.");
-    if (!ability.target) this.tryComplete(playerId);
+    if (symbols.includes("{X}") && !ability.chosenVariables?.includes("X"))
+      throw new Error("Variable mana costs require an authored chosen value.");
+    if (!ability.target && !ability.chosenVariables?.length)
+      this.tryComplete(playerId);
   }
   canActivateFromZone(
     source: GameObject,
@@ -462,6 +474,33 @@ export class RulesEngine {
     action: Extract<MatchAction, { type: "rules-input" }>,
   ) {
     const pending = this.rules.pending!;
+    if (pending.kind === "resolve") {
+      new Resolution(this).answer(action);
+      return;
+    }
+    if (pending.stage === "variable") {
+      const value = action.variables?.X;
+      if (
+        value === undefined ||
+        !Number.isSafeInteger(value) ||
+        value < 0 ||
+        value > 1000 ||
+        Object.keys(action.variables ?? {}).some((key) => key !== "X")
+      )
+        throw new Error("Choose a nonnegative integer for X, at most 1000.");
+      pending.variables = { X: value };
+      const symbols =
+        this.object(pending.sourceId!).characteristics.manaCost?.match(
+          /\{[^{}]+\}/g,
+        ) ?? [];
+      pending.totalCost.generic +=
+        symbols.filter((symbol) => symbol === "{X}").length * value;
+      pending.stage = pending.ability?.target ? "targets" : "payment";
+      pending.id = randomUUID();
+      return;
+    }
+    if (action.variables)
+      throw new Error("The chosen Variable Values are locked.");
     if (pending.kind === "cleanup") {
       const hand = this.zone("hand", playerId);
       const ids = action.selections?.discard ?? [];
@@ -510,7 +549,13 @@ export class RulesEngine {
         ability: pending.ability!,
         targetIds: pending.targetIds,
       };
+      spell.variables = Object.entries(pending.variables ?? {}).map(
+        ([name, value]) => ({ name, value: String(value) }),
+      );
       spell.casting = {
+        ...(pending.variables?.X !== undefined
+          ? { chosenX: String(pending.variables.X) }
+          : {}),
         sourceZoneId,
         modes: [],
         components: [0],
@@ -667,8 +712,11 @@ export class RulesEngine {
     color?: ManaType,
   ) {
     for (const effect of ability.effects) {
-      if (effect.kind === "draw") this.draw(playerId, effect.count);
-      else if (effect.kind === "add-mana") {
+      if (effect.kind === "draw") {
+        if (typeof effect.count !== "number")
+          throw new Error("Draw requires a resolution binding.");
+        this.draw(playerId, effect.count);
+      } else if (effect.kind === "add-mana") {
         const colors =
           effect.colors === "commander-colors"
             ? (this.rules.commanders[playerId].colorIdentity as ManaType[])
@@ -717,13 +765,26 @@ export class RulesEngine {
             object.controllerId,
           ),
       );
-    if (valid && resolution)
-      this.effects(
-        object.controllerId,
-        resolution.ability,
-        resolution.targetIds,
-        resolution.color,
-      );
+    if (valid && resolution) {
+      delete this.match.priority;
+      this.rules.resolving = {
+        sourceId: object.id,
+        playerId: object.controllerId,
+        remaining: structuredClone(resolution.ability.effects),
+        bindings: Object.fromEntries(
+          object.variables.map((variable) => [
+            variable.name,
+            Number(variable.value),
+          ]),
+        ),
+      };
+      new Resolution(this).resume();
+      return;
+    }
+    this.finishResolution(object, valid);
+    this.priority();
+  }
+  finishResolution(object: GameObject, valid: boolean) {
     if (
       object.kind === "card" &&
       valid &&

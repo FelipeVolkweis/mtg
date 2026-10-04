@@ -27,6 +27,36 @@
   "oracleText": "Draw X cards, then discard a card.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "spell",
+      "kind": "spell",
+      "origin": "printed",
+      "rules": {
+        "chosenVariables": [
+          "X"
+        ],
+        "costs": [],
+        "effects": [
+          {
+            "kind": "sequence",
+            "effects": [
+              {
+                "kind": "draw",
+                "count": {
+                  "binding": "X"
+                },
+                "bind": "drawn"
+              },
+              {
+                "kind": "discard",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

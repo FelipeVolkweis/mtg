@@ -6,7 +6,7 @@ import type { RoomState, ZoneKind } from "../../src/shared/model";
 
 // Initial scenario construction is test-only. Assertions and every subsequent
 // action use the public player command/view protocol; no fixture command exists.
-export async function seedRulesScenario(invite: string) {
+export async function seedRulesScenario(invite: string, spellName?: string) {
   const pool = new Pool({
     connectionString:
       process.env.TEST_DATABASE_URL ??
@@ -44,7 +44,8 @@ export async function seedRulesScenario(invite: string) {
       match.rules!.controlledSinceTurn[object.id] = 0;
       return object;
     }
-    const target = add("Sol Ring", "stack");
+    const target = add(spellName ?? "Sol Ring", spellName ? "hand" : "stack");
+    if (spellName) add("Mind Stone", "hand");
     add("Counterspell", "hand");
     add("Mind Stone", "battlefield");
     add("Sol Ring", "battlefield");
@@ -53,7 +54,7 @@ export async function seedRulesScenario(invite: string) {
     match.turn.activePlayerId = player.id;
     match.turn.stepIndex = 3;
     match.priority = { playerId: player.id, passedPlayerIds: [] };
-    match.rules!.mana[player.id].U = 2;
+    match.rules!.mana[player.id].U = spellName ? 5 : 2;
     match.revision++;
     room.revision++;
     await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [

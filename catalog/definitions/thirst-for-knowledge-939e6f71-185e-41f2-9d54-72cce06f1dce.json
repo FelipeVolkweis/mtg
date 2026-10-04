@@ -27,6 +27,47 @@
   "oracleText": "Draw three cards. Then discard two cards unless you discard an artifact card.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "spell",
+      "kind": "spell",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 3,
+            "bind": "drawn"
+          },
+          {
+            "kind": "alternative",
+            "options": [
+              {
+                "id": "artifact",
+                "label": "Discard one artifact card",
+                "effect": {
+                  "kind": "discard",
+                  "count": 1,
+                  "types": [
+                    "Artifact"
+                  ]
+                },
+                "requireComplete": true
+              },
+              {
+                "id": "cards",
+                "label": "Discard two cards",
+                "effect": {
+                  "kind": "discard",
+                  "count": 2
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

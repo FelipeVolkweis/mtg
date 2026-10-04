@@ -1025,3 +1025,362 @@ test("Counterspell cannot select an Ability Game Object on the Stack", async () 
     ),
   ).toBe(false);
 });
+
+test("Thirst for Knowledge draws before offering private discard alternatives and resumes without drawing twice", async () => {
+  const { match, command, seed, catalog, room, service } = await rulesGame();
+  const spell = seed("Thirst for Knowledge", "hand");
+  const artifact = seed("Mind Stone", "hand");
+  const player = match.players[0].id;
+  match.rules!.mana[player].U = 3;
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const library = () =>
+    view().zones.find((z) => z.kind === "library" && z.ownerId === player)!
+      .count;
+  const before = library();
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "accepted",
+  );
+  command(0, { type: "pass-priority" });
+  expect(command(1, { type: "pass-priority" }).kind).toBe("pending");
+  expect(library()).toBe(before - 3);
+  const pending = view().rules!.pending!;
+  expect(pending.kind).toBe("resolve");
+  expect(view().priority).toBeUndefined();
+  expect(view().actions).toEqual([]);
+  expect(
+    matchView(match, room.participants[1].id, catalog).rules!.pending,
+  ).toBeUndefined();
+  expect(pending.selectionOptions.artifact).toMatchObject({
+    count: 1,
+    objectIds: [artifact.id],
+  });
+  expect(pending.selectionOptions.cards.count).toBe(2);
+  const restored = JSON.parse(JSON.stringify(match));
+  expect(
+    service.execute(
+      restored,
+      room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: pending.id,
+        selections: { artifact: [artifact.id] },
+        confirm: true,
+      },
+      catalog,
+    ).kind,
+  ).toBe("accepted");
+  const resumed = matchView(restored, room.participants[0].id, catalog);
+  expect(
+    resumed.zones.find((z) => z.kind === "library" && z.ownerId === player)!
+      .count,
+  ).toBe(before - 3);
+  expect(resumed.zones.find((z) => z.kind === "stack")!.count).toBe(0);
+  expect(
+    service.execute(
+      restored,
+      room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: pending.id,
+        selections: { artifact: [artifact.id] },
+      },
+      catalog,
+    ).kind,
+  ).toBe("rejected");
+});
+
+test("Pull from Tomorrow locks chosen X before mana payment, draws X, and allows a newly drawn discard", async () => {
+  const { match, command, seed, catalog, room } = await rulesGame();
+  const player = match.players[0].id;
+  const spell = seed("Pull from Tomorrow", "hand");
+  match.rules!.mana[player].U = 4;
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const hand = () =>
+    view().zones.find((z) => z.kind === "hand" && z.ownerId === player)!;
+  const oldHand = [...hand().objectIds!];
+  expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+    "pending",
+  );
+  const choose = view().rules!.pending!;
+  expect(choose.stage).toBe("variable");
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: choose.id,
+      variables: { X: -1 },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: choose.id,
+      variables: { X: 2 },
+    }).kind,
+  ).toBe("pending");
+  const payment = view().rules!.pending!;
+  expect(payment.totalCost).toMatchObject({ U: 2, generic: 2 });
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: choose.id,
+      variables: { X: 0 },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: payment.id,
+      variables: { X: 0 },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    command(0, { type: "rules-input", procedureId: payment.id, confirm: true })
+      .kind,
+  ).toBe("accepted");
+  const stack = view().zones.find((z) => z.kind === "stack")!;
+  expect(view().objects[stack.objectIds![0]].casting?.chosenX).toBe("2");
+  expect(view().rules!.mana[player].U).toBe(0);
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const pending = view().rules!.pending!;
+  const drawn = hand().objectIds!.filter((id) => !oldHand.includes(id));
+  expect(drawn).toHaveLength(2);
+  expect(pending.selectionOptions.discard.objectIds).toEqual(
+    expect.arrayContaining(drawn),
+  );
+  expect(
+    command(1, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { discard: [drawn[0]] },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    command(0, { type: "cancel-procedure", procedureId: pending.id }).kind,
+  ).toBe("rejected");
+  const before = view();
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { discard: [drawn[0], drawn[0]] },
+    }).kind,
+  ).toBe("rejected");
+  expect(view()).toEqual(before);
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { discard: [drawn[0]] },
+    }).kind,
+  ).toBe("accepted");
+  expect(hand().objectIds).not.toContain(drawn[0]);
+  expect(view().priority?.playerId).toBe(player);
+});
+
+for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
+  test(`${name} completes partial draws and discards before checking a failed draw`, async () => {
+    const { match, command, seed, catalog, room } = await rulesGame();
+    const player = match.players[0].id;
+    const hand = match.zones.find(
+      (z) => z.kind === "hand" && z.ownerId === player,
+    )!;
+    const library = match.zones.find(
+      (z) => z.kind === "library" && z.ownerId === player,
+    )!;
+    for (const id of [...hand.objectIds, ...library.objectIds.slice(1)]) {
+      delete match.objects[id];
+    }
+    hand.objectIds = [];
+    library.objectIds = library.objectIds.slice(0, 1);
+    const spell = seed(name, "hand");
+    match.rules!.mana[player].U = 5;
+    expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+      name === "Pull from Tomorrow" ? "pending" : "accepted",
+    );
+    if (name === "Pull from Tomorrow") {
+      command(0, {
+        type: "rules-input",
+        procedureId: match.rules!.pending!.id,
+        variables: { X: 3 },
+      });
+      command(0, {
+        type: "rules-input",
+        procedureId: match.rules!.pending!.id,
+        confirm: true,
+      });
+    }
+    command(0, { type: "pass-priority" });
+    expect(command(1, { type: "pass-priority" }).kind).toBe("pending");
+    const view = matchView(match, room.participants[0].id, catalog);
+    expect(view.outcome).toBe("ongoing");
+    expect(view.players[0].outcome).toBe("playing");
+    expect(view.priority).toBeUndefined();
+    const pending = view.rules!.pending!;
+    const key = name === "Thirst for Knowledge" ? "cards" : "discard";
+    expect(Object.keys(pending.selectionOptions)).toEqual([key]);
+    expect(pending.selectionOptions[key]).toMatchObject({
+      count: 1,
+      requestedCount: name === "Thirst for Knowledge" ? 2 : 1,
+    });
+    const ids = pending.selectionOptions[key].objectIds;
+    expect(
+      command(0, {
+        type: "rules-input",
+        procedureId: pending.id,
+        selections: { [key]: ids },
+      }).kind,
+    ).toBe("accepted");
+    const after = matchView(match, room.participants[0].id, catalog);
+    expect(after.outcome).toBe("complete");
+    expect(after.players[0].outcome).toBe("lost");
+    expect(
+      after.zones.find((z) => z.kind === "hand" && z.ownerId === player)!.count,
+    ).toBe(0);
+    expect(
+      after.zones.find((z) => z.kind === "graveyard" && z.ownerId === player)!
+        .count,
+    ).toBe(2);
+  });
+}
+
+test("zero X with an empty Hand skips the impossible discard without attempting a draw", async () => {
+  const { match, command, seed, catalog, room } = await rulesGame();
+  const player = match.players[0].id;
+  const hand = match.zones.find(
+    (z) => z.kind === "hand" && z.ownerId === player,
+  )!;
+  for (const id of hand.objectIds) delete match.objects[id];
+  hand.objectIds = [];
+  const spell = seed("Pull from Tomorrow", "hand");
+  match.rules!.mana[player].U = 2;
+  command(0, { type: "cast-spell", objectId: spell.id });
+  command(0, {
+    type: "rules-input",
+    procedureId: match.rules!.pending!.id,
+    variables: { X: 0 },
+  });
+  command(0, {
+    type: "rules-input",
+    procedureId: match.rules!.pending!.id,
+    confirm: true,
+  });
+  command(0, { type: "pass-priority" });
+  expect(command(1, { type: "pass-priority" }).kind).toBe("accepted");
+  const view = matchView(match, room.participants[0].id, catalog);
+  expect(view.rules!.pending).toBeUndefined();
+  expect(view.outcome).toBe("ongoing");
+  expect(
+    view.zones.find((z) => z.kind === "library" && z.ownerId === player)!.count,
+  ).toBe(92);
+});
+
+test("nested sequences bind results, take conditions, and rotate choice identifiers across reconnects", async () => {
+  const { match, command, seed, catalog, room, service } = await rulesGame();
+  const spell = seed("Thirst for Knowledge", "hand");
+  const definition = Object.values(catalog.definitions).find(
+    (card) => card.canonicalName === "Thirst for Knowledge",
+  )!;
+  definition.abilities[0].rules = {
+    costs: [],
+    effects: [
+      {
+        kind: "sequence",
+        effects: [
+          { kind: "draw", count: 1, bind: "drawn" },
+          { kind: "discard", count: 1, bind: "discarded" },
+          {
+            kind: "if",
+            condition: { binding: "discarded", atLeast: 1 },
+            then: [
+              { kind: "draw", count: { binding: "drawn" } },
+              { kind: "discard", count: 1 },
+            ],
+            otherwise: [{ kind: "draw", count: 3 }],
+          },
+        ],
+      },
+    ],
+  };
+  const player = match.players[0].id;
+  match.rules!.mana[player].U = 3;
+  command(0, { type: "cast-spell", objectId: spell.id });
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  const first = view().rules!.pending!;
+  command(0, {
+    type: "rules-input",
+    procedureId: first.id,
+    selections: { discard: [first.selectionOptions.discard.objectIds[0]] },
+  });
+  const second = view().rules!.pending!;
+  expect(second.id).not.toBe(first.id);
+  expect(
+    view().zones.find((z) => z.kind === "library" && z.ownerId === player)!
+      .count,
+  ).toBe(90);
+  expect(
+    JSON.stringify(matchView(match, room.participants[1].id, catalog)),
+  ).not.toContain(second.selectionOptions.discard.objectIds[0]);
+  const before = view();
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: first.id,
+      selections: { discard: [second.selectionOptions.discard.objectIds[0]] },
+    }).kind,
+  ).toBe("rejected");
+  expect(view()).toEqual(before);
+  const restored = JSON.parse(JSON.stringify(match));
+  expect(
+    service.execute(
+      restored,
+      room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: second.id,
+        selections: { discard: [second.selectionOptions.discard.objectIds[0]] },
+      },
+      catalog,
+    ).kind,
+  ).toBe("accepted");
+  const done = matchView(restored, room.participants[0].id, catalog);
+  expect(
+    done.zones.find((z) => z.kind === "library" && z.ownerId === player)!.count,
+  ).toBe(90);
+  expect(done.zones.find((z) => z.kind === "stack")!.count).toBe(0);
+});
+
+test("Commander setup accepts validated ordered cards and rejects unknown result bindings", async () => {
+  const { room, catalog, island } = commanderFixture();
+  const release = await readCatalog("catalog");
+  for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
+    const card = Object.values(release.definitions).find(
+      (card) => card.canonicalName === name,
+    )!;
+    catalog.definitions[card.id] = structuredClone(card);
+    catalog.printings[card.defaultPrintingId] =
+      release.printings[card.defaultPrintingId];
+    for (const participant of room.participants) {
+      participant.decklists[0].entries.find(
+        (entry) => entry.definitionId === island,
+      )!.quantity--;
+      participant.decklists[0].entries.push({
+        definitionId: card.id,
+        printingId: card.defaultPrintingId,
+        quantity: 1,
+      });
+    }
+  }
+  expect(() => new MatchService().createCommander(room, catalog)).not.toThrow();
+  const pull = Object.values(catalog.definitions).find(
+    (card) => card.canonicalName === "Pull from Tomorrow",
+  )!;
+  pull.abilities[0].rules!.effects = [
+    { kind: "draw", count: { binding: "missing" } },
+  ];
+  expect(() => new MatchService().createCommander(room, catalog)).toThrow(
+    "Unsupported cards: Pull from Tomorrow",
+  );
+});

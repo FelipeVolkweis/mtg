@@ -224,3 +224,123 @@ test("target choices and activation payment resume after reload and stale input 
     await Promise.all(contexts.map((context) => context.close()));
   }
 });
+
+for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
+  test(`${name} restores its private resolution choice after reconnecting`, async ({
+    browser,
+  }) => {
+    const {
+      pages: [alice, bob],
+      contexts,
+      invitation,
+    } = await table(browser);
+    try {
+      for (const page of [alice, bob]) {
+        await saveDeck(
+          page,
+          "Supported Commander",
+          "99 Island (TST) 1\n1 Rules Commander",
+        );
+        await page.getByLabel("Match format").selectOption("commander");
+        await page
+          .getByLabel("Commander", { exact: true })
+          .selectOption({ label: "Rules Commander" });
+        await page
+          .getByRole("button", { name: "Mark ready", exact: true })
+          .click();
+        await expect(
+          page.getByRole("button", { name: "Not ready", exact: true }),
+        ).toBeVisible();
+      }
+      const initial = await snapshot(alice);
+      await alice
+        .getByLabel("Starting player")
+        .selectOption(initial.participantId);
+      await alice
+        .getByRole("button", { name: "Start Match", exact: true })
+        .click();
+      await expect(
+        alice.getByRole("heading", { name: "Commander Match" }),
+      ).toBeVisible();
+      await seedRulesScenario(invitation.split("/").pop()!, name);
+      await alice.reload();
+      await bob.reload();
+      await alice
+        .getByRole("button", { name: `Cast ${name}`, exact: true })
+        .click();
+      if (name === "Pull from Tomorrow") {
+        await alice.getByLabel("X", { exact: true }).fill("2");
+        const variableId = (await snapshot(alice)).match!.rules!.pending!.id;
+        await alice
+          .getByRole("button", { name: "Confirm X", exact: true })
+          .click();
+        await alice.reload();
+        const payment = (await snapshot(alice)).match!.rules!.pending!;
+        expect(payment.id).not.toBe(variableId);
+        expect(payment.totalCost).toMatchObject({ U: 2, generic: 2 });
+        await alice
+          .getByRole("button", { name: "Complete payment", exact: true })
+          .click();
+      }
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await expect(
+        alice.getByRole("heading", { name: "Resolve spell or ability" }),
+      ).toBeVisible();
+      await expect(
+        bob.getByRole("heading", { name: "Resolve spell or ability" }),
+      ).toHaveCount(0);
+      const suspended = (await snapshot(alice)).match!;
+      const player = suspended.players[0].id;
+      const library = suspended.zones.find(
+        (z) => z.kind === "library" && z.ownerId === player,
+      )!.count;
+      const pendingId = suspended.rules!.pending!.id;
+      await alice.reload();
+      const restored = (await snapshot(alice)).match!;
+      expect(restored.rules!.pending!.id).toBe(pendingId);
+      expect(
+        restored.zones.find(
+          (z) => z.kind === "library" && z.ownerId === player,
+        )!.count,
+      ).toBe(library);
+      await expect(
+        alice.getByRole("button", { name: "Pass Priority", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        alice.getByRole("button", { name: "Cancel procedure", exact: true }),
+      ).toHaveCount(0);
+      if (name === "Thirst for Knowledge")
+        await alice.getByLabel("Discard option").selectOption("artifact");
+      const prompt = alice.getByRole("region", {
+        name: "Pending rules choice",
+      });
+      await prompt.getByRole("checkbox").first().check();
+      await alice
+        .getByRole("button", { name: "Discard selected cards", exact: true })
+        .click();
+      await expect(
+        alice.getByRole("heading", { name: "Resolve spell or ability" }),
+      ).toHaveCount(0);
+      const done = (await snapshot(alice)).match!;
+      expect(
+        done.zones.find((z) => z.kind === "library" && z.ownerId === player)!
+          .count,
+      ).toBe(library);
+      expect(done.zones.find((z) => z.kind === "stack")!.count).toBe(0);
+      const stale = await exchange(alice, {
+        type: "match-action",
+        matchId: done.id,
+        revision: done.revision,
+        action: { type: "rules-input", procedureId: pendingId, selections: {} },
+      });
+      expect(stale.event).toBe("rejected");
+    } finally {
+      await Promise.all(contexts.map((context) => context.close()));
+    }
+  });
+}

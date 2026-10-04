@@ -52,18 +52,50 @@ function Procedure({
   act: (action: MatchAction) => void;
 }) {
   const pending = match.rules!.pending!;
+  const [chosenX, setChosenX] = useState(0);
+  const [alternative, setAlternative] = useState("");
   const [targetId, setTargetId] = useState("");
   const [selections, setSelections] = useState(pending.selections);
   return (
     <section aria-label="Pending rules choice">
       <h2>
-        {pending.kind === "cleanup"
-          ? "Cleanup discard"
-          : pending.stage === "targets"
-            ? "Choose target"
-            : "Pay costs"}
+        {pending.stage === "variable"
+          ? "Choose X"
+          : pending.kind === "resolve"
+            ? "Resolve spell or ability"
+            : pending.kind === "cleanup"
+              ? "Cleanup discard"
+              : pending.stage === "targets"
+                ? "Choose target"
+                : "Pay costs"}
       </h2>
-      {pending.stage === "targets" ? (
+      {pending.context && <p>{pending.context}</p>}
+      {pending.stage === "variable" ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            act({
+              type: "rules-input",
+              procedureId: pending.id,
+              variables: { X: chosenX },
+            });
+          }}
+        >
+          <label>
+            X
+            <input
+              type="number"
+              min={0}
+              max={1000}
+              step={1}
+              required
+              value={chosenX}
+              onChange={(event) => setChosenX(Number(event.target.value))}
+            />
+          </label>
+          <button>Confirm X</button>
+        </form>
+      ) : pending.stage === "targets" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -94,7 +126,7 @@ function Procedure({
         </form>
       ) : (
         <>
-          {pending.kind !== "cleanup" && (
+          {pending.stage === "payment" && (
             <p>
               Locked mana cost: {pending.totalCost.generic} generic
               {manaTypes
@@ -104,21 +136,51 @@ function Procedure({
               . Choose mana sources below, then complete payment.
             </p>
           )}
-          {Object.entries(pending.selectionOptions).map(([key, option]) => (
-            <CardChoices
-              key={key}
-              match={match}
-              ids={option.objectIds}
-              count={option.count}
-              label={
-                key === "discard"
-                  ? "Discard"
-                  : `Pay ${pending.ability?.costs[Number(key)]?.kind} cost`
-              }
-              selected={selections[key] ?? []}
-              onChange={(ids) => setSelections({ ...selections, [key]: ids })}
-            />
-          ))}
+          {pending.kind === "resolve" &&
+            Object.keys(pending.selectionOptions).length > 1 && (
+              <label>
+                Discard option
+                <select
+                  value={alternative}
+                  onChange={(event) => {
+                    setAlternative(event.target.value);
+                    setSelections({});
+                  }}
+                >
+                  <option value="">Choose a discard option</option>
+                  {Object.entries(pending.selectionOptions).map(
+                    ([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.label}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </label>
+            )}
+          {Object.entries(pending.selectionOptions)
+            .filter(
+              ([key]) =>
+                pending.kind !== "resolve" ||
+                Object.keys(pending.selectionOptions).length === 1 ||
+                key === alternative,
+            )
+            .map(([key, option]) => (
+              <CardChoices
+                key={key}
+                match={match}
+                ids={option.objectIds}
+                count={option.count}
+                label={
+                  option.label ??
+                  (key === "discard"
+                    ? "Discard"
+                    : `Pay ${pending.ability?.costs[Number(key)]?.kind} cost`)
+                }
+                selected={selections[key] ?? []}
+                onChange={(ids) => setSelections({ ...selections, [key]: ids })}
+              />
+            ))}
           <button
             onClick={() =>
               act({
@@ -129,13 +191,13 @@ function Procedure({
               })
             }
           >
-            {pending.kind === "cleanup"
+            {pending.kind === "cleanup" || pending.kind === "resolve"
               ? "Discard selected cards"
               : "Complete payment"}
           </button>
         </>
       )}
-      {pending.kind !== "cleanup" && (
+      {pending.kind !== "cleanup" && pending.kind !== "resolve" && (
         <button
           onClick={() =>
             act({ type: "cancel-procedure", procedureId: pending.id })

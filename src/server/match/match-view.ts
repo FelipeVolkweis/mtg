@@ -94,8 +94,13 @@ export function matchView(
     priority: match.priority,
     ...(match.rules
       ? (() => {
-          const { pending, controlledSinceTurn, turnStarted, ...rules } =
-            match.rules;
+          const {
+            pending,
+            resolving,
+            controlledSinceTurn,
+            turnStarted,
+            ...rules
+          } = match.rules;
           const engine = catalog ? new RulesEngine(match, catalog) : undefined;
           return {
             rules: {

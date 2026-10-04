@@ -1,7 +1,7 @@
-# Rules automation: tickets 01–06
+# Rules automation: tickets 01–07
 
 Commander is available alongside the temporary Tabletop compatibility path. The
-first six rules slices require two ready Room Participants, a selected legendary
+first seven rules slices require two ready Room Participants, a selected legendary
 creature commander in each Decklist, exactly 100 cards, singleton nonbasic cards,
 compatible Color Identity, and complete authored automation support. The mono-U
 sample still contains unsupported cards and is deliberately rejected. Sai and
@@ -61,3 +61,21 @@ Match data. Reconnection restores their procedure identifiers and authorized
 choices; revision and identifier checks prevent duplicate completion. Cancelling
 an unfinished procedure pays none of its costs. Separately completed mana
 abilities remain completed, with their mana in the player's pool.
+
+
+Ordered spell resolution persists a queue of remaining instructions and numeric
+bindings. Authored sequences, result-bound quantities and conditions share this
+interpreter. Discard alternatives declare whether complete performance is
+required: Thirst for Knowledge permits one artifact only when that option can be
+completed, otherwise discarding as many of the requested two cards as possible.
+Pull from Tomorrow chooses X before locking its mana cost, records that value in
+its Casting Record, draws X, then offers a discard from the updated Hand. Zero
+quantities and impossible discards complete without a prompt.
+
+Resolution retains its source on the Stack and grants no Priority while a player
+answers. Each new choice receives a fresh identifier; the private prompt supplies
+its responding player, labels, requested and legal quantities, eligible card IDs
+and explanatory context. The progress queue and bindings stay server-private.
+Insufficient Library contents do not interrupt later instructions: the failed-draw
+checkpoint runs only after resolution completes. Browser reconnect tests restore
+both cards' choices from persisted Room state without repeating draws.

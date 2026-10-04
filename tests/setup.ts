@@ -95,6 +95,8 @@ export async function seedCatalog() {
     "Negate",
     "Mind Stone",
     "Hedron Archive",
+    "Pull from Tomorrow",
+    "Thirst for Knowledge",
   ]) {
     const card = Object.values(release.definitions).find(
       (card) => card.canonicalName === name,

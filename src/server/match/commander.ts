@@ -3,13 +3,35 @@ import type {
   Catalog,
   Participant,
 } from "../../shared/model.js";
-import { rulesAbilitySchema } from "../../shared/rules.js";
+import { rulesAbilitySchema, type RulesEffect } from "../../shared/rules.js";
 
 export function commanderEligible(card: CardDefinition): boolean {
   const face = card.components[0];
   return (
     !!face.types?.includes("Creature") &&
     !!face.supertypes?.includes("Legendary")
+  );
+}
+
+function resolvingEffectSupported(
+  effect: RulesEffect,
+  allowMana = false,
+): boolean {
+  if (effect.kind === "sequence")
+    return effect.effects.every((part) =>
+      resolvingEffectSupported(part, allowMana),
+    );
+  if (effect.kind === "if")
+    return [...effect.then, ...effect.otherwise].every((part) =>
+      resolvingEffectSupported(part, allowMana),
+    );
+  if (effect.kind === "alternative")
+    return effect.options.every((option) =>
+      resolvingEffectSupported(option.effect, allowMana),
+    );
+  return (
+    ["counter-target", "draw", "discard"].includes(effect.kind) ||
+    (allowMana && effect.kind === "add-mana")
   );
 }
 
@@ -31,15 +53,15 @@ export function automationEligible(card: CardDefinition): boolean {
         ability.rules &&
         rulesAbilitySchema.safeParse(ability.rules).success &&
         ((ability.kind === "activated" &&
-          !ability.rules.effects.some(
-            (effect) => effect.kind === "enter-tapped",
+          !ability.rules.chosenVariables?.length &&
+          ability.rules.effects.every((effect) =>
+            resolvingEffectSupported(effect, true),
           )) ||
           (ability.kind === "spell" &&
             !ability.rules.costs.length &&
             !ability.rules.manaAbility &&
-            ability.rules.effects.every(
-              (effect) =>
-                effect.kind === "counter-target" || effect.kind === "draw",
+            ability.rules.effects.every((effect) =>
+              resolvingEffectSupported(effect),
             )) ||
           (ability.kind === "static" &&
             !ability.rules.costs.length &&
