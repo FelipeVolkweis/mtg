@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type {
   Catalog,
+  CardAbility,
   GameObject,
   MatchAction,
   MatchPlayer,
@@ -195,21 +196,10 @@ export class RulesEngine {
       for (const ability of this.abilities(object)) {
         const rules = ability.rules!;
         if (pending && !rules.manaAbility) continue;
-        if (
-          object.zoneId !==
-          this.zone(
-            ability.applicableZone ?? "battlefield",
-            ability.applicableZone === "hand" ? playerId : undefined,
-          ).id
-        )
-          continue;
+        if (!this.canActivateFromZone(object, playerId, ability)) continue;
         if (
           rules.costs.some((cost) => cost.kind === "tap-source") &&
-          (object.status.tapped ||
-            (object.characteristics.types?.includes("Creature") &&
-              (this.rules.controlledSinceTurn[object.id] ??
-                this.match.turn.number) >=
-                (this.rules.turnStarted[playerId] ?? 0)))
+          !this.canPayTapSymbol(object, playerId)
         )
           continue;
         const effect = rules.effects.find(
@@ -404,6 +394,26 @@ export class RulesEngine {
       throw new Error("No legal targets are available.");
     if (!ability.target) this.tryComplete(playerId);
   }
+  canActivateFromZone(
+    source: GameObject,
+    playerId: string,
+    ability: CardAbility,
+  ) {
+    const zone = this.zone(
+      ability.applicableZone ?? "battlefield",
+      ability.applicableZone === "hand" ? playerId : undefined,
+    );
+    return source.controllerId === playerId && source.zoneId === zone.id;
+  }
+  canPayTapSymbol(source: GameObject, playerId: string) {
+    return (
+      source.zoneId === this.zone("battlefield").id &&
+      !source.status.tapped &&
+      (!source.characteristics.types?.includes("Creature") ||
+        (this.rules.controlledSinceTurn[source.id] ?? this.match.turn.number) <
+          (this.rules.turnStarted[playerId] ?? 0))
+    );
+  }
   activate(
     playerId: string,
     action: Extract<MatchAction, { type: "activate-ability" }>,
@@ -415,14 +425,7 @@ export class RulesEngine {
     );
     if (!authored?.rules) throw new Error("Ability not found.");
     const ability = rulesAbilitySchema.parse(authored.rules);
-    if (
-      source.controllerId !== playerId ||
-      source.zoneId !==
-        this.zone(
-          authored.applicableZone ?? "battlefield",
-          authored.applicableZone === "hand" ? playerId : undefined,
-        ).id
-    )
+    if (!this.canActivateFromZone(source, playerId, authored))
       throw new Error("You cannot activate this source from that Zone.");
     if (duringPayment && !ability.manaAbility)
       throw new Error("Only mana abilities may be used in the payment window.");
@@ -564,12 +567,7 @@ export class RulesEngine {
         if (
           removed.has(source.id) ||
           tapped.has(source.id) ||
-          source.zoneId !== this.zone("battlefield").id ||
-          source.status.tapped ||
-          (source.characteristics.types?.includes("Creature") &&
-            (this.rules.controlledSinceTurn[source.id] ??
-              this.match.turn.number) >=
-              (this.rules.turnStarted[playerId] ?? 0))
+          !this.canPayTapSymbol(source, playerId)
         )
           throw new Error("The source cannot pay its tap-symbol cost.");
         tapped.add(source.id);

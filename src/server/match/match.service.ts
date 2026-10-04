@@ -136,11 +136,11 @@ export class MatchService implements GameplayExecutor {
     return match;
   }
 
-  createCommander(
+  validateCommanderSetup(
     room: RoomState,
     catalog: Catalog,
     startingParticipantId?: string,
-  ): MatchState {
+  ) {
     const participants = room.participants.filter(
       (p) => p.ready && p.selectedDecklistId,
     );
@@ -156,6 +156,19 @@ export class MatchService implements GameplayExecutor {
       !participants.some((p) => p.id === startingParticipantId)
     )
       throw new Error("Choose a starting Room Participant who is ready.");
+    return { participants, commanders };
+  }
+
+  createCommander(
+    room: RoomState,
+    catalog: Catalog,
+    startingParticipantId?: string,
+  ): MatchState {
+    const { participants, commanders } = this.validateCommanderSetup(
+      room,
+      catalog,
+      startingParticipantId,
+    );
     const match = this.create(room, catalog, "40");
     match.mode = "rules";
     const startingPlayerId =

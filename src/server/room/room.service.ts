@@ -251,8 +251,12 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Two to four participants must select Decklists and mark ready.",
             );
-          if (command.type === "start" && command.format === "commander")
-            this.matches.createCommander(
+          if (
+            room.match &&
+            command.type === "start" &&
+            command.format === "commander"
+          )
+            this.matches.validateCommanderSetup(
               room,
               await readCatalog(),
               command.startingParticipantId,

@@ -86,6 +86,25 @@ test("two players configure Commander, keep private opening Hands, pass Priority
     const recovered = (await snapshot(alice)).match!;
     expect(recovered.revision).toBe(before.revision);
     expect(recovered.rules!.mana[recovered.players[0].id].U).toBe(1);
+    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice
+      .getByRole("button", { name: "Request new Match", exact: true })
+      .click();
+    await expect(
+      alice.getByText("New Match requested", { exact: true }),
+    ).toBeVisible();
+    await alice
+      .getByRole("button", { name: "Confirm new Match", exact: true })
+      .click();
+    expect((await snapshot(alice)).match!.id).toBe(recovered.id);
+    await bob.getByText("Room lobby and Decklists", { exact: true }).click();
+    await bob
+      .getByRole("button", { name: "Confirm new Match", exact: true })
+      .click();
+    await expect
+      .poll(async () => (await snapshot(alice)).match!.id)
+      .not.toBe(recovered.id);
+    expect((await snapshot(alice)).match!.mode).toBe("rules");
   } finally {
     await Promise.all(contexts.map((context) => context.close()));
   }
