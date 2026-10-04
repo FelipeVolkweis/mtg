@@ -79,7 +79,10 @@ export function matchView(match: MatchState, participantId: string): MatchView {
     id: match.id,
     mode: match.mode,
     revision: match.revision,
-    players: match.players,
+    players: match.players.map((player) => ({
+      ...player,
+      mulliganCount: player.mulliganCount ?? 0,
+    })),
     instances,
     objects,
     zones,

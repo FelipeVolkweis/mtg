@@ -18,6 +18,7 @@ export function PlayerMarker({
   return (
     <article>
       <h2>{player.name}</h2>
+      <span className="mulligan-summary">Mulligans {player.mulliganCount}</span>
       <form
         onSubmit={(event) => {
           event.preventDefault();

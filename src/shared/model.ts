@@ -178,6 +178,7 @@ export interface MatchPlayer {
   name: string;
   seat: number;
   life: string;
+  mulliganCount: number;
   outcome: "playing" | "won" | "lost";
   counters: Counter[];
 }
@@ -359,6 +360,15 @@ export const matchActionSchema = z.discriminatedUnion("type", [
     .object({
       type: z.literal("draw"),
       count: z.number().int().min(1).max(1000),
+    })
+    .strict(),
+  z.object({ type: z.literal("opening-draw") }).strict(),
+  z.object({ type: z.literal("mulligan"), playerId: id }).strict(),
+  z
+    .object({
+      type: z.literal("mulligan-count"),
+      playerId: id,
+      value: z.number().int().min(0).max(1000),
     })
     .strict(),
   z

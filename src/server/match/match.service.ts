@@ -11,6 +11,7 @@ import type {
   ZoneKind,
 } from "../../shared/model.js";
 import { phaseSteps } from "../../shared/model.js";
+import { initialPosition } from "../../shared/table-layout.js";
 import { Library, zoneFor } from "./zones.js";
 import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
 
@@ -92,6 +93,7 @@ export class MatchService {
         name: participant.name,
         seat,
         life: startingLife,
+        mulliganCount: 0,
         outcome: "playing" as const,
         counters: [],
       };
@@ -389,7 +391,27 @@ export class MatchService {
           !match.zones.some((zone) => zone.id === patch.casting!.sourceZoneId)
         )
           throw new Error("Casting source Zone not found.");
+        const oldControllerId = object.controllerId;
         Object.assign(object, patch);
+        if (
+          patch.controllerId &&
+          patch.controllerId !== oldControllerId &&
+          match.zones.find((zone) => zone.id === object.zoneId)?.kind ===
+            "battlefield"
+        ) {
+          const seat = match.players.find(
+            (entry) => entry.id === patch.controllerId,
+          )!.seat;
+          match.layout.positions[object.id] = initialPosition(
+            match.players.length,
+            seat,
+            Object.values(match.objects).filter(
+              (entry) =>
+                entry.zoneId === object.zoneId &&
+                entry.controllerId === patch.controllerId,
+            ).length - 1,
+          );
+        }
         if (patch.characteristics)
           object.components = [structuredClone(patch.characteristics)];
         break;
@@ -508,10 +530,12 @@ export class MatchService {
         match.objects[object.id] = object;
         zone.insert(object.id);
         if (zone.state.kind === "battlefield")
-          match.layout.positions[object.id] = {
-            x: 30 + (Object.keys(match.layout.positions).length % 6) * 125,
-            y: 80,
-          };
+          match.layout.positions[object.id] = initialPosition(
+            match.players.length,
+            match.players.find((entry) => entry.id === object.controllerId)!
+              .seat,
+            Object.keys(match.layout.positions).length,
+          );
         break;
       }
       case "remove-object": {
@@ -585,10 +609,14 @@ export class MatchService {
             manaSpent: [],
           };
         if (destination.state.kind === "battlefield")
-          match.layout.positions[moved.id] = action.position ?? {
-            x: 30 + (Object.keys(match.layout.positions).length % 6) * 125,
-            y: 80,
-          };
+          match.layout.positions[moved.id] =
+            action.position ??
+            initialPosition(
+              match.players.length,
+              match.players.find((entry) => entry.id === moved.controllerId)!
+                .seat,
+              Object.keys(match.layout.positions).length,
+            );
         break;
       }
       case "position": {
@@ -617,6 +645,54 @@ export class MatchService {
           throw new Error("There are not enough cards in your Library.");
         for (let i = 0; i < action.count; i++)
           this.move(match, library.objectIds[0], hand.id, player.id);
+        break;
+      }
+      case "opening-draw": {
+        if (!player)
+          throw new Error("Only a Match Player may draw an opening Hand.");
+        const library = match.zones.find(
+          (zone) => zone.kind === "library" && zone.ownerId === player.id,
+        )!;
+        const hand = match.zones.find(
+          (zone) => zone.kind === "hand" && zone.ownerId === player.id,
+        )!;
+        if (hand.objectIds.length)
+          throw new Error("Your opening Hand has already been drawn.");
+        if (library.objectIds.length < 7)
+          throw new Error("Seven cards are required for an opening Hand.");
+        for (let i = 0; i < 7; i++)
+          this.move(match, library.objectIds[0], hand.id, player.id);
+        break;
+      }
+      case "mulligan": {
+        if (!player || player.id !== action.playerId)
+          throw new Error(
+            "Only the owning Match Player may mulligan their Hand.",
+          );
+        const library = match.zones.find(
+          (zone) => zone.kind === "library" && zone.ownerId === player.id,
+        )!;
+        const hand = match.zones.find(
+          (zone) => zone.kind === "hand" && zone.ownerId === player.id,
+        )!;
+        if (!hand.objectIds.length)
+          throw new Error("Draw an opening Hand before taking a Mulligan.");
+        if (library.objectIds.length + hand.objectIds.length < 7)
+          throw new Error("Seven cards are required for a Mulligan.");
+        for (const objectId of [...hand.objectIds])
+          this.move(match, objectId, library.id, player.id);
+        new Library(library).shuffle(player.id);
+        for (let i = 0; i < 7; i++)
+          this.move(match, library.objectIds[0], hand.id, player.id);
+        player.mulliganCount = (player.mulliganCount ?? 0) + 1;
+        break;
+      }
+      case "mulligan-count": {
+        const target = match.players.find(
+          (entry) => entry.id === action.playerId,
+        );
+        if (!target) throw new Error("Match Player not found.");
+        target.mulliganCount = action.value;
         break;
       }
       default:
