@@ -68,6 +68,10 @@ The rules identity and shared characteristics of a card, identified by its canon
 A rules-defined property of a Magic object, including its name, mana cost, color, types, rules text, abilities, power, and toughness. Both an ability and a value that the ability defines are characteristics of that object.
 _Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rule 109.3.
 
+**Copiable Values**:
+The Comprehensive Rules term for the characteristic values a copy effect uses from an object. Match data stores the captured values, including any copy exceptions, in an immutable record using the Card Characteristics field model. A copied Game Object references this record; it does not continue reading from the original object, and later changes to the original do not update the record. Each Game Object keeps its own counters, status, attachments, and other Match state separately. Manual Matches store the record without evaluating copy effects.
+_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rules 707.2–707.3 and 707.9.
+
 **Card Characteristics**:
 The complete set of characteristic data for a Card Component or Alternative Characteristics record, including its name, mana cost, colors, types, rules text, abilities, and stats. Every card form has Card Characteristics; Alternative Characteristics are a separate record for a context-specific alternate form or set of values.
 
@@ -118,10 +122,10 @@ One specific copy of a Card Printing created from a Deck Entry when a Match star
 An entity tracked in a Match, such as a card, token, ability, emblem, or nontraditional card object, with its current Zone, controller, and game state. A Game Object may represent one or multiple Card Instances, as with a melded permanent, or exist without a Card Instance. Its state may include its Game Object Status, Designations, current face or melded composite form, a Face-Down State, a Casting Record, chosen values that abilities refer to such as a chosen card name or a variable binding like X = N, and links to other Game Objects including attachments. A Battle Game Object also records its Protector Match Player, separately from its Controller and Owner. Players record face choices and changes manually in a Manual Match.
 
 **Object Filter**:
-A reusable declarative criterion describing which possible Game Objects qualify for a Card Ability condition, event, target, or effect. Typed criteria may refer to object kind, characteristics, or relationships to Match Players and Zones—for example, a card rather than a token, or a Game Object in an opponent's Graveyard. The filter says which objects qualify; the surrounding Card Ability data determines when and how it is used.
+A reusable declarative criterion describing which possible Game Objects qualify for a Card Ability condition, event, target, or effect. Typed criteria may refer to object kind, characteristics, or relationships to Match Players and Zones—for example, a card rather than a token, or a Game Object in an opponent's Graveyard. The filter says which objects qualify; it does not specify when their characteristics are inspected. The trigger, target, condition, or effect that uses the filter carries any required timing, such as immediately before a Zone change or by last known information.
 
 **Granted Ability**:
-A Card Ability that a rules effect gives to a Game Object, rather than one printed on that object's Card Definition or Card Component. Its source, recipient, and applicable duration or condition determine when it applies. A granted ability remains separate from the recipient's printed Card Characteristics.
+A Card Ability that a rules effect gives to a Game Object, rather than one printed on that object's Card Definition or Card Component. An active grant is represented by a separate Continuous Effect linked to the source Card Ability and recipient, with its typed change and duration or applicability condition. Static grants retain their source ability and applicable Match relationship, such as an Attachment; resolving grants are retained as Match effect data for their duration. A grant does not change the recipient's printed Card Characteristics.
 
 **Sticker Sheet**:
 A game aid containing a set of Sticker Definitions. A Match Player's access to stickers is limited to the Sticker Sheets selected for that game.

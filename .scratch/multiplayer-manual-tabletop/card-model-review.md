@@ -9,6 +9,7 @@ Input: [`card-sample.md`](../../card-sample.md), 100 named examples.
 - Core printed characteristics: mana costs, colors and color indicators, supertypes/types/subtypes, rules text, power/toughness, loyalty, defense, and other applicable stats. Examples include basic and snow lands, Dryad Arbor, planeswalkers, Invasion of Zendikar, and the variable-stat cards.
 - A single Card Ability representation for keyword, activated, triggered, and static abilities, with rules text and applicable trigger, condition, cost, mode, target, variable value, replacement/delayed behavior, effect, and contextual reference data. This is stored data; it does not execute the effect.
 - One or more Card Components for independently meaningful printed parts such as split-card halves, Room halves, and double-faced card faces. Linked Alternative Characteristics records cover partial and full alternative values such as Prototype, Adventures, Omen, Preparation, and older flip cards. Both use shared Card Characteristics fields; typed relationships distinguish alternative values from separate faces and transformations.
+- A shared immutable Copiable Values record captures the characteristics a copy takes, including copy exceptions, while each resulting Game Object keeps its own counters, status, attachments, and other Match state.
 - Printing-specific details such as set, collector number, art, and variants, in addition to shared card characteristics.
 
 The 100 examples cover single-faced cards, lands with multiple types, variable and alternate costs, modal spells, Auras and Equipment, vehicles, counters, Sagas, battles, planeswalkers, transform cards, split cards, Adventures, and several nontraditional card categories. The review prompted decisions to extend the glossary and spec with structures for meld, nontraditional objects and Zones, richer abilities, and attachments.
@@ -41,7 +42,7 @@ The Prismatic Bridge reveals cards from the top of its controller's Library unti
 
 ## Next validation pass
 
-Every reviewed card has its own Sample heading; paired cards remain separate records even when they inform the same question. Continue interactive random-card sampling. Q54, Q55, Q56, Q57, Q58, Q59, Q60, Q61, Q62, and Q63 are settled. Q64 is open.
+Every reviewed card has its own Sample heading; paired cards remain separate records even when they inform the same question. Q54 through Q66 are settled. The user asked to stop this sampling pass after Q66; other cards in the 100-card sample list have not been reviewed here.
 
 ## Decisions settled
 
@@ -90,9 +91,13 @@ Every reviewed card has its own Sample heading; paired cards remain separate rec
 
 40. Keep zone movement and object eligibility as separate data. A typed Zone Change Condition describes the moving object, its source and destination Zones, and whether the move would occur or has occurred. When only a subset of moving objects qualifies, the condition references a reusable Object Filter describing that subset, such as cards versus cards and tokens or an opponent's Graveyard versus any player's Graveyard.
 
+41. Record active continuous effects separately from affected Game Objects. Preserve the source Card Ability, affected Game Object or Object Filter, typed changes (including granted abilities), and duration or applicability condition. Do not mutate the recipient's printed Card Characteristics; future rules automation derives effective characteristics from the applicable effects.
+42. Keep an Object Filter limited to its reusable eligibility predicate. Put the characteristic-check timing at each use of the filter or characteristic, such as on the triggering event, target reference, condition, or effect. Declare when that use needs a particular view, including the state immediately before a Zone change or last known information.
+43. Store captured Copiable Values in a shared immutable record using the Card Characteristics field model. A copied Game Object references the record, including any copy exceptions; later changes to the original do not change the captured values. Keep each Game Object's counters, status, attachments, and other Match state separate.
+
 ## Questions still open
 
-- Continue checking representative card forms and unusual ability structures through random sampling.
+- Further card sampling from `card-sample.md` was not completed; the user stopped this pass after Q66.
 
 ## Interactive random-card sampling
 
@@ -537,7 +542,7 @@ Snapcaster Mage's enters-the-battlefield ability targets an instant or sorcery c
 
 Sword of Fire and Ice continuously gives the equipped creature +2/+2 and protection from red and from blue while the Equipment remains attached. It also has a separate triggered ability when the equipped creature deals combat damage to a player. Unlike Snapcaster Mage's timed grant, this grant applies while an Attachment relationship exists. These two cards test whether the model distinguishes temporary and relationship-dependent ability grants without changing the recipient's printed Card Characteristics. [Wizards Bloomburrow Release Notes](https://magic.wizards.com/en/news/feature/bloomburrow-release-notes), [Comprehensive Rules §611](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf).
 
-### Q64: Where should active granted abilities live?
+### Q64 settled: Keep granted abilities in separate effect data
 
 Both cards give an ability to another object. Snapcaster Mage's Flashback grant lasts until end of turn and may continue when the targeted card moves from the Graveyard to the Stack. Sword of Fire and Ice grants power/toughness and protection only while the Equipment remains attached. The target's printed characteristics should stay intact in either model. The choice is where Match state records the active grant and its duration or applicability.
 
@@ -546,4 +551,48 @@ Both cards give an ability to another object. Snapcaster Mage's Flashback grant 
 
 ➡️ Recommended: **B**. The grant, source, target, and expiration/attachment condition are already one continuous effect relationship. Storing a second copy directly on the recipient would need to stay synchronized with that effect. A separate active effect record also matches the typed-change structure settled in Q62 and leaves Card Characteristics unchanged.
 
-Status: Open.
+The user chose **B**. Record an active Continuous Effect separately from the affected Game Object. It links the source Card Ability to the recipient, records the typed change, and preserves its duration or applicability condition. A future rules engine derives effective abilities from the recipient's printed abilities and the applicable effects; the recipient's printed Card Characteristics remain unchanged. Static grants retain their source ability and applicable relationship, such as an Attachment; resolving grants retain Match effect data for their duration.
+
+Status: Settled as option B.
+
+### Sample 63: Blood Artist
+
+Blood Artist triggers whenever it or another creature dies, then targets a player who loses 1 life while its controller gains 1 life. A creature token can also die and cause this trigger. “Dies” is a move from the Battlefield to a Graveyard, and the trigger condition may need the object's characteristics immediately before the move even though the Game Object is now in a Graveyard. This checks the time context used by an Object Filter on a zone-change trigger. [Double Masters 2022 Release Notes](https://magic.wizards.com/en/news/feature/double-masters-2022-release-notes-2022-06-24), [Comprehensive Rules §§603.10 and 700.4](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf).
+
+### Sample 64: Scavenging Ooze
+
+Scavenging Ooze targets a card in a Graveyard and exiles it. If that card was a creature card, the ability puts a +1/+1 counter on Scavenging Ooze and its controller gains 1 life. The target filter applies while the card is in a Graveyard; the later condition checks the target's characteristics after the effect has moved it, using the card's last known information from the Graveyard. This distinguishes the filter (“which card can I target?”) from the timing of a characteristic check (“which state of that card do I read?”). [Foundations Release Notes](https://magic.wizards.com/en/news/feature/foundations-release-notes), [Comprehensive Rules §608.2h](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf).
+
+### Q65 settled: Keep characteristic-check timing at the use site
+
+An Object Filter describes what qualifies—for example, “creature,” “card,” or “card in a Graveyard.” The rules may need the filter or a later condition to inspect different versions of an object: Blood Artist cares whether it was a creature immediately before it died; Scavenging Ooze checks whether the exiled card was a creature card as it last existed in the Graveyard. The question is whether that “when do we look?” context belongs inside the filter or at the place that uses the filter or characteristic.
+
+- **A. Put the characteristic time on the Object Filter.** A filter includes both its predicate and the state to inspect, such as “creature immediately before the Zone change” or “creature card as last known in the Graveyard.” This makes each filter self-contained and easy to audit. The same simple predicate used in different moments would need separate filter records or variants, and time metadata may repeat what the event or effect already specifies.
+- **B. Keep the Object Filter as the predicate and put timing on each use.** The filter says “creature” or “card in a Graveyard”; the trigger condition, target reference, or effect condition says whether to inspect the object immediately before a Zone change, in its current public Zone, or by last known information. This lets one filter be reused in different rules contexts, but every use that depends on a particular moment must declare that context explicitly.
+
+➡️ Recommended: **B**. “Creature” describes a characteristic; it does not itself say which moment to inspect. The surrounding event or effect determines that moment. Keeping the timing at the use site avoids baking Blood Artist's event timing into a reusable filter and makes Scavenging Ooze's later characteristic check explicit.
+
+The user chose **B**. An Object Filter states which objects qualify; it does not contain a timestamp or snapshot rule. The relevant trigger, target, condition, or effect states which version of the object's characteristics it reads when needed—for example, immediately before a Zone change or as last known information. This keeps a reusable predicate independent of the event or effect using it, while making the required timing explicit at each use.
+
+Status: Settled as option B.
+
+### Sample 65: Phyrexian Metamorph
+
+Phyrexian Metamorph may enter as a copy of an artifact or creature on the Battlefield, with the exception that it is an artifact in addition to its other types. Its Card Instance remains a Phyrexian Metamorph, while its copiable values become those of the chosen object as modified by the exception. Counters, tapped status, and other non-copy effects on the chosen object are not copied. Once copied, later changes to the original do not change Metamorph. This tests how Match state represents a card-backed Game Object whose copied characteristics differ from its Card Definition. [Wizards Comprehensive Rules §§707.2, 707.2b, 707.3, and 707.9](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf).
+
+### Sample 66: Fable of the Mirror-Breaker // Reflection of Kiki-Jiki
+
+Reflection of Kiki-Jiki creates a token that copies another target nonlegendary creature its controller controls, except the token has haste, and the ability creates a delayed instruction to sacrifice that token at the next end step. The copied copiable values include the copy's characteristics and the haste exception; they do not include the original creature's counters, tapped status, or other non-copy effects. The delayed sacrifice applies to the token created by the ability, not to a later copy of that token. This tests token copy data, an exception to copied values, and the separation between copied characteristics and Match-specific effects. [Wizards Kamigawa: Neon Dynasty Release Notes](https://magic.wizards.com/en/news/feature/kamigawa-neon-dynasty-release-notes-2022-02-09), [Wizards Comprehensive Rules §707](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf).
+
+### Q66 settled: Share immutable Copiable Values records
+
+The Comprehensive Rules call the characteristic values used by a copy effect **Copiable Values**. A copy captures them at the time it is created; if the original later changes or leaves the Battlefield, the copy does not update. Copy exceptions can change the captured values—for example, Phyrexian Metamorph adds the artifact type, and Reflection of Kiki-Jiki's token gains haste. Each generated Game Object can also have its own counters, tapped status, attachments, and effects, which are not part of those copied values. The choice is whether identical copies should each carry their own captured characteristics or share one immutable record of those values.
+
+- **A. Store the captured Copiable Values on each Game Object.** At copy time, the object receives a complete characteristic snapshot using the shared Card Characteristics field model, with the copy exceptions already reflected. It may keep a source reference for provenance, but its values do not depend on reading that source again. Each token or card-backed copy is self-contained and easy to inspect; many identical copies repeat the same characteristic data.
+- **B. Store an immutable Copiable Values record that Game Objects can share.** At copy time, create or reuse a record containing the captured values and copy exceptions; each copied Game Object points to it. Per-object counters, status, attachments, and later effects remain on that Game Object. This avoids repeating full characteristics when an effect creates many identical copies, but adds a shared record and requires a clear boundary between its immutable copied values and each object's Match state.
+
+➡️ Recommended: **B**. A copied value set is immutable once captured under the Comprehensive Rules, while the resulting Game Objects can have independent counters and statuses. A shared record expresses that distinction and can be reused for multiple identical tokens; the source object should not be the live source of their values, because it may change or leave play.
+
+The user chose **B**. Capture Copiable Values, including any copy exceptions, in an immutable record using the shared Card Characteristics field model. Copied Game Objects reference that record; the original object is not a live source of their values after copy time. Counters, status, attachments, and other Match state remain on each Game Object. Identical copies may share a record, while copies with different exceptions use different records. Manual Matches store this data without evaluating copy effects.
+
+Status: Settled as option B.
