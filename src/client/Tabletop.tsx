@@ -25,6 +25,7 @@ export function Tabletop({
   const player = match.players.find(
     (player) => player.participantId === view.participantId,
   );
+  const readOnly = match.players.length === 1 && !player;
   const action: Act = (action) =>
     send({
       type: "match-action",
@@ -201,100 +202,110 @@ export function Tabletop({
   const selection = selected ? match.objects[selected] : undefined;
   return (
     <main className="tabletop" data-testid="match">
-      <div className="section-heading">
-        <div>
-          <h1>Manual Match</h1>
-          <p>Play freely. Resolve card effects together.</p>
+      {readOnly && (
+        <p className="hint" role="status">
+          You are observing this solo Match. Only {match.players[0].name} can
+          make changes.
+        </p>
+      )}
+      <fieldset disabled={readOnly} className="tabletop-controls">
+        <div className="section-heading">
+          <div>
+            <h1>Manual Match</h1>
+            <p>Play freely. Resolve card effects together.</p>
+          </div>
+          <span data-testid="match-revision">Revision {match.revision}</span>
         </div>
-        <span data-testid="match-revision">Revision {match.revision}</span>
-      </div>
-      <div data-testid="match-players" className="players">
-        {match.players.map((p) => (
-          <PlayerMarker
-            key={p.id}
-            player={p}
-            match={match}
-            act={action}
-            busy={busy}
-          />
-        ))}
-      </div>
-      <TurnMarkers match={match} act={action} busy={busy} />
-      <div className="board-grid">
-        <div>
-          <div className="private-zones">
-            {match.zones.filter(isOwnPrivateZone).map(ownZone)}
-          </div>
-          <section
-            data-testid="battlefield"
-            data-zone-id={battlefield.id}
-            className="battlefield"
-          >
-            <h2>Battlefield</h2>
-            <p>Drag cards here. Release to share your move.</p>
-            {battlefield.objectIds?.map((id) => card(match.objects[id], true))}
-          </section>
-          <div className="shared-zones">
-            {match.zones
-              .filter((zone) => !zone.ownerId && zone.kind !== "battlefield")
-              .map((zone) => (
-                <section
-                  className="zone"
-                  key={zone.id}
-                  data-zone-id={zone.id}
-                  data-testid={`zone-${zone.kind}`}
-                >
-                  <h3>
-                    {zone.name} <small>{zone.count}</small>
-                  </h3>
-                  <div className="card-list">{zoneContents(zone)}</div>
-                </section>
-              ))}
-          </div>
-          <div className="zones">
-            {match.zones
-              .filter((zone) => zone.ownerId && !isOwnPrivateZone(zone))
-              .map(ownZone)}
-          </div>
+        <div data-testid="match-players" className="players">
+          {match.players.map((p) => (
+            <PlayerMarker
+              key={p.id}
+              player={p}
+              match={match}
+              act={action}
+              busy={busy}
+            />
+          ))}
         </div>
-        <aside className="inspector">
-          <h2>Card details</h2>
-          {selection ? (
-            <CardInspector
-              key={selection.id}
-              object={selection}
+        <TurnMarkers match={match} act={action} busy={busy} />
+        <div className="board-grid">
+          <div>
+            <div className="private-zones">
+              {match.zones.filter(isOwnPrivateZone).map(ownZone)}
+            </div>
+            <section
+              data-testid="battlefield"
+              data-zone-id={battlefield.id}
+              className="battlefield"
+            >
+              <h2>Battlefield</h2>
+              <p>Drag cards here. Release to share your move.</p>
+              {battlefield.objectIds?.map((id) =>
+                card(match.objects[id], true),
+              )}
+            </section>
+            <div className="shared-zones">
+              {match.zones
+                .filter((zone) => !zone.ownerId && zone.kind !== "battlefield")
+                .map((zone) => (
+                  <section
+                    className="zone"
+                    key={zone.id}
+                    data-zone-id={zone.id}
+                    data-testid={`zone-${zone.kind}`}
+                  >
+                    <h3>
+                      {zone.name} <small>{zone.count}</small>
+                    </h3>
+                    <div className="card-list">{zoneContents(zone)}</div>
+                  </section>
+                ))}
+            </div>
+            <div className="zones">
+              {match.zones
+                .filter((zone) => zone.ownerId && !isOwnPrivateZone(zone))
+                .map(ownZone)}
+            </div>
+          </div>
+          <aside className="inspector">
+            <h2>Card details</h2>
+            {selection ? (
+              <CardInspector
+                key={selection.id}
+                object={selection}
+                match={match}
+                act={action}
+                busy={busy}
+                playerId={player?.id}
+              />
+            ) : (
+              <p>Select a card to move it or record its state.</p>
+            )}
+            <hr />
+            <CounterMarker match={match} act={action} busy={busy} />
+            <ObjectCreator
               match={match}
               act={action}
               busy={busy}
               playerId={player?.id}
             />
-          ) : (
-            <p>Select a card to move it or record its state.</p>
-          )}
-          <hr />
-          <CounterMarker match={match} act={action} busy={busy} />
-          <ObjectCreator
-            match={match}
-            act={action}
-            busy={busy}
-            playerId={player?.id}
-          />
-          <SetupControls
-            match={match}
-            act={action}
-            busy={busy}
-            playerId={player?.id}
-          />
-        </aside>
-      </div>
-      {preview && (
-        <div
-          className="drag-preview"
-          style={{ left: preview.x + 12, top: preview.y + 12 }}
-        >
-          {match.objects[preview.id]?.characteristics.name}
+            <SetupControls
+              match={match}
+              act={action}
+              busy={busy}
+              playerId={player?.id}
+            />
+          </aside>
         </div>
-      )}
+        {preview && (
+          <div
+            className="drag-preview"
+            style={{ left: preview.x + 12, top: preview.y + 12 }}
+          >
+            {match.objects[preview.id]?.characteristics.name}
+          </div>
+        )}
+      </fieldset>
     </main>
   );
 }

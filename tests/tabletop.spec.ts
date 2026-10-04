@@ -173,6 +173,24 @@ test("one ready participant can start a solo Match that guests can only observe"
     .click();
   await expect(alice.getByTestId("match")).toBeVisible();
   await expect(bob.getByTestId("match")).toBeVisible();
+  await expect(bob.getByRole("status")).toHaveText(
+    "You are observing this solo Match. Only Alice can make changes.",
+  );
+  await expect(bob.getByTestId("battlefield")).toBeVisible();
+  await expect(
+    bob.getByRole("button", { name: "Next step", exact: true }),
+  ).toBeDisabled();
+  await bob
+    .locator("details")
+    .filter({ hasText: "Add token or ability" })
+    .locator("summary")
+    .click();
+  await expect(
+    bob.getByRole("button", { name: "Create object", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    alice.getByRole("button", { name: "Next step", exact: true }),
+  ).toBeEnabled();
   let soloMatch = (await snapshot(alice)).match!;
   expect(soloMatch.players.map((player) => player.name)).toEqual(["Alice"]);
   expect(soloMatch.turn.order).toHaveLength(1);
