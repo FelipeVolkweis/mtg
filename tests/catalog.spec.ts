@@ -13,6 +13,7 @@ import {
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
+import { initializeTestCatalog } from "./support/empty-catalog";
 import { fixtureCards, catalogResponse } from "./support/catalog-fixture";
 import { startServer } from "./support/server";
 
@@ -21,7 +22,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
   browser,
 }) => {
   const catalogRoot = await mkdtemp(join(tmpdir(), "mtg-catalog-import-"));
-  await cp(resolve("catalog"), catalogRoot, { recursive: true });
+  await initializeTestCatalog(catalogRoot);
   let failed = false;
   let legacyBulk = false;
   let truncatedBulk = false;
@@ -446,6 +447,12 @@ test("an interrupted publication restores the last complete catalog on startup",
 }) => {
   const root = await mkdtemp(join(tmpdir(), "mtg-catalog-recover-"));
   await cp(process.env.CATALOG_ROOT!, root, { recursive: true });
+  const expectedSets = JSON.parse(
+    await readFile(join(root, "sets.json"), "utf8"),
+  );
+  const expectedDefinitions = (await readdir(join(root, "definitions"))).filter(
+    (file) => file.endsWith(".json"),
+  ).length;
   await rename(root, `${root}.previous`);
   const app = await startServer("mtg_catalog_recovery_test", 4321, {
     CATALOG_ROOT: root,
@@ -453,10 +460,10 @@ test("an interrupted publication restores the last complete catalog on startup",
   const request = await playwright.request.newContext({ baseURL: app.origin });
   try {
     expect(await (await request.get("/api/catalog/sets")).json()).toMatchObject(
-      { sets: ["tst"], definitions: 5 },
+      { sets: expectedSets, definitions: expectedDefinitions },
     );
     expect(JSON.parse(await readFile(join(root, "sets.json"), "utf8"))).toEqual(
-      ["tst"],
+      expectedSets,
     );
   } finally {
     await request.dispose();

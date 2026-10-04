@@ -23,6 +23,58 @@
   "oracleText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "C"
+            ],
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
 }

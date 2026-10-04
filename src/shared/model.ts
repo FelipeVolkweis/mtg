@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { RulesAbility, RulesState } from "./rules.js";
 
 export const id = z.uuid();
 const text = z.string().max(8000);
@@ -61,6 +62,7 @@ export interface CardAbility {
   origin: "printed" | "rules";
   applicableZone?: ZoneKind;
   keyword?: string;
+  rules?: RulesAbility;
   trigger?: { kind: "event" | "state"; condition: AbilityPrimitive };
   costs?: AbilityCost[];
   conditions?: AbilityPrimitive[];
@@ -101,6 +103,7 @@ export interface Participant {
   credentialHash: string;
   decklists: Decklist[];
   selectedDecklistId?: string;
+  selectedCommanderId?: string;
   ready: boolean;
 }
 export const phaseSteps = [
@@ -241,6 +244,7 @@ export interface CardInstance {
   definitionId: string;
   printingId: string;
   ownerId: string;
+  commander?: boolean;
 }
 export const objectKinds = [
   "card",
@@ -279,10 +283,17 @@ export interface GameObject {
   copiableValuesId?: string;
   stickerPlacements: { stickerId: string; order: number }[];
   meldParts?: GameObject[];
+  resolution?: {
+    ability: RulesAbility;
+    targetIds: string[];
+    color?: import("./rules.js").ManaType;
+  };
+  cannotBeCountered?: boolean;
 }
 export interface MatchState {
   id: string;
-  mode: "manual";
+  mode: "manual" | "rules";
+  rules?: RulesState;
   revision: number;
   players: MatchPlayer[];
   instances: Record<string, CardInstance>;
@@ -320,6 +331,8 @@ export interface RematchProposal {
   id: string;
   startingLife: string;
   confirmations: string[];
+  format?: "commander";
+  startingParticipantId?: string;
 }
 export interface RoomState {
   id: string;
@@ -352,7 +365,21 @@ export interface ObjectView extends Partial<Omit<GameObject, "meldParts">> {
   melded: boolean;
   canTurnFaceUp: boolean;
 }
-export interface MatchView extends Omit<MatchState, "zones" | "objects"> {
+export interface MatchView extends Omit<
+  MatchState,
+  "zones" | "objects" | "rules"
+> {
+  rules?: Omit<
+    RulesState,
+    "pending" | "controlledSinceTurn" | "turnStarted"
+  > & {
+    waiting?: { playerId: string; kind: string };
+    pending?: import("./rules.js").PendingProcedure & {
+      legalTargetIds: string[];
+      selectionOptions: Record<string, { count: number; objectIds: string[] }>;
+    };
+  };
+  actions?: { label: string; action: MatchAction }[];
   zones: ZoneView[];
   objects: Record<string, ObjectView>;
 }
@@ -366,6 +393,12 @@ export interface RoomView {
   selectedDecklistId?: string;
   match?: MatchView;
   rematch?: RematchProposal;
+  selectedCommanderId?: string;
+  commanderOptions?: {
+    definitionId: string;
+    name: string;
+    eligible: boolean;
+  }[];
 }
 const position = z
   .object({
@@ -374,6 +407,31 @@ const position = z
   })
   .strict();
 export const matchActionSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("pass-priority") }).strict(),
+  z.object({ type: z.literal("play-land"), objectId: id }).strict(),
+  z.object({ type: z.literal("cast-spell"), objectId: id }).strict(),
+  z
+    .object({
+      type: z.literal("activate-ability"),
+      objectId: id,
+      abilityId: z.string().min(1).max(200),
+      color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("rules-input"),
+      procedureId: id,
+      targetIds: z.array(id).max(100).optional(),
+      selections: z.record(z.string(), z.array(id).max(100)).optional(),
+      color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),
+      confirm: z.boolean().optional(),
+    })
+    .strict(),
+  z.object({ type: z.literal("cancel-procedure"), procedureId: id }).strict(),
+  z
+    .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
+    .strict(),
   z
     .object({
       type: z.literal("move"),
@@ -523,7 +581,21 @@ export const roomCommandSchema = z.discriminatedUnion("type", [
       ready: z.boolean(),
     })
     .strict(),
-  z.object({ type: z.literal("start"), startingLife: integer }).strict(),
+  z
+    .object({
+      type: z.literal("configure-commander"),
+      decklistId: id,
+      definitionId: id,
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("start"),
+      startingLife: integer,
+      format: z.literal("commander").optional(),
+      startingParticipantId: id.optional(),
+    })
+    .strict(),
   z.object({ type: z.literal("start-solo"), startingLife: integer }).strict(),
   z.object({ type: z.literal("confirm-rematch"), proposalId: id }).strict(),
   z.object({ type: z.literal("cancel-rematch") }).strict(),

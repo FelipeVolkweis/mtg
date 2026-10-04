@@ -16,6 +16,7 @@ import {
   zoneKinds,
   type Catalog,
 } from "../../shared/model.js";
+import { rulesAbilitySchema } from "../../shared/rules.js";
 import { nameKey } from "./card-names.js";
 
 const uuid = z.uuid();
@@ -53,6 +54,7 @@ const ability = z
     origin: z.enum(["printed", "rules"]),
     applicableZone: z.enum(zoneKinds).optional(),
     keyword: z.string().optional(),
+    rules: rulesAbilitySchema.optional(),
     trigger: z
       .object({ kind: z.enum(["event", "state"]), condition: primitive })
       .strict()

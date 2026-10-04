@@ -11,7 +11,7 @@
       "name": "Island",
       "manaCost": "",
       "colors": [],
-      "typeLine": "Basic Land — Island",
+      "typeLine": "Basic Land \u2014 Island",
       "manaValue": 0,
       "supertypes": [
         "Basic"
@@ -29,6 +29,6 @@
   "oracleText": "({T}: Add {U}.)",
   "keywords": [],
   "manaValue": 0,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": []
 }

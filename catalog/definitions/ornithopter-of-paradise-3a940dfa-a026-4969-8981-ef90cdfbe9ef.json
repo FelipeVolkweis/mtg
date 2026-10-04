@@ -9,7 +9,7 @@
       "name": "Ornithopter of Paradise",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact Creature — Thopter",
+      "typeLine": "Artifact Creature \u2014 Thopter",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -33,5 +33,33 @@
   ],
   "manaValue": 2,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "W",
+              "U",
+              "B",
+              "R",
+              "G"
+            ],
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

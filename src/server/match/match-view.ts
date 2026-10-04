@@ -1,15 +1,27 @@
-import type { MatchState, MatchView, ObjectView } from "../../shared/model.js";
+import type {
+  Catalog,
+  MatchState,
+  MatchView,
+  ObjectView,
+} from "../../shared/model.js";
+import { RulesEngine } from "./rules-engine.js";
 import { zoneFor } from "./zones.js";
 import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
 
-export function matchView(match: MatchState, participantId: string): MatchView {
+export function matchView(
+  match: MatchState,
+  participantId: string,
+  catalog?: Catalog,
+): MatchView {
   const playerId = match.players.find(
     (player) => player.participantId === participantId,
   )?.id;
   const objects: Record<string, ObjectView> = {};
   const instances: MatchView["instances"] = {};
   const zones = match.zones.map((zone) => {
-    const visible = zoneFor(match, zone.id).canInspect(playerId);
+    const visible =
+      !(match.mode === "rules" && zone.kind === "library") &&
+      zoneFor(match, zone.id).canInspect(playerId);
     if (visible)
       for (const objectId of zone.objectIds) {
         const object = match.objects[objectId];
@@ -79,6 +91,39 @@ export function matchView(match: MatchState, participantId: string): MatchView {
     id: match.id,
     mode: match.mode,
     revision: match.revision,
+    priority: match.priority,
+    ...(match.rules
+      ? (() => {
+          const { pending, controlledSinceTurn, turnStarted, ...rules } =
+            match.rules;
+          const engine = catalog ? new RulesEngine(match, catalog) : undefined;
+          return {
+            rules: {
+              ...rules,
+              waiting: pending
+                ? { playerId: pending.playerId, kind: pending.kind }
+                : undefined,
+              pending:
+                pending && pending.playerId === playerId
+                  ? {
+                      ...pending,
+                      legalTargetIds:
+                        pending.ability?.target && engine
+                          ? engine.legalTargets(
+                              playerId!,
+                              pending.ability.target,
+                            )
+                          : [],
+                      selectionOptions: engine
+                        ? engine.selectionOptions(pending)
+                        : {},
+                    }
+                  : undefined,
+            },
+            actions: engine && playerId ? engine.actions(playerId) : [],
+          };
+        })()
+      : {}),
     players: match.players.map((player) => ({
       ...player,
       mulliganCount: player.mulliganCount ?? 0,

@@ -13,40 +13,29 @@ import type {
 import { phaseSteps } from "../../shared/model.js";
 import { initialPosition } from "../../shared/table-layout.js";
 import { Library, zoneFor } from "./zones.js";
+import { validateCommanderDeck } from "./commander.js";
 import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
 
-export function gameObject(
-  kind: GameObject["kind"],
-  zoneId: string,
-  controllerId: string,
-  characteristics: Characteristics,
-): GameObject {
-  return {
-    id: randomUUID(),
-    kind,
-    zoneId,
-    controllerId,
-    characteristics: structuredClone(characteristics),
-    components: [structuredClone(characteristics)],
-    artwork: [],
-    cardInstanceIds: [],
-    currentFace: 0,
-    status: { tapped: false, flipped: false, phasedOut: false },
-    designations: [],
-    counters: [],
-    faceDown: null,
-    protectorId: null,
-    choices: [],
-    variables: [],
-    attachmentTo: null,
-    links: [],
-    casting: null,
-    stickerPlacements: [],
-  };
+export { gameObject } from "./game-objects.js";
+import { gameObject, moveObject } from "./game-objects.js";
+import { RulesEngine } from "./rules-engine.js";
+
+export type ExecutionResult =
+  | { kind: "accepted"; notice?: string }
+  | { kind: "pending"; playerId: string }
+  | { kind: "rejected"; message: string };
+
+export interface GameplayExecutor {
+  execute(
+    match: MatchState,
+    participant: Participant,
+    action: MatchAction,
+    catalog: Catalog,
+  ): ExecutionResult;
 }
 
 @Injectable()
-export class MatchService {
+export class MatchService implements GameplayExecutor {
   create(room: RoomState, catalog: Catalog, startingLife: string): MatchState {
     const participants = room.participants.filter(
       (participant) => participant.ready && participant.selectedDecklistId,
@@ -147,7 +136,101 @@ export class MatchService {
     return match;
   }
 
-  apply(
+  createCommander(
+    room: RoomState,
+    catalog: Catalog,
+    startingParticipantId?: string,
+  ): MatchState {
+    const participants = room.participants.filter(
+      (p) => p.ready && p.selectedDecklistId,
+    );
+    if (participants.length !== 2)
+      throw new Error(
+        "Commander currently requires two ready Room Participants.",
+      );
+    const commanders = participants.map((p) =>
+      validateCommanderDeck(p, catalog),
+    );
+    if (
+      startingParticipantId &&
+      !participants.some((p) => p.id === startingParticipantId)
+    )
+      throw new Error("Choose a starting Room Participant who is ready.");
+    const match = this.create(room, catalog, "40");
+    match.mode = "rules";
+    const startingPlayerId =
+      match.players[
+        startingParticipantId
+          ? participants.findIndex((p) => p.id === startingParticipantId)
+          : randomInt(2)
+      ].id;
+    match.turn.activePlayerId = startingPlayerId;
+    match.rules = {
+      format: "commander",
+      setup: { keptPlayerIds: [], startingPlayerId },
+      mana: {},
+      landsPlayed: {},
+      controlledSinceTurn: {},
+      turnStarted: {},
+      commanders: {},
+    };
+    match.players.forEach((player, index) => {
+      const instance = Object.values(match.instances).find(
+        (i) =>
+          i.ownerId === player.id && i.definitionId === commanders[index].id,
+      )!;
+      instance.commander = true;
+      match.rules!.commanders[player.id] = {
+        instanceId: instance.id,
+        colorIdentity: [...commanders[index].colorIdentity],
+      };
+      match.rules!.mana[player.id] = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+      const object = Object.values(match.objects).find((o) =>
+        o.cardInstanceIds.includes(instance.id),
+      )!;
+      this.move(
+        match,
+        object.id,
+        match.zones.find((z) => z.kind === "command")!.id,
+        player.id,
+      );
+      const library = match.zones.find(
+        (z) => z.kind === "library" && z.ownerId === player.id,
+      )!;
+      new Library(library).shuffle(player.id);
+      this.apply(match, participants[index], { type: "opening-draw" });
+    });
+    match.revision = 0;
+    return match;
+  }
+
+  execute(
+    match: MatchState,
+    participant: Participant,
+    action: MatchAction,
+    catalog: Catalog,
+  ): ExecutionResult {
+    const next = structuredClone(match);
+    try {
+      const notice =
+        next.mode === "rules"
+          ? new RulesEngine(next, catalog).apply(participant, action)
+          : this.apply(next, participant, action);
+      for (const key of Object.keys(match))
+        if (!(key in next)) Reflect.deleteProperty(match, key);
+      Object.assign(match, next);
+      return next.rules?.pending
+        ? { kind: "pending", playerId: next.rules.pending.playerId }
+        : { kind: "accepted", notice };
+    } catch (error) {
+      return {
+        kind: "rejected",
+        message: error instanceof Error ? error.message : "Action rejected.",
+      };
+    }
+  }
+
+  private apply(
     match: MatchState,
     participant: Participant,
     action: MatchAction,
@@ -731,51 +814,6 @@ export class MatchService {
     const destination = zoneFor(match, destinationId);
     source.requireAccess(actorId);
     if (!directed) destination.requireAccess(actorId);
-    source.remove(objectId);
-    if (source.state.id === destination.state.id) {
-      destination.insert(objectId, index);
-      return object;
-    }
-    const fresh = gameObject(
-      object.kind,
-      destinationId,
-      object.controllerId,
-      object.components[0],
-    );
-    fresh.cardInstanceIds = object.cardInstanceIds;
-    fresh.components = object.components;
-    fresh.artwork = object.artwork;
-    fresh.faceDown = object.faceDown;
-    fresh.meldParts = object.meldParts;
-    if (
-      destination.state.kind === "stack" ||
-      destination.state.kind === "battlefield"
-    ) {
-      fresh.currentFace = object.currentFace;
-      fresh.characteristics = structuredClone(object.characteristics);
-    }
-    if (!object.cardInstanceIds.length) {
-      fresh.copiableValuesId = object.copiableValuesId;
-      fresh.sourceObjectId = object.sourceObjectId;
-      fresh.sourceAbilityId = object.sourceAbilityId;
-    }
-    if (
-      source.state.kind === "stack" &&
-      destination.state.kind === "battlefield"
-    ) {
-      fresh.casting = object.casting;
-      fresh.currentFace = object.currentFace;
-      fresh.characteristics = object.characteristics;
-      fresh.choices = object.choices;
-      fresh.variables = object.variables;
-      fresh.copiableValuesId = object.copiableValuesId;
-      fresh.sourceObjectId = object.sourceObjectId;
-      fresh.sourceAbilityId = object.sourceAbilityId;
-    }
-    delete match.objects[objectId];
-    delete match.layout.positions[objectId];
-    match.objects[fresh.id] = fresh;
-    destination.insert(fresh.id, index);
-    return fresh;
+    return moveObject(match, objectId, destination.state, index);
   }
 }

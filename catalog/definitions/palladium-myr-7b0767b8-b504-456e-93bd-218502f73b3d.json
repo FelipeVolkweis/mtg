@@ -9,7 +9,7 @@
       "name": "Palladium Myr",
       "manaCost": "{3}",
       "colors": [],
-      "typeLine": "Artifact Creature — Myr",
+      "typeLine": "Artifact Creature \u2014 Myr",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -28,6 +28,30 @@
   "oracleText": "{T}: Add {C}{C}.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "C"
+            ],
+            "quantity": 2
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

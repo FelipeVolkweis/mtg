@@ -29,6 +29,70 @@
     "Cycling"
   ],
   "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "enter-tapped",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "enter-tapped"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "U"
+            ],
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "cycling",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "hand",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "discard-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      },
+      "keyword": "cycling"
+    }
+  ]
 }

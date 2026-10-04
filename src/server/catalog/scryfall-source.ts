@@ -97,7 +97,20 @@ export class ScryfallSource {
     if (bulk.jsonl_download_uri) {
       const response = await this.response(bulk.jsonl_download_uri, true);
       if (!response.body) throw new Error("Missing catalog bulk response body");
-      const compressed = Readable.fromWeb(response.body);
+      const reader = response.body.getReader();
+      const compressed = Readable.from(
+        (async function* () {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) return;
+              yield value;
+            }
+          } finally {
+            reader.releaseLock();
+          }
+        })(),
+      );
       const input = createGunzip();
       const lines = createInterface({ input, crlfDelay: Infinity });
       try {

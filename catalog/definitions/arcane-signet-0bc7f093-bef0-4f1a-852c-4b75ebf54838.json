@@ -23,6 +23,28 @@
   "oracleText": "{T}: Add one mana of any color in your commander's color identity.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": "commander-colors",
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

@@ -23,6 +23,30 @@
   "oracleText": "{T}: Add {C}{C}.",
   "keywords": [],
   "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "C"
+            ],
+            "quantity": 2
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

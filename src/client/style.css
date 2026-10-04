@@ -1066,3 +1066,22 @@ body:has(.tabletop) .room-panel[open] {
   width: min(800px, 70vw);
   overflow-y: auto;
 }
+
+.rules-tabletop > fieldset {
+  border: 0;
+  min-width: 0;
+}
+.rules-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.rules-card {
+  border: 1px solid var(--border, #54606b);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.rules-tabletop fieldset fieldset {
+  margin: 1rem 0;
+}

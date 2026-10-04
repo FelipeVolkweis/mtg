@@ -11,7 +11,7 @@
       "name": "Silver Myr",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact Creature — Myr",
+      "typeLine": "Artifact Creature \u2014 Myr",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -30,6 +30,30 @@
   "oracleText": "{T}: Add {U}.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "U"
+            ],
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

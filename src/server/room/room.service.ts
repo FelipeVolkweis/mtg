@@ -15,6 +15,8 @@ import { Database } from "../storage/database.js";
 import { CatalogService } from "../catalog/catalog.service.js";
 import { readCatalog } from "../catalog/catalog-files.js";
 import { MatchService } from "../match/match.service.js";
+import { commanderEligible } from "../match/commander.js";
+import type { Catalog } from "../../shared/model.js";
 import { matchView } from "../match/match-view.js";
 
 export class TabletopError extends Error {}
@@ -179,6 +181,35 @@ export class RoomService implements OnModuleInit {
             participant.selectedDecklistId = decklist.id;
             participant.ready = false;
           }
+          if (
+            !entries.some(
+              (entry) => entry.definitionId === participant.selectedCommanderId,
+            )
+          )
+            delete participant.selectedCommanderId;
+          delete room.rematch;
+          break;
+        }
+        case "configure-commander": {
+          const deck = participant.decklists.find(
+            (d) => d.id === command.decklistId,
+          );
+          const catalog = await readCatalog();
+          const card = catalog.definitions[command.definitionId];
+          if (
+            !deck ||
+            !deck.entries.some(
+              (e) => e.definitionId === command.definitionId,
+            ) ||
+            !card ||
+            !commanderEligible(card)
+          )
+            throw new TabletopError(
+              "Choose a legendary creature from your selected Decklist.",
+            );
+          participant.selectedDecklistId = deck.id;
+          participant.selectedCommanderId = card.id;
+          participant.ready = false;
           delete room.rematch;
           break;
         }
@@ -193,6 +224,8 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Select one of your saved Decklists first.",
             );
+          if (participant.selectedDecklistId !== command.decklistId)
+            delete participant.selectedCommanderId;
           participant.selectedDecklistId = command.decklistId;
           participant.ready = command.ready;
           delete room.rematch;
@@ -218,12 +251,29 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Two to four participants must select Decklists and mark ready.",
             );
+          if (command.type === "start" && command.format === "commander")
+            this.matches.createCommander(
+              room,
+              await readCatalog(),
+              command.startingParticipantId,
+            );
           if (room.match)
             room.rematch = {
               id: randomUUID(),
               startingLife: command.startingLife,
+              format: command.type === "start" ? command.format : undefined,
+              startingParticipantId:
+                command.type === "start"
+                  ? command.startingParticipantId
+                  : undefined,
               confirmations: [],
             };
+          else if (command.type === "start" && command.format === "commander")
+            room.match = this.matches.createCommander(
+              room,
+              await readCatalog(),
+              command.startingParticipantId,
+            );
           else
             room.match = this.matches.create(
               room,
@@ -260,11 +310,18 @@ export class RoomService implements OnModuleInit {
                 room.rematch!.confirmations.includes(player.participantId),
             )
           ) {
-            room.match = this.matches.create(
-              room,
-              await readCatalog(),
-              room.rematch.startingLife,
-            );
+            room.match =
+              room.rematch.format === "commander"
+                ? this.matches.createCommander(
+                    room,
+                    await readCatalog(),
+                    room.rematch.startingParticipantId,
+                  )
+                : this.matches.create(
+                    room,
+                    await readCatalog(),
+                    room.rematch.startingLife,
+                  );
             delete room.rematch;
           }
           break;
@@ -288,7 +345,15 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Only the Match Player can change a solo Match.",
             );
-          notice = this.matches.apply(room.match, participant, command.action);
+          const result = this.matches.execute(
+            room.match,
+            participant,
+            command.action,
+            await readCatalog(),
+          );
+          if (result.kind === "rejected")
+            throw new TabletopError(result.message);
+          if (result.kind === "accepted") notice = result.notice;
           break;
         }
         case "close":
@@ -337,9 +402,17 @@ export class RoomService implements OnModuleInit {
   }
   async view(invite: string, credential: string): Promise<RoomView> {
     const room = await this.load(invite, this.database.pool, false);
-    return this.toView(room, this.authorize(room, credential));
+    return this.toView(
+      room,
+      this.authorize(room, credential),
+      await readCatalog(),
+    );
   }
-  toView(room: RoomState, participant: Participant): RoomView {
+  toView(
+    room: RoomState,
+    participant: Participant,
+    catalog?: Catalog,
+  ): RoomView {
     return {
       id: room.id,
       revision: room.revision,
@@ -353,9 +426,24 @@ export class RoomService implements OnModuleInit {
         connected: this.connected(room.invite, p.id),
       })),
       decklists: participant.decklists,
+      selectedCommanderId: participant.selectedCommanderId,
+      commanderOptions: catalog
+        ? participant.decklists
+            .find((d) => d.id === participant.selectedDecklistId)
+            ?.entries.map((entry) => {
+              const card = catalog.definitions[entry.definitionId];
+              return {
+                definitionId: entry.definitionId,
+                name: card.canonicalName,
+                eligible: commanderEligible(card),
+              };
+            })
+        : [],
       selectedDecklistId: participant.selectedDecklistId,
       rematch: room.rematch,
-      match: room.match ? matchView(room.match, participant.id) : undefined,
+      match: room.match
+        ? matchView(room.match, participant.id, catalog)
+        : undefined,
     };
   }
   async purgeExpired() {

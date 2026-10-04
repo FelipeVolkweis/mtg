@@ -6,6 +6,7 @@ import type {
   RoomCommand,
 } from "../shared/model";
 import { Lobby } from "./Lobby";
+import { RulesTabletop } from "./RulesTabletop";
 import { Tabletop } from "./Tabletop";
 
 export function App() {
@@ -201,7 +202,11 @@ export function App() {
         </main>
       ) : view.match ? (
         <>
-          <Tabletop view={view} send={send} busy={busy} />
+          {view.match.mode === "rules" ? (
+            <RulesTabletop view={view} send={send} busy={busy} />
+          ) : (
+            <Tabletop view={view} send={send} busy={busy} />
+          )}
           <details className="room-panel">
             <summary>Room lobby and Decklists</summary>
             <Lobby view={view} send={send} busy={busy} />

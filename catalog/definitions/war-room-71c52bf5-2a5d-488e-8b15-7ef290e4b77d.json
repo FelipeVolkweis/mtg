@@ -23,6 +23,59 @@
   "oracleText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
   "keywords": [],
   "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "colors": [
+              "C"
+            ],
+            "quantity": 1
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{3}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "life",
+            "amount": "commander-colors"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
 }

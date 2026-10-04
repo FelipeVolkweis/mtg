@@ -27,6 +27,28 @@
   "oracleText": "Counter target noncreature spell.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "counter",
+      "kind": "spell",
+      "origin": "printed",
+      "applicableZone": "stack",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "counter-target"
+          }
+        ],
+        "target": {
+          "zone": "stack",
+          "kind": "spell",
+          "excludeTypes": [
+            "Creature"
+          ]
+        }
+      }
+    }
+  ]
 }
