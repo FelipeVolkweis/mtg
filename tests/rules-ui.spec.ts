@@ -84,7 +84,7 @@ test("two players configure Commander, keep private opening Hands, pass Priority
     const recovered = (await snapshot(alice)).match!;
     expect(recovered.revision).toBe(before.revision);
     expect(recovered.rules!.mana[recovered.players[0].id].U).toBe(1);
-    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await alice
       .getByRole("button", { name: "Request new Match", exact: true })
       .click();
@@ -95,7 +95,7 @@ test("two players configure Commander, keep private opening Hands, pass Priority
       .getByRole("button", { name: "Confirm new Match", exact: true })
       .click();
     expect((await snapshot(alice)).match!.id).toBe(recovered.id);
-    await bob.getByText("Room lobby and Decklists", { exact: true }).click();
+    await bob.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await bob
       .getByRole("button", { name: "Confirm new Match", exact: true })
       .click();
@@ -711,9 +711,11 @@ test("players crew, pay attack costs, declare blocks and assign combat damage th
     await alice
       .getByRole("button", { name: "Confirm damage", exact: true })
       .click();
-    await expect(bob.getByTestId("zone-graveyard-Bob")).toContainText(
-      "Graveyard (2)",
-    );
+    await expect(
+      bob
+        .getByTestId("zone-graveyard-Bob")
+        .getByRole("button", { name: "Bob Graveyard (2)", exact: true }),
+    ).toBeVisible();
     await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
       "2 damage",
     );
@@ -953,7 +955,7 @@ test("solo full mono-U practice resumes, delegates opponent choices and replaces
     await expect
       .poll(async () => (await snapshot(alice)).match!.turn.stepIndex)
       .toBe(2);
-    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await alice
       .getByRole("button", { name: "Start solo practice", exact: true })
       .click();
@@ -1012,7 +1014,7 @@ test("legacy Matches preserve Decklists and require every human's consent for au
     });
     expect(response.event).toBe("rejected");
     expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
-    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await alice
       .getByRole("button", { name: "Request new Match", exact: true })
       .click();
@@ -1020,7 +1022,7 @@ test("legacy Matches preserve Decklists and require every human's consent for au
       .getByRole("button", { name: "Confirm new Match", exact: true })
       .click();
     expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
-    await bob.getByText("Room lobby and Decklists", { exact: true }).click();
+    await bob.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await bob
       .getByRole("button", { name: "Confirm new Match", exact: true })
       .click();

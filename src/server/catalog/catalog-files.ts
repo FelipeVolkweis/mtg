@@ -50,6 +50,7 @@ const cost = z.discriminatedUnion("kind", [
 const ability = z
   .object({
     id: z.string().min(1),
+    description: z.string().trim().min(1).optional(),
     kind: z.enum(["static", "triggered", "activated", "spell"]),
     origin: z.enum(["printed", "rules"]),
     applicableZone: z.enum(zoneKinds).optional(),

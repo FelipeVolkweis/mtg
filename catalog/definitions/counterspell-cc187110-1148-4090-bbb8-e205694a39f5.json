@@ -45,7 +45,8 @@
           "zone": "stack",
           "kind": "spell"
         }
-      }
+      },
+      "description": "Counter target spell."
     }
   ]
 }

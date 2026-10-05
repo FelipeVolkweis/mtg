@@ -52,7 +52,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Colorless creatures you control get +2/+2."
     },
     {
       "id": "additional-mana",
@@ -78,7 +79,8 @@
             "controller": "you"
           }
         }
-      }
+      },
+      "description": "Whenever you tap a permanent for {C}, add an additional {C}."
     },
     {
       "id": "colorless-cast",
@@ -101,7 +103,8 @@
             "colorless": true
           }
         }
-      }
+      },
+      "description": "Whenever you cast a colorless spell, you gain 2 life."
     }
   ]
 }

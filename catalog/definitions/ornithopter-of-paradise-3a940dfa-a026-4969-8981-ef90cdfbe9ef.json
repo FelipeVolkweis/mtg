@@ -59,7 +59,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add one mana of any color."
     },
     {
       "id": "flying",
@@ -70,7 +71,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     }
   ]
 }

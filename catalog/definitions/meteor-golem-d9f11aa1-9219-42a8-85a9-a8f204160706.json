@@ -57,7 +57,8 @@
             "Land"
           ]
         }
-      }
+      },
+      "description": "When this creature enters, destroy target nonland permanent an opponent controls."
     }
   ]
 }

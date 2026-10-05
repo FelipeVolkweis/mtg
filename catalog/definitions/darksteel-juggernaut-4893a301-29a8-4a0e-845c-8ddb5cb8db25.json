@@ -71,7 +71,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Darksteel Juggernaut's power and toughness are each equal to the number of artifacts you control."
     },
     {
       "id": "indestructible",
@@ -82,7 +83,8 @@
         "effects": [],
         "keyword": "Indestructible"
       },
-      "keyword": "Indestructible"
+      "keyword": "Indestructible",
+      "description": "Indestructible"
     },
     {
       "id": "attack-requirement",
@@ -92,7 +94,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Must attack"
-      }
+      },
+      "description": "This creature attacks each combat if able."
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { readCatalog } from "../../src/server/catalog/catalog-files";
 
 // Exercise the board gestures, rather than the retired global action list.
 export async function cardAction(page: Page, label: string) {
@@ -27,5 +28,24 @@ export async function cardAction(page: Page, label: string) {
     .click();
   const menu = page.getByRole("dialog", { name: "Card actions" });
   await expect(menu).toBeVisible();
-  await menu.getByRole("button", { name: label, exact: true }).click();
+  const catalog = await readCatalog();
+  const identifier = label.slice(name.length + 2);
+  const definition = Object.values(catalog.definitions).find(
+    (card) => card.canonicalName === name,
+  );
+  const ability = definition?.abilities.find((ability) =>
+    identifier.startsWith("add ")
+      ? ability.rules?.manaAbility
+      : ability.id === identifier,
+  );
+  const mana = ability?.rules?.effects.find(
+    (effect) => effect.kind === "add-mana",
+  );
+  const chooseColor =
+    mana?.kind === "add-mana" &&
+    (mana.colors === "commander-colors" || mana.colors.length > 1);
+  const description = ability?.description
+    ? `${ability.description}${chooseColor ? ` Choose {${identifier.split(" ").at(-1)}}.` : ""}`
+    : label;
+  await menu.getByRole("button", { name: description, exact: true }).click();
 }

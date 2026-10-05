@@ -60,7 +60,8 @@
           }
         ]
       },
-      "keyword": "Affinity"
+      "keyword": "Affinity",
+      "description": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)"
     },
     {
       "id": "flying",
@@ -71,7 +72,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     }
   ]
 }

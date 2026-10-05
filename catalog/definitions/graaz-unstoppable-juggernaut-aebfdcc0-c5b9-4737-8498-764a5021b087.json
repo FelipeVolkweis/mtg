@@ -61,7 +61,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls."
     },
     {
       "id": "other-creatures",
@@ -93,7 +94,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Other creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types."
     }
   ]
 }

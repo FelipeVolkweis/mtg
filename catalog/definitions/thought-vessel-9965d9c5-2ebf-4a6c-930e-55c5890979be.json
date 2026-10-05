@@ -34,7 +34,8 @@
         "costs": [],
         "effects": [],
         "maximumHandSize": "unlimited"
-      }
+      },
+      "description": "You have no maximum hand size."
     },
     {
       "id": "mana",
@@ -57,7 +58,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {C}."
     }
   ]
 }

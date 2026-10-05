@@ -46,7 +46,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {C}."
     },
     {
       "id": "draw",
@@ -74,7 +75,8 @@
             "count": 1
           }
         ]
-      }
+      },
+      "description": "{1}, {T}, Sacrifice this artifact: Draw a card."
     }
   ]
 }

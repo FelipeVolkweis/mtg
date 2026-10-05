@@ -46,7 +46,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {C}."
     },
     {
       "id": "draw",
@@ -75,7 +76,8 @@
             "count": 1
           }
         ]
-      }
+      },
+      "description": "{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card."
     }
   ]
 }

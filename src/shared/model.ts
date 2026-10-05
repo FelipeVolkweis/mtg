@@ -58,6 +58,7 @@ export type AbilityCost =
   | ({ kind: "primitive" } & AbilityPrimitive);
 export interface CardAbility {
   id: string;
+  description?: string;
   kind: "static" | "triggered" | "activated" | "spell";
   origin: "printed" | "rules";
   applicableZone?: ZoneKind;

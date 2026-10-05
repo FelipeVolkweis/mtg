@@ -42,7 +42,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flash"
-      }
+      },
+      "description": "Flash"
     },
     {
       "id": "mana",
@@ -65,7 +66,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {U}."
     },
     {
       "id": "redirect-attack",
@@ -94,7 +96,8 @@
           ],
           "attacking": true
         }
-      }
+      },
+      "description": "When this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)"
     }
   ]
 }

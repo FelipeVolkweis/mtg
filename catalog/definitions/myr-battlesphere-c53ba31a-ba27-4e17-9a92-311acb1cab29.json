@@ -9,7 +9,7 @@
       "name": "Myr Battlesphere",
       "manaCost": "{7}",
       "colors": [],
-      "typeLine": "Artifact Creature — Myr Construct",
+      "typeLine": "Artifact Creature \u2014 Myr Construct",
       "manaValue": 7,
       "supertypes": [],
       "types": [
@@ -52,7 +52,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens."
     },
     {
       "id": "attack-payment",
@@ -101,7 +102,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "Whenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking."
     }
   ]
 }

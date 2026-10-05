@@ -64,7 +64,8 @@
           }
         ]
       },
-      "keyword": "Affinity"
+      "keyword": "Affinity",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)"
     },
     {
       "id": "entry",
@@ -85,7 +86,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "When this creature enters, draw two cards."
     },
     {
       "id": "flying",
@@ -96,7 +98,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     }
   ]
 }

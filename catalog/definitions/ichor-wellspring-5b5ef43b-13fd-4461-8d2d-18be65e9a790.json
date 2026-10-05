@@ -44,7 +44,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
     },
     {
       "id": "graveyard",
@@ -65,7 +66,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
     }
   ]
 }

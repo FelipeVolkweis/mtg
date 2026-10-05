@@ -49,7 +49,8 @@
           "zone": "graveyard",
           "kind": "card"
         }
-      }
+      },
+      "description": "When this artifact enters, exile target card from a graveyard."
     },
     {
       "id": "exile-graveyards",
@@ -75,7 +76,8 @@
             }
           }
         ]
-      }
+      },
+      "description": "{T}, Sacrifice this artifact: Exile each opponent's graveyard."
     },
     {
       "id": "draw",
@@ -103,7 +105,8 @@
             "count": 1
           }
         ]
-      }
+      },
+      "description": "{1}, {T}, Sacrifice this artifact: Draw a card."
     }
   ]
 }

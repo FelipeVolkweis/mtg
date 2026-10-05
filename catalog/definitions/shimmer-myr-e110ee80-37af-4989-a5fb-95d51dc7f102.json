@@ -43,7 +43,8 @@
         "effects": [],
         "keyword": "Flash"
       },
-      "keyword": "Flash"
+      "keyword": "Flash",
+      "description": "Flash"
     },
     {
       "id": "artifact-flash",
@@ -59,7 +60,8 @@
             "Artifact"
           ]
         }
-      }
+      },
+      "description": "You may cast artifact spells as though they had flash."
     }
   ]
 }

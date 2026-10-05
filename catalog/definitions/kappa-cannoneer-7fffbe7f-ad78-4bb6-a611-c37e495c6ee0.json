@@ -51,7 +51,8 @@
         "effects": [],
         "improvise": true
       },
-      "keyword": "Improvise"
+      "keyword": "Improvise",
+      "description": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)"
     },
     {
       "id": "ward",
@@ -92,7 +93,8 @@
           }
         }
       },
-      "keyword": "Ward"
+      "keyword": "Ward",
+      "description": "Ward {4}"
     },
     {
       "id": "artifact-entry",
@@ -131,7 +133,8 @@
             ]
           }
         }
-      }
+      },
+      "description": "Whenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn."
     }
   ]
 }

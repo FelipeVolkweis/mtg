@@ -59,7 +59,8 @@
             "controller": "you"
           }
         }
-      }
+      },
+      "description": "Whenever you cast an artifact spell, create a 1/1 colorless Thopter artifact creature token with flying."
     },
     {
       "id": "draw",
@@ -92,7 +93,8 @@
             "count": 1
           }
         ]
-      }
+      },
+      "description": "{1}{U}, Sacrifice two artifacts: Draw a card."
     }
   ]
 }

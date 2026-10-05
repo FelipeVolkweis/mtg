@@ -50,7 +50,8 @@
             "destination": "hand"
           }
         ]
-      }
+      },
+      "description": "Return all attacking creatures to their owner's hand."
     }
   ]
 }

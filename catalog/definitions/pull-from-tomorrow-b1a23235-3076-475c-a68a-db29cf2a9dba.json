@@ -56,7 +56,8 @@
             ]
           }
         ]
-      }
+      },
+      "description": "Draw X cards, then discard a card."
     }
   ]
 }

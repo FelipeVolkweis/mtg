@@ -56,7 +56,8 @@
           "recipientKind": "player",
           "grouped": true
         }
-      }
+      },
+      "description": "Whenever one or more artifact creatures you control deal combat damage to a player, draw a card."
     },
     {
       "id": "upkeep-thopter",
@@ -88,7 +89,8 @@
           },
           "atLeast": 1
         }
-      }
+      },
+      "description": "At the beginning of your upkeep, if you control an artifact, create a 1/1 colorless Thopter artifact creature token with flying."
     }
   ]
 }

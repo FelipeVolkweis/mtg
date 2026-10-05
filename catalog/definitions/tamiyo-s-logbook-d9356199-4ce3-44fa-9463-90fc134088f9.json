@@ -71,7 +71,8 @@
             }
           }
         ]
-      }
+      },
+      "description": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control."
     }
   ]
 }

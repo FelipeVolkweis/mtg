@@ -67,7 +67,8 @@
             ]
           }
         ]
-      }
+      },
+      "description": "Draw three cards. Then discard two cards unless you discard an artifact card."
     }
   ]
 }

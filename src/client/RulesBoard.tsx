@@ -190,6 +190,7 @@ export function RulesBoard({
   act,
   selection,
   children,
+  controls,
 }: {
   match: MatchView;
   participantId: string;
@@ -197,6 +198,7 @@ export function RulesBoard({
   act: (action: MatchAction) => void;
   selection: BoardSelection;
   children?: ReactNode;
+  controls: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const anchors = useRef(new Map<string, HTMLElement>());
@@ -227,6 +229,108 @@ export function RulesBoard({
   const stackObjects = zoneObjects(match, stack).slice().reverse();
   const pendingKey = `${match.rules?.pending?.id}:${match.rules?.pending?.stage}`;
   useLayoutEffect(() => {
+    const board = root.current;
+    if (!board) return;
+    const fit = () => {
+      for (const groups of board.querySelectorAll<HTMLElement>(
+        ".battlefield-groups",
+      )) {
+        const sections = [
+          ...groups.querySelectorAll<HTMLElement>(
+            ":scope > .battlefield-group",
+          ),
+        ];
+        const land = sections.find((section) =>
+          section.classList.contains("group-land"),
+        );
+        const front = sections.filter((section) => section !== land);
+        const opponent = !!groups.closest(".opponent-area");
+        const rows = !opponent && land && front.length ? 2 : 1;
+        const height = (groups.clientHeight - 12 - (rows - 1) * 16) / rows - 12;
+        const widthFor = (row: HTMLElement[]) => {
+          const cards = row.flatMap((section) => [
+            ...section.querySelectorAll<HTMLElement>(
+              ":scope > .group-cards > .card-pile > .permanent-with-attachments .rules-tile",
+            ),
+          ]);
+          const count = cards.length;
+          const units = cards.reduce(
+            (sum, card) =>
+              sum + (card.classList.contains("is-tapped") ? 1.4 : 1),
+            0,
+          );
+          const attachments = row.reduce(
+            (sum, section) =>
+              sum + section.querySelectorAll(".attachment-label").length,
+            0,
+          );
+          return count
+            ? (groups.clientWidth -
+                12 -
+                Math.max(0, row.length - 1) * 36 -
+                row.length * 20 -
+                Math.max(0, count - row.length) * 12 -
+                attachments * 12) /
+                units
+            : 100;
+        };
+        const width = Math.floor(
+          Math.min(
+            100,
+            height / 1.4,
+            opponent
+              ? widthFor(sections)
+              : Math.min(widthFor(front), widthFor(land ? [land] : [])),
+          ),
+        );
+        groups.style.setProperty("--card-width", `${Math.max(16, width)}px`);
+        groups.style.setProperty(
+          "--card-height",
+          "calc(var(--card-width) * 1.4)",
+        );
+      }
+      const hand = board.querySelector<HTMLElement>(
+        ".local-hand .rules-hand-cards",
+      );
+      if (hand) {
+        const count = hand.querySelectorAll(
+          ":scope > div > .rules-tile",
+        ).length;
+        if (count) {
+          const gap = Math.max(
+            2,
+            Math.min(
+              14,
+              Math.floor(
+                (hand.clientWidth - count * 40) / Math.max(1, count - 1),
+              ),
+            ),
+          );
+          const width = Math.floor(
+            Math.min(
+              98,
+              (hand.clientHeight - 6) / 1.4,
+              (hand.clientWidth - 6 - (count - 1) * gap) / count,
+            ),
+          );
+          hand.style.setProperty(
+            "--hand-card-width",
+            `${Math.max(8, width)}px`,
+          );
+          hand.style.gap = `${gap}px`;
+        }
+      }
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(board);
+    const hand = board.querySelector(".local-hand .rules-hand-cards");
+    if (hand) observer.observe(hand);
+    for (const group of board.querySelectorAll(".battlefield-groups"))
+      observer.observe(group);
+    return () => observer.disconnect();
+  }, [match.revision, expanded]);
+  useLayoutEffect(() => {
     setMenu(null);
   }, [pendingKey]);
   useEffect(() => {
@@ -235,7 +339,7 @@ export function RulesBoard({
       if (event.key === "Escape") {
         setMenu(null);
         setDrawer(null);
-        if (!selection.assigning) setExpanded([]);
+        setExpanded([]);
       }
     };
     const blur = () => {
@@ -287,10 +391,21 @@ export function RulesBoard({
       else anchors.current.delete(id);
     }
   };
-  function card(object: ObjectView, pile?: ObjectView[]) {
+  function card(object: ObjectView, pile?: ObjectView[], stackIndex?: number) {
     const folded = pile && pile.length > 1;
     const ids = folded ? pile.map((o) => o.id) : [object.id];
     const action = dragAction(match, object.id);
+    const source = object.sourceObjectId
+      ? match.objects[object.sourceObjectId]
+      : undefined;
+    const sourceName =
+      source?.characteristics.name ??
+      object.resolution?.sourceSnapshot?.characteristics.name;
+    const ownerName =
+      match.players.find((p) => p.id === object.controllerId)?.name ?? "Player";
+    const abilityKind = object.characteristics.typeLine?.includes("Triggered")
+      ? "Triggered ability"
+      : "Activated ability";
     return (
       <button
         key={object.id}
@@ -299,7 +414,7 @@ export function RulesBoard({
         disabled={busy}
         data-card-surface
         data-object-id={object.id}
-        className={`rules-tile ${object.status.tapped ? "is-tapped" : ""} ${selection.eligible.some((id) => ids.includes(id)) ? "legal-target" : ""} ${selection.selected.some((id) => ids.includes(id)) ? "chosen-card" : ""} ${folded ? "folded-pile" : ""}`}
+        className={`rules-tile ${object.status.tapped ? "is-tapped" : ""} ${selection.eligible.some((id) => ids.includes(id)) ? "legal-target" : ""} ${selection.selected.some((id) => ids.includes(id)) ? "chosen-card" : ""} ${folded ? "folded-pile" : ""} ${stackIndex !== undefined ? "stack-entry" : ""}`}
         aria-label={
           folded
             ? `Expand ${object.characteristics.name} pile (${pile.length})`
@@ -342,8 +457,54 @@ export function RulesBoard({
           });
         }}
       >
-        <Printing object={object} />
-        <CardState object={object} match={match} />
+        {stackIndex === undefined ? (
+          <>
+            <Printing object={object} />
+            <CardState object={object} match={match} />
+          </>
+        ) : (
+          <>
+            <span className="stack-order">{stackIndex + 1}</span>
+            <span className="stack-thumbnail">
+              {object.kind === "ability" ? (
+                source && cardArtwork(source) ? (
+                  <Printing object={source} />
+                ) : (
+                  <span className="ability-thumbnail">Ability</span>
+                )
+              ) : (
+                <Printing object={object} />
+              )}
+            </span>
+            <span className="stack-description">
+              <strong>{object.characteristics.name}</strong>
+              <span>
+                {ownerName} ·{" "}
+                {object.kind === "ability" ? abilityKind : "Spell"}
+              </span>
+              {stackIndex === 0 && (
+                <span className="next-resolve">Next to resolve</span>
+              )}
+              {sourceName && <small>Source: {sourceName}</small>}
+              {!!object.resolution?.targetIds.length && (
+                <small>
+                  Target:{" "}
+                  {object.resolution.targetIds
+                    .map(
+                      (id) =>
+                        match.objects[id]?.characteristics.name ??
+                        match.players.find((p) => p.id === id)?.name ??
+                        "Departed target",
+                    )
+                    .join(", ")}
+                </small>
+              )}
+            </span>
+            <span className="sr-only">
+              <CardState object={object} match={match} />
+            </span>
+          </>
+        )}
         {folded && <span className="pile-count">×{pile.length}</span>}
         {object.attachmentTo && (
           <span className="attachment-label">
@@ -400,7 +561,9 @@ export function RulesBoard({
         className={`rules-hand ${player.id === local?.id ? "local-hand" : "opponent-hand"}`}
         data-testid={`zone-hand-${player.name}`}
       >
-        <span>Hand ({zone?.count ?? 0})</span>
+        <span className="hand-label">
+          {player.id === local?.id ? "Your hand" : "Hand"} · {zone?.count ?? 0}
+        </span>
         <div className="hand-with-commander">
           <div className="rules-hand-cards">
             {!zone?.objectIds && (
@@ -448,13 +611,27 @@ export function RulesBoard({
     );
   }
   function piles(objects: ObjectView[]) {
-    return cardPiles(match, objects).map((pile) => {
-      const opened = pile.some((object) => expanded.includes(object.id));
+    // Keep the opened identities together even when tapping, counters, or
+    // attachments would normally split them into different collapsed piles.
+    const spread = objects.filter((object) => expanded.includes(object.id));
+    const folded = cardPiles(
+      match,
+      objects.filter((object) => !expanded.includes(object.id)),
+    );
+    const groups = spread.length ? [spread, ...folded] : folded;
+    return groups.map((pile) => {
+      const opened = pile === spread;
       return (
         <div
-          className={`card-pile ${opened ? "expanded-pile" : ""}`}
+          className={`card-pile ${opened ? "spread-pile" : ""}`}
           data-pile-members={pile.map((object) => object.id).join(" ")}
           key={pile.map((object) => object.id).join(":")}
+          role={opened ? "group" : undefined}
+          aria-label={
+            opened
+              ? `${pile[0].characteristics.name} spread (${pile.length})`
+              : undefined
+          }
         >
           {opened
             ? pile.map((object) => permanent(object))
@@ -477,8 +654,16 @@ export function RulesBoard({
           }}
           aria-label={`Player: ${player.name}`}
         >
-          {player.name}: {player.life} life{" "}
-          <span>
+          <span className="life-total" aria-hidden="true">
+            {player.life}
+          </span>
+          <span className="player-name" aria-hidden="true">
+            {player.name}
+          </span>
+          <span className="sr-only">
+            {player.name}: {player.life} life
+          </span>
+          <span className="player-turn-status">
             {player.outcome !== "playing"
               ? player.outcome
               : match.turn.activePlayerId === player.id
@@ -512,6 +697,50 @@ export function RulesBoard({
             )
             .join(" · ") || "0"}
         </span>
+      </div>
+    );
+  }
+  function zonePiles(player: MatchPlayer) {
+    return (
+      <div className="player-zone-piles" aria-label={`${player.name} zones`}>
+        {(["library", "graveyard", "exile"] as const).map((kind) => {
+          const zone = zoneForPlayer(player, kind);
+          const objects = zoneCards(zone, player.id);
+          const count =
+            kind === "library" ? (zone?.count ?? 0) : objects.length;
+          const title = `${kind[0].toUpperCase()}${kind.slice(1)}`;
+          return (
+            <section key={kind} data-testid={`zone-${kind}-${player.name}`}>
+              <button
+                type="button"
+                className="zone-pile-control"
+                disabled={kind === "library"}
+                aria-label={`${player.name} ${title} (${count})`}
+                onClick={() =>
+                  zone &&
+                  setDrawer({
+                    zoneId: zone.id,
+                    playerId: player.id,
+                    title: `${player.name} — ${title}`,
+                  })
+                }
+              >
+                <span className="zone-pile-image">
+                  {kind === "library" ? (
+                    <span className="library-back" />
+                  ) : objects.length ? (
+                    <Printing object={objects[objects.length - 1]} />
+                  ) : (
+                    <span className="empty-zone" />
+                  )}
+                </span>
+                <span className="zone-pile-title">
+                  {title} <b>{count}</b>
+                </span>
+              </button>
+            </section>
+          );
+        })}
       </div>
     );
   }
@@ -587,6 +816,7 @@ export function RulesBoard({
                   const entries = unattached.filter(
                     (o) => battlefieldType(o) === type,
                   );
+                  if (!entries.length) return null;
                   const label =
                     type === "Other"
                       ? "Other permanents"
@@ -597,75 +827,38 @@ export function RulesBoard({
                       aria-label={`${label} — ${player.name}`}
                       key={type}
                     >
-                      <span className="group-label">{label}</span>
                       <div className="group-cards">{piles(entries)}</div>
                     </section>
                   );
                 })}
               </div>
-              <div className="player-zone-piles">
-                {(["library", "graveyard", "exile"] as const).map((kind) => {
-                  const zone = zoneForPlayer(player, kind);
-                  const objects = zoneCards(zone, player.id);
-                  const count =
-                    kind === "library" ? (zone?.count ?? 0) : objects.length;
-                  const title = `${kind[0].toUpperCase()}${kind.slice(1)}`;
-                  return (
-                    <section
-                      key={kind}
-                      data-testid={`zone-${kind}-${player.name}`}
-                    >
-                      <button
-                        type="button"
-                        className="zone-pile-control"
-                        disabled={kind === "library"}
-                        onClick={() =>
-                          zone &&
-                          setDrawer({
-                            zoneId: zone.id,
-                            playerId: player.id,
-                            title: `${player.name} — ${title}`,
-                          })
-                        }
-                      >
-                        <span className="zone-pile-image">
-                          {kind === "library" ? (
-                            <span className="library-back">Library</span>
-                          ) : objects.length ? (
-                            <Printing object={objects[objects.length - 1]} />
-                          ) : (
-                            <span>Empty</span>
-                          )}
-                        </span>
-                        {title} ({count})
-                      </button>
-                    </section>
-                  );
-                })}
-              </div>
-              {player.id === local?.id && hand(player)}
+              {player.id !== local?.id && zonePiles(player)}
             </section>
           );
           return area;
         })}
       </div>
-      <aside
-        className={`rules-stack ${stackObjects.length ? "nonempty-stack" : "empty-stack"}`}
-        data-testid="zone-stack-shared"
-        aria-label="Stack"
-      >
-        <h2>Stack ({stack?.count ?? 0})</h2>
-        <div className="stack-cards">
-          {stackObjects.map((object, i) => (
-            <div key={object.id} style={{ zIndex: stackObjects.length - i }}>
-              {i === 0 && <span className="next-resolve">Next to resolve</span>}
-              {card(object)}
-            </div>
-          ))}
+      {local && (
+        <div className={`hand-dock accent-${local.seat % 4}`}>
+          {zonePiles(local)}
+          {hand(local)}
         </div>
-      </aside>
+      )}
+      <div className="match-command-rail">
+        <aside
+          className={`rules-stack ${stackObjects.length ? "nonempty-stack" : "empty-stack"}`}
+          data-testid="zone-stack-shared"
+          aria-label="Stack"
+        >
+          <h2>Stack ({stack?.count ?? 0})</h2>
+          <div className="stack-cards">
+            {stackObjects.map((object, i) => card(object, undefined, i))}
+          </div>
+        </aside>
+        {children}
+        {controls}
+      </div>
       <CombatLines root={root} anchors={anchors} links={selection.links} />
-      {children}
       {drawer && drawerZone && (
         <aside
           className="rules-zone-drawer"
@@ -694,7 +887,11 @@ export function RulesBoard({
         >
           <strong>{menuObject.characteristics.name}</strong>
           {objectActions(match, menu.id)
-            .filter(({ action }) => action.type === "activate-ability")
+            .filter(({ action }) =>
+              ["activate-ability", "cast-spell", "play-land"].includes(
+                action.type,
+              ),
+            )
             .map(({ label, action }) => (
               <button
                 type="button"
@@ -708,9 +905,11 @@ export function RulesBoard({
                 {label}
               </button>
             ))}
-          {!objectActions(match, menu.id).some(
-            (a) => a.action.type === "activate-ability",
-          ) && <span>No available activated abilities</span>}
+          {!objectActions(match, menu.id).some((a) =>
+            ["activate-ability", "cast-spell", "play-land"].includes(
+              a.action.type,
+            ),
+          ) && <span>No available card actions</span>}
           <p>{menuObject.characteristics.rulesText || menuSource?.rulesText}</p>
           {(menuSource || menuObject.sourceObjectId) && (
             <p>Source: {menuSource?.name ?? "Departed source"}</p>

@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Moonfolk Wizard",
+      "typeLine": "Artifact Creature \u2014 Moonfolk Wizard",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -50,7 +50,8 @@
         "effects": [],
         "keyword": "Flash"
       },
-      "keyword": "Flash"
+      "keyword": "Flash",
+      "description": "Flash"
     },
     {
       "id": "flying",
@@ -61,7 +62,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     },
     {
       "id": "combat-draw",
@@ -89,7 +91,8 @@
           "combat": true,
           "recipientKind": "player"
         }
-      }
+      },
+      "description": "Whenever an artifact creature you control deals combat damage to a player, draw a card."
     }
   ]
 }

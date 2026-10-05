@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Creature — Dragon",
+      "typeLine": "Creature \u2014 Dragon",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -46,7 +46,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     },
     {
       "id": "conditional-hexproof",
@@ -80,7 +81,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "As long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)"
     },
     {
       "id": "draw",
@@ -108,7 +110,8 @@
             "count": 1
           }
         ]
-      }
+      },
+      "description": "Tap two untapped artifacts you control: Draw a card."
     }
   ]
 }

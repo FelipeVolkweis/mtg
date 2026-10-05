@@ -580,37 +580,41 @@ export function RulesTabletop({
     },
   };
   const pass = match.actions?.find((a) => a.action.type === "pass-priority");
+  const stackZone = match.zones.find((z) => z.kind === "stack");
+  const nextObject = stackZone?.objectIds?.at(-1);
+  const nextName = nextObject
+    ? match.objects[nextObject]?.characteristics.name
+    : undefined;
+  const phaseLabel =
+    phase === "Precombat main"
+      ? "First main"
+      : phase === "Postcombat main"
+        ? "Second main"
+        : phase;
+  const nextStep = phaseSteps[match.turn.stepIndex + 1];
+  const nextLabel = nextStep
+    ? nextStep[1] === "Main"
+      ? nextStep[0] === "Precombat main"
+        ? "First main"
+        : "Second main"
+      : nextStep[1]
+    : "Next turn";
+  const phaseIndex =
+    match.turn.stepIndex < 3
+      ? 0
+      : match.turn.stepIndex === 3
+        ? 1
+        : match.turn.stepIndex < 9
+          ? 2
+          : match.turn.stepIndex === 9
+            ? 3
+            : 4;
   return (
     <main data-testid="match" className="tabletop rules-tabletop">
-      <div className="rules-heading">
-        <div>
-          <h1>Commander Match</h1>
-          <span data-testid="match-revision">
-            Revision {match.revision} · {match.outcome}
-          </span>
-        </div>
-        <span>
-          Turn {match.turn.number} · {name(match.turn.activePlayerId)} · {phase}
-          : {step}
-          <br />
-          Priority:{" "}
-          {match.priority
-            ? name(match.priority.playerId)
-            : "Opening or required choices"}
-        </span>
-        {pass && (
-          <div className="priority-control">
-            <button disabled={busy} onClick={() => act(pass.action)}>
-              Pass Priority
-            </button>
-            <small>
-              {match.zones.find((z) => z.kind === "stack")?.count
-                ? "Everyone passing resolves the top object"
-                : "Everyone passing advances the step"}
-            </small>
-          </div>
-        )}
-      </div>
+      <h1 className="sr-only">Commander Match</h1>
+      <span className="sr-only" data-testid="match-revision">
+        Revision {match.revision} · {match.outcome}
+      </span>
       <RulesBoard
         key={match.id}
         match={match}
@@ -618,9 +622,67 @@ export function RulesTabletop({
         act={act}
         busy={busy}
         selection={selection}
+        controls={
+          <>
+            <section className="priority-control" aria-label="Priority">
+              <strong role="status">
+                {match.outcome !== "ongoing"
+                  ? `Match ${match.outcome}`
+                  : match.priority
+                    ? match.priority.playerId === player?.id
+                      ? "You have Priority"
+                      : `${name(match.priority.playerId)} has Priority`
+                    : opening
+                      ? "Choose your opening hand"
+                      : "Required choices"}
+              </strong>
+              {pass && (
+                <button
+                  className="primary pass-priority"
+                  disabled={busy}
+                  onClick={() => act(pass.action)}
+                >
+                  Pass Priority
+                </button>
+              )}
+              {pass && (
+                <small>
+                  {stackZone?.count
+                    ? `Consecutive passes → Resolve ${nextName ?? "top Stack object"}`
+                    : `Consecutive passes → ${nextLabel}`}
+                </small>
+              )}
+              {!pass && match.priority && (
+                <small>Waiting for {name(match.priority.playerId)}</small>
+              )}
+            </section>
+            <section className="phase-control" aria-label="Turn and phase">
+              <span>
+                Turn {match.turn.number} ·{" "}
+                {match.turn.activePlayerId === player?.id
+                  ? "Your turn"
+                  : `${name(match.turn.activePlayerId)}’s turn`}
+              </span>
+              <h2>{phaseLabel}</h2>
+              {step !== "Main" && <span className="current-step">{step}</span>}
+              <ol className="phase-progress" aria-label="Phase progression">
+                {["Beginning", "Main", "Combat", "Main", "Ending"].map(
+                  (label, i) => (
+                    <li
+                      key={i}
+                      aria-current={i === phaseIndex ? "step" : undefined}
+                    >
+                      <span>{label}</span>
+                    </li>
+                  ),
+                )}
+              </ol>
+            </section>
+          </>
+        }
       >
         <aside
-          className={`choice-panel ${opening || pending ? "has-choice" : "quiet-panel"}`}
+          className={`choice-panel ${opening || pending || rules.waiting ? "has-choice" : "quiet-panel"} ${opening ? "opening-choice" : ""}`}
         >
           <fieldset disabled={busy}>
             {rules.practice && (

@@ -60,7 +60,8 @@
           "owner": "you",
           "self": "exclude"
         }
-      }
+      },
+      "description": "When this creature dies, return another target artifact card from your graveyard to your hand."
     }
   ]
 }

@@ -247,7 +247,9 @@ export class RulesEngine {
               : effect.colors;
           for (const color of colors)
             actions.push({
-              label: `${object.characteristics.name}: add ${effect.quantity} ${color}`,
+              label: ability.description
+                ? `${ability.description}${colors.length > 1 ? ` Choose {${color}}.` : ""}`
+                : `${object.characteristics.name}: add ${effect.quantity} ${color}`,
               action: {
                 type: "activate-ability",
                 objectId: object.id,
@@ -257,7 +259,9 @@ export class RulesEngine {
             });
         } else
           actions.push({
-            label: `${object.characteristics.name}: ${ability.id}`,
+            label:
+              ability.description ??
+              `${object.characteristics.name}: ${ability.id}`,
             action: {
               type: "activate-ability",
               objectId: object.id,

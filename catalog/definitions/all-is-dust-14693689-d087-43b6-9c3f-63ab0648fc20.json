@@ -46,7 +46,8 @@
             }
           }
         ]
-      }
+      },
+      "description": "Each player sacrifices all permanents they control that are one or more colors."
     }
   ]
 }

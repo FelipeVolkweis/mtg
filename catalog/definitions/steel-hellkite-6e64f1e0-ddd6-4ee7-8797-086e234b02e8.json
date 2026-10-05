@@ -9,7 +9,7 @@
       "name": "Steel Hellkite",
       "manaCost": "{6}",
       "colors": [],
-      "typeLine": "Artifact Creature — Dragon",
+      "typeLine": "Artifact Creature \u2014 Dragon",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -43,7 +43,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     },
     {
       "id": "pump",
@@ -71,7 +72,8 @@
             ]
           }
         ]
-      }
+      },
+      "description": "{2}: This creature gets +1/+0 until end of turn."
     },
     {
       "id": "destroy-damaged",
@@ -107,7 +109,8 @@
           "X"
         ],
         "oncePerTurn": true
-      }
+      },
+      "description": "{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn."
     }
   ]
 }

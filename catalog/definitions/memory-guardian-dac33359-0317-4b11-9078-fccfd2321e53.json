@@ -65,7 +65,8 @@
           }
         ]
       },
-      "keyword": "Affinity"
+      "keyword": "Affinity",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)"
     },
     {
       "id": "flying",
@@ -76,7 +77,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     }
   ]
 }

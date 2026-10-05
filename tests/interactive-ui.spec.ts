@@ -43,7 +43,7 @@ test("dragging a land and using its card menu keeps gameplay server-owned; Alt a
     await expect(
       alice.getByRole("dialog", { name: "Card actions" }),
     ).toBeVisible();
-    await alice.getByRole("heading", { name: "Commander Match" }).click();
+    await alice.getByLabel("Turn and phase", { exact: true }).click();
     await expect(
       alice.getByRole("dialog", { name: "Card actions" }),
     ).toHaveCount(0);
@@ -107,18 +107,39 @@ test("equivalent copies expand individually while tapped, countered, attached an
       .click();
     await expect(pile).toHaveCount(1);
     await pile.click();
-    const untapped = creatures
+    const untapped = alice
+      .getByRole("group", { name: "Silver Myr spread (2)", exact: true })
       .getByRole("button", { name: "Card: Silver Myr", exact: true })
       .filter({ hasNotText: "Tapped" })
       .first();
     await untapped.click();
     await alice
-      .getByRole("button", { name: "Silver Myr: add 1 U", exact: true })
+      .getByRole("button", { name: "{T}: Add {U}.", exact: true })
       .click();
-    await alice.getByRole("heading", { name: "Commander Match" }).click();
+    const spread = creatures.getByRole("group", {
+      name: "Silver Myr spread (2)",
+      exact: true,
+    });
+    await expect(
+      spread.getByRole("button", { name: "Card: Silver Myr", exact: true }),
+    ).toHaveCount(2);
+    await expect(spread.locator(".is-tapped")).toHaveCount(1);
+    await spread
+      .getByRole("button", { name: "Card: Silver Myr", exact: true })
+      .filter({ hasNotText: "Tapped" })
+      .click();
+    await alice
+      .getByRole("button", { name: "{T}: Add {U}.", exact: true })
+      .click();
+    await expect(spread.locator(".is-tapped")).toHaveCount(2);
+    await expect(
+      alice.getByLabel("Alice mana").getByLabel("4 U", { exact: true }),
+    ).toBeVisible();
+    await alice.keyboard.press("Escape");
+    await expect(spread).toHaveCount(0);
     await expect(
       creatures.getByRole("button", {
-        name: "Expand Silver Myr pile (2)",
+        name: "Expand Silver Myr pile (3)",
         exact: true,
       }),
     ).toContainText("Tapped");
@@ -264,5 +285,100 @@ test("a crowded pile keeps every member reachable without scrolling the page or 
     ).toBeLessThanOrEqual(720);
   } finally {
     await Promise.all(contexts.map((c) => c.close()));
+  }
+});
+
+test("the match layout separates the Hand, hides empty groups, and puts phase below Priority", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice],
+    contexts,
+    invitation,
+  } = await startTable(browser);
+  try {
+    await seedRulesScenario(
+      invitation.split("/").pop()!,
+      undefined,
+      false,
+      "presentation",
+    );
+    await alice.reload();
+    await expect(alice.getByTestId("match")).toBeVisible();
+    await expect(alice.locator(".match-app > header")).toBeHidden();
+    await expect(alice.locator(".group-label")).toHaveCount(0);
+    await expect(alice.getByLabel("Planeswalkers — Alice")).toHaveCount(0);
+    await expect(alice.getByLabel("Battles — Alice")).toHaveCount(0);
+    await expect(
+      alice.locator(".hand-dock").getByTestId("zone-hand-Alice"),
+    ).toBeVisible();
+    for (const kind of ["library", "graveyard", "exile"]) {
+      await expect(
+        alice.locator(".hand-dock").getByTestId(`zone-${kind}-Alice`),
+      ).toBeVisible();
+      await expect(
+        alice.getByLabel("Bob Battlefield").getByTestId(`zone-${kind}-Bob`),
+      ).toBeVisible();
+    }
+    const pass = await alice
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .boundingBox();
+    const phase = await alice
+      .getByLabel("Turn and phase", { exact: true })
+      .boundingBox();
+    const dock = await alice.locator(".hand-dock").boundingBox();
+    expect(phase!.y).toBeGreaterThan(pass!.y + pass!.height);
+    expect(phase!.y + phase!.height).toBeLessThanOrEqual(dock!.y);
+    for (const group of await alice.locator(".battlefield-groups").all()) {
+      const layout = await group.evaluate((node) => ({
+        height: node.clientHeight,
+        scroll: node.scrollHeight,
+        cardWidth: getComputedStyle(node).getPropertyValue("--card-width"),
+        cards: [...node.querySelectorAll(".rules-tile")].map((card) => ({
+          name: card.getAttribute("aria-label"),
+          width: card.getBoundingClientRect().width,
+          height: card.getBoundingClientRect().height,
+          y: card.getBoundingClientRect().y,
+        })),
+        y: node.getBoundingClientRect().y,
+      }));
+      expect(layout.scroll, JSON.stringify(layout)).toBeLessThanOrEqual(
+        layout.height + 1,
+      );
+      expect(
+        await group.evaluate((node) => getComputedStyle(node).overflowY),
+      ).toBe("hidden");
+    }
+    const handLayout = await alice
+      .locator(".local-hand .rules-hand-cards")
+      .evaluate((node) => ({
+        width: node.clientWidth,
+        height: node.clientHeight,
+        scrollWidth: node.scrollWidth,
+        scrollHeight: node.scrollHeight,
+      }));
+    expect(handLayout.scrollWidth).toBeLessThanOrEqual(handLayout.width + 1);
+    expect(handLayout.scrollHeight).toBeLessThanOrEqual(handLayout.height + 1);
+    const tapped = alice
+      .getByLabel("Creatures — Alice")
+      .locator(".rules-tile.is-tapped")
+      .first();
+    const bounds = await tapped.boundingBox();
+    expect(bounds!.width).toBeGreaterThan(bounds!.height);
+    const stack = alice.getByLabel("Stack", { exact: true });
+    await expect(stack.locator(".stack-entry")).toHaveCount(1);
+    await expect(stack.locator(".stack-entry").first()).toContainText(
+      "Next to resolve",
+    );
+    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
+    await expect(
+      alice.getByRole("heading", { name: "Room lobby" }),
+    ).toBeVisible();
+    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
+    await expect(
+      alice.getByRole("heading", { name: "Room lobby" }),
+    ).toBeHidden();
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
   }
 });

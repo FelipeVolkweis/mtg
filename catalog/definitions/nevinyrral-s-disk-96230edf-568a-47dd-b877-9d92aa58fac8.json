@@ -37,7 +37,8 @@
             "kind": "enter-tapped"
           }
         ]
-      }
+      },
+      "description": "This artifact enters tapped."
     },
     {
       "id": "destroy",
@@ -70,7 +71,8 @@
             }
           }
         ]
-      }
+      },
+      "description": "{1}, {T}: Destroy all artifacts, creatures, and enchantments."
     }
   ]
 }

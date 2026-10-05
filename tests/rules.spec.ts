@@ -5462,3 +5462,78 @@ test("Favor goes to its owner's Graveyard when its enchanted creature leaves whi
   ).toContain("Fall from Favor");
   expect(g.view().rules!.monarchId).toBe(p);
 });
+
+test("implemented catalog abilities retain exact rules descriptions and expose readable activation choices", async () => {
+  const { resolve } = await import("node:path");
+  const { RulesEngine } = await import("../src/server/match/rules-engine");
+  const released = await readCatalog(resolve("catalog"));
+  const implemented = Object.values(released.definitions).filter(
+    (card) => card.automationStatus === "implemented",
+  );
+  expect(implemented.length).toBeGreaterThan(0);
+  for (const card of implemented) {
+    for (const ability of card.abilities) {
+      expect(
+        ability.description,
+        `${card.canonicalName}: ${ability.id}`,
+      ).toBeTruthy();
+      expect(card.oracleText).toContain(ability.description!);
+    }
+  }
+  const { room, catalog } = commanderFixture();
+  const match = new MatchService().createCommander(
+    room,
+    catalog,
+    room.participants[0].id,
+  );
+  const player = match.players[0];
+  match.rules!.setup.keptPlayerIds = match.players.map((seat) => seat.id);
+  match.priority = { playerId: player.id, passedPlayerIds: [] };
+  match.rules!.commanders[player.id].colorIdentity = ["U", "R"];
+  const battlefield = match.zones.find((zone) => zone.kind === "battlefield")!;
+  const objects = new Map<string, string>();
+  for (const name of [
+    "Sai, Master Thopterist",
+    "Mind Stone",
+    "Arcane Signet",
+  ]) {
+    const definition = implemented.find((card) => card.canonicalName === name)!;
+    catalog.definitions[definition.id] = definition;
+    const instanceId = randomUUID();
+    match.instances[instanceId] = {
+      id: instanceId,
+      ownerId: player.id,
+      definitionId: definition.id,
+      printingId: definition.defaultPrintingId,
+    };
+    const object = gameObject(
+      "card",
+      battlefield.id,
+      player.id,
+      definition.components[0],
+    );
+    object.cardInstanceIds = [instanceId];
+    match.objects[object.id] = object;
+    battlefield.objectIds.push(object.id);
+    match.rules!.controlledSinceTurn[object.id] = 0;
+    objects.set(name, object.id);
+  }
+  const actions = new RulesEngine(match, catalog).actions(player.id);
+  const forCard = (name: string) =>
+    actions.filter(
+      ({ action }) =>
+        action.type === "activate-ability" &&
+        action.objectId === objects.get(name),
+    );
+  expect(forCard("Sai, Master Thopterist").map(({ label }) => label)).toEqual([
+    "{1}{U}, Sacrifice two artifacts: Draw a card.",
+  ]);
+  expect(forCard("Mind Stone").map(({ label }) => label)).toEqual([
+    "{T}: Add {C}.",
+    "{1}, {T}, Sacrifice this artifact: Draw a card.",
+  ]);
+  expect(forCard("Arcane Signet").map(({ label }) => label)).toEqual([
+    "{T}: Add one mana of any color in your commander's color identity. Choose {U}.",
+    "{T}: Add one mana of any color in your commander's color identity. Choose {R}.",
+  ]);
+});

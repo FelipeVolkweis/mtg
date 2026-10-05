@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact — Vehicle",
+      "typeLine": "Artifact \u2014 Vehicle",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -72,7 +72,8 @@
           }
         ]
       },
-      "keyword": "Crew"
+      "keyword": "Crew",
+      "description": "Crew 2"
     },
     {
       "id": "flying",
@@ -83,7 +84,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     },
     {
       "id": "second-draw",
@@ -104,7 +106,8 @@
           "player": "you",
           "ordinal": 2
         }
-      }
+      },
+      "description": "Whenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying."
     }
   ]
 }

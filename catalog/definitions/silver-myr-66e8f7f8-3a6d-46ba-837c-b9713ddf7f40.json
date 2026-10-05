@@ -53,7 +53,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {U}."
     }
   ]
 }

@@ -40,7 +40,7 @@ test("repeated authentication on one socket cannot leave a disconnected guest co
       }),
   );
   await bob.goto("about:blank");
-  const room = alice.getByText("Room lobby and Decklists", { exact: true });
+  const room = alice.getByLabel("Room lobby and Decklists", { exact: true });
   await room.click();
   await expect(
     alice.getByTestId("participants").locator("li").filter({ hasText: "Bob" }),

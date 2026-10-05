@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Legendary Creature — Vedalken Artificer",
+      "typeLine": "Legendary Creature \u2014 Vedalken Artificer",
       "manaValue": 4,
       "supertypes": [
         "Legendary"
@@ -59,7 +59,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)"
     },
     {
       "id": "upkeep-draw",
@@ -104,7 +105,8 @@
             ]
           }
         }
-      }
+      },
+      "description": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card."
     }
   ]
 }

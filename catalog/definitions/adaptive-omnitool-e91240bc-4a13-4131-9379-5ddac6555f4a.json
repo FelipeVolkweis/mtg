@@ -9,7 +9,7 @@
       "name": "Adaptive Omnitool",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact — Equipment",
+      "typeLine": "Artifact \u2014 Equipment",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -71,7 +71,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Equipped creature gets +1/+1 for each artifact you control."
     },
     {
       "id": "equip",
@@ -101,7 +102,8 @@
           ],
           "controller": "you"
         }
-      }
+      },
+      "description": "Equip {3}"
     },
     {
       "id": "attack-inspection",
@@ -131,7 +133,8 @@
             "attached": true
           }
         }
-      }
+      },
+      "description": "Whenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
     }
   ]
 }

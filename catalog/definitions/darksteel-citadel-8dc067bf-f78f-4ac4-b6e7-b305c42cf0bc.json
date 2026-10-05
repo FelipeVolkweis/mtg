@@ -39,7 +39,8 @@
         "effects": [],
         "keyword": "Indestructible"
       },
-      "keyword": "Indestructible"
+      "keyword": "Indestructible",
+      "description": "Indestructible"
     },
     {
       "id": "mana",
@@ -61,7 +62,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {C}."
     }
   ]
 }

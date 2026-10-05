@@ -72,7 +72,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Master of Etherium's power and toughness are each equal to the number of artifacts you control."
     },
     {
       "id": "bonus",
@@ -99,7 +100,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Other artifact creatures you control get +1/+1."
     }
   ]
 }

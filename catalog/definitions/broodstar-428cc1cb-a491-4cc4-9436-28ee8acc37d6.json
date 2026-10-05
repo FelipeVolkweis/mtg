@@ -63,7 +63,8 @@
           }
         ]
       },
-      "keyword": "Affinity"
+      "keyword": "Affinity",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)"
     },
     {
       "id": "size",
@@ -102,7 +103,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Broodstar's power and toughness are each equal to the number of artifacts you control."
     },
     {
       "id": "flying",
@@ -113,7 +115,8 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
-      }
+      },
+      "description": "Flying"
     }
   ]
 }

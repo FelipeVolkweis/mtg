@@ -43,7 +43,8 @@
             "kind": "enter-tapped"
           }
         ]
-      }
+      },
+      "description": "This land enters tapped."
     },
     {
       "id": "mana",
@@ -66,7 +67,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {U}."
     },
     {
       "id": "cycling",
@@ -92,7 +94,8 @@
           }
         ]
       },
-      "keyword": "cycling"
+      "keyword": "cycling",
+      "description": "Cycling {U} ({U}, Discard this card: Draw a card.)"
     }
   ]
 }

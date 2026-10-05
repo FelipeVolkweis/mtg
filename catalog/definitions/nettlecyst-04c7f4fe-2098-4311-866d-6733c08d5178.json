@@ -58,7 +58,8 @@
             "self": "only"
           }
         }
-      }
+      },
+      "description": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)"
     },
     {
       "id": "equipped-bonus",
@@ -102,7 +103,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Equipped creature gets +1/+1 for each artifact and/or enchantment you control."
     },
     {
       "id": "equip",
@@ -132,7 +134,8 @@
           ],
           "controller": "you"
         }
-      }
+      },
+      "description": "Equip {2}"
     }
   ]
 }

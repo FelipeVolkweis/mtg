@@ -46,7 +46,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add {C}."
     },
     {
       "id": "retrieve",
@@ -83,7 +84,8 @@
           "kind": "card",
           "owner": "you"
         }
-      }
+      },
+      "description": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand."
     }
   ]
 }

@@ -142,7 +142,7 @@ export function App() {
     }
   }
   return (
-    <div className="app">
+    <div className={`app ${view?.match?.mode === "rules" ? "match-app" : ""}`}>
       <header>
         <a href="/" className="brand">
           ◈ Magic Tabletop
@@ -211,7 +211,15 @@ export function App() {
             </section>
           )}
           <details className="room-panel">
-            <summary>Room lobby and Decklists</summary>
+            <summary aria-label="Room lobby and Decklists">
+              <span className="room-trigger">Room</span>
+              <span className="room-drawer-title">
+                Room lobby and Decklists
+              </span>
+            </summary>
+            <div className="room-connection" role="status">
+              {connection}
+            </div>
             <Lobby view={view} send={send} busy={busy} />
           </details>
         </>

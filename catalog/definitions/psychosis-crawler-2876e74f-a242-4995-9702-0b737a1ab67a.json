@@ -9,7 +9,7 @@
       "name": "Psychosis Crawler",
       "manaCost": "{5}",
       "colors": [],
-      "typeLine": "Artifact Creature — Phyrexian Horror",
+      "typeLine": "Artifact Creature \u2014 Phyrexian Horror",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -57,7 +57,8 @@
             }
           ]
         }
-      }
+      },
+      "description": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand."
     },
     {
       "id": "draw-life-loss",
@@ -77,7 +78,8 @@
           "event": "draw",
           "player": "you"
         }
-      }
+      },
+      "description": "Whenever you draw a card, each opponent loses 1 life."
     }
   ]
 }

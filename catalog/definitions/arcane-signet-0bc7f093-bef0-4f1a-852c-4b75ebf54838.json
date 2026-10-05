@@ -44,7 +44,8 @@
           }
         ],
         "manaAbility": true
-      }
+      },
+      "description": "{T}: Add one mana of any color in your commander's color identity."
     }
   ]
 }
