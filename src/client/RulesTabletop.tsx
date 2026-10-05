@@ -213,22 +213,49 @@ function Procedure({
   return (
     <section aria-label="Pending rules choice">
       <h2>
-        {pending.kind === "attack-payment"
-          ? "Pay attack costs"
-          : pending.kind === "trigger-order"
-            ? "Order simultaneous triggers"
-            : pending.stage === "variable"
-              ? "Choose X"
-              : pending.kind === "resolve"
-                ? "Resolve spell or ability"
-                : pending.kind === "cleanup"
-                  ? "Cleanup discard"
-                  : pending.stage === "targets"
-                    ? "Choose target"
-                    : "Pay costs"}
+        {pending.kind === "commander-return"
+          ? "Commander return"
+          : pending.kind === "attack-payment"
+            ? "Pay attack costs"
+            : pending.kind === "trigger-order"
+              ? "Order simultaneous triggers"
+              : pending.stage === "variable"
+                ? "Choose X"
+                : pending.kind === "resolve"
+                  ? "Resolve spell or ability"
+                  : pending.kind === "cleanup"
+                    ? "Cleanup discard"
+                    : pending.stage === "targets"
+                      ? "Choose target"
+                      : "Pay costs"}
       </h2>
       {pending.context && <p>{pending.context}</p>}
-      {pending.kind === "trigger-order" ? (
+      {pending.kind === "commander-return" ? (
+        <div>
+          <button
+            onClick={() =>
+              act({
+                type: "rules-input",
+                procedureId: pending.id,
+                confirm: true,
+              })
+            }
+          >
+            Return to Command Zone
+          </button>
+          <button
+            onClick={() =>
+              act({
+                type: "rules-input",
+                procedureId: pending.id,
+                confirm: false,
+              })
+            }
+          >
+            Decline return
+          </button>
+        </div>
+      ) : pending.kind === "trigger-order" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -410,7 +437,8 @@ function Procedure({
           </button>
         </>
       )}
-      {pending.kind !== "cleanup" &&
+      {pending.kind !== "commander-return" &&
+        pending.kind !== "cleanup" &&
         pending.kind !== "resolve" &&
         pending.kind !== "trigger-order" &&
         pending.kind !== "trigger-target" && (
@@ -478,6 +506,17 @@ export function RulesTabletop({
               )?.name
             : "Opening or required choices"}
         </p>
+        {rules.monarchId && (
+          <p>
+            Monarch: {match.players.find((p) => p.id === rules.monarchId)?.name}
+          </p>
+        )}
+        {rules.practice && (
+          <p>
+            Solo practice · the practice opponent passes Priority automatically.
+            You make its required choices.
+          </p>
+        )}
         <section data-testid="match-players">
           {match.players.map((player) => (
             <p key={player.id}>

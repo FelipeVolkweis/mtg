@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Enchantment — Aura",
+      "typeLine": "Enchantment \u2014 Aura",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -33,6 +33,59 @@
     "Enchant"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "enchant",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "keyword": "Enchant",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "aura": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    },
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "tap-attached"
+          },
+          {
+            "kind": "become-monarch"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "untap-restriction",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "monarchUntap": true
+      }
+    }
+  ]
 }

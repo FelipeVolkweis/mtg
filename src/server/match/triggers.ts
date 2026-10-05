@@ -112,6 +112,10 @@ export class Triggers {
         const groupKey = `${source.id}:${ability.id}:${event.damage?.recipientId}`;
         if (trigger.grouped && groups.has(groupKey)) continue;
         if (trigger.grouped) groups.add(groupKey);
+        if (ability.rules?.manaAbility) {
+          this.engine.effects(source.controllerId, ability.rules, []);
+          continue;
+        }
         this.engine.rules.waitingTriggers ??= [];
         this.engine.rules.waitingTriggers.push({
           id: randomUUID(),
@@ -148,6 +152,7 @@ export class Triggers {
     )
       throw new Error("Choose one legal trigger target.");
     object.resolution!.targetIds = ids;
+    this.engine.targeted(object);
     delete this.engine.rules.pending;
     this.flush();
   }

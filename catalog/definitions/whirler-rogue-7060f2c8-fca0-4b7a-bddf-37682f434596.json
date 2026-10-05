@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Creature — Human Rogue Artificer",
+      "typeLine": "Creature \u2014 Human Rogue Artificer",
       "manaValue": 4,
       "supertypes": [],
       "types": [
@@ -33,6 +33,70 @@
   "oracleText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 2
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "unblockable",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ],
+              "untapped": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "recipient": "target",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "Unblockable"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    }
+  ]
 }

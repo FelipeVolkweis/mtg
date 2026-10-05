@@ -5,6 +5,7 @@ import type {
   ObjectView,
 } from "../../shared/model.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
+import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
 import { zoneFor } from "./zones.js";
 import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
@@ -17,12 +18,14 @@ export function matchView(
   const playerId = match.players.find(
     (player) => player.participantId === participantId,
   )?.id;
+  const choicePlayerId = actingPlayer(match, participantId)?.id;
   const objects: Record<string, ObjectView> = {};
   const instances: MatchView["instances"] = {};
   const zones = match.zones.map((zone) => {
     const visible =
       !(match.mode === "rules" && zone.kind === "library") &&
-      zoneFor(match, zone.id).canInspect(playerId);
+      (zoneFor(match, zone.id).canInspect(playerId) ||
+        zoneFor(match, zone.id).canInspect(choicePlayerId));
     if (visible)
       for (const objectId of zone.objectIds) {
         const object = match.objects[objectId];
@@ -75,7 +78,7 @@ export function matchView(
   });
   if (
     match.rules &&
-    match.rules.pending?.playerId === playerId &&
+    match.rules.pending?.playerId === choicePlayerId &&
     match.rules.resolving?.inspectedIds
   ) {
     for (const id of match.rules.resolving.inspectedIds) {
@@ -141,6 +144,8 @@ export function matchView(
       ? (() => {
           const {
             pending,
+            commanderReplay,
+            commanderReturns,
             orderedTriggerPlayerIds,
             resolving,
             waitingTriggers,
@@ -168,13 +173,13 @@ export function matchView(
                 ? { playerId: pending.playerId, kind: pending.kind }
                 : undefined,
               pending:
-                pending && pending.playerId === playerId
+                pending && pending.playerId === choicePlayerId
                   ? {
                       ...pending,
                       legalTargetIds:
                         pending.ability?.target && engine
                           ? engine.legalTargets(
-                              playerId!,
+                              choicePlayerId!,
                               pending.ability.target,
                               engine.targetSource(pending),
                             )
@@ -185,7 +190,7 @@ export function matchView(
                     }
                   : undefined,
             },
-            actions: engine && playerId ? engine.actions(playerId) : [],
+            actions: engine && playerId ? engine.actions(choicePlayerId!) : [],
           };
         })()
       : {}),

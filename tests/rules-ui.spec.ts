@@ -684,6 +684,7 @@ test("players crew, pay attack costs, declare blocks and assign combat damage th
     await alice
       .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
       .click();
+    await expect(alice.getByTestId("match-players")).toContainText("2 C");
     await alice.reload();
     await alice
       .getByRole("button", { name: "Complete payment", exact: true })
@@ -902,5 +903,178 @@ test("Omnitool's private Library choice survives reload and publicly displays on
     );
   } finally {
     await Promise.all(contexts.map((context) => context.close()));
+  }
+});
+
+test("solo full mono-U practice resumes, delegates opponent choices and replaces only with human consent", async ({
+  browser,
+}) => {
+  const { readFile } = await import("node:fs/promises");
+  const {
+    pages: [alice, spectator],
+    contexts,
+  } = await table(browser);
+  try {
+    const deck = (await readFile("sample-decklists/mono-u.md", "utf8")).replace(
+      "34 Island",
+      "34 Island (TST) 1",
+    );
+    await saveDeck(alice, "Full mono-U", deck);
+    await alice
+      .getByLabel("Commander", { exact: true })
+      .selectOption({ label: "Sai, Master Thopterist" });
+    await alice
+      .getByRole("button", { name: "Mark ready", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Start solo practice", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Commander Match" }),
+    ).toBeVisible();
+    await alice.getByRole("button", { name: "Keep Hand", exact: true }).click();
+    await expect(
+      alice.getByRole("button", { name: "Pass Priority", exact: true }),
+    ).toBeVisible();
+    const before = (await snapshot(alice)).match!;
+    expect(before.players).toHaveLength(2);
+    expect((await snapshot(alice)).participants).toHaveLength(2);
+    expect(before.outcome).toBe("ongoing");
+    const hidden = (await snapshot(spectator)).match!;
+    expect(hidden.actions).toEqual([]);
+    expect(
+      hidden.zones.filter((z) => z.kind === "hand").every((z) => !z.objectIds),
+    ).toBe(true);
+    await alice.reload();
+    expect((await snapshot(alice)).match).toEqual(before);
+    await alice
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await expect
+      .poll(async () => (await snapshot(alice)).match!.turn.stepIndex)
+      .toBe(2);
+    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice
+      .getByRole("button", { name: "Start solo practice", exact: true })
+      .click();
+    expect((await snapshot(alice)).match!.id).toBe(before.id);
+    await alice
+      .getByRole("button", { name: "Confirm new Match", exact: true })
+      .click();
+    await expect
+      .poll(async () => (await snapshot(alice)).match!.id)
+      .not.toBe(before.id);
+  } finally {
+    await Promise.all(contexts.map((c) => c.close()));
+  }
+});
+
+test("legacy Matches preserve Decklists and require every human's consent for automated replacement", async ({
+  browser,
+}) => {
+  const { Pool } = await import("pg");
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  const pool = new Pool({
+    connectionString:
+      process.env.TEST_DATABASE_URL ??
+      "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",
+  });
+  try {
+    const invite = invitation.split("/").pop()!;
+    const document = (
+      await pool.query<{ document: import("../src/shared/model").RoomState }>(
+        "SELECT document FROM rooms WHERE invite = $1",
+        [invite],
+      )
+    ).rows[0].document;
+    document.match!.mode = "manual";
+    delete document.match!.rules;
+    document.revision++;
+    await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [
+      invite,
+      JSON.stringify(document),
+    ]);
+    await alice.reload();
+    await bob.reload();
+    await expect(alice.getByRole("status")).toContainText(
+      "legacy Match requires replacement",
+    );
+    const before = await snapshot(alice);
+    const response = await exchange(alice, {
+      type: "match-action",
+      matchId: before.match!.id,
+      revision: before.match!.revision,
+      action: { type: "pass-priority" },
+    });
+    expect(response.event).toBe("rejected");
+    expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
+    await alice.getByText("Room lobby and Decklists", { exact: true }).click();
+    await alice
+      .getByRole("button", { name: "Request new Match", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Confirm new Match", exact: true })
+      .click();
+    expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
+    await bob.getByText("Room lobby and Decklists", { exact: true }).click();
+    await bob
+      .getByRole("button", { name: "Confirm new Match", exact: true })
+      .click();
+    await expect
+      .poll(async () => (await snapshot(alice)).match!.id)
+      .not.toBe(before.match!.id);
+    expect((await snapshot(alice)).match!.mode).toBe("rules");
+    expect((await snapshot(alice)).decklists).toEqual(before.decklists);
+  } finally {
+    await pool.end();
+    await Promise.all(contexts.map((c) => c.close()));
+  }
+});
+
+test("improvise choices survive reload and share the locked payment controls", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  try {
+    await seedRulesScenario(invitation.split("/").pop()!, "Kappa Cannoneer");
+    await alice.reload();
+    await bob.reload();
+    await alice
+      .getByRole("button", { name: "Cast Kappa Cannoneer", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("group", { name: /Improvise: tap artifacts/ }),
+    ).toBeVisible();
+    const pending = (await snapshot(alice)).match!.rules!.pending!;
+    await alice.reload();
+    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(pending.id);
+    const group = alice.getByRole("group", {
+      name: /Improvise: tap artifacts/,
+    });
+    await group.getByLabel("Mind Stone", { exact: true }).check();
+    await group.getByLabel("Sol Ring", { exact: true }).check();
+    await alice
+      .getByRole("button", { name: "Complete payment", exact: true })
+      .click();
+    await expect(group).toHaveCount(0);
+    const match = (await snapshot(alice)).match!;
+    expect(match.rules!.pending).toBeUndefined();
+    expect(match.zones.find((z) => z.kind === "stack")!.count).toBe(1);
+    const artifacts = Object.values(match.objects).filter(
+      (o) =>
+        ["Mind Stone", "Sol Ring"].includes(o.characteristics.name) &&
+        o.zoneId === match.zones.find((z) => z.kind === "battlefield")!.id,
+    );
+    expect(artifacts.every((o) => o.status.tapped)).toBe(true);
+  } finally {
+    await Promise.all(contexts.map((c) => c.close()));
   }
 });

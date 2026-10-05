@@ -32,6 +32,9 @@ function resolvingEffectSupported(
   return (
     [
       "counter-target",
+      "counter-event",
+      "become-monarch",
+      "tap-attached",
       "draw",
       "discard",
       "create-token",
@@ -62,8 +65,79 @@ export function automationEligible(card: CardDefinition): boolean {
       card.abilities.some((ability) => {
         if (!ability.rules) return false;
         const name = keyword.toLowerCase();
-        if (["cycling", "affinity"].includes(name))
-          return ability.keyword?.toLowerCase() === name;
+        if (name === "cycling")
+          return (
+            ability.kind === "activated" &&
+            ability.applicableZone === "hand" &&
+            ability.rules.costs.some(
+              (cost) => cost.kind === "discard-source",
+            ) &&
+            ability.rules.costs.some((cost) => cost.kind === "mana") &&
+            ability.rules.effects.some(
+              (effect) => effect.kind === "draw" && effect.count === 1,
+            )
+          );
+        if (name === "affinity")
+          return (
+            ability.kind === "static" &&
+            !!ability.rules.costModifiers?.some(
+              (modifier) =>
+                modifier.use === "cast" &&
+                modifier.scope === "source" &&
+                modifier.component === "generic" &&
+                typeof modifier.amount === "object" &&
+                "count" in modifier.amount &&
+                modifier.amount.count.zone === "battlefield" &&
+                modifier.amount.count.controller === "you" &&
+                (!!modifier.amount.count.types?.length ||
+                  !!modifier.amount.count.subtypes?.length),
+            )
+          );
+        if (name === "improvise")
+          return ability.kind === "static" && !!ability.rules.improvise;
+        if (name === "ward") {
+          const trigger = ability.rules.trigger;
+          return (
+            ability.kind === "triggered" &&
+            trigger?.event === "target" &&
+            trigger.player === "opponent" &&
+            trigger.filter?.self === "only" &&
+            ability.rules.effects.some((effect, index) => {
+              if (
+                effect.kind !== "pay-mana" ||
+                effect.player !== "event-player"
+              )
+                return false;
+              return ability
+                .rules!.effects.slice(index + 1)
+                .some(
+                  (followup) =>
+                    followup.kind === "if" &&
+                    followup.condition.binding === effect.bind &&
+                    followup.condition.atLeast === 1 &&
+                    followup.otherwise.some((e) => e.kind === "counter-event"),
+                );
+            })
+          );
+        }
+        if (name === "scry")
+          return ability.rules.effects.some(
+            (e) => e.kind === "inspect" && !e.select,
+          );
+        if (name === "imprint")
+          return ability.rules.effects.some(
+            (e) => e.kind === "exile" && !!e.link,
+          );
+        if (name === "living weapon")
+          return (
+            ability.rules.effects.some(
+              (e) => e.kind === "create-token" && e.token === "germ",
+            ) &&
+            ability.rules.effects.some(
+              (e) => e.kind === "attach" && e.to === "created",
+            )
+          );
+        if (name === "enchant") return !!ability.rules.aura;
         if (name === "equip")
           return (
             ability.id === "equip" &&
@@ -91,7 +165,7 @@ export function automationEligible(card: CardDefinition): boolean {
             !!ability.rules.trigger &&
             !ability.rules.costs.length &&
             ability.rules.effects.every((effect) =>
-              resolvingEffectSupported(effect),
+              resolvingEffectSupported(effect, !!ability.rules?.manaAbility),
             )) ||
           (ability.kind === "spell" &&
             !ability.rules.costs.length &&

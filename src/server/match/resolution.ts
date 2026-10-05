@@ -101,10 +101,10 @@ export class Resolution {
             "Choose an optional tap payment.",
           );
         } else if (effect.kind === "pay-mana") {
-          this.prompt(
-            {},
-            "You may pay mana to draw a card. Choose Pay or Decline.",
-          );
+          this.prompt({}, "Choose Pay or Decline for the resolving effect.");
+          if (effect.player === "event-player")
+            this.engine.rules.pending!.playerId =
+              source.resolution!.event!.playerId!;
           this.engine.rules.pending!.stage = "payment";
           this.engine.rules.pending!.totalCost = manaCost(effect.symbols);
         } else {
@@ -134,6 +134,25 @@ export class Resolution {
           );
         }
         return;
+      } else if (effect.kind === "become-monarch") {
+        const event = source.resolution?.event;
+        this.engine.rules.monarchId =
+          effect.player === "event-controller"
+            ? (this.engine.match.objects[event?.sourceId ?? ""]?.controllerId ??
+              event?.controllerId)
+            : progress.playerId;
+      } else if (effect.kind === "tap-attached") {
+        const aura = this.engine.match.objects[source.sourceObjectId ?? ""];
+        const attached = this.engine.match.objects[aura?.attachmentTo ?? ""];
+        if (attached) attached.status.tapped = true;
+      } else if (effect.kind === "counter-event") {
+        const target =
+          this.engine.match.objects[source.resolution?.event?.stackId ?? ""];
+        if (
+          target?.zoneId === this.engine.zone("stack").id &&
+          !target.cannotBeCountered
+        )
+          this.engine.toGraveyard(target);
       } else if (effect.kind === "lose-life") {
         const players = this.engine.match.players.filter((p) =>
           effect.player === "opponents"
@@ -406,16 +425,15 @@ export class Resolution {
           throw new Error("Choose Pay or Decline.");
         let paid = 0;
         if (action.confirm !== false) {
-          const pool = { ...this.engine.rules.mana[this.progress.playerId] };
-          for (const lot of this.engine.rules.restrictedMana?.[
-            this.progress.playerId
-          ] ?? [])
+          const payer = this.engine.rules.pending!.playerId;
+          const pool = { ...this.engine.rules.mana[payer] };
+          for (const lot of this.engine.rules.restrictedMana?.[payer] ?? [])
             pool[lot.type] -= lot.amount;
           const payment = spendMana(pool, manaCost(effect.symbols));
           if (!payment)
             throw new Error("The effect's mana payment cannot be paid yet.");
           for (const type of payment.spent)
-            this.engine.rules.mana[this.progress.playerId][type]--;
+            this.engine.rules.mana[payer][type]--;
           paid = 1;
         }
         this.progress.bindings[effect.bind] = paid;

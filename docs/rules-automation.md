@@ -1,13 +1,12 @@
-# Rules automation: tickets 01–25
+# Rules automation: complete mono-U release
 
-Commander is available alongside the temporary Tabletop compatibility path. The
-rules slices require two ready Room Participants, a selected legendary
-creature commander in each Decklist, exactly 100 cards, singleton nonbasic cards,
-compatible Color Identity, and complete authored automation support. The mono-U
-sample still contains unsupported cards and is deliberately rejected. Sai and
-Padeem satisfy commander eligibility; Sai and Padeem are now fully supported. Graaz cannot lead the unchanged blue Decklist. Solo automated
-practice, commander tax and commander return choices belong to later
-tickets. The existing Tabletop remains available until ticket 30 removes it.
+Commander requires a selected legendary creature commander, exactly 100 cards,
+singleton nonbasic cards, compatible Color Identity, and complete authored
+automation support. The mono-U sample resolves locally to 100 physical cards and
+67 supported Card Definitions; Sai and Padeem can lead it, while Graaz cannot lead
+the unchanged blue Decklist. Two ready humans start mirror Matches; one ready
+human starts solo practice against an inert opponent. Manual gameplay has been
+retired, while legacy Match snapshots require player consent for replacement.
 
 `MatchService.execute` is the server-owned gameplay command boundary. Transport,
 authorization, stale-revision checks, database transactions, and participant views
@@ -20,7 +19,8 @@ The agreed testing seam is the command/player-view boundary. Acceptance tests us
 isolated fully supported Decklists and authored release card definitions. Browser
 coverage uses the same WebSocket commands and shared choice controls as players.
 Rules views conceal both Libraries, reveal each Hand only to its player, and show
-pending procedure details and legal choices only to the player answering them.
+pending procedure details and legal choices only to the player answering them
+or the solo practice controller handling the practice seat.
 
 Card Abilities may contain a validated `rules` composition. It describes costs,
 Object Filters, targets and semantic effects. Imported keywords and legacy
@@ -256,3 +256,46 @@ checked both when triggering and when resolving. Shimmer Dragon's conditional
 hexproof follows the live four-artifact threshold. Its draw cost selects two
 untapped artifacts and can use newly controlled artifacts, independently of
 creature tap-symbol restrictions. Printed characteristics remain unchanged.
+
+Improvise offers explicit untapped artifact selections for generic payment after
+costs are locked. It composes with artifact reducers and pool spending without
+producing mana; invalid quantities, duplicate objects, or tapped artifacts leave
+all payment resources unchanged. Cannoneer gains a Counter and temporary
+unblockability on each controlled-artifact entry. Ward captures the responsible
+Stack object when opposing targeting occurs, uses normal trigger ordering, and
+opens a separate optional payment for that object's controller; the trigger
+outlives its source and counters the captured object on decline.
+
+Forsaken Monument grants +2/+2 to controlled colorless creatures, adds one
+colorless mana for each applicable permanent tap for colorless mana immediately
+without a Stack object, and gains two life through an ordinary colorless-cast
+trigger. Mana production composes with both supported payment workflows.
+
+Fall from Favor casts with a creature target and attaches before its entry
+trigger taps that creature and crowns its controller. The enchanted creature's
+untap restriction compares its own controller with the current monarch. Monarch
+end-step draws and combat transfers are ordinary designation triggers controlled
+by the monarch when they trigger, with the damaging creature's controller as the
+transfer beneficiary; APNAP ordering applies alongside card triggers.
+
+Commander designation belongs to the Card Instance across Zones. Command Zone
+casts increment tax counts and add two generic mana per earlier Command Zone
+cast before reductions and payment locking. Hand/Library return choices replace
+movement and retain the interrupted command and original Priority for atomic
+resumption; Graveyard/Exile returns are offered after movement at the checkpoint.
+Combat damage is accumulated separately for each commander Card Instance and
+recipient; 21 damage produces a Commander-specific loss at the checkpoint.
+
+Solo practice uses a supported mirror Decklist and its own Library, commander,
+Hand, and Life Total. The human's Priority never passes automatically. Required
+practice-seat choices are delegated through the same authorization policy used
+for command execution and participant views. Spectators remain read-only.
+Practice-seat passes, procedures, and results are persisted with the Match;
+replacement consent includes only real human Match Players.
+
+Launch Mishap, Aetherize, and Whirler Rogue complete the remaining authored pool.
+Eligibility requires the complete implemented definition and supported validated
+compositions; imported keywords and empty authored mechanic envelopes cannot
+substitute for Improvise or Ward behavior. Existing Rooms and Decklists are
+preserved, and the browser exposes legacy replacement without arbitrary state
+mutation. ADR-0016 records the superseding gameplay decision.

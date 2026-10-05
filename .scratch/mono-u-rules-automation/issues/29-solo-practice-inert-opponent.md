@@ -6,10 +6,23 @@
 
 **Status:** ready-for-agent
 
-- [ ] Retain a one-human Room start while creating an inert practice opponent as an additional Match Player in the same rules engine.
-- [ ] Automatically pass the practice opponent's Priority opportunities without automatically passing for the human.
-- [ ] Make no proactive practice-opponent casts or activations and do not introduce a strategic AI.
-- [ ] Provide a coherent practice configuration and Library so required drawing does not cause an immediate empty-Library loss.
-- [ ] Route required practice-opponent choices through the shared choice machinery under the solo practice controller and preserve relevant private-view policies.
-- [ ] Allow normal attacks, monarch behavior, opponent-draw triggers, and opponent-facing effects against the practice seat.
-- [ ] Verify restart recovery, normal game outcomes, spectator permissions, and replacement consent for the real human participant.
+- [x] Retain a one-human Room start while creating an inert practice opponent as an additional Match Player in the same rules engine.
+- [x] Automatically pass the practice opponent's Priority opportunities without automatically passing for the human.
+- [x] Make no proactive practice-opponent casts or activations and do not introduce a strategic AI.
+- [x] Provide a coherent practice configuration and Library so required drawing does not cause an immediate empty-Library loss.
+- [x] Route required practice-opponent choices through the shared choice machinery under the solo practice controller and preserve relevant private-view policies.
+- [x] Allow normal attacks, monarch behavior, opponent-draw triggers, and opponent-facing effects against the practice seat.
+- [x] Verify restart recovery, normal game outcomes, spectator permissions, and replacement consent for the real human participant.
+
+## Comments
+
+Implemented on 2026-10-05 through the agreed Match command/participant-view and
+browser-control seams.
+
+Restored one-human rules practice with a mirrored supported opponent Library,
+automatic opponent Priority passes and human-controlled required choices.
+The practice seat takes no proactive actions. Checks cover private views,
+spectators, normal outcomes, restart recovery and human replacement consent.
+
+See `docs/rules-automation.md` for behavior. Verification and the independent
+Standards/Spec reviews are recorded in `../review-26-30.md`.

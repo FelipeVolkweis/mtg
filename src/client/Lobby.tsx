@@ -15,11 +15,7 @@ export function Lobby({
   const [decklistText, setText] = useState("");
   const [editingId, setEditingId] = useState<string>();
   const [selection, setSelection] = useState(view.selectedDecklistId ?? "");
-  const [format, setFormat] = useState<"manual" | "commander">(
-    view.match?.rules ? "commander" : "manual",
-  );
   const [startingParticipantId, setStartingParticipantId] = useState("");
-  const [startingLife, setStartingLife] = useState("20");
   const participant = view.participants.find(
     (p) => p.id === view.participantId,
   )!;
@@ -102,11 +98,7 @@ export function Lobby({
           <div className="button-row">
             <button
               className="primary"
-              disabled={
-                busy ||
-                !selection ||
-                (format === "commander" && !view.selectedCommanderId)
-              }
+              disabled={busy || !selection || !view.selectedCommanderId}
               onClick={() =>
                 send({
                   type: "ready",
@@ -135,90 +127,74 @@ export function Lobby({
             Match format
             <select
               aria-label="Match format"
-              value={format}
-              onChange={(event) =>
-                setFormat(event.target.value as "manual" | "commander")
-              }
+              value="commander"
+              onChange={() => {}}
             >
-              <option value="manual">Tabletop</option>
               <option value="commander">Commander (automated)</option>
             </select>
           </label>
-          {format === "commander" && (
-            <>
-              <label>
-                Commander
-                <select
-                  aria-label="Commander"
-                  disabled={busy || !selection}
-                  value={view.selectedCommanderId ?? ""}
-                  onChange={(event) => {
-                    if (event.target.value)
-                      send({
-                        type: "configure-commander",
-                        decklistId: selection,
-                        definitionId: event.target.value,
-                      });
-                  }}
-                >
-                  <option value="">Choose a commander</option>
-                  {view.commanderOptions
-                    ?.filter((option) => option.eligible)
-                    .map((option) => (
-                      <option
-                        key={option.definitionId}
-                        value={option.definitionId}
-                      >
-                        {option.name}
-                      </option>
-                    ))}
-                </select>
-              </label>
-              <label>
-                Starting player
-                <select
-                  aria-label="Starting player"
-                  value={startingParticipantId}
-                  onChange={(event) =>
-                    setStartingParticipantId(event.target.value)
-                  }
-                >
-                  <option value="">Random</option>
-                  {view.participants
-                    .filter((p) => p.ready)
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                </select>
-              </label>
-              <p>
-                Commander starts at 40 life. Decklists must contain 100 cards
-                and every card must have complete automation support.
-              </p>
-            </>
-          )}
+          <>
+            <label>
+              Commander
+              <select
+                aria-label="Commander"
+                disabled={busy || !selection}
+                value={view.selectedCommanderId ?? ""}
+                onChange={(event) => {
+                  if (event.target.value)
+                    send({
+                      type: "configure-commander",
+                      decklistId: selection,
+                      definitionId: event.target.value,
+                    });
+                }}
+              >
+                <option value="">Choose a commander</option>
+                {view.commanderOptions
+                  ?.filter((option) => option.eligible)
+                  .map((option) => (
+                    <option
+                      key={option.definitionId}
+                      value={option.definitionId}
+                    >
+                      {option.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <label>
+              Starting player
+              <select
+                aria-label="Starting player"
+                value={startingParticipantId}
+                onChange={(event) =>
+                  setStartingParticipantId(event.target.value)
+                }
+              >
+                <option value="">Random</option>
+                {view.participants
+                  .filter((p) => p.ready)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <p>
+              Commander starts at 40 life. Decklists must contain 100 cards and
+              every card must have complete automation support.
+            </p>
+          </>
           <div className="start-match">
-            {format === "manual" && (
-              <label>
-                Starting life
-                <input
-                  value={startingLife}
-                  onChange={(event) => setStartingLife(event.target.value)}
-                  inputMode="numeric"
-                  pattern="-?[0-9]+"
-                />
-              </label>
-            )}
             <button
               className="primary"
-              disabled={busy || ready < 2}
+              disabled={busy || ready !== 2}
               onClick={() =>
                 send({
                   type: "start",
-                  startingLife,
-                  format: format === "commander" ? "commander" : undefined,
+                  startingLife: "40",
+                  format: "commander",
                   startingParticipantId: startingParticipantId || undefined,
                 })
               }
@@ -226,20 +202,20 @@ export function Lobby({
               {view.match ? "Request new Match" : "Start Match"}
             </button>
             {/* Keep solo start isolated so it can be commented out without changing multiplayer start. */}
-            {format === "manual" && ready === 1 && participant.ready && (
+            {ready === 1 && participant.ready && (
               <button
                 className="primary"
                 disabled={busy}
-                onClick={() => send({ type: "start-solo", startingLife })}
+                onClick={() => send({ type: "start-solo", startingLife: "40" })}
               >
-                Start solo Match
+                Start solo practice
               </button>
             )}
           </div>
           <p className="hint">
             {ready === 1
-              ? "1 ready. The ready participant can start a solo Match, or wait for two to four ready participants to play; other guests wait for the next Match."
-              : `${ready} ready. Two to four ready participants play; other guests wait for the next Match.`}
+              ? "1 ready. The ready participant can start a solo Match, or wait for two ready participants to play; other guests wait for the next Match."
+              : `${ready} ready. Two ready participants play; other guests wait for the next Match.`}
           </p>
           {view.rematch && (
             <div className="rematch">

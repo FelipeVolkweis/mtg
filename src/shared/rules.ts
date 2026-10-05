@@ -32,6 +32,7 @@ export const objectFilterSchema = z
     owner: z.enum(["you", "opponent"]).optional(),
     nontoken: z.boolean().optional(),
     colored: z.boolean().optional(),
+    colorless: z.boolean().optional(),
     attached: z.boolean().optional(),
     types: z.array(z.string().min(1)).optional(),
     excludeTypes: z.array(z.string().min(1)).optional(),
@@ -215,8 +216,17 @@ const primitiveEffectSchema = z.discriminatedUnion("kind", [
       kind: z.literal("pay-mana"),
       symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)),
       bind: z.string().min(1),
+      player: z.literal("event-player").optional(),
     })
     .strict(),
+  z
+    .object({
+      kind: z.literal("become-monarch"),
+      player: z.literal("event-controller").optional(),
+    })
+    .strict(),
+  z.object({ kind: z.literal("tap-attached") }).strict(),
+  z.object({ kind: z.literal("counter-event") }).strict(),
   z.object({ kind: z.literal("redirect-attack") }).strict(),
   z
     .object({
@@ -228,6 +238,7 @@ const primitiveEffectSchema = z.discriminatedUnion("kind", [
   z
     .object({
       kind: z.literal("animate-source"),
+      recipient: z.literal("target").optional(),
       changes: z.array(continuousChangeSchema).min(1).max(20),
     })
     .strict(),
@@ -352,6 +363,9 @@ export const conditionSchema = z
 
 export const rulesAbilitySchema = z
   .object({
+    improvise: z.boolean().optional(),
+    aura: objectFilterSchema.optional(),
+    monarchUntap: z.boolean().optional(),
     attackCost: z
       .object({
         symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)).min(1),
@@ -408,6 +422,8 @@ export const rulesAbilitySchema = z
           "attack",
           "draw",
           "upkeep",
+          "target",
+          "mana",
         ]),
         filter: objectFilterSchema.optional(),
         player: z.enum(["you", "opponent"]).optional(),
@@ -590,6 +606,7 @@ export interface PendingProcedure {
   id: string;
   playerId: string;
   kind:
+    | "commander-return"
     | "declare-attackers"
     | "declare-blockers"
     | "attack-payment"
@@ -668,6 +685,19 @@ export interface DamageChoice {
   recipientIds: string[];
 }
 export interface RulesState {
+  practice?: { playerId: string; controllerParticipantId: string };
+  monarchId?: string;
+  commanderCasts?: Record<string, number>;
+  commanderDamage?: Record<string, Record<string, number>>;
+  commanderReturns?: string[];
+  commanderReplay?: {
+    action: import("./model.js").MatchAction;
+    participantId: string;
+    previousPriority?: { playerId: string; passedPlayerIds: string[] };
+    previousPending?: PendingProcedure;
+    key: string;
+    answers: Record<string, boolean>;
+  };
   markedDamage?: Record<string, number>;
   damageEvents?: DamageEvent[];
   drawsThisTurn?: Record<string, number>;
@@ -701,8 +731,11 @@ export interface SemanticEvent {
     | "damage"
     | "attack"
     | "draw"
-    | "upkeep";
+    | "upkeep"
+    | "target"
+    | "mana";
   playerId?: string;
+  stackId?: string;
   ordinal?: number;
   damage?: DamageAssignment & {
     combat: boolean;

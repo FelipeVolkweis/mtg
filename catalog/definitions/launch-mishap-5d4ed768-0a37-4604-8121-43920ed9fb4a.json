@@ -27,6 +27,34 @@
   "oracleText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "counter-and-token",
+      "kind": "spell",
+      "origin": "printed",
+      "applicableZone": "stack",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "counter-target"
+          },
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "target": {
+          "zone": "stack",
+          "kind": "spell",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        }
+      }
+    }
+  ]
 }

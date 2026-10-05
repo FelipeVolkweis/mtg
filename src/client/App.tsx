@@ -7,7 +7,6 @@ import type {
 } from "../shared/model";
 import { Lobby } from "./Lobby";
 import { RulesTabletop } from "./RulesTabletop";
-import { Tabletop } from "./Tabletop";
 
 export function App() {
   const invite = location.pathname.match(/^\/room\/([a-f0-9]{48})$/)?.[1];
@@ -205,7 +204,11 @@ export function App() {
           {view.match.mode === "rules" ? (
             <RulesTabletop view={view} send={send} busy={busy} />
           ) : (
-            <Tabletop view={view} send={send} busy={busy} />
+            <section role="status">
+              This legacy Match requires replacement. Open the Room lobby and
+              request a new automated Commander Match. Every current Match
+              Player must confirm.
+            </section>
           )}
           <details className="room-panel">
             <summary>Room lobby and Decklists</summary>

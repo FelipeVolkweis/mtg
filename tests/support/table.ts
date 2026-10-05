@@ -49,7 +49,14 @@ export async function saveDeck(
 export async function startTable(browser: Browser) {
   const result = await table(browser);
   for (const page of result.pages) {
-    await saveDeck(page);
+    await saveDeck(
+      page,
+      "Supported Commander",
+      "99 Island (TST) 1\n1 Rules Commander",
+    );
+    await page
+      .getByLabel("Commander", { exact: true })
+      .selectOption({ label: "Rules Commander" });
     await page.getByRole("button", { name: "Mark ready", exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Not ready", exact: true }),

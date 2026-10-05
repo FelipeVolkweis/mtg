@@ -11,9 +11,11 @@ export async function seedRulesScenario(
   spellName?: string,
   synergies = false,
   scenario?: "combat" | "flash" | "draw" | "inspect",
+  databaseUrl?: string,
 ) {
   const pool = new Pool({
     connectionString:
+      databaseUrl ??
       process.env.TEST_DATABASE_URL ??
       "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",
   });

@@ -27,6 +27,30 @@
   "oracleText": "Return all attacking creatures to their owner's hand.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "return-attackers",
+      "kind": "spell",
+      "origin": "printed",
+      "applicableZone": "stack",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "types": [
+                "Creature"
+              ],
+              "attacking": true
+            },
+            "destination": "hand"
+          }
+        ]
+      }
+    }
+  ]
 }

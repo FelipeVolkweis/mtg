@@ -44,10 +44,11 @@
             "component": "generic",
             "amount": 1,
             "filter": {
-              "zone": "hand",
+              "zone": "stack",
               "types": [
                 "Artifact"
-              ]
+              ],
+              "kind": "spell"
             }
           }
         ]

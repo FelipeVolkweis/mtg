@@ -1,3 +1,5 @@
 # Manual-first gameplay
 
+_Superseded by [ADR-0016](0016-rules-automated-commander-and-practice.md)._
+
 The first version is a manual tabletop: players can move cards freely between zones, draw and shuffle from their own Library, and tap or untap permanents on the Battlefield. Zone scope, visibility, and ordering follow their normal defaults, while public cards can be manipulated by any participant and private Hands and Libraries remain restricted to their owner. A Match also tracks configurable, manually editable Life Totals; a Turn State with active player, turn number, phase, and step; and typed counters on Match Players or Game Objects. Numeric/stat counter values have no fixed digit limit; the first kinds include +1/+1 and -1/-1. Category counters such as flying are also supported. Turn State and counters do not restrict actions or apply effects. Participants choose the starting player by a die roll; turns default clockwise but can be adjusted. The game does not enforce move legality, deck legality, or card effects. This makes friend games playable before building the much broader rules and card-ability system, which can be added in later phases.

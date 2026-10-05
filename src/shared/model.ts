@@ -374,6 +374,8 @@ export interface MatchView extends Omit<
 > {
   rules?: Omit<
     RulesState,
+    | "commanderReplay"
+    | "commanderReturns"
     | "pending"
     | "resolving"
     | "waitingTriggers"
@@ -457,137 +459,8 @@ export const matchActionSchema = z.discriminatedUnion("type", [
   z
     .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
     .strict(),
-  z
-    .object({
-      type: z.literal("move"),
-      objectId: id,
-      zoneId: id,
-      index: z.number().int().nonnegative().optional(),
-      position: position.optional(),
-      directedBy: z
-        .object({ sourceId: id, reason: z.string().min(1).max(2000) })
-        .strict()
-        .optional(),
-      cast: castingSchema.optional(),
-    })
-    .strict(),
   z.object({ type: z.literal("position"), objectId: id, position }).strict(),
-  z.object({ type: z.literal("shuffle"), zoneId: id }).strict(),
-  z
-    .object({
-      type: z.literal("draw"),
-      count: z.number().int().min(1).max(1000),
-    })
-    .strict(),
-  z.object({ type: z.literal("opening-draw") }).strict(),
   z.object({ type: z.literal("mulligan"), playerId: id }).strict(),
-  z
-    .object({
-      type: z.literal("mulligan-count"),
-      playerId: id,
-      value: z.number().int().min(0).max(1000),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("patch-object"),
-      objectId: id,
-      patch: objectPatchSchema,
-    })
-    .strict(),
-  z.object({ type: z.literal("life"), playerId: id, value: integer }).strict(),
-  z
-    .object({
-      type: z.literal("counter"),
-      targetId: id,
-      kind: z.string().min(1).max(100),
-      quantity: integer,
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("turn"),
-      activePlayerId: id.optional(),
-      number: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER).optional(),
-      stepIndex: z.number().int().min(0).max(11).optional(),
-      direction: z.enum(["next", "previous"]).optional(),
-      order: z.array(id).min(1).max(4).optional(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("roll"),
-      sides: z.number().int().min(2).max(1000),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("outcome"),
-      value: z.enum(["ongoing", "complete", "draw"]),
-      playerId: id.optional(),
-      playerStatus: z.enum(["playing", "won", "lost"]).optional(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("create-object"),
-      kind: z.enum(objectKinds),
-      zoneId: id,
-      characteristics: characteristicSchema,
-      controllerId: id,
-      sourceObjectId: id.optional(),
-      sourceAbilityId: z.string().max(200).optional(),
-    })
-    .strict(),
-  z.object({ type: z.literal("remove-object"), objectId: id }).strict(),
-  z
-    .object({
-      type: z.literal("create-zone"),
-      kind: z.enum(["supplementary", "special"]),
-      name: z.string().min(1).max(200),
-      visibility: z.enum(["public", "private"]),
-      ownerId: id.optional(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("meld"),
-      objectIds: z.array(id).length(2),
-      characteristics: characteristicSchema,
-    })
-    .strict(),
-  z.object({ type: z.literal("unmeld"), objectId: id }).strict(),
-  z
-    .object({
-      type: z.literal("copy"),
-      sourceId: id,
-      targetId: id.optional(),
-      characteristics: characteristicSchema.optional(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("opening-hand"),
-      objectId: id.optional(),
-      description: z.string().min(1).max(2000),
-      taken: z.boolean(),
-      result: text,
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("sticker-sheets"),
-      sheetIds: z.array(z.string().min(1).max(200)).max(100),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("sticker"),
-      objectId: id,
-      stickerId: z.string().min(1).max(200),
-      order: z.number().int().nonnegative(),
-    })
-    .strict(),
 ]);
 export type MatchAction = z.infer<typeof matchActionSchema>;
 export const roomCommandSchema = z.discriminatedUnion("type", [

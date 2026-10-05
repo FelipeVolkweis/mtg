@@ -89,27 +89,16 @@ export async function seedCatalog() {
     canonicalName: "Rules Commander",
   };
   const release = await readCatalog("catalog");
-  for (const name of [
-    "Mazemind Tome",
-    "Nettlecyst",
-    "Sol Ring",
-    "Counterspell",
-    "Negate",
-    "Mind Stone",
-    "Hedron Archive",
-    "Pull from Tomorrow",
-    "Thirst for Knowledge",
-    "Sai, Master Thopterist",
-    "Vedalken Archmage",
-    "Chief of the Foundry",
-    "Steel Overseer",
-    "Cultivator's Caravan",
-    "Silver Myr",
-    "Propaganda",
-    "Shimmer Myr",
-    "Mind's Eye",
-    "Adaptive Omnitool",
-  ]) {
+  const { CatalogService } =
+    await import("../src/server/catalog/catalog.service");
+  const { readFile } = await import("node:fs/promises");
+  const entries = new CatalogService().resolveDecklist(
+    await readFile("sample-decklists/mono-u.md", "utf8"),
+    release,
+  );
+  for (const name of entries
+    .map((e) => release.definitions[e.definitionId].canonicalName)
+    .filter((name) => name !== "Island")) {
     const card = Object.values(release.definitions).find(
       (card) => card.canonicalName === name,
     )!;

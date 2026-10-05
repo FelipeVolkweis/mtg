@@ -244,45 +244,36 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Only the sole ready participant can start a solo Match.",
             );
-          if (
-            command.type === "start" &&
-            (ready.length < 2 || ready.length > 4)
-          )
+          if (command.type === "start" && ready.length !== 2)
             throw new TabletopError(
-              "Two to four participants must select Decklists and mark ready.",
+              "Two participants must select Decklists and mark ready.",
             );
-          if (
-            room.match &&
-            command.type === "start" &&
-            command.format === "commander"
-          )
+          if (room.match)
             this.matches.validateCommanderSetup(
               room,
               await readCatalog(),
-              command.startingParticipantId,
+              command.type === "start"
+                ? command.startingParticipantId
+                : participant.id,
             );
           if (room.match)
             room.rematch = {
               id: randomUUID(),
               startingLife: command.startingLife,
-              format: command.type === "start" ? command.format : undefined,
+              format: "commander",
               startingParticipantId:
                 command.type === "start"
                   ? command.startingParticipantId
                   : undefined,
               confirmations: [],
             };
-          else if (command.type === "start" && command.format === "commander")
+          else
             room.match = this.matches.createCommander(
               room,
               await readCatalog(),
-              command.startingParticipantId,
-            );
-          else
-            room.match = this.matches.create(
-              room,
-              await readCatalog(),
-              command.startingLife,
+              command.type === "start"
+                ? command.startingParticipantId
+                : participant.id,
             );
           break;
         }
@@ -308,24 +299,21 @@ export class RoomService implements OnModuleInit {
           if (!room.rematch.confirmations.includes(participant.id))
             room.rematch.confirmations.push(participant.id);
           if (
-            room.match.players.every(
-              (player) =>
-                this.connected(invite, player.participantId) &&
-                room.rematch!.confirmations.includes(player.participantId),
-            )
+            room.match.players
+              .filter(
+                (player) => player.id !== room.match!.rules?.practice?.playerId,
+              )
+              .every(
+                (player) =>
+                  this.connected(invite, player.participantId) &&
+                  room.rematch!.confirmations.includes(player.participantId),
+              )
           ) {
-            room.match =
-              room.rematch.format === "commander"
-                ? this.matches.createCommander(
-                    room,
-                    await readCatalog(),
-                    room.rematch.startingParticipantId,
-                  )
-                : this.matches.create(
-                    room,
-                    await readCatalog(),
-                    room.rematch.startingLife,
-                  );
+            room.match = this.matches.createCommander(
+              room,
+              await readCatalog(),
+              room.rematch.startingParticipantId,
+            );
             delete room.rematch;
           }
           break;

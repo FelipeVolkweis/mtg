@@ -34,27 +34,6 @@ const emptyCatalog: Catalog = {
   importedSets: [],
 };
 
-test("command execution accepts transitions and rejects actions without changing the player view", () => {
-  const service = new MatchService();
-  const room = emptyRoom();
-  const match = service.create(room, emptyCatalog, "20");
-  const actor = room.participants[0];
-  expect(
-    service.execute(match, actor, { type: "draw", count: 1 }, emptyCatalog),
-  ).toMatchObject({ kind: "rejected" });
-  expect(matchView(match, actor.id).revision).toBe(0);
-  expect(
-    service.execute(
-      match,
-      actor,
-      { type: "life", playerId: match.players[0].id, value: "19" },
-      emptyCatalog,
-    ),
-  ).toMatchObject({ kind: "accepted" });
-  expect(matchView(match, actor.id).players[0].life).toBe("19");
-  expect(match.revision).toBe(1);
-});
-
 function commanderFixture() {
   const catalog = structuredClone(emptyCatalog);
   const room = emptyRoom();
@@ -194,7 +173,9 @@ test("opening choices and explicit Priority passes perform the first turn draw a
       (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
     )!.count,
   ).toBe(6);
-  expect(command(0, { type: "turn", direction: "next" }).kind).toBe("rejected");
+  expect(
+    command(0, JSON.parse('{"type":"turn","direction":"next"}')).kind,
+  ).toBe("rejected");
 });
 
 test("lands and simple spells use selected mana sources and retain casting identity after resolution", () => {
@@ -4664,4 +4645,820 @@ test("Signpost outside declare attackers has no redirection trigger and retains 
     }).kind,
   ).toBe("accepted");
   expect(game.view().rules!.mana[game.match.players[0].id].U).toBe(1);
+});
+
+test("improvise taps explicit artifacts without producing mana and Cannoneer entry grows it", async () => {
+  const g = await triggerGame();
+  const kappa = g.seed("Kappa Cannoneer", "hand");
+  const artifacts = Array.from({ length: 5 }, () =>
+    g.seed("Mind Stone", "battlefield"),
+  );
+  const p = g.match.players[0].id;
+  g.match.rules!.mana[p].U = 1;
+  expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
+    "pending",
+  );
+  expect(g.view().rules!.pending!.selectionOptions.improvise.objectIds).toEqual(
+    expect.arrayContaining(artifacts.map((a) => a.id)),
+  );
+  expect(g.answer({ improvise: artifacts.map((a) => a.id) }).kind).toBe(
+    "accepted",
+  );
+  expect(artifacts.every((a) => g.view().objects[a.id].status.tapped)).toBe(
+    true,
+  );
+  expect(g.view().rules!.mana[p].C).toBe(0);
+  g.pass();
+  g.pass();
+  const permanent = Object.values(g.view().objects).find(
+    (o) => o.characteristics.name === "Kappa Cannoneer",
+  )!;
+  expect(permanent.counters).toContainEqual({ kind: "+1/+1", quantity: "1" });
+  expect(permanent.characteristics.keywords).toContain("Unblockable");
+  for (let i = 0; i < 15 && g.match.turn.number === 1; i++) {
+    if (g.view().rules!.pending?.kind === "declare-attackers") g.answer({});
+    else g.pass();
+  }
+  expect(g.match.turn.number).toBe(2);
+  expect(g.view().objects[permanent.id].counters).toContainEqual({
+    kind: "+1/+1",
+    quantity: "1",
+  });
+  expect(g.view().objects[permanent.id].characteristics.keywords).not.toContain(
+    "Unblockable",
+  );
+});
+
+for (const pay of [false, true])
+  test(`ward ${pay ? "payment preserves" : "decline counters"} the targeted spell after its original cost`, async () => {
+    const g = await triggerGame();
+    const kappa = g.seed("Kappa Cannoneer", "battlefield", 1);
+    const spell = g.seed("Aether Spellbomb", "battlefield");
+    g.match.rules!.mana[g.match.players[0].id].U = 1;
+    g.match.rules!.mana[g.match.players[0].id].C = 4;
+    expect(
+      g.command(0, {
+        type: "activate-ability",
+        objectId: spell.id,
+        abilityId: "bounce",
+      }).kind,
+    ).toBe("pending");
+    const pending = g.view().rules!.pending!;
+    expect(
+      g.command(0, {
+        type: "rules-input",
+        procedureId: pending.id,
+        targetIds: [kappa.id],
+      }).kind,
+    ).toBe("accepted");
+    expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(2);
+    g.pass();
+    expect(g.view().rules!.pending!.totalCost.generic).toBe(4);
+    expect(
+      g.command(0, {
+        type: "rules-input",
+        procedureId: g.view().rules!.pending!.id,
+        confirm: pay,
+      }).kind,
+    ).toBe("accepted");
+    if (pay) g.pass();
+    expect(!!g.view().objects[kappa.id]).toBe(!pay);
+    expect(g.view().rules!.mana[g.match.players[0].id].C).toBe(pay ? 0 : 4);
+  });
+
+test("Monument produces additional mana immediately once per tapped source and stacks colorless cast life gain", async () => {
+  const g = await triggerGame();
+  g.seed("Forsaken Monument", "battlefield");
+  const ring = g.seed("Sol Ring", "battlefield");
+  const myr = g.seed("Silver Myr", "battlefield");
+  expect(g.view().objects[myr.id].characteristics.power).toBe("3");
+  expect(
+    g.command(0, {
+      type: "activate-ability",
+      objectId: ring.id,
+      abilityId: "mana",
+      color: "C",
+    }).kind,
+  ).toBe("accepted");
+  expect(g.view().rules!.mana[g.match.players[0].id].C).toBe(3);
+  expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+  const stone = g.seed("Mind Stone", "hand");
+  expect(g.command(0, { type: "cast-spell", objectId: stone.id }).kind).toBe(
+    "accepted",
+  );
+  expect(g.view().players[0].life).toBe("40");
+  g.pass();
+  expect(g.view().players[0].life).toBe("42");
+  expect(g.view().rules!.mana[g.match.players[0].id].C).toBe(1);
+});
+
+test("Commander casts retain designation, tax is locked, and graveyard return resumes privately", async () => {
+  const g = await triggerGame();
+  const p = g.match.players[0].id;
+  const commander = Object.values(g.view().objects).find((o) =>
+    o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  g.match.rules!.mana[p].U = 5;
+  expect(
+    g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
+  ).toBe("accepted");
+  g.pass();
+  const creature = Object.values(g.view().objects).find((o) =>
+    o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  const disk = g.seed("Nevinyrral's Disk", "battlefield");
+  g.match.rules!.mana[p].C = 1;
+  expect(
+    g.command(0, {
+      type: "activate-ability",
+      objectId: disk.id,
+      abilityId: "destroy",
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view().rules!.pending!.kind).toBe("commander-return");
+  expect(g.view(1).rules!.pending).toBeUndefined();
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      confirm: true,
+    }).kind,
+  ).toBe("accepted");
+  const returned = Object.values(g.view().objects).find((o) =>
+    o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  expect(returned.zoneId).toBe(
+    g.view().zones.find((z) => z.kind === "command")!.id,
+  );
+  g.match.rules!.mana[p].U = 0;
+  expect(g.command(0, { type: "cast-spell", objectId: returned.id }).kind).toBe(
+    "pending",
+  );
+  expect(g.view().rules!.pending!.totalCost.generic).toBe(2);
+  expect(g.view().objects[creature.id]).toBeUndefined();
+});
+
+test("Favor attaches before its entry trigger, taps the creature and crowns the monarch", async () => {
+  const g = await triggerGame();
+  const creature = g.seed("Silver Myr", "battlefield", 1);
+  const favor = g.seed("Fall from Favor", "hand");
+  g.match.rules!.mana[g.match.players[0].id].U = 3;
+  expect(g.command(0, { type: "cast-spell", objectId: favor.id }).kind).toBe(
+    "pending",
+  );
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      targetIds: [creature.id],
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  g.pass();
+  expect(g.view().objects[creature.id].status.tapped).toBe(true);
+  expect(g.view().rules!.monarchId).toBe(g.match.players[0].id);
+  expect(
+    Object.values(g.view().objects).find(
+      (o) => o.characteristics.name === "Fall from Favor",
+    )!.attachmentTo,
+  ).toBe(creature.id);
+});
+
+test("solo Commander practice has an inert opponent, automatic passes and private delegated choices", async () => {
+  const { room, catalog } = commanderFixture();
+  room.participants.pop();
+  const service = new MatchService();
+  const match = service.createCommander(room, catalog, room.participants[0].id);
+  const act = (action: import("../src/shared/model").MatchAction) =>
+    service.execute(match, room.participants[0], action, catalog);
+  expect(match.players).toHaveLength(2);
+  expect(room.participants).toHaveLength(1);
+  expect(act({ type: "keep-hand", bottomIds: [] }).kind).toBe("accepted");
+  expect(match.outcome).toBe("ongoing");
+  expect(match.priority!.playerId).toBe(match.players[0].id);
+  expect(act({ type: "pass-priority" }).kind).toBe("accepted");
+  expect(match.priority!.playerId).toBe(match.players[0].id);
+  expect(match.turn.stepIndex).toBe(2);
+  const spectator = matchView(match, randomUUID(), catalog);
+  expect(spectator.actions).toEqual([]);
+  expect(
+    spectator.zones.filter((z) => z.kind === "hand").every((z) => !z.objectIds),
+  ).toBe(true);
+});
+
+test("Launch Mishap counters a creature spell and creates its Thopter through the shared resolver", async () => {
+  const g = await triggerGame();
+  const creature = g.seed("Silver Myr", "hand");
+  const mishap = g.seed("Launch Mishap", "hand", 1);
+  g.match.rules!.mana[g.match.players[0].id].C = 2;
+  g.match.rules!.mana[g.match.players[1].id].U = 3;
+  expect(g.command(0, { type: "cast-spell", objectId: creature.id }).kind).toBe(
+    "accepted",
+  );
+  expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
+  expect(g.command(1, { type: "cast-spell", objectId: mishap.id }).kind).toBe(
+    "pending",
+  );
+  const target = g.view(1).zones.find((z) => z.kind === "stack")!.objectIds![0];
+  expect(
+    g.command(1, {
+      type: "rules-input",
+      procedureId: g.view(1).rules!.pending!.id,
+      targetIds: [target],
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+  expect(
+    Object.values(g.view().objects).filter(
+      (o) => o.characteristics.name === "Thopter",
+    ),
+  ).toHaveLength(1);
+});
+
+test("Whirler Rogue creates two Thopters and taps selected artifacts to make a creature unblockable", async () => {
+  const g = await triggerGame();
+  const rogue = g.seed("Whirler Rogue", "hand");
+  g.match.rules!.mana[g.match.players[0].id].U = 4;
+  expect(g.command(0, { type: "cast-spell", objectId: rogue.id }).kind).toBe(
+    "accepted",
+  );
+  g.pass();
+  g.pass();
+  const thopters = Object.values(g.view().objects).filter(
+    (o) => o.characteristics.name === "Thopter",
+  );
+  expect(thopters).toHaveLength(2);
+  const permanent = Object.values(g.view().objects).find(
+    (o) => o.characteristics.name === "Whirler Rogue",
+  )!;
+  expect(
+    g.command(0, {
+      type: "activate-ability",
+      objectId: permanent.id,
+      abilityId: "unblockable",
+    }).kind,
+  ).toBe("pending");
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      targetIds: [permanent.id],
+      selections: { "0": thopters.map((o) => o.id) },
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view().objects[permanent.id].characteristics.keywords).toContain(
+    "Unblockable",
+  );
+});
+
+test("Aetherize returns all attacking creatures to their owners without moving blockers", async () => {
+  const g = await triggerGame();
+  const attacker = g.seed("Silver Myr", "battlefield");
+  const blocker = g.seed("Silver Myr", "battlefield", 1);
+  const bounce = g.seed("Aetherize", "hand");
+  g.match.rules!.mana[g.match.players[0].id].U = 4;
+  g.match.rules!.combat = {
+    attackers: [
+      {
+        objectId: attacker.id,
+        defenderId: g.match.players[1].id,
+        defendingPlayerId: g.match.players[1].id,
+        blockerIds: [blocker.id],
+        blocked: true,
+      },
+    ],
+    remainingDefenderIds: [],
+  };
+  expect(g.command(0, { type: "cast-spell", objectId: bounce.id }).kind).toBe(
+    "accepted",
+  );
+  g.pass();
+  expect(g.view().objects[attacker.id]).toBeUndefined();
+  expect(g.view().objects[blocker.id]).toBeDefined();
+  expect(
+    Object.values(g.view().objects).find((o) =>
+      o.cardInstanceIds?.includes(attacker.cardInstanceIds[0]),
+    )!.zoneId,
+  ).toBe(
+    g
+      .view()
+      .zones.find(
+        (z) => z.kind === "hand" && z.ownerId === g.match.players[0].id,
+      )!.id,
+  );
+});
+
+test("the complete mono-U pool resolves to 100 cards and 67 supported definitions in mirror and practice setup", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { CatalogService } =
+    await import("../src/server/catalog/catalog.service");
+  const { automationEligible } = await import("../src/server/match/commander");
+  const catalog = await readCatalog("catalog");
+  const entries = new CatalogService().resolveDecklist(
+    await readFile("sample-decklists/mono-u.md", "utf8"),
+    catalog,
+  );
+  expect(entries.reduce((n, e) => n + e.quantity, 0)).toBe(100);
+  expect(new Set(entries.map((e) => e.definitionId)).size).toBe(67);
+  expect(
+    entries
+      .filter((e) => !automationEligible(catalog.definitions[e.definitionId]))
+      .map((e) => catalog.definitions[e.definitionId].canonicalName),
+  ).toEqual([]);
+  const room = emptyRoom();
+  const sai = Object.values(catalog.definitions).find(
+    (d) => d.canonicalName === "Sai, Master Thopterist",
+  )!;
+  room.participants[0].decklists[0].entries = entries;
+  room.participants[0].selectedCommanderId = sai.id;
+  room.participants.push({
+    ...structuredClone(room.participants[0]),
+    id: randomUUID(),
+    name: "Bob",
+  });
+  const mirror = new MatchService().createCommander(
+    room,
+    catalog,
+    room.participants[0].id,
+  );
+  expect(Object.keys(mirror.instances)).toHaveLength(200);
+  expect(new Set(Object.keys(mirror.instances)).size).toBe(200);
+  room.participants.pop();
+  const practice = new MatchService().createCommander(
+    room,
+    catalog,
+    room.participants[0].id,
+  );
+  expect(practice.rules!.practice).toBeDefined();
+  expect(Object.keys(practice.instances)).toHaveLength(200);
+});
+
+for (const returnToCommand of [true, false])
+  test(`commander Hand replacement ${returnToCommand ? "redirects" : "permits bounce"} and resumes after serialized recovery`, async () => {
+    const g = await triggerGame();
+    const p = g.match.players[0].id;
+    const commander = Object.values(g.view().objects).find((o) =>
+      o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    g.match.rules!.mana[p].U = 1;
+    expect(
+      g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
+    ).toBe("accepted");
+    g.pass();
+    const creature = Object.values(g.view().objects).find((o) =>
+      o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    const bomb = g.seed("Aether Spellbomb", "battlefield");
+    g.match.rules!.mana[p].U = 1;
+    expect(
+      g.command(0, {
+        type: "activate-ability",
+        objectId: bomb.id,
+        abilityId: "bounce",
+      }).kind,
+    ).toBe("pending");
+    expect(
+      g.command(0, {
+        type: "rules-input",
+        procedureId: g.view().rules!.pending!.id,
+        targetIds: [creature.id],
+      }).kind,
+    ).toBe("accepted");
+    g.pass();
+    const pending = g.view().rules!.pending!;
+    expect(pending.kind).toBe("commander-return");
+    expect(g.view(1).rules!.pending).toBeUndefined();
+    const restored = JSON.parse(JSON.stringify(g.match));
+    const result = g.service.execute(
+      restored,
+      g.room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: pending.id,
+        confirm: returnToCommand,
+      },
+      g.catalog,
+    );
+    expect(result).toMatchObject({ kind: "accepted" });
+    const view = matchView(restored, g.room.participants[0].id, g.catalog);
+    const moved = Object.values(view.objects).find((o) =>
+      o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    expect(moved.zoneId).toBe(
+      view.zones.find(
+        (z) =>
+          z.kind === (returnToCommand ? "command" : "hand") &&
+          (returnToCommand || z.ownerId === p),
+      )!.id,
+    );
+    expect(view.rules!.mana[p].U).toBe(0);
+    expect(
+      g.service.execute(
+        restored,
+        g.room.participants[0],
+        {
+          type: "rules-input",
+          procedureId: pending.id,
+          confirm: returnToCommand,
+        },
+        g.catalog,
+      ).kind,
+    ).toBe("rejected");
+  });
+
+for (const name of ["Thought Monitor", "Memory Guardian", "Broodstar"])
+  test(`${name} composes artifact affinity, flying and its distinct resolved characteristics`, async () => {
+    const g = await triggerGame();
+    const spell = g.seed(name, "hand");
+    for (let i = 0; i < 7; i++) g.seed("Mind Stone", "battlefield");
+    const p = g.match.players[0].id;
+    const before = g.handCount();
+    g.match.rules!.mana[p].U = name === "Broodstar" ? 2 : 1;
+    if (name === "Broodstar") g.match.rules!.mana[p].C = 1;
+    expect(g.command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
+      "accepted",
+    );
+    g.pass();
+    if (name === "Thought Monitor") g.pass();
+    const permanent = Object.values(g.view().objects).find((o) =>
+      o.cardInstanceIds?.includes(spell.cardInstanceIds[0]),
+    )!;
+    expect(permanent.characteristics.keywords).toContain("Flying");
+    expect(g.view().rules!.mana[p].U).toBe(0);
+    expect(g.handCount()).toBe(
+      before - 1 + (name === "Thought Monitor" ? 2 : 0),
+    );
+    if (name === "Broodstar") expect(permanent.characteristics.power).toBe("7");
+  });
+
+test("improvise composes discounts and rejects tapped or duplicate artifacts atomically", async () => {
+  const g = await triggerGame();
+  const kappa = g.seed("Kappa Cannoneer", "hand");
+  const reducer = g.seed("Etherium Sculptor", "battlefield");
+  const ring = g.seed("Sol Ring", "battlefield");
+  const tapped = g.seed("Mind Stone", "battlefield");
+  tapped.status.tapped = true;
+  const myr = g.seed("Silver Myr", "battlefield");
+  const stone = g.seed("Mind Stone", "battlefield");
+  g.match.rules!.mana[g.match.players[0].id].U = 1;
+  expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
+    "pending",
+  );
+  expect(g.view().rules!.pending!.totalCost.generic).toBe(4);
+  const before = g.view();
+  expect(g.answer({ improvise: [tapped.id] }).kind).toBe("rejected");
+  expect(g.answer({ improvise: [ring.id, ring.id] }).kind).toBe("rejected");
+  expect(g.view()).toEqual(before);
+  expect(
+    g.command(0, {
+      type: "activate-ability",
+      objectId: ring.id,
+      abilityId: "mana",
+      color: "C",
+    }).kind,
+  ).toBe("pending");
+  expect(g.answer({ improvise: [reducer.id, myr.id] }).kind).toBe("accepted");
+  expect(g.view().objects[stone.id].status.tapped).toBe(false);
+  expect(g.view().rules!.mana[g.match.players[0].id].C).toBe(0);
+});
+
+for (const commander of [false, true])
+  test(`combat ${commander ? "commander damage causes loss at 21" : "transfers monarch through a Stack trigger"}`, async () => {
+    const g = await triggerGame();
+    const attacker = g.seed("Silver Myr", "battlefield");
+    const p = g.match.players[0].id,
+      opponent = g.match.players[1].id;
+    if (commander) {
+      g.match.instances[attacker.cardInstanceIds[0]].commander = true;
+      g.match.rules!.commanderDamage = {
+        [opponent]: { [attacker.cardInstanceIds[0]]: 20 },
+      };
+    } else g.match.rules!.monarchId = opponent;
+    g.pass();
+    g.pass();
+    expect(g.answer({ [attacker.id]: [opponent] }).kind).toBe("accepted");
+    g.pass();
+    expect(g.answer({}, 1).kind).toBe("accepted");
+    g.pass();
+    if (commander) {
+      expect(g.view().players[1].life).toBe("39");
+      expect(g.view().outcome).toBe("complete");
+    } else {
+      expect(g.view().rules!.monarchId).toBe(opponent);
+      g.pass();
+      expect(g.view().rules!.monarchId).toBe(p);
+    }
+  });
+
+test("the monarch end-step draw is stacked and privately increases only that player's Hand", async () => {
+  const g = await triggerGame();
+  g.match.rules!.monarchId = g.match.players[0].id;
+  g.match.turn.stepIndex = 9;
+  const before = g.handCount();
+  g.pass();
+  expect(g.handCount()).toBe(before);
+  expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
+  g.pass();
+  expect(g.handCount()).toBe(before + 1);
+  expect(
+    g
+      .view(1)
+      .zones.find(
+        (z) => z.kind === "hand" && z.ownerId === g.match.players[0].id,
+      )!.objectIds,
+  ).toBeUndefined();
+});
+
+for (const monarch of [0, 1])
+  test(`Favor untap restriction evaluates the creature controller as monarch ${monarch}`, async () => {
+    const g = await triggerGame();
+    const creature = g.seed("Silver Myr", "battlefield", 1);
+    creature.status.tapped = true;
+    g.seed("Fall from Favor", "battlefield").attachmentTo = creature.id;
+    g.match.rules!.monarchId = g.match.players[monarch].id;
+    g.match.turn.stepIndex = 11;
+    g.pass();
+    expect(g.view().objects[creature.id].status.tapped).toBe(monarch !== 1);
+  });
+
+test("a commander destroyed in the second player's Graveyard offers that owner's return choice", async () => {
+  const g = await triggerGame();
+  const p = g.match.players[1].id;
+  g.match.turn.activePlayerId = p;
+  g.match.priority = { playerId: p, passedPlayerIds: [] };
+  const commander = Object.values(g.view(1).objects).find((o) =>
+    o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  g.match.rules!.mana[p].U = 1;
+  expect(
+    g.command(1, { type: "cast-spell", objectId: commander.id }).kind,
+  ).toBe("accepted");
+  g.pass();
+  const disk = g.seed("Nevinyrral's Disk", "battlefield", 1);
+  g.match.rules!.mana[p].C = 1;
+  expect(
+    g.command(1, {
+      type: "activate-ability",
+      objectId: disk.id,
+      abilityId: "destroy",
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view(1).rules!.pending!.kind).toBe("commander-return");
+  expect(
+    g.command(1, {
+      type: "rules-input",
+      procedureId: g.view(1).rules!.pending!.id,
+      confirm: true,
+    }).kind,
+  ).toBe("accepted");
+  const returned = Object.values(g.view(1).objects).find((o) =>
+    o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  expect(returned.zoneId).toBe(
+    g.view(1).zones.find((z) => z.kind === "command")!.id,
+  );
+});
+
+for (const [keyword, cardName] of [
+  ["Ward", "Kappa Cannoneer"],
+  ["Improvise", "Kappa Cannoneer"],
+  ["Cycling", "Lonely Sandbar"],
+  ["Affinity", "Thoughtcast"],
+])
+  test(`Commander setup rejects an empty authored ${keyword} envelope`, async () => {
+    const release = await readCatalog("catalog");
+    const { room, catalog } = commanderFixture();
+    const kappa = structuredClone(
+      Object.values(release.definitions).find(
+        (d) => d.canonicalName === cardName,
+      )!,
+    );
+    kappa.abilities = kappa.abilities.map((a) =>
+      a.keyword?.toLowerCase() === keyword.toLowerCase()
+        ? {
+            id: a.id,
+            kind: "static",
+            origin: "printed",
+            keyword,
+            rules: { costs: [], effects: [] },
+          }
+        : a,
+    );
+    catalog.definitions[kappa.id] = kappa;
+    catalog.printings[kappa.defaultPrintingId] =
+      release.printings[kappa.defaultPrintingId];
+    room.participants[0].decklists[0].entries[1].quantity--;
+    room.participants[0].decklists[0].entries.push({
+      definitionId: kappa.id,
+      printingId: kappa.defaultPrintingId,
+      quantity: 1,
+    });
+    expect(() => new MatchService().createCommander(room, catalog)).toThrow(
+      `Unsupported cards: ${cardName}`,
+    );
+  });
+
+test("the monarch controls its transfer trigger above the attacker's Research Thief draw", async () => {
+  const g = await triggerGame();
+  g.seed("Research Thief", "battlefield");
+  const attacker = g.seed("Silver Myr", "battlefield");
+  const p = g.match.players[0].id,
+    opponent = g.match.players[1].id;
+  g.match.rules!.monarchId = opponent;
+  g.pass();
+  g.pass();
+  expect(g.answer({ [attacker.id]: [opponent] }).kind).toBe("accepted");
+  g.pass();
+  expect(g.answer({}, 1).kind).toBe("accepted");
+  g.pass();
+  expect(g.view().rules!.pending).toBeUndefined();
+  const stack = g.view().zones.find((z) => z.kind === "stack")!.objectIds!;
+  expect(stack).toHaveLength(2);
+  expect(g.view().objects[stack[1]].controllerId).toBe(opponent);
+  const before = g.handCount();
+  g.pass();
+  expect(g.view().rules!.monarchId).toBe(p);
+  expect(g.handCount()).toBe(before);
+  g.pass();
+  expect(g.handCount()).toBe(before + 1);
+});
+
+test("solo controller answers the practice opponent's required sacrifice while spectators have no choice access", async () => {
+  const g = await triggerGame();
+  const practiceId = g.match.players[1].id;
+  g.match.rules!.practice = {
+    playerId: practiceId,
+    controllerParticipantId: g.room.participants[0].id,
+  };
+  g.match.players[1].participantId = randomUUID();
+  const padeem = g.seed("Padeem, Consul of Innovation", "battlefield", 1);
+  const dust = g.seed("All Is Dust", "hand");
+  g.match.rules!.mana[g.match.players[0].id].C = 7;
+  expect(g.command(0, { type: "cast-spell", objectId: dust.id }).kind).toBe(
+    "accepted",
+  );
+  expect(g.command(0, { type: "pass-priority" }).kind).toBe("pending");
+  const pending = g.view().rules!.pending!;
+  expect(pending.playerId).toBe(practiceId);
+  const spectator = matchView(g.match, g.room.participants[1].id, g.catalog);
+  expect(spectator.rules!.pending).toBeUndefined();
+  expect(spectator.actions).toEqual([]);
+  const hand = g
+    .view()
+    .zones.find(
+      (z) => z.kind === "hand" && z.ownerId === g.match.players[0].id,
+    )!;
+  expect(hand.objectIds).toBeDefined();
+  expect(
+    g.command(1, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { select: [padeem.id] },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { select: [padeem.id] },
+    }).kind,
+  ).toBe("accepted");
+  expect(g.view().objects[padeem.id]).toBeUndefined();
+  expect(g.view().priority!.playerId).toBe(g.match.players[0].id);
+});
+
+test("commander tax and artifact reducers compose before the locked Command Zone payment", async () => {
+  const g = await triggerGame();
+  const graaz = g.seed("Graaz, Unstoppable Juggernaut", "hand");
+  const instance = graaz.cardInstanceIds[0];
+  g.match.instances[instance].commander = true;
+  const commandZone = g.match.zones.find((z) => z.kind === "command")!;
+  const commander = moveObject(g.match, graaz.id, commandZone);
+  g.match.rules!.commanderCasts = { [instance]: 1 };
+  g.seed("Foundry Inspector", "battlefield");
+  g.seed("Etherium Sculptor", "battlefield");
+  expect(
+    g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
+  ).toBe("pending");
+  expect(g.view().rules!.pending!.totalCost.generic).toBe(8);
+});
+
+test("ward outlives its removed source and counters the captured responsible ability", async () => {
+  const g = await triggerGame();
+  const kappa = g.seed("Kappa Cannoneer", "battlefield", 1);
+  const bomb = g.seed("Aether Spellbomb", "battlefield");
+  const ownBomb = g.seed("Aether Spellbomb", "battlefield", 1);
+  g.match.rules!.mana[g.match.players[0].id].U = 1;
+  g.match.rules!.mana[g.match.players[1].id].U = 1;
+  g.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  g.command(0, {
+    type: "rules-input",
+    procedureId: g.view().rules!.pending!.id,
+    targetIds: [kappa.id],
+  });
+  g.command(0, { type: "pass-priority" });
+  g.command(1, {
+    type: "activate-ability",
+    objectId: ownBomb.id,
+    abilityId: "bounce",
+  });
+  expect(
+    g.command(1, {
+      type: "rules-input",
+      procedureId: g.view(1).rules!.pending!.id,
+      targetIds: [kappa.id],
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view().objects[kappa.id]).toBeUndefined();
+  g.pass();
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      confirm: false,
+    }).kind,
+  ).toBe("accepted");
+  expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+});
+
+test("multiple ward triggers use their controller's ordering and independently permit declining", async () => {
+  const g = await triggerGame();
+  const kappa = g.seed("Kappa Cannoneer", "battlefield", 1);
+  const card =
+    g.catalog.definitions[
+      g.match.instances[kappa.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities.push({
+    ...structuredClone(card.abilities.find((a) => a.id === "ward")!),
+    id: "second-ward",
+  });
+  const bomb = g.seed("Aether Spellbomb", "battlefield");
+  g.match.rules!.mana[g.match.players[0].id].U = 1;
+  g.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      targetIds: [kappa.id],
+    }).kind,
+  ).toBe("pending");
+  const order = g.view(1).rules!.pending!.selectionOptions.order.objectIds;
+  expect(order).toHaveLength(2);
+  expect(g.answer({ order }, 1).kind).toBe("accepted");
+  for (let i = 0; i < 2; i++) {
+    g.pass();
+    expect(
+      g.command(0, {
+        type: "rules-input",
+        procedureId: g.view().rules!.pending!.id,
+        confirm: false,
+      }).kind,
+    ).toBe("accepted");
+  }
+  expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+});
+
+test("Favor goes to its owner's Graveyard when its enchanted creature leaves while monarchy persists", async () => {
+  const g = await triggerGame();
+  const creature = g.seed("Silver Myr", "battlefield", 1);
+  const favor = g.seed("Fall from Favor", "battlefield");
+  favor.attachmentTo = creature.id;
+  const p = g.match.players[0].id;
+  g.match.rules!.monarchId = p;
+  const bomb = g.seed("Aether Spellbomb", "battlefield");
+  g.match.rules!.mana[p].U = 1;
+  g.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  expect(
+    g.command(0, {
+      type: "rules-input",
+      procedureId: g.view().rules!.pending!.id,
+      targetIds: [creature.id],
+    }).kind,
+  ).toBe("accepted");
+  g.pass();
+  expect(g.view().objects[favor.id]).toBeUndefined();
+  const graveyard = g
+    .view()
+    .zones.find((z) => z.kind === "graveyard" && z.ownerId === p)!;
+  expect(
+    graveyard.objectIds!.map((id) => g.view().objects[id].characteristics.name),
+  ).toContain("Fall from Favor");
+  expect(g.view().rules!.monarchId).toBe(p);
 });

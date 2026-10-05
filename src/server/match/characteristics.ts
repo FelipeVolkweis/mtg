@@ -37,6 +37,7 @@ export function matchesFilter(
             object.controllerId) !== playerId)) &&
     (!filter.nontoken || object.kind !== "token") &&
     (!filter.colored || !!object.characteristics.colors.length) &&
+    (!filter.colorless || !object.characteristics.colors.length) &&
     (!filter.attached ||
       match.objects[sourceId ?? ""]?.attachmentTo === object.id) &&
     (!filter.self ||

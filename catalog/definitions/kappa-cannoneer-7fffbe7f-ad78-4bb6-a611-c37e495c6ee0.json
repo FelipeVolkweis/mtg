@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Turtle Warrior",
+      "typeLine": "Artifact Creature \u2014 Turtle Warrior",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -39,6 +39,99 @@
     "Ward"
   ],
   "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "improvise",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "improvise": true
+      },
+      "keyword": "Improvise"
+    },
+    {
+      "id": "ward",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "pay-mana",
+            "symbols": [
+              "{4}"
+            ],
+            "bind": "paid",
+            "player": "event-player"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "paid",
+              "atLeast": 1
+            },
+            "then": [],
+            "otherwise": [
+              {
+                "kind": "counter-event"
+              }
+            ]
+          }
+        ],
+        "trigger": {
+          "event": "target",
+          "player": "opponent",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      },
+      "keyword": "Ward"
+    },
+    {
+      "id": "artifact-entry",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "filter": {
+              "zone": "battlefield",
+              "self": "only"
+            },
+            "counter": "+1/+1",
+            "count": 1
+          },
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "Unblockable"
+              }
+            ]
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          }
+        }
+      }
+    }
+  ]
 }
