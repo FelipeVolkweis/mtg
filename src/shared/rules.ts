@@ -690,6 +690,7 @@ export interface RulesState {
   commanderCasts?: Record<string, number>;
   commanderDamage?: Record<string, Record<string, number>>;
   commanderReturns?: string[];
+  cleanupNeedsPriority?: boolean;
   commanderReplay?: {
     action: import("./model.js").MatchAction;
     participantId: string;
@@ -708,6 +709,7 @@ export interface RulesState {
   orderedTriggerPlayerIds?: string[];
   continuousEffects?: ActiveContinuousEffect[];
   waitingTriggers?: WaitingTrigger[];
+  triggerPlacement?: WaitingTrigger[];
   priorityAfterTriggers?: string;
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
@@ -736,6 +738,7 @@ export interface SemanticEvent {
     | "mana";
   playerId?: string;
   stackId?: string;
+  defenderId?: string;
   ordinal?: number;
   damage?: DamageAssignment & {
     combat: boolean;

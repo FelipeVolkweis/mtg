@@ -82,9 +82,13 @@ export class CommanderRules {
       action.variables
     )
       throw new Error("Choose Confirm or Decline.");
-    if (action.confirm && pending.sourceId)
+    const cleanup = this.engine.rules.cleanupNeedsPriority !== undefined;
+    if (action.confirm && pending.sourceId) {
       this.engine.move(pending.sourceId, this.engine.zone("command"));
+      if (cleanup) this.engine.rules.cleanupNeedsPriority = true;
+    }
     delete this.engine.rules.pending;
-    this.engine.priority(this.engine.rules.priorityAfterTriggers);
+    if (cleanup) this.engine.cleanup();
+    else this.engine.priority(this.engine.rules.priorityAfterTriggers);
   }
 }

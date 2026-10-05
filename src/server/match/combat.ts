@@ -274,6 +274,7 @@ export class Combat {
       new Triggers(e).collect(
         {
           kind: "attack",
+          defenderId: defender.id,
           sourceId: id,
           affectedId: id,
           controllerId: playerId,
@@ -396,11 +397,26 @@ export class Combat {
         e.effective(object).types?.includes("Creature")
       );
     };
-    combat.attackers = combat.attackers.filter(
-      (a) =>
+    combat.attackers = combat.attackers.filter((a) => {
+      if (
         present(a.objectId) &&
-        e.object(a.objectId).controllerId === e.match.turn.activePlayerId,
-    );
+        e.object(a.objectId).controllerId === e.match.turn.activePlayerId
+      )
+        return true;
+      // Captured attack triggers retain the last defender, including redirections,
+      // when their source leaves combat before the trigger resolves.
+      const events = [
+        ...(e.rules.waitingTriggers ?? []).map((t) => t.event),
+        ...(e.rules.triggerPlacement ?? []).map((t) => t.event),
+        ...e
+          .zone("stack")
+          .objectIds.map((id) => e.object(id).resolution?.event),
+      ];
+      for (const event of events)
+        if (event?.kind === "attack" && event.sourceId === a.objectId)
+          event.defenderId = a.defenderId;
+      return false;
+    });
     for (const a of combat.attackers)
       a.blockerIds = a.blockerIds.filter(
         (id) =>

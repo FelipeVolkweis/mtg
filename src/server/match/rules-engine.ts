@@ -1264,15 +1264,17 @@ export class RulesEngine {
                     (a) =>
                       a.objectId === this.object(stackSource).sourceObjectId,
                   );
-                  if (!attacker) return [];
-                  const recipient = this.match.objects[attacker.defenderId];
+                  const defenderId =
+                    attacker?.defenderId ??
+                    this.object(stackSource).resolution?.event?.defenderId;
+                  if (!defenderId) return [];
+                  const recipient = this.match.objects[defenderId];
                   return this.match.players.some(
-                    (p) =>
-                      p.id === attacker.defenderId && p.outcome === "playing",
+                    (p) => p.id === defenderId && p.outcome === "playing",
                   ) ||
                     (recipient?.zoneId === this.zone("battlefield").id &&
                       this.effective(recipient).types?.includes("Planeswalker"))
-                    ? [attacker.defenderId]
+                    ? [defenderId]
                     : [];
                 })()
               : targets
@@ -1663,8 +1665,15 @@ export class RulesEngine {
     this.rules.temporaryEffects = [];
     const changed = this.checkpoint();
     if (this.match.outcome !== "ongoing") return;
+    // Persist cleanup progress through commander choices; declining a return
+    // alone does not create an exceptional cleanup Priority opportunity.
+    this.rules.cleanupNeedsPriority ||= changed;
+    if (new CommanderRules(this).checkpoint()) return;
     new Triggers(this).collectStates();
-    if (changed || this.rules.waitingTriggers?.length) this.priority();
+    const needsPriority =
+      this.rules.cleanupNeedsPriority || this.rules.waitingTriggers?.length;
+    delete this.rules.cleanupNeedsPriority;
+    if (needsPriority) this.priority();
     else this.nextTurn();
   }
   nextTurn() {
@@ -1778,6 +1787,8 @@ export class RulesEngine {
       delete this.rules.pending;
       delete this.rules.resolving;
       delete this.rules.waitingTriggers;
+      delete this.rules.triggerPlacement;
+      delete this.rules.cleanupNeedsPriority;
       if (alive.length) {
         alive[0].outcome = "won";
         this.match.outcome = "complete";

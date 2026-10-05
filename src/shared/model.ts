@@ -377,9 +377,11 @@ export interface MatchView extends Omit<
     RulesState,
     | "commanderReplay"
     | "commanderReturns"
+    | "cleanupNeedsPriority"
     | "pending"
     | "resolving"
     | "waitingTriggers"
+    | "triggerPlacement"
     | "orderedTriggerPlayerIds"
     | "priorityAfterTriggers"
     | "controlledSinceTurn"

@@ -2,7 +2,12 @@ import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { MatchService } from "../src/server/match/match.service";
 import { matchView } from "../src/server/match/match-view";
-import type { Catalog, Participant, RoomState } from "../src/shared/model";
+import type {
+  Catalog,
+  MatchState,
+  Participant,
+  RoomState,
+} from "../src/shared/model";
 
 function emptyRoom(): RoomState {
   const participant: Participant = {
@@ -5537,3 +5542,234 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
     "{T}: Add one mana of any color in your commander's color identity. Choose {R}.",
   ]);
 });
+
+for (const defenderKind of [
+  "player",
+  "planeswalker",
+  "redirected-planeswalker",
+] as const)
+  test(`Battlesphere damages its last ${defenderKind} after leaving combat across recovery`, async () => {
+    const g = await triggerGame();
+    const sphere = g.seed("Myr Battlesphere", "battlefield");
+    const myr = g.seed("Silver Myr", "battlefield");
+    const bomb = g.seed("Aether Spellbomb", "battlefield", 1);
+    const walker =
+      defenderKind !== "player"
+        ? g.seed("Mind Stone", "battlefield", 1)
+        : undefined;
+    if (walker) {
+      walker.characteristics.types = ["Planeswalker"];
+      walker.counters = [{ kind: "loyalty", quantity: "8" }];
+    }
+    g.pass();
+    g.pass();
+    expect(
+      g.answer({
+        [sphere.id]: [
+          defenderKind === "planeswalker" ? walker!.id : g.match.players[1].id,
+        ],
+      }).kind,
+    ).toBe("accepted");
+    if (defenderKind === "redirected-planeswalker") {
+      const signpost = g.seed("Misleading Signpost", "hand", 1);
+      expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
+      g.match.rules!.mana[g.match.players[1].id].U = 3;
+      expect(
+        g.command(1, { type: "cast-spell", objectId: signpost.id }).kind,
+      ).toBe("accepted");
+      g.pass();
+      expect(
+        g.command(1, {
+          type: "rules-input",
+          procedureId: g.view(1).rules!.pending!.id,
+          targetIds: [sphere.id],
+        }).kind,
+      ).toBe("accepted");
+      g.pass();
+      expect(g.answer({ select: [walker!.id] }, 1).kind).toBe("accepted");
+    }
+    expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
+    g.match.rules!.mana[g.match.players[1].id].U = 1;
+    expect(
+      g.command(1, {
+        type: "activate-ability",
+        objectId: bomb.id,
+        abilityId: "bounce",
+      }).kind,
+    ).toBe("pending");
+    expect(
+      g.command(1, {
+        type: "rules-input",
+        procedureId: g.view(1).rules!.pending!.id,
+        targetIds: [sphere.id],
+      }).kind,
+    ).toBe("accepted");
+    g.pass();
+    expect(g.view().objects[sphere.id]).toBeUndefined();
+    g.pass();
+    const recovered: MatchState = JSON.parse(JSON.stringify(g.match));
+    expect(
+      g.service.execute(
+        recovered,
+        g.room.participants[0],
+        {
+          type: "rules-input",
+          procedureId: g.view().rules!.pending!.id,
+          selections: { select: [myr.id] },
+        },
+        g.catalog,
+      ).kind,
+    ).toBe("accepted");
+    const view = matchView(recovered, g.room.participants[0].id, g.catalog);
+    expect(view.objects[myr.id].status.tapped).toBe(true);
+    expect(view.players[1].life).toBe(walker ? "40" : "39");
+    if (walker)
+      expect(view.objects[walker.id].counters).toContainEqual({
+        kind: "loyalty",
+        quantity: "7",
+      });
+    expect(view.rules!.damageEvents).toContainEqual(
+      expect.objectContaining({
+        sourceId: sphere.id,
+        recipientId: walker?.id ?? g.match.players[1].id,
+        amount: 1,
+        combat: false,
+      }),
+    );
+  });
+
+for (const legacySnapshot of [false, true])
+  test(`Ward generated during trigger targeting follows the complete original placement batch across ${legacySnapshot ? "legacy" : "current"} recovery`, async () => {
+    const g = await triggerGame();
+    const target = g.seed("Kappa Cannoneer", "battlefield");
+    g.seed("Kappa Cannoneer", "battlefield", 1);
+    g.seed("Shimmer Myr", "battlefield", 1);
+    const golem = g.seed("Meteor Golem", "hand", 1);
+    expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
+    g.match.rules!.mana[g.match.players[1].id].U = 7;
+    expect(g.command(1, { type: "cast-spell", objectId: golem.id }).kind).toBe(
+      "accepted",
+    );
+    g.pass();
+    const pending = g.view(1).rules!.pending!;
+    const order = pending.selectionOptions.order.objectIds;
+    const destroyId = order.find((id) =>
+      pending.selectionOptions.order.labels![id].includes("destroy"),
+    )!;
+    expect(
+      g.answer(
+        { order: [destroyId, ...order.filter((id) => id !== destroyId)] },
+        1,
+      ).kind,
+    ).toBe("pending");
+    expect(g.view(1).rules).not.toHaveProperty("triggerPlacement");
+    expect(g.view(0).rules).not.toHaveProperty("triggerPlacement");
+    const recovered: MatchState = JSON.parse(JSON.stringify(g.match));
+    if (legacySnapshot) {
+      recovered.rules!.waitingTriggers = recovered.rules!.triggerPlacement;
+      delete recovered.rules!.triggerPlacement;
+    }
+    const command = (
+      seat: number,
+      action: import("../src/shared/model").MatchAction,
+    ) =>
+      g.service.execute(
+        recovered,
+        g.room.participants[seat],
+        action,
+        g.catalog,
+      );
+    expect(
+      command(1, {
+        type: "rules-input",
+        procedureId: g.view(1).rules!.pending!.id,
+        targetIds: [target.id],
+      }).kind,
+    ).toBe("accepted");
+    const view = matchView(recovered, g.room.participants[0].id, g.catalog);
+    const stack = view.zones.find((z) => z.kind === "stack")!;
+    expect(
+      stack.objectIds!.map((id) => view.objects[id].sourceAbilityId),
+    ).toEqual(["destroy", "artifact-entry", "ward"]);
+    expect(view.rules).not.toHaveProperty("triggerPlacement");
+    expect(command(0, { type: "pass-priority" }).kind).toBe("accepted");
+    expect(command(1, { type: "pass-priority" }).kind).toBe("pending");
+    expect(recovered.objects[target.id].counters).toEqual([]);
+    expect(
+      command(1, {
+        type: "rules-input",
+        procedureId: recovered.rules!.pending!.id,
+        confirm: false,
+      }).kind,
+    ).toBe("accepted");
+    expect(
+      recovered.zones
+        .find((z) => z.kind === "stack")!
+        .objectIds.map((id) => recovered.objects[id].sourceAbilityId),
+    ).toEqual(["artifact-entry"]);
+  });
+
+for (const returnToCommand of [true, false])
+  test(`cleanup offers a discarded commander return before untap and ${returnToCommand ? "repeats cleanup after priority" : "continues without priority when declined"}`, async () => {
+    const g = await triggerGame();
+    const p = g.match.players[0].id;
+    const commander = Object.values(g.match.objects).find((o) =>
+      o.cardInstanceIds.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    moveObject(
+      g.match,
+      commander.id,
+      g.match.zones.find((z) => z.kind === "hand" && z.ownerId === p)!,
+    );
+    const discarded = Object.values(g.match.objects).find((o) =>
+      o.cardInstanceIds.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    const stone = g.seed("Mind Stone", "battlefield", 1);
+    stone.status.tapped = true;
+    g.match.turn.stepIndex = 10;
+    g.pass();
+    expect(g.view().rules!.pending!.kind).toBe("cleanup");
+    expect(g.answer({ discard: [discarded.id] }).kind).toBe("pending");
+    expect(g.view().rules!.pending!.kind).toBe("commander-return");
+    expect(g.match.turn.number).toBe(1);
+    expect(g.match.turn.stepIndex).toBe(11);
+    expect(g.view().objects[stone.id].status.tapped).toBe(true);
+    const recovered: MatchState = JSON.parse(JSON.stringify(g.match));
+    expect(
+      g.service.execute(
+        recovered,
+        g.room.participants[0],
+        {
+          type: "rules-input",
+          procedureId: g.view().rules!.pending!.id,
+          confirm: returnToCommand,
+        },
+        g.catalog,
+      ).kind,
+    ).toBe("accepted");
+    const returned = Object.values(recovered.objects).find((o) =>
+      o.cardInstanceIds.includes(g.match.rules!.commanders[p].instanceId),
+    )!;
+    expect(returned.zoneId).toBe(
+      recovered.zones.find(
+        (z) =>
+          z.kind === (returnToCommand ? "command" : "graveyard") &&
+          (returnToCommand || z.ownerId === p),
+      )!.id,
+    );
+    if (returnToCommand) {
+      expect(recovered.turn.number).toBe(1);
+      expect(recovered.priority!.playerId).toBe(p);
+      for (const participant of g.room.participants)
+        expect(
+          g.service.execute(
+            recovered,
+            participant,
+            { type: "pass-priority" },
+            g.catalog,
+          ).kind,
+        ).toBe("accepted");
+    }
+    expect(recovered.turn.number).toBe(2);
+    expect(recovered.objects[stone.id].status.tapped).toBe(false);
+  });

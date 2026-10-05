@@ -36,9 +36,10 @@ export class Triggers {
         )
           continue;
         if (!this.stateSatisfied(source, trigger)) continue;
-        const pending = this.engine.rules.waitingTriggers?.some(
-          (t) => t.sourceId === source.id && t.abilityId === ability.id,
-        );
+        const pending = [
+          ...(this.engine.rules.waitingTriggers ?? []),
+          ...(this.engine.rules.triggerPlacement ?? []),
+        ].some((t) => t.sourceId === source.id && t.abilityId === ability.id);
         const stacked = this.engine.zone("stack").objectIds.some((id) => {
           const o = this.engine.object(id);
           return (
@@ -152,6 +153,7 @@ export class Triggers {
     )
       throw new Error("Choose one legal trigger target.");
     object.resolution!.targetIds = ids;
+    this.placement();
     this.engine.targeted(object);
     delete this.engine.rules.pending;
     this.flush();
@@ -205,50 +207,63 @@ export class Triggers {
       delete engine.match.priority;
     }
   }
+  private placement() {
+    const rules = this.engine.rules;
+    if (!rules.triggerPlacement) {
+      // New triggers collected while choosing targets belong to the next batch.
+      // Keep the current batch in persisted state until all its choices finish.
+      rules.triggerPlacement = rules.waitingTriggers ?? [];
+      delete rules.waitingTriggers;
+    }
+    return rules.triggerPlacement;
+  }
   flush() {
-    const engine = this.engine,
-      waiting = engine.rules.waitingTriggers ?? [];
+    const engine = this.engine;
     const order = engine.match.turn.order;
     const start = order.indexOf(engine.match.turn.activePlayerId);
-    for (let i = 0; i < order.length; i++) {
-      const playerId = order[(start + i) % order.length];
-      const group = waiting.filter((t) => t.playerId === playerId);
-      if (
-        group.length > 1 &&
-        !engine.rules.orderedTriggerPlayerIds?.includes(playerId)
-      ) {
-        engine.rules.pending = {
-          id: randomUUID(),
-          playerId,
-          kind: "trigger-order",
-          stage: "selection",
-          targetIds: [],
-          selections: {},
-          totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
-          context:
-            "Order your simultaneous triggers from bottom to top of the Stack.",
-          options: {
-            order: {
-              count: group.length,
-              objectIds: group.map((t) => t.id),
-              label: "Trigger order (bottom to top)",
-              labels: Object.fromEntries(
-                group.map((t) => [t.id, `${t.sourceName}: ${t.abilityId}`]),
-              ),
+    do {
+      const waiting = this.placement();
+      for (let i = 0; i < order.length; i++) {
+        const playerId = order[(start + i) % order.length];
+        const group = waiting.filter((t) => t.playerId === playerId);
+        if (
+          group.length > 1 &&
+          !engine.rules.orderedTriggerPlayerIds?.includes(playerId)
+        ) {
+          engine.rules.pending = {
+            id: randomUUID(),
+            playerId,
+            kind: "trigger-order",
+            stage: "selection",
+            targetIds: [],
+            selections: {},
+            totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
+            context:
+              "Order your simultaneous triggers from bottom to top of the Stack.",
+            options: {
+              order: {
+                count: group.length,
+                objectIds: group.map((t) => t.id),
+                label: "Trigger order (bottom to top)",
+                labels: Object.fromEntries(
+                  group.map((t) => [t.id, `${t.sourceName}: ${t.abilityId}`]),
+                ),
+              },
             },
-          },
-        };
-        delete engine.match.priority;
-        return;
+          };
+          delete engine.match.priority;
+          return;
+        }
+        for (const trigger of group) {
+          this.place(trigger);
+          waiting.splice(waiting.indexOf(trigger), 1);
+          if (engine.rules.pending) return;
+        }
       }
-      for (const trigger of group) {
-        this.place(trigger);
-        waiting.splice(waiting.indexOf(trigger), 1);
-        if (engine.rules.pending) return;
-      }
-    }
+      delete engine.rules.triggerPlacement;
+      delete engine.rules.orderedTriggerPlayerIds;
+    } while (engine.rules.waitingTriggers?.length);
     delete engine.rules.waitingTriggers;
-    delete engine.rules.orderedTriggerPlayerIds;
     const playerId =
       engine.rules.priorityAfterTriggers ?? engine.match.turn.activePlayerId;
     delete engine.rules.priorityAfterTriggers;
@@ -257,20 +272,17 @@ export class Triggers {
   answer(action: Extract<MatchAction, { type: "rules-input" }>) {
     const pending = this.engine.rules.pending!;
     const ids = action.selections?.order ?? [];
-    const group = (this.engine.rules.waitingTriggers ?? []).filter(
-      (t) => t.playerId === pending.playerId,
-    );
+    const waiting = this.placement();
+    const group = waiting.filter((t) => t.playerId === pending.playerId);
     if (
       ids.length !== group.length ||
       new Set(ids).size !== ids.length ||
       ids.some((id) => !group.some((t) => t.id === id))
     )
       throw new Error("Order each waiting trigger exactly once.");
-    this.engine.rules.waitingTriggers = [
+    this.engine.rules.triggerPlacement = [
       ...ids.map((id) => group.find((t) => t.id === id)!),
-      ...this.engine.rules.waitingTriggers!.filter(
-        (t) => t.playerId !== pending.playerId,
-      ),
+      ...waiting.filter((t) => t.playerId !== pending.playerId),
     ];
     this.engine.rules.orderedTriggerPlayerIds ??= [];
     this.engine.rules.orderedTriggerPlayerIds.push(pending.playerId);

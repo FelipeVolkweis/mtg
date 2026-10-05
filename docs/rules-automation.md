@@ -87,7 +87,10 @@ lasts with waiting triggers or their Stack objects, without an action history.
 Triggers wait throughout payment and suspended resolution. At a Priority
 checkpoint, state-based actions repeat until stable, then waiting triggers are
 placed in active-player/nonactive-player order. Each player orders their own
-simultaneous triggers from bottom to top through a persisted choice. Cancelling a
+simultaneous triggers from bottom to top through a persisted choice.
+New triggers generated while selecting targets wait in a separate batch until
+the current batch is completely placed; both batches survive suspended choices
+and remain server-private. Cancelling a
 cast retains completed mana activations and places their waiting triggers at the
 restored Priority opportunity. Browser coverage verifies trigger-order recovery.
 
@@ -207,11 +210,17 @@ state-based actions or triggers require Priority, cleanup waits, offers Priority
 and repeats after the Stack clears before advancing to the next turn. Persisted
 choices retain their identifiers across reconnects, including attack payment and
 combat damage assignments.
+Discarded commanders receive their Command Zone return choice during cleanup,
+before the next turn's untap. An accepted return requires Priority and repeated
+cleanup; a declined return alone does not.
 
 Attack declarations emit one event per declared creature. Battlesphere creates
 four Myr on entry; its attack trigger offers any number of eligible untapped Myr,
 binds the tapped count, applies a fixed temporary power bonus, and deals separate
 noncombat damage to its current defending player or planeswalker at resolution.
+If Battlesphere leaves combat first, its trigger retains the last defending
+recipient, including any redirection, and still deals that damage if the
+recipient remains eligible.
 A departed recipient receives no damage. Skysovereign's entry and attack triggers
 choose opposing creatures or planeswalkers and revalidate them before damage.
 
