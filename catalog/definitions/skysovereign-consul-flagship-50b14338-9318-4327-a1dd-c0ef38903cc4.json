@@ -9,7 +9,7 @@
       "name": "Skysovereign, Consul Flagship",
       "manaCost": "{5}",
       "colors": [],
-      "typeLine": "Legendary Artifact — Vehicle",
+      "typeLine": "Legendary Artifact \u2014 Vehicle",
       "manaValue": 5,
       "supertypes": [
         "Legendary"
@@ -36,5 +36,52 @@
   ],
   "manaValue": 5,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "crew",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 3,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "keyword": "Crew"
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "origin": "printed",
+      "keyword": "Flying",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flying"
+      }
+    }
+  ]
 }

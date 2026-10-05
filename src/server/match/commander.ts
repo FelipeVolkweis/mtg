@@ -36,6 +36,8 @@ function resolvingEffectSupported(
       "discard",
       "create-token",
       "add-counters",
+      "animate-source",
+      "damage",
     ].includes(effect.kind) ||
     (allowMana && effect.kind === "add-mana")
   );
@@ -45,14 +47,21 @@ export function automationEligible(card: CardDefinition): boolean {
   return (
     card.automationStatus === "implemented" &&
     card.form === "normal" &&
-    card.keywords.every(
-      (keyword) =>
-        ["cycling", "affinity"].includes(keyword.toLowerCase()) &&
-        card.abilities.some(
-          (ability) =>
-            ability.keyword?.toLowerCase() === keyword.toLowerCase() &&
-            ability.rules,
-        ),
+    card.keywords.every((keyword) =>
+      card.abilities.some((ability) => {
+        if (!ability.rules) return false;
+        const name = keyword.toLowerCase();
+        if (["cycling", "affinity"].includes(name))
+          return ability.keyword?.toLowerCase() === name;
+        if (name === "crew")
+          return (
+            ability.rules.costs.some((cost) => cost.kind === "crew") &&
+            ability.rules.effects.some(
+              (effect) => effect.kind === "animate-source",
+            )
+          );
+        return ability.rules.keyword?.toLowerCase() === name;
+      }),
     ) &&
     card.abilities.every(
       (ability) =>

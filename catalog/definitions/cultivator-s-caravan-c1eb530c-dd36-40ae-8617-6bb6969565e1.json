@@ -9,7 +9,7 @@
       "name": "Cultivator's Caravan",
       "manaCost": "{3}",
       "colors": [],
-      "typeLine": "Artifact — Vehicle",
+      "typeLine": "Artifact \u2014 Vehicle",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -31,6 +31,68 @@
     "Crew"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "W",
+              "U",
+              "B",
+              "R",
+              "G"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "crew",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 3,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "keyword": "Crew"
+    }
+  ]
 }

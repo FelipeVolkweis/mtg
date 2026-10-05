@@ -1926,11 +1926,9 @@ test("creatures with zero toughness die at checkpoints and hidden characteristic
 });
 
 for (const name of [
-  "Darksteel Juggernaut",
-  "Broodstar",
-  "Memory Guardian",
-  "Spire Golem",
-  "Thought Monitor",
+  "Research Thief",
+  "Thopter Fabricator",
+  "Skysovereign, Consul Flagship",
 ]) {
   test(`${name} retains partial data without promising complete automation`, async () => {
     const release = structuredClone(await readCatalog("catalog"));
@@ -2941,4 +2939,815 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
     Object.values(view().objects).filter((o) => o.kind === "token"),
   ).toHaveLength(0);
   expect(view().objects[creature.id].characteristics.power).toBe("1");
+});
+
+test("source grants enforce opponent hexproof and artifact flash through current views", async () => {
+  const game = await rulesGame();
+  const { match, command, seed, catalog, room } = game;
+  const myr = seed("Shimmer Myr", "battlefield");
+  const ring = seed("Sol Ring", "hand");
+  const protectedMyr = seed("Silver Myr", "battlefield", 1);
+  const padeem = seed("Padeem, Consul of Innovation", "battlefield", 1);
+  Object.values(catalog.definitions)
+    .find((c) => c.canonicalName === "Padeem, Consul of Innovation")!
+    .abilities.push({
+      id: "protection",
+      kind: "static",
+      origin: "printed",
+      rules: {
+        costs: [],
+        effects: [],
+        continuous: {
+          filter: {
+            zone: "battlefield",
+            controller: "you",
+            types: ["Artifact"],
+          },
+          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+        },
+      },
+    });
+  const bomb = seed("Aether Spellbomb", "battlefield");
+  match.turn.stepIndex = 4;
+  match.rules!.mana[match.players[0].id].U = 2;
+  const view = () => matchView(match, room.participants[0].id, catalog);
+  expect(view().actions!.some((a) => a.label === "Cast Sol Ring")).toBe(true);
+  expect(command(0, { type: "cast-spell", objectId: ring.id }).kind).toBe(
+    "accepted",
+  );
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  expect(
+    command(0, {
+      type: "activate-ability",
+      objectId: bomb.id,
+      abilityId: "bounce",
+    }).kind,
+  ).toBe("pending");
+  expect(view().rules!.pending!.legalTargetIds).not.toContain(protectedMyr.id);
+  expect(view().rules!.pending!.legalTargetIds).toContain(myr.id);
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: view().rules!.pending!.id,
+      targetIds: [protectedMyr.id],
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    command(0, {
+      type: "rules-input",
+      procedureId: view().rules!.pending!.id,
+      targetIds: [padeem.id],
+    }).kind,
+  ).toBe("accepted");
+  command(0, { type: "pass-priority" });
+  command(1, { type: "pass-priority" });
+  const secondBomb = seed("Aether Spellbomb", "battlefield");
+  command(0, {
+    type: "activate-ability",
+    objectId: secondBomb.id,
+    abilityId: "bounce",
+  });
+  expect(view().rules!.pending!.legalTargetIds).toContain(protectedMyr.id);
+});
+
+test("combat declarations enforce controllers, flying, timing and public participation", async () => {
+  const game = await rulesGame();
+  const ground = game.seed("Silver Myr", "battlefield");
+  const flyer = game.seed("Spire Golem", "battlefield");
+  const blocker = game.seed("Silver Myr", "battlefield", 1);
+  const newCreature = game.seed("Silver Myr", "battlefield");
+  game.match.rules!.controlledSinceTurn[newCreature.id] =
+    game.match.turn.number;
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  for (let i = 0; i < 2; i++) {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  }
+  const attack = view().rules!.pending!;
+  expect(attack.kind).toBe("declare-attackers");
+  expect(attack.selectionOptions[newCreature.id]).toBeUndefined();
+  expect(
+    game.command(1, {
+      type: "rules-input",
+      procedureId: attack.id,
+      selections: {},
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: attack.id,
+      selections: { [newCreature.id]: [game.match.players[1].id] },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: attack.id,
+      selections: {
+        [ground.id]: [game.match.players[1].id],
+        [flyer.id]: [game.match.players[1].id],
+      },
+    }).kind,
+  ).toBe("accepted");
+  expect(view(1).rules!.combat!.attackers).toHaveLength(2);
+  expect(view().objects[ground.id].status.tapped).toBe(true);
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  const block = view(1).rules!.pending!;
+  expect(block.kind).toBe("declare-blockers");
+  expect(block.selectionOptions[blocker.id].objectIds).toEqual([ground.id]);
+  expect(
+    game.command(1, {
+      type: "rules-input",
+      procedureId: block.id,
+      selections: { [blocker.id]: [flyer.id] },
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    game.command(1, {
+      type: "rules-input",
+      procedureId: block.id,
+      selections: { [blocker.id]: [ground.id] },
+    }).kind,
+  ).toBe("accepted");
+  expect(
+    view().rules!.combat!.attackers.find((a) => a.objectId === ground.id)!
+      .blockerIds,
+  ).toEqual([blocker.id]);
+  expect(view().objects[blocker.id].status.tapped).toBe(false);
+  expect(
+    view(1).zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+    )!.objectIds,
+  ).toBeUndefined();
+});
+
+test("combat damage assignments apply simultaneously, keep damage distinct and determine losses", async () => {
+  const game = await rulesGame();
+  const attacker = game.seed("Spire Golem", "battlefield");
+  const a = game.seed("Silver Myr", "battlefield", 1),
+    b = game.seed("Silver Myr", "battlefield", 1);
+  // Initial blockers have flying and 2 power: both sides die in the same damage event.
+  for (const o of [a, b]) {
+    o.characteristics.keywords = ["Flying"];
+    o.characteristics.power = "2";
+  }
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { [attacker.id]: [game.match.players[1].id] },
+  });
+  pass();
+  game.command(1, {
+    type: "rules-input",
+    procedureId: view(1).rules!.pending!.id,
+    selections: { [a.id]: [attacker.id], [b.id]: [attacker.id] },
+  });
+  pass();
+  const pending = view().rules!.pending!;
+  expect(pending.kind).toBe("combat-damage");
+  const bad = {
+    type: "rules-input" as const,
+    procedureId: pending.id,
+    damageAssignments: [
+      { sourceId: attacker.id, recipientId: a.id, amount: 3 },
+    ],
+  };
+  expect(game.command(0, bad).kind).toBe("rejected");
+  expect(
+    game.command(0, {
+      ...bad,
+      damageAssignments: [
+        { sourceId: attacker.id, recipientId: a.id, amount: 1 },
+        { sourceId: attacker.id, recipientId: b.id, amount: 1 },
+      ],
+    }).kind,
+  ).toBe("accepted");
+  for (const o of [attacker, a, b])
+    expect(view().objects[o.id]).toBeUndefined();
+  expect(view().players.map((p) => p.life)).toEqual(["40", "40"]);
+  expect(view().rules!.damageEvents!.map((e) => e.amount)).toEqual([
+    1, 1, 2, 2,
+  ]);
+});
+
+test("crew taps newly controlled creatures for effective power and animation expires at cleanup", async () => {
+  const game = await rulesGame();
+  const vehicle = game.seed("Cultivator's Caravan", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  const chief = game.seed("Chief of the Foundry", "battlefield");
+  game.match.rules!.controlledSinceTurn[myr.id] = 1;
+  myr.counters = [{ kind: "+1/+1", quantity: "1" }];
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: vehicle.id,
+      abilityId: "crew",
+    }).kind,
+  ).toBe("pending");
+  const pending = view().rules!.pending!;
+  expect(pending.selectionOptions["0"].objectIds).toContain(myr.id);
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { "0": [] },
+      confirm: true,
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { "0": [chief.id] },
+      confirm: true,
+    }).kind,
+  ).toBe("rejected");
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: { "0": [myr.id] },
+      confirm: true,
+    }).kind,
+  ).toBe("accepted");
+  expect(view().objects[myr.id].status.tapped).toBe(true);
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().objects[vehicle.id].characteristics.types).toEqual([
+    "Artifact",
+    "Creature",
+  ]);
+  expect(view().objects[vehicle.id].characteristics.power).toBe("6");
+  expect(view().objects[vehicle.id].characteristics.subtypes).toEqual([
+    "Vehicle",
+  ]);
+  game.match.turn.stepIndex = 10; // Begin immediately before cleanup in this initial timing scenario.
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().objects[vehicle.id].characteristics.types).toEqual([
+    "Artifact",
+  ]);
+  expect(view().objects[myr.id].counters).toEqual([
+    { kind: "+1/+1", quantity: "1" },
+  ]);
+  expect(view().objects[chief.id]).toBeDefined();
+});
+
+test("Propaganda payment is optional for required attackers and Graaz composes types, base stats and bonuses", async () => {
+  const game = await rulesGame();
+  const graaz = game.seed("Graaz, Unstoppable Juggernaut", "battlefield");
+  const jug = game.seed("Darksteel Juggernaut", "battlefield");
+  const chief = game.seed("Chief of the Foundry", "battlefield");
+  jug.counters = [{ kind: "+1/+1", quantity: "2" }];
+  game.seed("Propaganda", "battlefield", 1);
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  expect(view().objects[jug.id].characteristics.power).toBe("8");
+  expect(view().objects[jug.id].characteristics.toughness).toBe("6");
+  expect(view().objects[chief.id].characteristics.subtypes).toContain(
+    "Juggernaut",
+  );
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  const declare = view().rules!.pending!;
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: declare.id,
+      selections: {
+        [jug.id]: [game.match.players[1].id],
+        [graaz.id]: [game.match.players[1].id],
+      },
+    }).kind,
+  ).toBe("pending");
+  const payment = view().rules!.pending!;
+  expect(payment.kind).toBe("attack-payment");
+  expect(payment.totalCost.generic).toBe(4);
+  expect(view().objects[jug.id].status.tapped).toBe(false);
+  const ring = game.seed("Sol Ring", "battlefield");
+  game.command(0, {
+    type: "activate-ability",
+    objectId: ring.id,
+    abilityId: "mana",
+  });
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: payment.id,
+      confirm: true,
+    }).kind,
+  ).toBe("rejected");
+  const ring2 = game.seed("Sol Ring", "battlefield");
+  game.command(0, {
+    type: "activate-ability",
+    objectId: ring2.id,
+    abilityId: "mana",
+  });
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: payment.id,
+      confirm: true,
+    }).kind,
+  ).toBe("accepted");
+  expect(view().rules!.combat!.attackers).toHaveLength(2);
+  expect(view().objects[jug.id].status.tapped).toBe(true);
+  const other = await rulesGame();
+  other.seed("Darksteel Juggernaut", "battlefield");
+  other.seed("Propaganda", "battlefield", 1);
+  for (let i = 0; i < 2; i++) {
+    other.command(0, { type: "pass-priority" });
+    other.command(1, { type: "pass-priority" });
+  }
+  expect(
+    other.command(0, {
+      type: "rules-input",
+      procedureId: other.match.rules!.pending!.id,
+      selections: {},
+    }).kind,
+  ).toBe("accepted");
+});
+
+test("newly completed protection, flying, Vehicle and requirement definitions pass normal Commander setup", async () => {
+  const release = await readCatalog("catalog");
+  for (const name of [
+    "Darksteel Citadel",
+    "Darksteel Juggernaut",
+    "Shimmer Myr",
+    "Ornithopter of Paradise",
+    "Cultivator's Caravan",
+    "Propaganda",
+    "Graaz, Unstoppable Juggernaut",
+    "Broodstar",
+    "Memory Guardian",
+    "Spire Golem",
+    "Thought Monitor",
+  ]) {
+    const { room, catalog } = commanderFixture();
+    const card = Object.values(release.definitions).find(
+      (c) => c.canonicalName === name,
+    )!;
+    catalog.definitions[card.id] = structuredClone(card);
+    catalog.printings[card.defaultPrintingId] =
+      release.printings[card.defaultPrintingId];
+    room.participants[0].decklists[0].entries[1].quantity--;
+    room.participants[0].decklists[0].entries.push({
+      definitionId: card.id,
+      printingId: card.defaultPrintingId,
+      quantity: 1,
+    });
+    expect(
+      () => new MatchService().createCommander(room, catalog),
+      name,
+    ).not.toThrow();
+  }
+});
+
+test("noncombat damage retains lethal marks on indestructible creatures and cleanup removes damage with temporary effects", async () => {
+  const game = await rulesGame();
+  const jug = game.seed("Darksteel Juggernaut", "battlefield", 1);
+  const spell = game.seed("Counterspell", "hand");
+  const card =
+    game.catalog.definitions[
+      game.match.instances[spell.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities = [
+    {
+      id: "damage",
+      kind: "spell",
+      origin: "printed",
+      rules: {
+        costs: [],
+        target: { zone: "battlefield", types: ["Creature"] },
+        effects: [{ kind: "damage", amount: 5 }],
+      },
+    },
+  ];
+  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  game.command(0, { type: "cast-spell", objectId: spell.id });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    targetIds: [jug.id],
+  });
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().objects[jug.id]).toBeDefined();
+  expect(view().rules!.markedDamage![jug.id]).toBe(5);
+  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+    recipientId: jug.id,
+    amount: 5,
+    combat: false,
+  });
+  game.match.turn.stepIndex = 10;
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().rules!.markedDamage).toEqual({});
+  expect(view().objects[jug.id]).toBeDefined();
+});
+
+test("an unblocked attacker deals damage before a zero-life loss completes the Match", async () => {
+  const game = await rulesGame();
+  const creature = game.seed("Silver Myr", "battlefield");
+  game.match.players[1].life = "1";
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { [creature.id]: [game.match.players[1].id] },
+  });
+  pass();
+  game.command(1, {
+    type: "rules-input",
+    procedureId: view(1).rules!.pending!.id,
+    selections: {},
+  });
+  pass();
+  expect(view().players.map((p) => p.outcome)).toEqual(["won", "lost"]);
+  expect(view().outcome).toBe("complete");
+  expect(view().priority).toBeUndefined();
+  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+    sourceId: creature.id,
+    recipientId: game.match.players[1].id,
+    amount: 1,
+    combat: true,
+    recipientKind: "player",
+  });
+  expect(game.command(0, { type: "pass-priority" }).kind).toBe("rejected");
+});
+
+test("an attacker stays blocked after its blocker leaves during the response window", async () => {
+  const game = await rulesGame();
+  const creature = game.seed("Silver Myr", "battlefield");
+  const blocker = game.seed("Silver Myr", "battlefield", 1);
+  const bomb = game.seed("Aether Spellbomb", "battlefield");
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { [creature.id]: [game.match.players[1].id] },
+  });
+  pass();
+  game.command(1, {
+    type: "rules-input",
+    procedureId: view(1).rules!.pending!.id,
+    selections: { [blocker.id]: [creature.id] },
+  });
+  game.match.rules!.mana[game.match.players[0].id].U = 1;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    targetIds: [blocker.id],
+  });
+  pass();
+  expect(view().rules!.combat!.attackers[0]).toMatchObject({
+    blocked: true,
+    blockerIds: [],
+  });
+  pass();
+  expect(view().players[1].life).toBe("40");
+  expect(view().rules!.damageEvents ?? []).toEqual([]);
+});
+
+test("cleanup removes damage and temporary bonuses together, gives Priority for deaths and repeats cleanup", async () => {
+  const game = await rulesGame();
+  const creature = game.seed("Silver Myr", "battlefield");
+  creature.characteristics.toughness = "0";
+  const card =
+    game.catalog.definitions[
+      game.match.instances[creature.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities.push({
+    id: "death-draw",
+    kind: "triggered",
+    origin: "printed",
+    rules: {
+      costs: [],
+      effects: [{ kind: "draw", count: 1 }],
+      trigger: { event: "dies", filter: { zone: "battlefield", self: "only" } },
+    },
+  });
+  game.match.rules!.temporaryEffects = [
+    {
+      sourceId: creature.id,
+      abilityId: "bonus",
+      playerId: game.match.players[0].id,
+      filter: { zone: "battlefield", self: "only" },
+      changes: [{ kind: "add-stats", power: 0, toughness: 2 }],
+      applicability: "until-end-of-turn",
+    },
+  ];
+  game.match.rules!.markedDamage = { [creature.id]: 1 };
+  game.match.turn.stepIndex = 10;
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  expect(view().turn.stepIndex).toBe(11);
+  expect(view().turn.number).toBe(1);
+  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
+  pass(); // Resolve the death draw during cleanup.
+  pass(); // A further cleanup requires discarding the newly drawn eighth card.
+  expect(view().rules!.pending!.kind).toBe("cleanup");
+  const pending = view().rules!.pending!;
+  game.command(0, {
+    type: "rules-input",
+    procedureId: pending.id,
+    selections: { discard: [pending.selectionOptions.discard.objectIds[0]] },
+  });
+  expect(view().turn.number).toBe(2);
+  expect(view().rules!.markedDamage).toEqual({});
+});
+
+test("Graaz animates no Vehicle itself, but layers its creature changes onto crewed Vehicles and prevents Wall blocks", async () => {
+  const game = await rulesGame();
+  const vehicle = game.seed("Cultivator's Caravan", "battlefield");
+  const graaz = game.seed("Graaz, Unstoppable Juggernaut", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  const wall = game.seed("Silver Myr", "battlefield", 1);
+  wall.characteristics.subtypes = ["Wall"];
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  expect(view().objects[vehicle.id].characteristics.types).toEqual([
+    "Artifact",
+  ]);
+  game.command(0, {
+    type: "activate-ability",
+    objectId: vehicle.id,
+    abilityId: "crew",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { "0": [myr.id] },
+  });
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  expect(view().objects[vehicle.id].characteristics.subtypes).toEqual([
+    "Vehicle",
+    "Juggernaut",
+  ]);
+  expect(view().objects[vehicle.id].characteristics.toughness).toBe("3");
+  pass();
+  pass();
+  const pending = view().rules!.pending!;
+  expect(
+    game.command(0, {
+      type: "rules-input",
+      procedureId: pending.id,
+      selections: {},
+    }).kind,
+  ).toBe("rejected");
+  game.command(0, {
+    type: "rules-input",
+    procedureId: pending.id,
+    selections: {
+      [vehicle.id]: [game.match.players[1].id],
+      [graaz.id]: [game.match.players[1].id],
+    },
+  });
+  pass();
+  expect(view(1).rules!.pending!.selectionOptions[wall.id].objectIds).toEqual(
+    [],
+  );
+  expect(
+    game.command(1, {
+      type: "rules-input",
+      procedureId: view(1).rules!.pending!.id,
+      selections: { [wall.id]: [vehicle.id] },
+    }).kind,
+  ).toBe("rejected");
+});
+
+test("noncombat ability damage retains the permanent source after sacrifice", async () => {
+  const game = await rulesGame();
+  const bomb = game.seed("Aether Spellbomb", "battlefield");
+  const target = game.seed("Silver Myr", "battlefield", 1);
+  const card =
+    game.catalog.definitions[
+      game.match.instances[bomb.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities = [
+    {
+      id: "damage",
+      kind: "activated",
+      origin: "printed",
+      rules: {
+        costs: [{ kind: "sacrifice-source" }],
+        target: { zone: "battlefield", types: ["Creature"] },
+        effects: [{ kind: "damage", amount: 1 }],
+      },
+    },
+  ];
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  game.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "damage",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    targetIds: [target.id],
+  });
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().objects[target.id]).toBeUndefined();
+  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+    sourceId: bomb.id,
+    recipientId: target.id,
+    amount: 1,
+    combat: false,
+  });
+});
+
+test("hexproof gained in response invalidates an opponent target while preserving its controller's targets", async () => {
+  const game = await rulesGame();
+  const myr = game.seed("Silver Myr", "battlefield", 1);
+  const bomb = game.seed("Aether Spellbomb", "battlefield");
+  const padeem = game.seed("Padeem, Consul of Innovation", "hand", 1);
+  const card =
+    game.catalog.definitions[
+      game.match.instances[padeem.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities = [
+    {
+      id: "scenario-grant",
+      kind: "static",
+      origin: "printed",
+      rules: {
+        keyword: "Flash",
+        costs: [],
+        effects: [],
+        continuous: {
+          filter: {
+            zone: "battlefield",
+            controller: "you",
+            types: ["Artifact"],
+          },
+          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+        },
+      },
+    },
+  ];
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  game.match.rules!.mana[game.match.players[0].id].U = 1;
+  game.match.rules!.mana[game.match.players[1].id].U = 1;
+  game.match.rules!.mana[game.match.players[1].id].C = 3;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    targetIds: [myr.id],
+  });
+  game.command(0, { type: "pass-priority" });
+  expect(
+    game.command(1, { type: "cast-spell", objectId: padeem.id }).kind,
+  ).toBe("accepted");
+  game.command(1, { type: "pass-priority" });
+  game.command(0, { type: "pass-priority" });
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  expect(view().objects[myr.id]).toBeDefined();
+  const ownBomb = game.seed("Aether Spellbomb", "battlefield", 1);
+  game.command(0, { type: "pass-priority" });
+  game.command(1, {
+    type: "activate-ability",
+    objectId: ownBomb.id,
+    abilityId: "bounce",
+  });
+  expect(view(1).rules!.pending!.legalTargetIds).toContain(myr.id);
+});
+
+test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches when animation expires", async () => {
+  const game = await rulesGame();
+  const vehicle = game.seed("Cultivator's Caravan", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  myr.counters = [{ kind: "+1/+1", quantity: "2" }];
+  const nettle = game.seed("Nettlecyst", "battlefield");
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  game.command(0, {
+    type: "activate-ability",
+    objectId: vehicle.id,
+    abilityId: "crew",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { "0": [myr.id] },
+  });
+  pass();
+  game.match.rules!.mana[game.match.players[0].id].C = 2;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: nettle.id,
+    abilityId: "equip",
+  });
+  expect(view().rules!.pending!.legalTargetIds).toContain(vehicle.id);
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    targetIds: [vehicle.id],
+  });
+  pass();
+  expect(view().objects[nettle.id].attachmentTo).toBe(vehicle.id);
+  expect(view().objects[vehicle.id].characteristics.power).toBe("8");
+  game.match.turn.stepIndex = 10;
+  pass();
+  expect(view().objects[nettle.id].attachmentTo).toBeNull();
+  expect(view().objects[vehicle.id].characteristics.types).toEqual([
+    "Artifact",
+  ]);
+  expect(view().objects[myr.id].counters).toEqual([
+    { kind: "+1/+1", quantity: "2" },
+  ]);
+});
+
+test("damage attribution expires at the next turn while surviving the current turn", async () => {
+  const game = await rulesGame();
+  const creature = game.seed("Silver Myr", "battlefield");
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { [creature.id]: [game.match.players[1].id] },
+  });
+  pass();
+  game.command(1, {
+    type: "rules-input",
+    procedureId: view(1).rules!.pending!.id,
+    selections: {},
+  });
+  pass();
+  expect(view().rules!.damageEvents).toHaveLength(1);
+  pass();
+  pass(); // End combat and postcombat main phase.
+  expect(view().rules!.damageEvents).toHaveLength(1);
+  pass();
+  pass(); // Postcombat main, end step and cleanup, then next turn.
+  expect(view().turn.number).toBe(2);
+  expect(view().rules!.damageEvents).toEqual([]);
 });

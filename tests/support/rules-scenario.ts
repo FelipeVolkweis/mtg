@@ -10,6 +10,7 @@ export async function seedRulesScenario(
   invite: string,
   spellName?: string,
   synergies = false,
+  scenario?: "combat" | "flash",
 ) {
   const pool = new Pool({
     connectionString:
@@ -26,13 +27,18 @@ export async function seedRulesScenario(
     const match = room.match!;
     const catalog = await readCatalog();
     const player = match.players[0];
-    function add(name: string, kind: ZoneKind) {
+    const combat = scenario === "combat";
+    function add(name: string, kind: ZoneKind, seat = 0) {
+      const player = match.players[seat];
       const card = Object.values(catalog.definitions).find(
         (card) => card.canonicalName === name,
       )!;
       const zone = match.zones.find(
         (zone) =>
-          zone.kind === kind && (kind !== "hand" || zone.ownerId === player.id),
+          zone.kind === kind &&
+          (kind === "battlefield" ||
+            kind === "stack" ||
+            zone.ownerId === player.id),
       )!;
       const instanceId = randomUUID();
       match.instances[instanceId] = {
@@ -48,13 +54,25 @@ export async function seedRulesScenario(
       match.rules!.controlledSinceTurn[object.id] = 0;
       return object;
     }
+    if (combat) {
+      add("Cultivator's Caravan", "battlefield");
+      const creature = add("Silver Myr", "battlefield");
+      creature.counters = [{ kind: "+1/+1", quantity: "2" }];
+      add("Silver Myr", "battlefield", 1);
+      add("Silver Myr", "battlefield", 1);
+      add("Propaganda", "battlefield", 1);
+      match.rules!.mana[player.id].U = 0;
+    }
     if (synergies) {
       add("Sai, Master Thopterist", "battlefield");
       add("Vedalken Archmage", "battlefield");
       add("Chief of the Foundry", "battlefield");
       add("Steel Overseer", "battlefield");
     }
-    const target = add(spellName ?? "Sol Ring", spellName ? "hand" : "stack");
+    const target = add(
+      spellName ?? "Sol Ring",
+      spellName || combat ? "hand" : "stack",
+    );
     if (spellName) add("Mind Stone", "hand");
     add("Counterspell", "hand");
     add("Mind Stone", "battlefield");
@@ -62,9 +80,9 @@ export async function seedRulesScenario(
     match.rules!.setup.keptPlayerIds = match.players.map((player) => player.id);
     match.rules!.turnStarted[player.id] = 1;
     match.turn.activePlayerId = player.id;
-    match.turn.stepIndex = 3;
+    match.turn.stepIndex = scenario === "flash" ? 4 : 3;
     match.priority = { playerId: player.id, passedPlayerIds: [] };
-    match.rules!.mana[player.id].U = spellName ? 5 : 2;
+    match.rules!.mana[player.id].U = combat ? 0 : spellName ? 5 : 2;
     match.revision++;
     room.revision++;
     await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [

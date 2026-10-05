@@ -5,6 +5,7 @@ import type {
   SemanticEvent,
   WaitingTrigger,
 } from "../../shared/rules.js";
+import { matchesFilter } from "./characteristics.js";
 import { gameObject } from "./game-objects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
@@ -73,9 +74,14 @@ export class Triggers {
             : trigger.event === event.kind;
         if (
           !matchesEvent ||
+          (trigger.combat !== undefined &&
+            event.damage?.combat !== trigger.combat) ||
+          (trigger.recipientKind !== undefined &&
+            event.damage?.recipientKind !== trigger.recipientKind) ||
           (trigger.event === "state" &&
             !this.stateSatisfied(source, trigger)) ||
-          !this.engine.matches(
+          !matchesFilter(
+            this.engine.match,
             { ...affected, characteristics: event.before ?? event.after },
             trigger.filter,
             source.controllerId,
@@ -90,6 +96,13 @@ export class Triggers {
           sourceId: source.id,
           abilityId: ability.id,
           sourceName: source.characteristics.name,
+          sourceSnapshot: {
+            characteristics:
+              source.id === event.sourceId
+                ? (event.before ?? event.after)
+                : this.engine.effective(source),
+            ownerId: this.engine.owner(source),
+          },
           ability: structuredClone(ability.rules!),
           event: structuredClone(event),
         });
@@ -131,6 +144,7 @@ export class Triggers {
     object.sourceObjectId = trigger.sourceId;
     object.sourceAbilityId = trigger.abilityId;
     object.resolution = {
+      sourceSnapshot: trigger.sourceSnapshot,
       ability: trigger.ability,
       event: structuredClone(trigger.event),
       targetIds: [],

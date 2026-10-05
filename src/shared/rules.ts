@@ -46,6 +46,13 @@ const quantitySchema = z.union([
 export const rulesCostSchema = z.discriminatedUnion("kind", [
   z
     .object({
+      kind: z.literal("crew"),
+      power: z.number().int().positive(),
+      filter: objectFilterSchema,
+    })
+    .strict(),
+  z
+    .object({
       kind: z.literal("mana"),
       symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)).max(100),
     })
@@ -82,7 +89,40 @@ export const valueSchema: z.ZodType<RulesValue> = z.lazy(() =>
     z.object({ sum: z.array(valueSchema).min(1).max(20) }).strict(),
   ]),
 );
+export const supportedKeywordSchema = z.enum([
+  "Flying",
+  "Reach",
+  "Flash",
+  "Hexproof",
+  "Indestructible",
+  "Haste",
+  "Vigilance",
+  "Unblockable",
+  "Must attack",
+  "Cannot be blocked by Walls",
+  "Defender",
+]);
 export const continuousChangeSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("add-types"),
+      types: z.array(z.string()).optional(),
+      subtypes: z.array(z.string()).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("set-stats"),
+      power: valueSchema,
+      toughness: valueSchema,
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("grant-keyword"),
+      keyword: supportedKeywordSchema,
+    })
+    .strict(),
   z
     .object({
       kind: z.literal("linked-characteristics"),
@@ -112,7 +152,8 @@ export interface ActiveContinuousEffect {
   playerId: string;
   filter: ObjectFilter;
   changes: ContinuousChange[];
-  applicability: "source-on-battlefield" | "characteristic-defining";
+  applicability:
+    "source-on-battlefield" | "characteristic-defining" | "until-end-of-turn";
 }
 const discardSchema = z
   .object({
@@ -147,6 +188,13 @@ const inspectSchema = z
   .strict();
 export type InspectEffect = z.infer<typeof inspectSchema>;
 const primitiveEffectSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("damage"), amount: valueSchema }).strict(),
+  z
+    .object({
+      kind: z.literal("animate-source"),
+      changes: z.array(continuousChangeSchema).min(1).max(20),
+    })
+    .strict(),
   movementSchema,
   inspectSchema,
   z
@@ -259,6 +307,14 @@ export const rulesEffectSchema: z.ZodType<RulesEffect> = z.lazy(() =>
 
 export const rulesAbilitySchema = z
   .object({
+    attackCost: z
+      .object({
+        symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)).min(1),
+      })
+      .strict()
+      .optional(),
+    keyword: supportedKeywordSchema.optional(),
+    castingPermission: objectFilterSchema.optional(),
     timing: z.literal("sorcery").optional(),
     chosenVariables: z.array(z.literal("X")).max(1).optional(),
     costs: z.array(rulesCostSchema).max(100).default([]),
@@ -282,14 +338,23 @@ export const rulesAbilitySchema = z
         filter: objectFilterSchema,
         changes: z.array(continuousChangeSchema).min(1).max(20),
         characteristicDefining: z.boolean().optional(),
+        condition: z
+          .object({
+            value: valueSchema,
+            atLeast: z.number().int().nonnegative(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .optional(),
     target: objectFilterSchema.optional(),
     trigger: z
       .object({
-        event: z.enum(["enter", "cast", "dies", "state"]),
+        event: z.enum(["enter", "cast", "dies", "state", "damage"]),
         filter: objectFilterSchema,
+        combat: z.boolean().optional(),
+        recipientKind: z.enum(["player", "object"]).optional(),
         counter: z.string().min(1).optional(),
         atLeast: z.number().int().positive().optional(),
       })
@@ -335,6 +400,10 @@ export const rulesAbilitySchema = z
           if (available.has(effect.bind))
             invalid("Result bindings must be unique.");
           available.add(effect.bind);
+        } else if (effect.kind === "damage") {
+          checkValue(effect.amount, available);
+          if (!ability.target)
+            invalid("Damage effects require a target declaration.");
         } else if (effect.kind === "counter-target" && !ability.target)
           invalid("Counter effects require a target declaration.");
       }
@@ -378,7 +447,11 @@ export const rulesAbilitySchema = z
     for (const modifier of ability.costModifiers ?? [])
       checkValue(modifier.amount, available);
     for (const change of ability.continuous?.changes ?? []) {
-      if (change.kind !== "linked-characteristics") {
+      if (
+        change.kind === "define-stats" ||
+        change.kind === "set-stats" ||
+        change.kind === "add-stats"
+      ) {
         checkValue(change.power, available);
         checkValue(change.toughness, available);
       }
@@ -414,6 +487,10 @@ export interface PendingProcedure {
   id: string;
   playerId: string;
   kind:
+    | "declare-attackers"
+    | "declare-blockers"
+    | "attack-payment"
+    | "combat-damage"
     | "cast"
     | "activate"
     | "cleanup"
@@ -421,6 +498,7 @@ export interface PendingProcedure {
     | "trigger-order"
     | "trigger-target";
   stage: "variable" | "targets" | "payment" | "selection";
+  damageChoices?: DamageChoice[];
   variables?: Record<string, number>;
   context?: string;
   options?: Record<string, SelectionOption>;
@@ -454,7 +532,39 @@ export interface ResolutionProgress {
   selectionPlayers?: string[];
   simultaneousIds?: string[];
 }
+export interface CombatAttacker {
+  objectId: string;
+  defenderId: string;
+  defendingPlayerId: string;
+  blockerIds: string[];
+  blocked: boolean;
+}
+export interface CombatState {
+  attackers: CombatAttacker[];
+  remainingDefenderIds: string[];
+}
+export interface DamageAssignment {
+  sourceId: string;
+  recipientId: string;
+  amount: number;
+}
+export interface DamageEvent extends DamageAssignment {
+  sourceCharacteristics: import("./model.js").Characteristics;
+  combat: boolean;
+  controllerId: string;
+  recipientKind: "player" | "object";
+  turn: number;
+}
+export interface DamageChoice {
+  sourceId: string;
+  amount: number;
+  recipientIds: string[];
+}
 export interface RulesState {
+  markedDamage?: Record<string, number>;
+  damageEvents?: DamageEvent[];
+  temporaryEffects?: ActiveContinuousEffect[];
+  combat?: CombatState;
   orderedTriggerPlayerIds?: string[];
   continuousEffects?: ActiveContinuousEffect[];
   waitingTriggers?: WaitingTrigger[];
@@ -473,7 +583,11 @@ export interface RulesState {
 }
 
 export interface SemanticEvent {
-  kind: "enter" | "cast" | "zone-change" | "state";
+  kind: "enter" | "cast" | "zone-change" | "state" | "damage";
+  damage?: DamageAssignment & {
+    combat: boolean;
+    recipientKind: "player" | "object";
+  };
   sourceId: string;
   affectedId: string;
   controllerId: string;
@@ -484,6 +598,10 @@ export interface SemanticEvent {
   after: import("./model.js").Characteristics;
 }
 export interface WaitingTrigger {
+  sourceSnapshot?: {
+    characteristics: import("./model.js").Characteristics;
+    ownerId: string;
+  };
   id: string;
   playerId: string;
   sourceId: string;

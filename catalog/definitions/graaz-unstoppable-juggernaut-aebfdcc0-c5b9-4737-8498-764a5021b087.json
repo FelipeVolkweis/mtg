@@ -9,7 +9,7 @@
       "name": "Graaz, Unstoppable Juggernaut",
       "manaCost": "{8}",
       "colors": [],
-      "typeLine": "Legendary Artifact Creature — Juggernaut",
+      "typeLine": "Legendary Artifact Creature \u2014 Juggernaut",
       "manaValue": 8,
       "supertypes": [
         "Legendary"
@@ -30,6 +30,70 @@
   "oracleText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
   "keywords": [],
   "manaValue": 8,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "juggernauts",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Creature"
+            ],
+            "subtypes": [
+              "Juggernaut"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "grant-keyword",
+              "keyword": "Must attack"
+            },
+            {
+              "kind": "grant-keyword",
+              "keyword": "Cannot be blocked by Walls"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "other-creatures",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Creature"
+            ],
+            "self": "exclude"
+          },
+          "changes": [
+            {
+              "kind": "add-types",
+              "subtypes": [
+                "Juggernaut"
+              ]
+            },
+            {
+              "kind": "set-stats",
+              "power": 5,
+              "toughness": 3
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

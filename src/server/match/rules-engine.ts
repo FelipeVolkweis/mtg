@@ -17,6 +17,7 @@ import {
   type ObjectFilter,
   type PendingProcedure,
   type RulesAbility,
+  type SelectionOption,
   rulesAbilitySchema,
 } from "../../shared/rules.js";
 import { gameObject, moveObject } from "./game-objects.js";
@@ -25,6 +26,7 @@ import { Library } from "./zones.js";
 import { CharacteristicsCalculator, matchesFilter } from "./characteristics.js";
 import { tokenCharacteristics } from "./tokens.js";
 import { Triggers } from "./triggers.js";
+import { Combat } from "./combat.js";
 import { Resolution } from "./resolution.js";
 
 export const emptyMana = (): ManaPool => ({
@@ -78,10 +80,15 @@ export class RulesEngine {
         pending.kind !== "cleanup" &&
         pending.kind !== "resolve" &&
         pending.kind !== "trigger-order" &&
-        pending.kind !== "trigger-target"
+        pending.kind !== "trigger-target" &&
+        pending.kind !== "declare-attackers" &&
+        pending.kind !== "declare-blockers" &&
+        pending.kind !== "combat-damage"
       ) {
         delete this.rules.pending;
-        this.priority(player.id);
+        if (pending.kind === "attack-payment")
+          new Combat(this).beginAttackers();
+        else this.priority(player.id);
       } else
         throw new Error(
           "Complete the current procedure using its latest identifier.",
@@ -141,6 +148,7 @@ export class RulesEngine {
   }
   priority(playerId = this.match.turn.activePlayerId) {
     this.checkpoint();
+    if (this.match.outcome !== "ongoing") return;
     new Triggers(this).collectStates();
     this.rules.priorityAfterTriggers = playerId;
     new Triggers(this).flush();
@@ -158,7 +166,8 @@ export class RulesEngine {
       this.resolve();
       return;
     }
-    this.advanceStep();
+    if (this.match.turn.stepIndex === 11) this.cleanup();
+    else this.advanceStep();
   }
   actions(playerId: string): { label: string; action: MatchAction }[] {
     if (
@@ -189,10 +198,7 @@ export class RulesEngine {
               label: `Play ${object.characteristics.name}`,
               action: { type: "play-land", objectId: object.id },
             });
-        } else if (
-          object.characteristics.types?.includes("Instant") ||
-          this.mainTiming(playerId)
-        ) {
+        } else if (this.canCastTiming(object, playerId)) {
           const target = this.definition(object)?.abilities.find(
             (a) => a.kind === "spell",
           )?.rules?.target;
@@ -249,11 +255,8 @@ export class RulesEngine {
     }
     return actions;
   }
-  selectionOptions(
-    pending: PendingProcedure,
-  ): Record<string, { count: number; objectIds: string[] }> {
-    if (pending.kind === "resolve" || pending.kind === "trigger-order")
-      return pending.options ?? {};
+  selectionOptions(pending: PendingProcedure): Record<string, SelectionOption> {
+    if (pending.options) return pending.options ?? {};
     if (pending.kind === "cleanup")
       return {
         discard: {
@@ -261,20 +264,31 @@ export class RulesEngine {
           objectIds: [...this.zone("hand", pending.playerId).objectIds],
         },
       };
-    const options: Record<string, { count: number; objectIds: string[] }> = {};
+    const options: Record<string, SelectionOption> = {};
     for (const [index, cost] of (pending.ability?.costs ?? []).entries())
       if ("filter" in cost)
         options[String(index)] = {
-          count: cost.count,
-          objectIds: this.legalTargets(pending.playerId, cost.filter).filter(
-            (id) => {
+          count:
+            cost.kind === "crew"
+              ? this.battlefieldSources().length
+              : cost.count,
+          minCount: cost.kind === "crew" ? 1 : undefined,
+          label:
+            cost.kind === "crew"
+              ? `Crew: at least ${cost.power} total power`
+              : undefined,
+          objectIds: Object.values(this.match.objects)
+            .filter((object) =>
+              this.matches(object, cost.filter, pending.playerId),
+            )
+            .map((object) => object.id)
+            .filter((id) => {
               const object = this.object(id);
               return (
                 object.controllerId === pending.playerId &&
-                (cost.kind !== "tap" || !object.status.tapped)
+                (!["tap", "crew"].includes(cost.kind) || !object.status.tapped)
               );
-            },
-          ),
+            }),
         };
     return options;
   }
@@ -293,6 +307,46 @@ export class RulesEngine {
       this.match.turn.activePlayerId === playerId &&
       [3, 9].includes(this.match.turn.stepIndex) &&
       !this.zone("stack").objectIds.length
+    );
+  }
+  hasKeyword(object: GameObject, keyword: string) {
+    return (
+      this.effective(object).keywords?.some(
+        (k) => k.toLowerCase() === keyword.toLowerCase(),
+      ) ?? false
+    );
+  }
+  canCastTiming(object: GameObject, playerId: string) {
+    return (
+      this.mainTiming(playerId) ||
+      this.effective(object).types?.includes("Instant") ||
+      this.hasKeyword(object, "Flash") ||
+      this.battlefieldSources().some(
+        (source) =>
+          source.controllerId === playerId &&
+          this.definition(source)?.abilities.some(
+            (ability) =>
+              ability.kind === "static" &&
+              ability.rules?.castingPermission &&
+              this.matches(
+                object,
+                ability.rules.castingPermission,
+                playerId,
+                source.id,
+              ),
+          ),
+      )
+    );
+  }
+  targetEligible(
+    object: GameObject,
+    filter: ObjectFilter,
+    playerId: string,
+    sourceId?: string,
+  ) {
+    return (
+      this.matches(object, filter, playerId, sourceId) &&
+      (object.controllerId === playerId || !this.hasKeyword(object, "Hexproof"))
     );
   }
   playLand(playerId: string, id: string) {
@@ -377,7 +431,13 @@ export class RulesEngine {
     playerId: string,
     sourceId?: string,
   ) {
-    return matchesFilter(this.match, object, filter, playerId, sourceId);
+    return matchesFilter(
+      this.match,
+      { ...object, characteristics: this.effective(object) },
+      filter,
+      playerId,
+      sourceId,
+    );
   }
   effective(object: GameObject) {
     return new CharacteristicsCalculator(this.match, this.catalog).effective(
@@ -405,7 +465,9 @@ export class RulesEngine {
   }
   legalTargets(playerId: string, filter: ObjectFilter, sourceId?: string) {
     return Object.values(this.match.objects)
-      .filter((object) => this.matches(object, filter, playerId, sourceId))
+      .filter((object) =>
+        this.targetEligible(object, filter, playerId, sourceId),
+      )
       .map((object) => object.id);
   }
   abilities(object: GameObject) {
@@ -445,10 +507,7 @@ export class RulesEngine {
       source.characteristics.types?.includes("Land")
     )
       throw new Error("Choose a spell from your Hand.");
-    if (
-      !source.characteristics.types?.includes("Instant") &&
-      !this.mainTiming(playerId)
-    )
+    if (!this.canCastTiming(source, playerId))
       throw new Error(
         "This spell requires your main phase and an empty Stack.",
       );
@@ -504,7 +563,8 @@ export class RulesEngine {
     return (
       source.zoneId === this.zone("battlefield").id &&
       !source.status.tapped &&
-      (!source.characteristics.types?.includes("Creature") ||
+      (!this.effective(source).types?.includes("Creature") ||
+        this.hasKeyword(source, "Haste") ||
         (this.rules.controlledSinceTurn[source.id] ?? this.match.turn.number) <
           (this.rules.turnStarted[playerId] ?? 0))
     );
@@ -565,6 +625,21 @@ export class RulesEngine {
     action: Extract<MatchAction, { type: "rules-input" }>,
   ) {
     const pending = this.rules.pending!;
+    if (pending.kind === "attack-payment") {
+      new Combat(this).payAttackers(action);
+      return;
+    }
+    if (pending.kind === "combat-damage") {
+      new Combat(this).answerDamage(action);
+      return;
+    }
+    if (
+      pending.kind === "declare-attackers" ||
+      pending.kind === "declare-blockers"
+    ) {
+      new Combat(this).answer(action);
+      return;
+    }
     if (pending.kind === "trigger-target") {
       new Triggers(this).answerTarget(action);
       return;
@@ -612,7 +687,7 @@ export class RulesEngine {
         throw new Error("Choose the required cards to discard for cleanup.");
       for (const id of ids) this.move(id, this.zone("graveyard", playerId));
       delete this.rules.pending;
-      this.nextTurn();
+      this.cleanup();
       return;
     }
     if (action.color) pending.color = action.color;
@@ -641,6 +716,11 @@ export class RulesEngine {
   }
   tryComplete(playerId: string) {
     const pending = this.rules.pending!;
+    const beforePayment = this.object(pending.sourceId!);
+    const sourceSnapshot = {
+      characteristics: this.effective(beforePayment),
+      ownerId: this.owner(beforePayment),
+    };
     if (!this.pay(pending)) return false;
     const source = pending.sourceId!;
     if (pending.kind === "cast") {
@@ -675,6 +755,7 @@ export class RulesEngine {
       object.sourceObjectId = source;
       object.sourceAbilityId = pending.abilityId;
       object.resolution = {
+        sourceSnapshot,
         ability: pending.ability!,
         targetIds: pending.targetIds,
         color: pending.color,
@@ -773,6 +854,27 @@ export class RulesEngine {
         if (removed.has(source.id) || source.zoneId !== zone.id)
           throw new Error("The source cannot pay this removal cost.");
         removed.add(source.id);
+      } else if (cost.kind === "crew") {
+        const ids = pending.selections[String(index)] ?? [];
+        if (!ids.length) return false;
+        if (new Set(ids).size !== ids.length)
+          throw new Error("Choose distinct creatures to crew.");
+        let power = 0;
+        for (const id of ids) {
+          const creature = this.object(id);
+          if (
+            removed.has(id) ||
+            tapped.has(id) ||
+            creature.controllerId !== playerId ||
+            creature.status.tapped ||
+            !this.matches(creature, cost.filter, playerId)
+          )
+            throw new Error("Choose untapped creatures you control to crew.");
+          power += Number(this.effective(creature).power) || 0;
+          tapped.add(id);
+        }
+        if (power < cost.power)
+          throw new Error("Insufficient total power to crew.");
       } else if (
         ["tap", "sacrifice", "discard", "return"].includes(cost.kind)
       ) {
@@ -851,12 +953,14 @@ export class RulesEngine {
         this.move(source.id, this.zone("graveyard", this.owner(source)));
       else if (
         cost.kind === "tap" ||
+        cost.kind === "crew" ||
         cost.kind === "sacrifice" ||
         cost.kind === "discard" ||
         cost.kind === "return"
       )
         for (const id of pending.selections[String(index)] ?? []) {
-          if (cost.kind === "tap") this.object(id).status.tapped = true;
+          if (cost.kind === "tap" || cost.kind === "crew")
+            this.object(id).status.tapped = true;
           else
             this.move(
               id,
@@ -876,7 +980,37 @@ export class RulesEngine {
     color?: ManaType,
   ) {
     for (const effect of ability.effects) {
-      if (effect.kind === "draw") {
+      if (effect.kind === "animate-source") {
+        const stack = this.match.objects[this.rules.resolving?.sourceId ?? ""];
+        const id = stack?.sourceObjectId;
+        const source = this.match.objects[id ?? ""];
+        if (source?.zoneId === this.zone("battlefield").id) {
+          this.rules.temporaryEffects ??= [];
+          this.rules.temporaryEffects.push({
+            sourceId: source.id,
+            abilityId: stack?.sourceAbilityId ?? "animation",
+            playerId,
+            filter: { zone: "battlefield", self: "only" },
+            changes: effect.changes,
+            applicability: "until-end-of-turn",
+          });
+        }
+      } else if (effect.kind === "damage") {
+        const stackSource = this.rules.resolving?.sourceId;
+        if (stackSource)
+          this.damage(
+            targets.map((recipientId) => ({
+              sourceId: stackSource,
+              recipientId,
+              amount: this.value(
+                effect.amount,
+                playerId,
+                stackSource,
+                this.rules.resolving?.bindings,
+              ),
+            })),
+          );
+      } else if (effect.kind === "draw") {
         if (typeof effect.count !== "number")
           throw new Error("Draw requires a resolution binding.");
         this.draw(playerId, effect.count);
@@ -963,7 +1097,7 @@ export class RulesEngine {
       resolution.targetIds.some(
         (id) =>
           this.match.objects[id] &&
-          this.matches(
+          this.targetEligible(
             this.match.objects[id],
             resolution.ability.target!,
             object.controllerId,
@@ -1002,6 +1136,92 @@ export class RulesEngine {
       this.enter(object);
     else this.toGraveyard(object);
   }
+  damage(
+    assignments: import("../../shared/rules.js").DamageAssignment[],
+    combat = false,
+  ) {
+    // Capture all sources before the checkpoint so lethal damage is simultaneous.
+    const sources = structuredClone(this.battlefieldSources());
+    for (const assignment of assignments) {
+      if (!Number.isSafeInteger(assignment.amount) || assignment.amount < 0)
+        throw new Error("Invalid damage amount.");
+      if (!assignment.amount) continue;
+      const stackSource = this.match.objects[assignment.sourceId];
+      if (!stackSource) continue;
+      const sourceId =
+        stackSource.kind === "ability"
+          ? (stackSource.sourceObjectId ?? stackSource.id)
+          : stackSource.id;
+      const live = this.match.objects[sourceId];
+      const characteristics = live
+        ? this.effective(live)
+        : (stackSource.resolution?.sourceSnapshot?.characteristics ??
+          stackSource.resolution?.event?.after ??
+          stackSource.characteristics);
+      const source = live ?? {
+        ...stackSource,
+        id: sourceId,
+        zoneId: this.zone("battlefield").id,
+        characteristics,
+      };
+      const recorded = { ...assignment, sourceId };
+      const player = this.match.players.find(
+        (p) => p.id === assignment.recipientId,
+      );
+      const recipient = this.match.objects[assignment.recipientId];
+      if (player)
+        player.life = String(BigInt(player.life) - BigInt(assignment.amount));
+      else if (recipient?.zoneId === this.zone("battlefield").id) {
+        const types = this.effective(recipient).types ?? [];
+        if (types.includes("Creature")) {
+          this.rules.markedDamage ??= {};
+          this.rules.markedDamage[recipient.id] =
+            (this.rules.markedDamage[recipient.id] ?? 0) + assignment.amount;
+        } else if (types.includes("Planeswalker") || types.includes("Battle")) {
+          const counter = recipient.counters.find(
+            (c) =>
+              c.kind ===
+              (types.includes("Planeswalker") ? "loyalty" : "defense"),
+          );
+          if (counter)
+            counter.quantity = String(
+              BigInt(counter.quantity) > BigInt(assignment.amount)
+                ? BigInt(counter.quantity) - BigInt(assignment.amount)
+                : 0n,
+            );
+        } else continue;
+      } else continue;
+      this.rules.damageEvents ??= [];
+      this.rules.damageEvents.push({
+        ...recorded,
+        sourceCharacteristics: structuredClone(characteristics),
+        combat,
+        controllerId: source.controllerId,
+        recipientKind: player ? "player" : "object",
+        turn: this.match.turn.number,
+      });
+      new Triggers(this).collect(
+        {
+          kind: "damage",
+          sourceId: source.id,
+          affectedId: source.id,
+          controllerId: source.controllerId,
+          ownerId: live
+            ? this.owner(source)
+            : (stackSource.resolution?.sourceSnapshot?.ownerId ??
+              source.controllerId),
+          after: characteristics,
+          damage: {
+            ...recorded,
+            combat,
+            recipientKind: player ? "player" : "object",
+          },
+        },
+        source,
+        sources,
+      );
+    }
+  }
   draw(playerId: string, count: number) {
     const library = this.zone("library", playerId),
       hand = this.zone("hand", playerId);
@@ -1033,33 +1253,56 @@ export class RulesEngine {
       this.rules.mana[player.id] = emptyMana();
     this.rules.restrictedMana = {};
     this.match.turn.stepIndex++;
-    // There are no declared attackers in these rules slices. Empty combat skips
-    // declare-blockers and combat-damage steps (CR 508.8).
-    if (this.match.turn.stepIndex === 6) this.match.turn.stepIndex = 8;
-    if (this.match.turn.stepIndex === 11) {
-      const playerId = this.match.turn.activePlayerId;
-      const hand = this.zone("hand", playerId);
-      if (hand.objectIds.length > 7) {
-        this.rules.pending = {
-          id: randomUUID(),
-          playerId,
-          kind: "cleanup",
-          stage: "selection",
-          targetIds: [],
-          selections: {},
-          totalCost: { ...emptyMana(), generic: 0 },
-        };
-        delete this.match.priority;
+    if (this.match.turn.stepIndex === 5) {
+      new Combat(this).beginAttackers();
+      return;
+    }
+    if (this.match.turn.stepIndex === 6) {
+      if (!this.rules.combat?.attackers.length) this.match.turn.stepIndex = 8;
+      else {
+        new Combat(this).beginBlockers();
         return;
       }
-      this.nextTurn();
+    }
+    if (this.match.turn.stepIndex === 7) {
+      new Combat(this).beginDamage();
+      return;
+    }
+    if (this.match.turn.stepIndex === 9) delete this.rules.combat;
+    if (this.match.turn.stepIndex === 11) {
+      this.cleanup();
       return;
     }
     if (this.match.turn.stepIndex === 2 && this.match.turn.number !== 1)
       this.draw(this.match.turn.activePlayerId, 1);
     this.priority();
   }
+  cleanup() {
+    const playerId = this.match.turn.activePlayerId;
+    if (this.zone("hand", playerId).objectIds.length > 7) {
+      this.rules.pending = {
+        id: randomUUID(),
+        playerId,
+        kind: "cleanup",
+        stage: "selection",
+        targetIds: [],
+        selections: {},
+        totalCost: { ...emptyMana(), generic: 0 },
+      };
+      delete this.match.priority;
+      return;
+    }
+    // CR 514: after discarding, damage and end-of-turn changes end together.
+    this.rules.markedDamage = {};
+    this.rules.temporaryEffects = [];
+    const changed = this.checkpoint();
+    if (this.match.outcome !== "ongoing") return;
+    new Triggers(this).collectStates();
+    if (changed || this.rules.waitingTriggers?.length) this.priority();
+    else this.nextTurn();
+  }
   nextTurn() {
+    this.rules.damageEvents = [];
     const turn = this.match.turn;
     turn.number++;
     turn.activePlayerId =
@@ -1069,15 +1312,37 @@ export class RulesEngine {
     this.beginTurn();
   }
   checkpoint() {
+    let performed = false;
     let changed: boolean;
     do {
       changed = false;
+      for (const equipment of this.battlefieldSources()) {
+        if (
+          !equipment.attachmentTo ||
+          !this.effective(equipment).subtypes?.includes("Equipment")
+        )
+          continue;
+        const recipient = this.match.objects[equipment.attachmentTo];
+        if (
+          !recipient ||
+          recipient.zoneId !== this.zone("battlefield").id ||
+          !this.effective(recipient).types?.includes("Creature") ||
+          this.effective(equipment).types?.includes("Creature")
+        ) {
+          equipment.attachmentTo = null;
+          changed = true;
+          performed = true;
+        }
+      }
       const dying = this.battlefieldSources().filter((object) => {
         const effective = this.effective(object);
         return (
           effective.types?.includes("Creature") &&
           /^-?\d+$/.test(effective.toughness ?? "") &&
-          BigInt(effective.toughness!) <= 0n
+          (BigInt(effective.toughness!) <= 0n ||
+            (!this.hasKeyword(object, "Indestructible") &&
+              BigInt(this.rules.markedDamage?.[object.id] ?? 0) >=
+                BigInt(effective.toughness!)))
         );
       });
       // Determine the whole set before moving anything: these deaths are simultaneous.
@@ -1098,6 +1363,7 @@ export class RulesEngine {
           before.get(object.id),
         );
         changed = true;
+        performed = true;
       }
       for (const token of Object.values(this.match.objects).filter(
         (o) => o.kind === "token" && o.zoneId !== this.zone("battlefield").id,
@@ -1107,6 +1373,7 @@ export class RulesEngine {
         delete this.match.objects[token.id];
       }
     } while (changed);
+    new Combat(this).prune();
     this.rules.continuousEffects = new CharacteristicsCalculator(
       this.match,
       this.catalog,
@@ -1115,6 +1382,7 @@ export class RulesEngine {
       const plus = object.counters.find((c) => c.kind === "+1/+1");
       const minus = object.counters.find((c) => c.kind === "-1/-1");
       if (plus && minus) {
+        performed = true;
         const common =
           BigInt(plus.quantity) < BigInt(minus.quantity)
             ? BigInt(plus.quantity)
@@ -1133,10 +1401,15 @@ export class RulesEngine {
     this.rules.failedDrawPlayerIds = [];
     const alive = this.match.players.filter((p) => p.outcome === "playing");
     if (alive.length < 2) {
+      delete this.match.priority;
+      delete this.rules.pending;
+      delete this.rules.resolving;
+      delete this.rules.waitingTriggers;
       if (alive.length) {
         alive[0].outcome = "won";
         this.match.outcome = "complete";
       } else this.match.outcome = "draw";
     }
+    return performed;
   }
 }

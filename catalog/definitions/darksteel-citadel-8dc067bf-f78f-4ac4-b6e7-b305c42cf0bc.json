@@ -28,6 +28,40 @@
     "Indestructible"
   ],
   "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "indestructible",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Indestructible"
+      },
+      "keyword": "Indestructible"
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

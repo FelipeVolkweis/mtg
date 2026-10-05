@@ -27,6 +27,21 @@
   "oracleText": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
   "keywords": [],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "attack-tax",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "attackCost": {
+          "symbols": [
+            "{2}"
+          ]
+        }
+      }
+    }
+  ]
 }

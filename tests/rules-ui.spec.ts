@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Browser } from "@playwright/test";
 import { table, saveDeck } from "./support/table";
 import { snapshot, exchange } from "./support/peer";
 
@@ -582,6 +582,190 @@ test("living weapon shows its Attachment and equip offers only controlled creatu
       .click();
     await expect(bob.getByTestId("zone-battlefield-shared")).toContainText(
       "Attached to Phyrexian Germ",
+    );
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});
+
+async function preparedRulesTable(browser: Browser) {
+  const result = await table(browser);
+  const [alice, bob] = result.pages;
+  try {
+    for (const page of [alice, bob]) {
+      await saveDeck(
+        page,
+        "Supported Commander",
+        "99 Island (TST) 1\n1 Rules Commander",
+      );
+      await page.getByLabel("Match format").selectOption("commander");
+      await page
+        .getByLabel("Commander", { exact: true })
+        .selectOption({ label: "Rules Commander" });
+      await page
+        .getByRole("button", { name: "Mark ready", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Not ready", exact: true }),
+      ).toBeVisible();
+    }
+    await alice
+      .getByLabel("Starting player")
+      .selectOption((await snapshot(alice)).participantId);
+    await alice
+      .getByRole("button", { name: "Start Match", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Commander Match" }),
+    ).toBeVisible();
+    return result;
+  } catch (error) {
+    await Promise.all(result.contexts.map((context) => context.close()));
+    throw error;
+  }
+}
+
+test("players crew, pay attack costs, declare blocks and assign combat damage through shared controls", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  try {
+    await seedRulesScenario(
+      invitation.split("/").pop()!,
+      undefined,
+      false,
+      "combat",
+    );
+    await alice.reload();
+    await bob.reload();
+    await alice
+      .getByRole("button", { name: "Cultivator's Caravan: crew", exact: true })
+      .click();
+    await alice
+      .getByRole("group", { name: /Crew: at least 3/ })
+      .getByLabel("Silver Myr", { exact: true })
+      .check();
+    await alice
+      .getByRole("button", { name: "Complete payment", exact: true })
+      .click();
+    const pass = async () => {
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    };
+    await pass();
+    await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
+      "Artifact Creature — Vehicle",
+    );
+    await pass();
+    await pass();
+    await expect(
+      alice.getByRole("heading", { name: "Declare attackers", exact: true }),
+    ).toBeVisible();
+    await expect(
+      bob.getByLabel("Attack with Cultivator's Caravan"),
+    ).toHaveCount(0);
+    await alice
+      .getByLabel("Attack with Cultivator's Caravan", { exact: true })
+      .selectOption({ label: "Bob" });
+    await alice
+      .getByRole("button", { name: "Confirm attackers", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Pay attack costs", exact: true }),
+    ).toBeVisible();
+    await alice
+      .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
+      .click();
+    await alice.reload();
+    await alice
+      .getByRole("button", { name: "Complete payment", exact: true })
+      .click();
+    await expect(bob.getByLabel("Combat state")).toContainText(
+      "Cultivator's Caravan attacks Bob",
+    );
+    await pass();
+    const blocks = bob.getByLabel("Block with Silver Myr", { exact: true });
+    await expect(blocks).toHaveCount(2);
+    for (const block of await blocks.all())
+      await block.selectOption({ label: "Cultivator's Caravan" });
+    await bob
+      .getByRole("button", { name: "Confirm blockers", exact: true })
+      .click();
+    await pass();
+    await expect(
+      alice.getByRole("heading", { name: "Assign combat damage", exact: true }),
+    ).toBeVisible();
+    const damage = alice.getByRole("spinbutton", {
+      name: /Damage from Cultivator's Caravan to Silver Myr/,
+    });
+    await damage.nth(0).fill("2");
+    await damage.nth(1).fill("3");
+    await alice
+      .getByRole("button", { name: "Confirm damage", exact: true })
+      .click();
+    await expect(bob.getByTestId("zone-graveyard-Bob")).toContainText(
+      "Graveyard (2)",
+    );
+    await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
+      "2 damage",
+    );
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});
+
+test("flash and source artifact casting permission use normal browser casting and Priority", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  try {
+    await seedRulesScenario(
+      invitation.split("/").pop()!,
+      "Shimmer Myr",
+      false,
+      "flash",
+    );
+    await alice.reload();
+    await bob.reload();
+    await expect(
+      alice.getByRole("button", { name: "Cast Mind Stone", exact: true }),
+    ).toHaveCount(0);
+    await alice
+      .getByRole("button", { name: "Cast Shimmer Myr", exact: true })
+      .click();
+    const pass = async () => {
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    };
+    await pass();
+    await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
+      "Shimmer Myr",
+    );
+    await alice
+      .getByRole("button", { name: "Cast Mind Stone", exact: true })
+      .click();
+    await expect(bob.getByTestId("zone-stack-shared")).toContainText(
+      "Mind Stone",
+    );
+    await pass();
+    await expect(alice.getByTestId("zone-stack-shared")).toContainText(
+      "Stack (0)",
     );
   } finally {
     await Promise.all(contexts.map((context) => context.close()));

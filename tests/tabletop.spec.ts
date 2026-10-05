@@ -306,6 +306,11 @@ test("card drags commit on release and both participants receive ordered revisio
     contexts,
   } = await startTable(browser);
   await alice.getByRole("button", { name: "Draw one", exact: true }).click();
+  await expect(
+    alice
+      .getByTestId("zone-hand-Alice")
+      .getByRole("button", { name: "Island", exact: true }),
+  ).toBeVisible();
   const before = (await snapshot(alice)).match!;
   const hand = before.zones.find(
     (zone) => zone.kind === "hand" && zone.ownerId === before.players[0].id,

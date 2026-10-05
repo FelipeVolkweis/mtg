@@ -79,6 +79,125 @@ function CardChoices({
   );
 }
 
+function CombatProcedure({
+  match,
+  act,
+}: {
+  match: MatchView;
+  act: (action: MatchAction) => void;
+}) {
+  const pending = match.rules!.pending!;
+  const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [amounts, setAmounts] = useState<Record<string, number>>({});
+  const attacking = pending.kind === "declare-attackers";
+  const damage = pending.kind === "combat-damage";
+  const name = (id: string) =>
+    match.objects[id]?.characteristics.name ??
+    match.players.find((p) => p.id === id)?.name ??
+    "Permanent";
+  return (
+    <section aria-label="Pending combat choice">
+      <h2>
+        {damage
+          ? "Assign combat damage"
+          : attacking
+            ? "Declare attackers"
+            : "Declare blockers"}
+      </h2>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          act({
+            type: "rules-input",
+            procedureId: pending.id,
+            ...(damage
+              ? {
+                  damageAssignments: (pending.damageChoices ?? []).flatMap(
+                    (choice) =>
+                      choice.recipientIds.map((recipientId) => ({
+                        sourceId: choice.sourceId,
+                        recipientId,
+                        amount:
+                          amounts[`${choice.sourceId}:${recipientId}`] ??
+                          (choice.recipientIds.length === 1
+                            ? choice.amount
+                            : 0),
+                      })),
+                  ),
+                }
+              : { selections }),
+          });
+        }}
+      >
+        {damage
+          ? (pending.damageChoices ?? []).map((choice) => (
+              <fieldset key={choice.sourceId}>
+                <legend>
+                  {name(choice.sourceId)}: assign {choice.amount} damage
+                </legend>
+                {choice.recipientIds.map((id) => (
+                  <label key={id}>
+                    Damage from {name(choice.sourceId)} to {name(id)}
+                    <input
+                      aria-label={`Damage from ${name(choice.sourceId)} to ${name(id)}`}
+                      type="number"
+                      min={0}
+                      max={choice.amount}
+                      step={1}
+                      required
+                      value={
+                        amounts[`${choice.sourceId}:${id}`] ??
+                        (choice.recipientIds.length === 1 ? choice.amount : 0)
+                      }
+                      onChange={(event) =>
+                        setAmounts({
+                          ...amounts,
+                          [`${choice.sourceId}:${id}`]: Number(
+                            event.target.value,
+                          ),
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+              </fieldset>
+            ))
+          : Object.entries(pending.selectionOptions).map(([id, option]) => (
+              <label key={id}>
+                {option.label}
+                <select
+                  aria-label={option.label}
+                  value={selections[id]?.[0] ?? ""}
+                  onChange={(event) =>
+                    setSelections({
+                      ...selections,
+                      [id]: event.target.value ? [event.target.value] : [],
+                    })
+                  }
+                >
+                  <option value="">
+                    {attacking ? "Do not attack" : "Do not block"}
+                  </option>
+                  {option.objectIds.map((target) => (
+                    <option key={target} value={target}>
+                      {option.labels?.[target] ?? name(target)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ))}
+        <button>
+          {damage
+            ? "Confirm damage"
+            : attacking
+              ? "Confirm attackers"
+              : "Confirm blockers"}
+        </button>
+      </form>
+    </section>
+  );
+}
+
 function Procedure({
   match,
   act,
@@ -94,17 +213,19 @@ function Procedure({
   return (
     <section aria-label="Pending rules choice">
       <h2>
-        {pending.kind === "trigger-order"
-          ? "Order simultaneous triggers"
-          : pending.stage === "variable"
-            ? "Choose X"
-            : pending.kind === "resolve"
-              ? "Resolve spell or ability"
-              : pending.kind === "cleanup"
-                ? "Cleanup discard"
-                : pending.stage === "targets"
-                  ? "Choose target"
-                  : "Pay costs"}
+        {pending.kind === "attack-payment"
+          ? "Pay attack costs"
+          : pending.kind === "trigger-order"
+            ? "Order simultaneous triggers"
+            : pending.stage === "variable"
+              ? "Choose X"
+              : pending.kind === "resolve"
+                ? "Resolve spell or ability"
+                : pending.kind === "cleanup"
+                  ? "Cleanup discard"
+                  : pending.stage === "targets"
+                    ? "Choose target"
+                    : "Pay costs"}
       </h2>
       {pending.context && <p>{pending.context}</p>}
       {pending.kind === "trigger-order" ? (
@@ -255,7 +376,7 @@ function Procedure({
               act({
                 type: "rules-input",
                 procedureId: pending.id,
-                selections,
+                ...(pending.kind === "attack-payment" ? {} : { selections }),
                 confirm: true,
               })
             }
@@ -386,11 +507,17 @@ export function RulesTabletop({
             <p>Waiting for the other player to keep their opening Hand.</p>
           )}
         {pending ? (
-          <Procedure
-            key={`${pending.id}:${pending.stage}`}
-            match={match}
-            act={act}
-          />
+          ["declare-attackers", "declare-blockers", "combat-damage"].includes(
+            pending.kind,
+          ) ? (
+            <CombatProcedure key={pending.id} match={match} act={act} />
+          ) : (
+            <Procedure
+              key={`${pending.id}:${pending.stage}`}
+              match={match}
+              act={act}
+            />
+          )
         ) : (
           rules.waiting && (
             <p>
@@ -411,6 +538,22 @@ export function RulesTabletop({
             </button>
           ))}
         </section>
+        {rules.combat && (
+          <section aria-label="Combat state">
+            <h2>Combat</h2>
+            {rules.combat.attackers.map((attacker) => (
+              <p key={attacker.objectId}>
+                {match.objects[attacker.objectId]?.characteristics.name} attacks{" "}
+                {match.players.find((p) => p.id === attacker.defenderId)
+                  ?.name ??
+                  match.objects[attacker.defenderId]?.characteristics.name}
+                {attacker.blocked
+                  ? ` · Blocked by ${attacker.blockerIds.map((id) => match.objects[id]?.characteristics.name).join(", ") || "departed blockers"}`
+                  : " · Unblocked"}
+              </p>
+            ))}
+          </section>
+        )}
         <div className="rules-zones">
           {match.zones.map((zone) => (
             <section
@@ -462,6 +605,9 @@ export function RulesTabletop({
                                 .join(", ")}
                             </p>
                           ))}
+                        {!!rules.markedDamage?.[id] && (
+                          <p>{rules.markedDamage[id]} damage</p>
+                        )}
                         {object.counters.map((counter) => (
                           <p key={counter.kind}>
                             {counter.quantity} {counter.kind} counters

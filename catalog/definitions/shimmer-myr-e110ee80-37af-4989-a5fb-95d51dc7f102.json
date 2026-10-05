@@ -9,7 +9,7 @@
       "name": "Shimmer Myr",
       "manaCost": "{3}",
       "colors": [],
-      "typeLine": "Artifact Creature — Myr",
+      "typeLine": "Artifact Creature \u2014 Myr",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -32,6 +32,34 @@
     "Flash"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flash"
+      },
+      "keyword": "Flash"
+    },
+    {
+      "id": "artifact-flash",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "castingPermission": {
+          "zone": "hand",
+          "controller": "you",
+          "types": [
+            "Artifact"
+          ]
+        }
+      }
+    }
+  ]
 }

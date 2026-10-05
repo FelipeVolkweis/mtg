@@ -103,6 +103,10 @@ export async function seedCatalog() {
     "Vedalken Archmage",
     "Chief of the Foundry",
     "Steel Overseer",
+    "Cultivator's Caravan",
+    "Silver Myr",
+    "Propaganda",
+    "Shimmer Myr",
   ]) {
     const card = Object.values(release.definitions).find(
       (card) => card.canonicalName === name,

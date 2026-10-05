@@ -88,45 +88,91 @@ export class CharacteristicsCalculator {
     return result;
   }
   active(): ActiveContinuousEffect[] {
-    return Object.values(this.match.objects).flatMap((source) => {
-      const card =
-        this.catalog.definitions[
-          this.match.instances[source.cardInstanceIds[0]]?.definitionId
-        ];
-      return (card?.abilities ?? []).flatMap((ability) => {
-        const effect = ability.rules?.continuous;
-        if (!effect || ability.kind !== "static" || source.status.phasedOut)
-          return [];
-        if (
-          !effect.characteristicDefining &&
-          this.match.zones.find((z) => z.id === source.zoneId)?.kind !==
-            "battlefield"
+    return [
+      ...(this.match.rules?.temporaryEffects ?? []).filter(
+        (effect) => !!this.match.objects[effect.sourceId],
+      ),
+      ...Object.values(this.match.objects).flatMap((source) => {
+        const card =
+          this.catalog.definitions[
+            this.match.instances[source.cardInstanceIds[0]]?.definitionId
+          ];
+        return (card?.abilities ?? []).flatMap((ability) => {
+          const effect = ability.rules?.continuous;
+          if (!effect || ability.kind !== "static" || source.status.phasedOut)
+            return [];
+          if (
+            !effect.characteristicDefining &&
+            this.match.zones.find((z) => z.id === source.zoneId)?.kind !==
+              "battlefield"
+          )
+            return [];
+          if (
+            effect.condition &&
+            this.value(effect.condition.value, source.controllerId, source.id) <
+              effect.condition.atLeast
+          )
+            return [];
+          return [
+            {
+              sourceId: source.id,
+              abilityId: ability.id,
+              playerId: source.controllerId,
+              filter: effect.filter,
+              changes: effect.changes,
+              applicability: effect.characteristicDefining
+                ? ("characteristic-defining" as const)
+                : ("source-on-battlefield" as const),
+            },
+          ];
+        });
+      }),
+    ];
+  }
+  typeCharacteristics(object: GameObject): Characteristics {
+    const result = structuredClone(object.characteristics);
+    for (const effect of this.active())
+      if (
+        matchesFilter(
+          this.match,
+          { ...object, characteristics: result },
+          effect.filter,
+          effect.playerId,
+          effect.sourceId,
         )
-          return [];
-        return [
-          {
-            sourceId: source.id,
-            abilityId: ability.id,
-            playerId: source.controllerId,
-            filter: effect.filter,
-            changes: effect.changes,
-            applicability: effect.characteristicDefining
-              ? ("characteristic-defining" as const)
-              : ("source-on-battlefield" as const),
-          },
-        ];
-      });
-    });
+      )
+        for (const change of effect.changes)
+          if (change.kind === "add-types") {
+            result.types = [
+              ...new Set([...(result.types ?? []), ...(change.types ?? [])]),
+            ];
+            result.subtypes = [
+              ...new Set([
+                ...(result.subtypes ?? []),
+                ...(change.subtypes ?? []),
+              ]),
+            ];
+          }
+    return result;
   }
   effective(object: GameObject): Characteristics {
-    const result = structuredClone(object.characteristics);
+    const result = this.typeCharacteristics(object);
+    const definition =
+      this.catalog.definitions[
+        this.match.instances[object.cardInstanceIds[0]]?.definitionId
+      ];
+    for (const ability of definition?.abilities ?? [])
+      if (ability.rules?.keyword)
+        result.keywords = [
+          ...new Set([...(result.keywords ?? []), ability.rules.keyword]),
+        ];
     const changes = this.active().flatMap((effect) => {
       const applies =
         effect.applicability === "characteristic-defining"
           ? effect.sourceId === object.id
           : matchesFilter(
               this.match,
-              object,
+              { ...object, characteristics: result },
               effect.filter,
               effect.playerId,
               effect.sourceId,
@@ -135,6 +181,11 @@ export class CharacteristicsCalculator {
         ? effect.changes.map((change) => ({ effect, change }))
         : [];
     });
+    for (const { change } of changes)
+      if (change.kind === "grant-keyword")
+        result.keywords = [
+          ...new Set([...(result.keywords ?? []), change.keyword]),
+        ];
     // CR 613: characteristic-defining values precede additive modifications;
     // counters contribute in the modification sublayer, after base values.
     for (const { effect, change } of changes.filter(
@@ -142,14 +193,14 @@ export class CharacteristicsCalculator {
     )) {
       result.power = String(
         this.value(
-          change.kind === "linked-characteristics" ? 0 : change.power,
+          change.kind === "define-stats" ? change.power : 0,
           effect.playerId,
           effect.sourceId,
         ),
       );
       result.toughness = String(
         this.value(
-          change.kind === "linked-characteristics" ? 0 : change.toughness,
+          change.kind === "define-stats" ? change.toughness : 0,
           effect.playerId,
           effect.sourceId,
         ),
@@ -186,6 +237,19 @@ export class CharacteristicsCalculator {
         " — " +
         result.subtypes.join(" ");
     }
+    for (const { effect, change } of changes)
+      if (change.kind === "set-stats") {
+        result.power = String(
+          this.value(change.power, effect.playerId, effect.sourceId),
+        );
+        result.toughness = String(
+          this.value(change.toughness, effect.playerId, effect.sourceId),
+        );
+      }
+    if (changes.some(({ change }) => change.kind === "add-types"))
+      result.typeLine =
+        [...(result.supertypes ?? []), ...(result.types ?? [])].join(" ") +
+        (result.subtypes?.length ? " — " + result.subtypes.join(" ") : "");
     for (const stat of ["power", "toughness"] as const) {
       if (!/^-?\d+$/.test(result[stat] ?? "")) continue;
       let amount = BigInt(result[stat]!);
@@ -194,7 +258,7 @@ export class CharacteristicsCalculator {
       ))
         amount += BigInt(
           this.value(
-            change.kind === "linked-characteristics" ? 0 : change[stat],
+            change.kind === "add-stats" ? change[stat] : 0,
             effect.playerId,
             effect.sourceId,
           ),

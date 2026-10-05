@@ -93,9 +93,9 @@ export class ObjectEffects {
       source.zoneId !== battlefield ||
       target.zoneId !== battlefield ||
       source.id === target.id ||
-      !target.characteristics.types?.includes("Creature") ||
+      !this.engine.effective(target).types?.includes("Creature") ||
       !source.characteristics.subtypes?.includes("Equipment") ||
-      source.characteristics.types?.includes("Creature")
+      this.engine.effective(source).types?.includes("Creature")
     )
       return;
     source.attachmentTo = target.id;

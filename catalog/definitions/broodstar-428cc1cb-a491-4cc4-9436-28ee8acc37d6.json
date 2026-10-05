@@ -37,7 +37,7 @@
     "Affinity"
   ],
   "manaValue": 10,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "affinity",
@@ -102,6 +102,17 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "origin": "printed",
+      "keyword": "Flying",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flying"
       }
     }
   ]

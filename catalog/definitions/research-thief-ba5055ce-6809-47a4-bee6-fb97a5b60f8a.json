@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Moonfolk Wizard",
+      "typeLine": "Artifact Creature \u2014 Moonfolk Wizard",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -40,5 +40,28 @@
   ],
   "manaValue": 5,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flash"
+      },
+      "keyword": "Flash"
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "origin": "printed",
+      "keyword": "Flying",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flying"
+      }
+    }
+  ]
 }

@@ -1,0 +1,390 @@
+import { randomUUID } from "node:crypto";
+import type { GameObject, MatchAction } from "../../shared/model.js";
+import type {
+  DamageAssignment,
+  DamageChoice,
+  SelectionOption,
+} from "../../shared/rules.js";
+import { manaCost, spendMana } from "./mana.js";
+import { emptyMana, type RulesEngine } from "./rules-engine.js";
+
+// Declarations are turn-based actions. Their choices finish before Priority is offered.
+export class Combat {
+  constructor(readonly engine: RulesEngine) {}
+  eligible(object: GameObject, playerId: string, attacking = false) {
+    const e = this.engine;
+    return (
+      object.controllerId === playerId &&
+      object.zoneId === e.zone("battlefield").id &&
+      !object.status.phasedOut &&
+      !object.status.tapped &&
+      e.effective(object).types?.includes("Creature") &&
+      (!attacking ||
+        (!e.hasKeyword(object, "Defender") &&
+          e.canPayTapSymbol(object, playerId)))
+    );
+  }
+  defenders(playerId: string) {
+    const e = this.engine;
+    return [
+      ...e.match.players
+        .filter((p) => p.id !== playerId && p.outcome === "playing")
+        .map((p) => ({ id: p.id, playerId: p.id, name: p.name })),
+      ...e.battlefieldSources().flatMap((object) => {
+        const types = e.effective(object).types ?? [];
+        const defending = types.includes("Battle")
+          ? object.protectorId
+          : types.includes("Planeswalker")
+            ? object.controllerId
+            : undefined;
+        return defending && defending !== playerId
+          ? [
+              {
+                id: object.id,
+                playerId: defending,
+                name: object.characteristics.name,
+              },
+            ]
+          : [];
+      }),
+    ];
+  }
+  prompt(
+    kind: "declare-attackers" | "declare-blockers",
+    playerId: string,
+    options: Record<string, SelectionOption>,
+  ) {
+    const e = this.engine;
+    e.rules.pending = {
+      id: randomUUID(),
+      playerId,
+      kind,
+      stage: "selection",
+      targetIds: [],
+      selections: {},
+      totalCost: { ...emptyMana(), generic: 0 },
+      options,
+    };
+    delete e.match.priority;
+  }
+  beginAttackers() {
+    const e = this.engine,
+      playerId = e.match.turn.activePlayerId;
+    e.rules.combat = { attackers: [], remainingDefenderIds: [] };
+    const defenders = this.defenders(playerId);
+    const options = Object.fromEntries(
+      e
+        .battlefieldSources()
+        .filter((o) => this.eligible(o, playerId, true))
+        .map((o) => [
+          o.id,
+          {
+            count: 1,
+            minCount: 0,
+            objectIds: defenders.map((d) => d.id),
+            label: `Attack with ${o.characteristics.name}`,
+            labels: Object.fromEntries(defenders.map((d) => [d.id, d.name])),
+          },
+        ]),
+    );
+    // With no eligible attackers, the empty declaration requires no choice.
+    if (!Object.keys(options).length) {
+      e.priority();
+      return;
+    }
+    this.prompt("declare-attackers", playerId, options);
+  }
+  canBlock(blocker: GameObject, attacker: GameObject) {
+    const e = this.engine;
+    return (
+      !e.hasKeyword(attacker, "Unblockable") &&
+      (!e.hasKeyword(attacker, "Flying") ||
+        e.hasKeyword(blocker, "Flying") ||
+        e.hasKeyword(blocker, "Reach")) &&
+      (!e.hasKeyword(attacker, "Cannot be blocked by Walls") ||
+        !e.effective(blocker).subtypes?.includes("Wall"))
+    );
+  }
+  beginBlockers() {
+    const e = this.engine,
+      combat = e.rules.combat!;
+    if (!combat.remainingDefenderIds.length)
+      combat.remainingDefenderIds = e.match.turn.order.filter((id) =>
+        combat.attackers.some((a) => a.defendingPlayerId === id),
+      );
+    this.nextBlocker();
+  }
+  nextBlocker() {
+    const e = this.engine,
+      combat = e.rules.combat!;
+    const playerId = combat.remainingDefenderIds[0];
+    if (!playerId) {
+      e.priority();
+      return;
+    }
+    const options = Object.fromEntries(
+      e
+        .battlefieldSources()
+        .filter((o) => this.eligible(o, playerId))
+        .map((o) => [
+          o.id,
+          {
+            count: 1,
+            minCount: 0,
+            label: `Block with ${o.characteristics.name}`,
+            objectIds: combat.attackers
+              .filter(
+                (a) =>
+                  a.defendingPlayerId === playerId &&
+                  e.match.objects[a.objectId] &&
+                  this.canBlock(o, e.object(a.objectId)),
+              )
+              .map((a) => a.objectId),
+          },
+        ]),
+    );
+    this.prompt("declare-blockers", playerId, options);
+  }
+  answer(action: Extract<MatchAction, { type: "rules-input" }>) {
+    const e = this.engine,
+      pending = e.rules.pending!,
+      combat = e.rules.combat!;
+    const selections = action.selections ?? {};
+    for (const [id, ids] of Object.entries(selections)) {
+      const option = pending.options?.[id];
+      if (
+        !option ||
+        ids.length > 1 ||
+        ids.some((target) => !option.objectIds.includes(target))
+      )
+        throw new Error("Choose a legal combat declaration.");
+    }
+    if (pending.kind === "declare-attackers") {
+      this.validateAttackers(selections, pending.playerId);
+      pending.selections = selections;
+      pending.totalCost = this.attackCost(selections, pending.playerId);
+      if (Object.values(pending.totalCost).some((amount) => amount > 0)) {
+        pending.kind = "attack-payment";
+        pending.stage = "payment";
+        delete pending.options;
+        return;
+      }
+      this.commitAttackers(selections, pending.playerId);
+    } else {
+      for (const [id, ids] of Object.entries(selections)) {
+        if (!ids.length) continue;
+        const blocker = e.object(id),
+          attacker = combat.attackers.find((a) => a.objectId === ids[0]);
+        if (
+          !this.eligible(blocker, pending.playerId) ||
+          !attacker ||
+          attacker.defendingPlayerId !== pending.playerId ||
+          !this.canBlock(blocker, e.object(attacker.objectId))
+        )
+          throw new Error("Choose a legal blocker.");
+        attacker.blockerIds.push(id);
+        attacker.blocked = true;
+      }
+      combat.remainingDefenderIds.shift();
+    }
+    delete e.rules.pending;
+    if (
+      pending.kind === "declare-blockers" &&
+      combat.remainingDefenderIds.length
+    )
+      this.nextBlocker();
+    else e.priority();
+  }
+  attackCost(selections: Record<string, string[]>, playerId: string) {
+    const e = this.engine;
+    const total = { ...emptyMana(), generic: 0 };
+    for (const ids of Object.values(selections)) {
+      const defenderId = ids[0];
+      if (!defenderId || !e.match.players.some((p) => p.id === defenderId))
+        continue;
+      for (const source of e.battlefieldSources()) {
+        if (
+          source.controllerId !== defenderId ||
+          source.controllerId === playerId
+        )
+          continue;
+        for (const ability of e.definition(source)?.abilities ?? [])
+          if (ability.kind === "static" && ability.rules?.attackCost) {
+            const cost = manaCost(ability.rules.attackCost.symbols);
+            for (const type of Object.keys(total) as (keyof typeof total)[])
+              total[type] += cost[type];
+          }
+      }
+    }
+    return total;
+  }
+  validateAttackers(selections: Record<string, string[]>, playerId: string) {
+    const e = this.engine,
+      defenders = this.defenders(playerId);
+    for (const [id, ids] of Object.entries(selections)) {
+      if (!ids.length) continue;
+      if (
+        ids.length !== 1 ||
+        !this.eligible(e.object(id), playerId, true) ||
+        !defenders.some((d) => d.id === ids[0])
+      )
+        throw new Error("Choose an eligible attacker and defender.");
+    }
+    for (const object of e.battlefieldSources()) {
+      if (
+        !this.eligible(object, playerId, true) ||
+        !e.hasKeyword(object, "Must attack") ||
+        selections[object.id]?.length
+      )
+        continue;
+      // CR 508.1d: players need not pay an optional cost to satisfy a requirement.
+      if (
+        defenders.some((d) =>
+          Object.values(
+            this.attackCost({ [object.id]: [d.id] }, playerId),
+          ).every((amount) => amount === 0),
+        )
+      )
+        throw new Error("An eligible creature must attack this combat.");
+    }
+  }
+  commitAttackers(selections: Record<string, string[]>, playerId: string) {
+    const e = this.engine,
+      defenders = this.defenders(playerId);
+    for (const [id, ids] of Object.entries(selections)) {
+      if (!ids.length) continue;
+      const attacker = e.object(id),
+        defender = defenders.find((d) => d.id === ids[0])!;
+      e.rules.combat!.attackers.push({
+        objectId: id,
+        defenderId: defender.id,
+        defendingPlayerId: defender.playerId,
+        blockerIds: [],
+        blocked: false,
+      });
+      if (!e.hasKeyword(attacker, "Vigilance")) attacker.status.tapped = true;
+    }
+  }
+  payAttackers(action: Extract<MatchAction, { type: "rules-input" }>) {
+    const e = this.engine,
+      pending = e.rules.pending!;
+    if (action.selections || action.variables || action.damageAssignments)
+      throw new Error("Attack choices are locked during payment.");
+    this.validateAttackers(pending.selections, pending.playerId);
+    const available = { ...e.rules.mana[pending.playerId] };
+    for (const lot of e.rules.restrictedMana?.[pending.playerId] ?? [])
+      available[lot.type] -= lot.amount;
+    const payment = spendMana(available, pending.totalCost);
+    if (!payment) throw new Error("The attack costs cannot be paid yet.");
+    for (const type of payment.spent) e.rules.mana[pending.playerId][type]--;
+    this.commitAttackers(pending.selections, pending.playerId);
+    delete e.rules.pending;
+    e.priority(pending.playerId);
+  }
+  damageChoices(): DamageChoice[] {
+    const e = this.engine;
+    this.prune();
+    return (e.rules.combat?.attackers ?? []).flatMap((a) => {
+      const power = Math.max(
+        0,
+        Number(e.effective(e.object(a.objectId)).power) || 0,
+      );
+      const recipientIds = a.blocked
+        ? a.blockerIds
+        : e.match.players.some((p) => p.id === a.defenderId) ||
+            e.match.objects[a.defenderId]
+          ? [a.defenderId]
+          : [];
+      return power && recipientIds.length
+        ? [{ sourceId: a.objectId, amount: power, recipientIds }]
+        : [];
+    });
+  }
+  beginDamage() {
+    const e = this.engine,
+      choices = this.damageChoices();
+    if (choices.some((c) => c.recipientIds.length > 1)) {
+      e.rules.pending = {
+        id: randomUUID(),
+        playerId: e.match.turn.activePlayerId,
+        kind: "combat-damage",
+        stage: "selection",
+        targetIds: [],
+        selections: {},
+        damageChoices: choices,
+        totalCost: { ...emptyMana(), generic: 0 },
+      };
+      delete e.match.priority;
+      return;
+    }
+    this.applyDamage(
+      choices.map((c) => ({
+        sourceId: c.sourceId,
+        recipientId: c.recipientIds[0],
+        amount: c.amount,
+      })),
+    );
+  }
+  answerDamage(action: Extract<MatchAction, { type: "rules-input" }>) {
+    const choices = this.damageChoices(),
+      assignments = action.damageAssignments ?? [];
+    const pairs = new Set<string>();
+    for (const a of assignments) {
+      const choice = choices.find((c) => c.sourceId === a.sourceId);
+      const pair = `${a.sourceId}:${a.recipientId}`;
+      if (
+        !Number.isSafeInteger(a.amount) ||
+        a.amount < 0 ||
+        !choice?.recipientIds.includes(a.recipientId) ||
+        pairs.has(pair)
+      )
+        throw new Error("Choose legal combat damage recipients and amounts.");
+      pairs.add(pair);
+    }
+    for (const c of choices)
+      if (
+        assignments
+          .filter((a) => a.sourceId === c.sourceId)
+          .reduce((sum, a) => sum + a.amount, 0) !== c.amount
+      )
+        throw new Error("Assign all available combat damage.");
+    delete this.engine.rules.pending;
+    this.applyDamage(assignments);
+  }
+  applyDamage(assignments: DamageAssignment[]) {
+    const e = this.engine;
+    const all = [...assignments];
+    for (const a of e.rules.combat?.attackers ?? [])
+      for (const id of a.blockerIds) {
+        const power = Math.max(0, Number(e.effective(e.object(id)).power) || 0);
+        if (power)
+          all.push({ sourceId: id, recipientId: a.objectId, amount: power });
+      }
+    e.damage(all, true);
+    e.priority();
+  }
+  prune() {
+    const e = this.engine,
+      combat = e.rules.combat;
+    if (!combat) return;
+    const present = (id: string) => {
+      const object = e.match.objects[id];
+      return (
+        object &&
+        object.zoneId === e.zone("battlefield").id &&
+        !object.status.phasedOut &&
+        e.effective(object).types?.includes("Creature")
+      );
+    };
+    combat.attackers = combat.attackers.filter(
+      (a) =>
+        present(a.objectId) &&
+        e.object(a.objectId).controllerId === e.match.turn.activePlayerId,
+    );
+    for (const a of combat.attackers)
+      a.blockerIds = a.blockerIds.filter(
+        (id) =>
+          present(id) && e.object(id).controllerId === a.defendingPlayerId,
+      );
+  }
+}

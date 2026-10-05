@@ -284,6 +284,7 @@ export interface GameObject {
   stickerPlacements: { stickerId: string; order: number }[];
   meldParts?: GameObject[];
   resolution?: {
+    sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
     ability: RulesAbility;
     event?: import("./rules.js").SemanticEvent;
     targetIds: string[];
@@ -430,6 +431,18 @@ export const matchActionSchema = z.discriminatedUnion("type", [
     .object({
       type: z.literal("rules-input"),
       procedureId: id,
+      damageAssignments: z
+        .array(
+          z
+            .object({
+              sourceId: id,
+              recipientId: id,
+              amount: z.number().int().nonnegative().max(1000000),
+            })
+            .strict(),
+        )
+        .max(100)
+        .optional(),
       targetIds: z.array(id).max(100).optional(),
       selections: z.record(z.string(), z.array(id).max(100)).optional(),
       color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),

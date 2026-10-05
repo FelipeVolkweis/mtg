@@ -95,6 +95,13 @@ export function moveObject(
   for (const other of Object.values(match.objects)) {
     if (other.attachmentTo === objectId) other.attachmentTo = null;
   }
+  if (match.rules) {
+    delete match.rules.markedDamage?.[objectId];
+    delete match.rules.controlledSinceTurn[objectId];
+    match.rules.temporaryEffects = match.rules.temporaryEffects?.filter(
+      (effect) => effect.sourceId !== objectId,
+    );
+  }
   delete match.objects[objectId];
   delete match.layout.positions[objectId];
   match.objects[fresh.id] = fresh;

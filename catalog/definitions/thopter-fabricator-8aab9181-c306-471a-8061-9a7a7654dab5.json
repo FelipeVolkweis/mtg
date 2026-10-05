@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact — Vehicle",
+      "typeLine": "Artifact \u2014 Vehicle",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -38,5 +38,52 @@
   ],
   "manaValue": 3,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "crew",
+      "kind": "activated",
+      "origin": "printed",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "keyword": "Crew"
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "origin": "printed",
+      "keyword": "Flying",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flying"
+      }
+    }
+  ]
 }

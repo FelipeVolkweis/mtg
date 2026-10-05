@@ -32,7 +32,7 @@
     "Indestructible"
   ],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "size",
@@ -71,6 +71,27 @@
             }
           ]
         }
+      }
+    },
+    {
+      "id": "indestructible",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Indestructible"
+      },
+      "keyword": "Indestructible"
+    },
+    {
+      "id": "attack-requirement",
+      "kind": "static",
+      "origin": "printed",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Must attack"
       }
     }
   ]

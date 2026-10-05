@@ -1,4 +1,4 @@
-# Rules automation: tickets 01–15
+# Rules automation: tickets 01–20
 
 Commander is available alongside the temporary Tabletop compatibility path. The
 rules slices require two ready Room Participants, a selected legendary
@@ -7,7 +7,7 @@ compatible Color Identity, and complete authored automation support. The mono-U
 sample still contains unsupported cards and is deliberately rejected. Sai and
 Padeem satisfy commander eligibility; Sai is now fully supported, while Padeem
 awaits later slices. Graaz cannot lead the unchanged blue Decklist. Solo automated
-practice, combat, commander tax and commander return choices belong to later
+practice, commander tax and commander return choices belong to later
 tickets. The existing Tabletop remains available until ticket 30 removes it.
 
 `MatchService.execute` is the server-owned gameplay command boundary. Transport,
@@ -26,8 +26,7 @@ pending procedure details and legal choices only to the player answering them.
 Card Abilities may contain a validated `rules` composition. It describes costs,
 Object Filters, targets and semantic effects. Imported keywords and legacy
 primitive envelopes do not imply execution support. Complete definitions retain
-binary automation status; Ornithopter of Paradise has authored mana behavior but
-remains unimplemented until flying is enforced. The catalog importer preserves
+binary automation status. Ornithopter of Paradise now supports its mana ability and flying. The catalog importer preserves
 these separately owned authored fields.
 
 Opening procedures remove commanders before shuffling, draw seven, and use London
@@ -97,7 +96,7 @@ restored Priority opportunity. Browser coverage verifies trigger-order recovery.
 
 Shared Thopter and Myr descriptors create independent token Game Objects with
 explicit characteristics, an owner and controller, and no Card Instance.
-Thopters carry flying; combat enforcement comes with the later combat slices.
+Thopters carry enforced flying.
 Ichor Wellspring, Vedalken Archmage, Sai and Foundry of the Consuls have authored
 trigger, draw and token behavior.
 
@@ -120,8 +119,8 @@ and leave colored requirements unchanged. Both preproduced mana and production
 during payment use the same locked cost.
 
 Darksteel Juggernaut, Broodstar, Memory Guardian, Spire Golem and Thought Monitor
-retain their authored stat, affinity and available entry behavior but remain
-unimplemented pending flying, indestructible or attack requirements. The complete
+now combine their authored stats, affinity and entry behavior with enforced
+flying, indestructible or attack requirements and are implemented. The complete
 mono-U Decklist remains ineligible until the remaining slices are delivered.
 
 
@@ -161,3 +160,57 @@ an Object Link. Its continuous ability reads that creature card's current
 characteristics in Exile, retaining Shapeshifter; unrelated exiled cards do not
 apply. Departed linked cards and new Duplicant lifetimes do not reuse an old link.
 The link is persisted with Match state and projected only through visible objects.
+
+
+Combat declarations are persisted turn-based choices at the start of the declare
+attackers and declare blockers steps, followed by ordinary Priority windows.
+Only the declaring player sees the legal choices. Shared Combat state records
+attackers, defending players or permanents, blockers and whether an attacker was
+blocked. Effective creature types, controller, tapped state, control timing,
+flying, reach, unblockability and Wall restrictions govern legality. Changing
+characteristics before declaration changes the available choices. Departing
+creatures leave combat; an attacker whose blockers leave stays blocked.
+
+At combat damage, players divide an attacker's power among multiple blockers.
+Single-recipient assignments are automatic, and blocker damage is simultaneous
+with attacker damage. The current rules permit arbitrary division among multiple
+blockers without a damage assignment order ([Wizards Foundations update](https://magic.wizards.com/en/news/announcements/foundations-update-bulletin)).
+Damage events retain source identity and characteristics, controller, recipient,
+amount, combat status and turn for later consumers, expiring at the next turn. Damage is distinct from life
+loss; both combat and resolving noncombat effects use the same operation. Damage
+marks persist on creatures until cleanup or departure. Indestructible prevents
+destruction and lethal-damage death, while zero toughness, sacrifice, exile and
+bounce retain their distinct semantics. Checkpoints apply simultaneous creature
+deaths, failed-draw losses and zero-life losses, and completed Matches stop
+Priority and further gameplay.
+
+Typed keyword grants participate in effective characteristics and opponent
+hexproof target legality, including revalidation during resolution. Costs and
+untargeted effects do not target. Flash and source-based artifact casting
+permission use the normal casting/payment procedure and require Priority.
+Darksteel Citadel and Shimmer Myr are fully implemented; Research Thief retains
+flash and flying but remains unimplemented pending its combat-damage trigger.
+
+Crew selects untapped controlled creatures by total effective power. It can use
+newly controlled creatures and remains separate from tap-symbol costs. The
+resolved ability adds Artifact and Creature types until end of turn, preserving
+Vehicle stats and subtypes, Counters and other changes. Equipment uses effective
+creature types when attaching and detaches at a checkpoint if animation ends. The Vehicle's own attack
+and tap-symbol timing is checked independently. Cultivator's Caravan is complete;
+Thopter Fabricator and Skysovereign retain flying and crew but remain unimplemented
+until their remaining triggers are delivered.
+
+Propaganda opens a per-attacker mana payment using the existing source controls.
+No attackers are tapped or declared before the complete payment succeeds;
+cancelling returns to attacker selection and retains completed mana activations.
+Restricted casting/activation mana cannot pay attack costs. Required attackers
+may decline attacks when every legal defender requires optional payment. Graaz
+adds Juggernaut types and sets other creatures' base stats to 5/3 before additive
+bonuses and Counters, including on crewed Vehicles. Its requirements and Wall
+restriction follow those effective types.
+
+Cleanup discards first, then removes damage and temporary effects together. If
+state-based actions or triggers require Priority, cleanup waits, offers Priority,
+and repeats after the Stack clears before advancing to the next turn. Persisted
+choices retain their identifiers across reconnects, including attack payment and
+combat damage assignments.

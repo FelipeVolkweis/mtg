@@ -9,7 +9,7 @@
       "name": "Steel Hellkite",
       "manaCost": "{6}",
       "colors": [],
-      "typeLine": "Artifact Creature — Dragon",
+      "typeLine": "Artifact Creature \u2014 Dragon",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -33,5 +33,17 @@
   ],
   "manaValue": 6,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "flying",
+      "kind": "static",
+      "origin": "printed",
+      "keyword": "Flying",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flying"
+      }
+    }
+  ]
 }
