@@ -4,6 +4,8 @@ Shared language for an invitation-only Magic tabletop where Room Participants pl
 
 ## Language
 
+### Rooms and Matches
+
 **Room**:
 An invitation-only online session for guest players and successive Matches. A Room can hold waiting guests while one human plays Solo Practice or two humans play a Commander Match.
 
@@ -11,16 +13,45 @@ An invitation-only online session for guest players and successive Matches. A Ro
 A person playing in a room under a chosen name, without a persistent account.
 
 **Room Participant**:
-A guest player's identity within a Room, retained across successive Matches. A participant who is not included when a Match starts waits for the next Match rather than entering the active one. If the browser credential is unavailable, the participant reclaims this identity by providing their unique Room name while holding the Room's invitation link.
+A Guest player's identity within a Room, retained across successive Matches. Participants outside the active Match are spectators waiting for a later Match.
 
 **Match**:
 One game of Magic played by one or more Match Players in a Room.
 
+**Commander Match**:
+A Match using the Commander format, with a designated Commander and Decklists constrained by that Commander's Color Identity.
+
+**Rules-Automated Match**:
+A Match where the game enforces modeled rules and authored behavior for a supported pool of cards.
+
+**Manual Match**:
+A legacy Match whose gameplay was manipulated directly by participants.
+
+**Solo Practice**:
+A practice mode with one human Match Player and an inert Practice Opponent using a mirror Decklist.
+
 **Solo Match**:
-A rules-enforced practice Match with one human Match Player and an inert Practice Opponent.
+A Match played in Solo Practice.
 
 **Match Player**:
-A room participant's role in one match, including their seat and match-specific state.
+A seat in a Match with its own game state, occupied by a Room Participant or a Practice Opponent.
+
+**Practice Opponent**:
+An inert Match Player in Solo Practice with its own Library, Hand, Commander, and Life Total. It passes Priority automatically; the human handles its required choices.
+
+**Decklist**:
+A private, reusable list owned by a room participant, containing card quantities and optional exact printings.
+
+**Deck Entry**:
+One card and quantity in a decklist, optionally identifying a specific printing.
+
+### Match state
+
+**Game state**:
+The current players, Card Instances, Game Objects, Zones, Life Totals, Turn State, and Game Outcome in a match, including information each player may see.
+
+**Game Outcome**:
+The rules-determined state of each Match Player as playing, won, or lost, and of the Match as ongoing, complete, or a draw.
 
 **Life Total**:
 A Match Player's current life value, changed by costs, damage, and effects. Commander Matches start at 40 life.
@@ -38,144 +69,152 @@ The order in which Match Players take turns, beginning with the selected or rand
 The opportunity for a Match Player to take a legal action or explicitly pass. Consecutive passes resolve the top Stack object or advance the turn procedure.
 
 **Counter**:
-A marker associated with a Game Object or Match Player. Counter kinds include numeric/stat counters such as +1/+1 and -1/-1, and category counters such as flying. Numeric values have no fixed digit limit. Counters participate in effective characteristics and authored effects.
+A marker on a Game Object or Match Player, such as a +1/+1 counter or a flying counter. A Counter is distinct from a Game Object Status or Designation.
 
 **Game Object Status**:
-One of the rules-defined physical-state categories of a permanent: tapped or untapped, flipped or unflipped, face up or face down, and phased in or phased out. A status is not a Card Characteristic or a Counter, though it may affect characteristics.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rule 110.5.
+A permanent's tapped/untapped, flipped/unflipped, face-up/face-down, or phased-in/phased-out state. Status is distinct from Characteristics and Counters.
 
 **Designation**:
-A rules-defined marker or value that other rules and abilities can identify, such as a Case being solved, a permanent being prepared, a Class level, or a Room half being unlocked. A Designation is distinct from a Counter and from a Game Object Status.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rules 709.5, 716.2, 719.3, and 722.3.
+A rules-defined marker or value, such as monarch, a solved Case, or an unlocked Room half. A Designation is distinct from a Counter or Game Object Status.
 
-**Manual Match**:
-A legacy Match whose gameplay was manipulated directly by participants. Continuing play requires consent from its human Match Players to replace it with a Rules-Automated Match.
+**Commander**:
+A designated Card Instance whose designation persists across Zones. Casts from the Command Zone accrue commander tax, and combat damage from the same commander can cause a Commander-specific loss.
 
-**Rules-Automated Match**:
-A Match where the game enforces modeled rules and authored behavior for a supported pool of cards.
+**Monarch**:
+The Match Player holding the monarch designation, with its associated end-step draw and combat-damage transfer abilities.
 
-**Game state**:
-The current players, Card Instances, Game Objects, Zones, Life Totals, Turn State, and Game Outcome in a match, including information each player may see.
-
-**Game Outcome**:
-The rules-determined state of each Match Player as playing, won, or lost, and of the Match as ongoing, complete, or a draw.
+### Cards and characteristics
 
 **Card Catalog**:
 The locally stored collection of card definitions and printings available to the game, represented in a game-specific structured model rather than as a direct copy of the import source's schema.
 
 **Card Name Directory**:
-The full index of rules-recognized card names, available independently of per-set Card Definition and printing imports from the initial release. It includes canonical names and alternate or composite names that Comprehensive Rules allow a card-name choice to select, such as back-face, Adventure, and melded names. Entries may refer to a Card Definition, Card Component, Alternative Characteristics, or composite form. A name in the directory does not by itself make that card available for Decklist import.
+The index of rules-recognized card names, including alternate and composite names. Inclusion does not imply that a Card Definition is imported or eligible for a Decklist.
 
 **Card Definition**:
-The rules identity and shared characteristics of a card, independent of edition or artwork and associated with a stable Oracle identity across printings. Its canonical name is the Decklist label; for a multi-faced card, the front-face name is canonical and each Card Component retains its face name. Record a double-faced card's form kind as modal double-faced, nonmodal double-faced, or meld. A meld pair may also refer to its composite form. A Card Definition also carries the card's Color Identity.
+A card's rules identity and shared characteristics, independent of edition or artwork and associated with a stable Oracle identity across printings. Its canonical name is its Decklist label.
+
+**Card Printing**:
+A set-specific edition of a Card Definition, with its own collector number and artwork. A Deck Entry may request an exact printing or use the default printing.
+
+**Card Component**:
+A characteristic-bearing part of a Card Definition, such as a printed face or independently playable half. An Adventure spell uses Alternative Characteristics rather than a separate printed face.
+
+**Alternative Characteristics**:
+Context-specific characteristics linked to a Card Component. Partial alternatives inherit unchanged values; full alternatives supply the complete characteristics for their context.
+
+**Characteristic**:
+A rules-defined property of a Magic object, including its name, mana cost, color, types, rules text, abilities, power, and toughness. Both an ability and a value that the ability defines are characteristics of that object.
+
+**Card Characteristics**:
+The characteristic data belonging to a Card Component or Alternative Characteristics, including name, mana cost, colors, types, rules text, abilities, and stats.
 
 **Oracle Text**:
 The current official wording of a card used to determine how it plays, regardless of wording printed on a particular Card Printing. It is distinct from the structured Card Ability data used to represent that behavior.
 
-**Characteristic**:
-A rules-defined property of a Magic object, including its name, mana cost, color, types, rules text, abilities, power, and toughness. Both an ability and a value that the ability defines are characteristics of that object.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rule 109.3.
-
-**Copiable Values**:
-The Comprehensive Rules term for the characteristic values a copy effect uses from an object. Match data stores the captured values, including any copy exceptions, in an immutable record using the Card Characteristics field model. A copied Game Object references this record; it does not continue reading from the original object, and later changes to the original do not update the record. Each Game Object keeps its own counters, status, attachments, and other Match state separately.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rules 707.2–707.3 and 707.9.
-
-**Card Characteristics**:
-The complete set of characteristic data for a Card Component or Alternative Characteristics record, including its name, mana cost, colors, types, rules text, abilities, and stats. Every card form has Card Characteristics; Alternative Characteristics are a separate record for a context-specific alternate form or set of values.
-
 **Color Identity**:
 The rules-defined set of colors associated with a Card Definition, distinct from its current color. It is available as card data for format rules and for Card Abilities that reference it.
-_Rules reference_: [Wizards Comprehensive Rules](https://magic.wizards.com/en/rules), section 903.4.
 
 **Card Ability**:
-An ability represented in a Card Component's characteristics, granted to a Game Object, or derived from characteristics by a Comprehensive Rules rule. Abilities share a structured representation with a kind and applicable details such as a trigger, condition, cost, mode, target, variable value and its declarative source data, replacement behavior, delayed triggered ability, effect, or reference to relevant card data and Match context. A printed ability corresponds to Oracle Text without requiring a second copy of that text. Triggered abilities identify whether the trigger is an event or a game state, and store the corresponding event or state condition as data. Mana symbols and quantities in ability costs and mana-producing effects use ordered typed data. Ability origin is retained. Rule-derived abilities use reusable rules data rather than being duplicated on every matching Card Definition. Keyword abilities such as flying, haste, and trample use the same representation. When one printed keyword represents multiple Comprehensive Rules abilities, retain the printed keyword and link it to a separate structured Card Ability record for each rules-defined ability, including each ability's applicable Zone and behavior. Preserve relationships among abilities represented together by a Comprehensive Rules construct, including shared conditions and related characteristic changes such as Class level bars, Leveler thresholds, Station thresholds, and a Case’s solved ability. For Saga chapter abilities, store the chapter number on each structured ability and derive the final chapter number from the greatest number among the Saga's applicable chapter abilities. An activated or triggered ability on the Stack is represented separately as a Game Object. Automation requires complete supported authored behavior.
+An ability belonging to a card's characteristics, granted to a Game Object, or derived from the rules. It is distinct from an Ability Game Object on the Stack.
 
 **Characteristic-Defining Ability**:
 A static Card Ability that defines a characteristic normally shown elsewhere on its card, such as Tarmogoyf's power and toughness. It remains an ability while defining those characteristics, and functions in all zones under the Comprehensive Rules.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), rule 604.3.
 
-**Casting Record**:
-Structured Match data associated with a spell Game Object that records the Zone from which the card was cast, casting choices, and payment facts its abilities or the Comprehensive Rules may need later. Applicable data includes a chosen value such as X, selected modes or fused split-card halves, alternative or additional costs, and the colors of mana actually spent. Card Abilities refer to the relevant recorded facts. Preserve or link the record when a spell resolves into a permanent or another Game Object needs that casting information. An object put onto the Battlefield without being cast has no Casting Record.
-
-**Opening-Hand Action**:
-A card-specific action taken with a card in an opening hand after mulligans and before the first turn, as allowed by the Comprehensive Rules. Card Ability data describes its applicable conditions, choices, costs, and action. Match setup records whether the action was taken and its result.
-
-**Variable Value Source**:
-Declarative Card Ability data describing how a variable value is determined, including its source, references and parameters, and the Comprehensive Rules timing at which it is determined. For example, an ability may define X from its controller's devotion to blue when that ability resolves. Store this description as data, not an executable function call. When a value is determined in a Match, retain its binding, such as X = N, on the relevant Game Object or Ability Game Object for use by the ability's effects and conditions.
-
-**Effect**:
-Something that happens in the game as a result of a spell or ability, following the Comprehensive Rules meaning. The rules distinguish forms including one-shot, continuous, replacement, and prevention effects; an effect may also create a delayed triggered ability. Effect data consists of ordered structured parts that can reference Game Objects and characteristics, including their current or last known information as determined by the Comprehensive Rules. Continuous effects identify their individual typed changes, such as changing types, removing abilities, or setting power and toughness. Card data does not duplicate Comprehensive Rules layer or sublayer labels; the rules engine classifies supported changes from their meaning. Effects can include reusable data groups such as a Library Sequence.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), sections 609–615.
-
-**Library Sequence**:
-A reusable declarative effect group for inspecting successive cards from a Library. It records the source Zone, operation, stop predicate, handling of the selected card and remaining cards, their ordering, and no-match behavior. Related card operations such as reveal, look, and exile remain distinct data values.
-
-**Card Component**:
-A characteristic-bearing part of a Card Definition, including its name. A card has one component for a single-faced form and multiple components for forms such as double-faced, split, and Room cards. Each printed face of a double-faced card has its own component with its full Card Characteristics. A melded composite form is represented in addition to the components for its two source cards. An Adventurer card's normal characteristics use a Card Component; its inset Adventure spell is represented by Alternative Characteristics. Component relationships describe the card form without implying that its mechanics are automated.
-
-**Alternative Characteristics**:
-Context-specific characteristic values linked to a Card Component, using the same characteristic field model. Each record declares a composition mode. Partial alternatives supply values that differ and inherit omitted values from the linked Card Component where the Comprehensive Rules say they remain unchanged, as with Prototype. Full alternatives supply the characteristics used in the stated context; omitted values are absent rather than inherited, as with Adventure and Omen spells on the Stack or the characteristics of a Preparation spell copy. A typed relationship describes when and how the alternative values apply. Printed faces such as the faces of a modal double-faced card, and independently playable Room halves, remain Card Components.
-_Rules reference_: [Wizards Comprehensive Rules](https://media.wizards.com/2026/downloads/MagicCompRules%2020260925.pdf), sections 710, 715, 718, 720, and 722.
-
-**Card Printing**:
-A specific printing of a Card Definition from a set, with its own collector number and artwork. Printings sharing the same Oracle identity refer to one Card Definition. One default Card Printing is selected when a Deck Entry does not request an exact printing; gameplay characteristics come from the Card Definition.
+**Granted Ability**:
+A Card Ability given to a Game Object by an effect rather than belonging to its printed characteristics.
 
 **Token Definition**:
-A reusable characteristic template for a predefined token defined by the Comprehensive Rules, separate from a Card Definition. A token-creation effect may reference this template and add or modify characteristics. Other custom or copied token outcomes can use explicit or copy-based descriptors. Each created token is a Game Object without a Card Instance.
+A reusable characteristic template for a predefined token. A token is a Game Object without a Card Instance.
+
+**Copiable Values**:
+The characteristic values used by a copy effect, including applicable copy exceptions. They are distinct from the copied object's own Counters, status, Attachments, and other game state.
+
+### Objects and effects
 
 **Card Instance**:
 One specific copy of a Card Printing created from a Deck Entry when a Match starts. It retains its identity and owner as it moves between Zones.
 
 **Game Object**:
-An entity tracked in a Match, such as a card, token, ability, emblem, or nontraditional card object, with its current Zone, controller, and game state. A Game Object may represent one or multiple Card Instances, as with a melded permanent, or exist without a Card Instance. Its state may include its Game Object Status, Designations, current face or melded composite form, a Face-Down State, a Casting Record, chosen values that abilities refer to such as a chosen card name or a variable binding like X = N, and links to other Game Objects including attachments. A Battle Game Object also records its Protector Match Player, separately from its Controller and Owner.
-
-**Object Filter**:
-A reusable declarative criterion describing which possible Game Objects qualify for a Card Ability condition, event, target, or effect. Typed criteria may refer to object kind, characteristics, or relationships to Match Players and Zones—for example, a card rather than a token, or a Game Object in an opponent's Graveyard. The filter says which objects qualify; it does not specify when their characteristics are inspected. The trigger, target, condition, or effect that uses the filter carries any required timing, such as immediately before a Zone change or by last known information.
-
-**Granted Ability**:
-A Card Ability that a rules effect gives to a Game Object, rather than one printed on that object's Card Definition or Card Component. An active grant is represented by a separate Continuous Effect linked to the source Card Ability and recipient, with its typed change and duration or applicability condition. Static grants retain their source ability and applicable Match relationship, such as an Attachment; resolving grants are retained as Match effect data for their duration. A grant does not change the recipient's printed Card Characteristics.
-
-**Sticker Sheet**:
-A game aid containing a set of Sticker Definitions. A Match Player's access to stickers is limited to the Sticker Sheets selected for that game.
-
-**Sticker Definition**:
-One sticker on a Sticker Sheet, with its rules-relevant kind and value, such as a name, ability, art, or power/toughness sticker. It is catalog data separate from Card Definition and Card Characteristics.
-
-**Sticker Placement**:
-A Match relationship between a Sticker Definition and a Game Object. It retains the identity and ordering of a sticker placed on that object without adding sticker-specific fields to the card's base characteristics.
-
-**Face-Down State**:
-Match data for a Game Object that is face down. It retains the underlying Card Instance or other source object when applicable, the face-down source or mode, the characteristics shown while face down, applicable procedures for turning it face up, and who may inspect its underlying identity. Participant-specific views redact information from players who are not allowed to see it.
+An entity in a Match, such as a card, token, spell, ability, or emblem, with its current Zone and game state. It can represent one or multiple Card Instances, or exist without one.
 
 **Ability Game Object**:
-A Game Object representing an activated or triggered ability on the Stack. It is distinct from the Card Ability data on its source and has no Card Instance of its own. It may retain references to the source Game Object and Card Ability, applicable variable bindings, and Object Links to relevant Game Objects.
+An activated or triggered ability on the Stack, distinct from the Card Ability on its source. It has no Card Instance of its own.
 
 **Owner**:
-The Match Player whose deck supplied a Card Instance. Ownership remains with that player when control changes.
+The Match Player who owns a Card Instance or Game Object under the rules. Ownership remains unchanged when control changes.
 
 **Controller**:
 The Match Player currently controlling a Game Object. The controller may differ from the Card Instance's owner.
 
 **Protector**:
-The Match Player chosen as protector for a Battle Game Object under the Comprehensive Rules. Protector is Match state distinct from the Battle's Owner and Controller.
+The Match Player designated to protect a Battle, separately from its Owner and Controller.
 
-**Zone**:
-A game location that holds Game Objects; its kind determines visibility, order, and behavior. A Match may use ordinary Zones, special Zones, and supplementary decks needed to represent its card types and variant components. Visibility normally follows the Zone kind but can vary for individual objects. A legal cost or effect may move a known Game Object into another player's private Zone without exposing the other contents.
-_Modeling direction_: Prefer specialized Zone types built on a common Zone base class. Define their required behavior before settling the implementation.
-_Rules reference_: [Wizards Comprehensive Rules](https://magic.wizards.com/en/rules), section 400.
+**Casting Record**:
+The facts of a spell's casting, including its source Zone, choices, and payment. An object put onto the Battlefield without being cast has no Casting Record.
+
+**Opening-Hand Action**:
+A card-specific action allowed after mulligans and before the first turn.
+
+**Variable Value Source**:
+The description of how and when an ability's variable value is determined. It is distinct from the resulting binding, such as X = 3.
+
+**Effect**:
+Something that happens as a result of a spell or ability. Effects include one-shot, continuous, replacement, and prevention effects.
+
+**Library Sequence**:
+An effect group that inspects successive Library cards, with a stopping condition and handling for selected and remaining cards.
+
+**Object Filter**:
+A criterion determining which Game Objects qualify for an ability's condition, event, target, or effect. The using ability or effect determines when characteristics are inspected.
 
 **Zone Change Condition**:
-A Card Ability condition describing a Game Object moving between Zones. It identifies the moving object, source and destination Zones, and whether the move would occur (for a replacement effect) or has occurred (for a zone-change trigger). When only a subset of possible moving objects qualifies, it references a separate Object Filter. The replacement action or triggered effect is separate.
+A condition identifying an object's source and destination Zones and whether movement would occur or has occurred. Eligibility is described by an Object Filter; the replacement action or triggered effect is separate.
+
+**Face-Down State**:
+A Game Object's concealed identity and the characteristics and procedures that apply while it is face down.
+
+**Meld**:
+A relationship between two Card Definitions whose Card Instances can combine into one Game Object with combined characteristics. Each Card Instance retains its own identity and Owner.
+
+**Attachment**:
+A relationship in which one Game Object, such as an Aura or Equipment, is attached to another Game Object.
+
+**Object Link**:
+A relationship from a source Game Object, optionally identifying the Card Ability involved, to one or more related Game Objects, such as the specific object an ability exiles and later refers to. An Object Link is distinct from an Attachment and does not itself perform game actions.
+
+### Zones and presentation
+
+**Zone**:
+A game location holding Game Objects, with rules for visibility, order, and behavior.
 
 **Library**:
 A player's ordered, hidden Zone created from their Decklist. Opponents can see its size but not its contents or order.
 _Avoid_: Deck (for the in-game zone)
 
 **Hand**:
-The hidden Zone containing cards a player has drawn. Opponents can see its size but not its contents.
+A player's normally hidden Zone for drawn cards. Revealed cards can be known to opponents without exposing the rest of the Hand.
 
 **Battlefield**:
-The shared play area containing cards in play, visible to all participants.
+The shared Zone containing permanents in play.
+
+**Graveyard**:
+A player's public Zone for cards put there by game actions, including discards and cards that leave the Battlefield. Its order is preserved.
+
+**Exile**:
+The Zone for exiled objects, normally public but also able to contain face-down objects.
+
+**Command Zone**:
+A public zone for commanders and other special game objects.
+
+**Stack**:
+The shared, ordered Zone containing spells and abilities waiting to resolve.
+
+**Supplementary Deck**:
+A collection used by a game variant for cards outside the player's ordinary Library, such as an Attraction deck or planar deck.
+
+**Tapped**:
+A Game Object state indicating that a permanent is tapped; legal costs and turn procedures change this status.
 
 **Player Area**:
 The portion of the shared Battlefield visually associated with a Match Player. It is not a separate Zone.
@@ -189,47 +228,15 @@ An expandable visual collection of same-name permanents within a Battlefield Gro
 _Avoid_: Stack (for grouped Battlefield permanents)
 
 **Battlefield Layout**:
-The shared visual arrangement of cards across Player Areas on the Battlefield, stored separately from gameplay state so the layout can change without changing rules behavior.
+The visual arrangement of permanents across Player Areas, distinct from gameplay state.
 
-**Graveyard**:
-A player's public Zone for cards put there by game actions, including discards and cards that leave the Battlefield. Its order is preserved.
+### Stickers
 
-**Exile**:
-A public zone for cards removed from the match by an effect.
+**Sticker Sheet**:
+A game aid containing a set of Sticker Definitions. A Match Player's access to stickers is limited to the Sticker Sheets selected for that game.
 
-**Command Zone**:
-A public zone for commanders and other special game objects.
+**Sticker Definition**:
+One sticker on a Sticker Sheet, with its rules-relevant kind and value, such as a name, ability, art, or power/toughness sticker. It is catalog data separate from Card Definition and Card Characteristics.
 
-**Stack**:
-A shared, public, ordered Zone containing spells and abilities waiting to resolve. An ability may be on the Stack without a Card Instance. The model should support explicit Priority and pass sequences later.
-
-**Tapped**:
-A Game Object state indicating that a permanent is tapped; legal costs and turn procedures change this status.
-
-**Decklist**:
-A private, reusable list owned by a room participant, containing card quantities and optional exact printings.
-
-**Deck Entry**:
-One card and quantity in a decklist, optionally identifying a specific printing.
-
-**Supplementary Deck**:
-A collection used by a game variant for cards outside the player's ordinary Library, such as an Attraction deck or planar deck.
-
-**Meld**:
-A relationship between two Card Definitions whose Card Instances can combine into one Game Object with combined characteristics. Each Card Instance retains its own identity and Owner.
-
-**Attachment**:
-A relationship in which one Game Object, such as an Aura or Equipment, is attached to another Game Object.
-
-**Object Link**:
-A relationship from a source Game Object, optionally identifying the Card Ability involved, to one or more related Game Objects, such as the specific object an ability exiles and later refers to. An Object Link is distinct from an Attachment and does not itself perform game actions.
-
-
-**Practice Opponent**:
-An inert Match Player in Solo Practice with its own Library, Hand, commander, and Life Total. It passes Priority automatically; its required choices belong to the human practice controller.
-
-**Monarch**:
-The Match Player holding the monarch designation, with its associated end-step draw and combat-damage transfer abilities.
-
-**Commander**:
-A designated Card Instance whose designation persists across Zones. Casts from the Command Zone accrue commander tax, and combat damage from the same commander can cause a Commander-specific loss.
+**Sticker Placement**:
+The relationship between a Sticker Definition and a Game Object, including placement order.

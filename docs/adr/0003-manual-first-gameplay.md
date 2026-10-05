@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0016
+---
+
 # Manual-first gameplay
 
 _Superseded by [ADR-0016](0016-rules-automated-commander-and-practice.md)._

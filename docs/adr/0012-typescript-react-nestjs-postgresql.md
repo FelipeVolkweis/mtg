@@ -1,5 +1,7 @@
+---
+status: accepted
+---
+
 # Use TypeScript across a React and NestJS application
 
-The application uses TypeScript on both sides of the browser boundary. The client is a React application built with Vite; its production assets are included in the application image and served by the NestJS backend. NestJS provides the backend modules for Room, Match, and Card Catalog, following ADR-0009. Match updates use NestJS's `ws` WebSocket adapter and the browser's native WebSocket API. PostgreSQL stores application and active Match state. Docker Compose runs the application and PostgreSQL as services. This keeps the interactive client, authoritative server, and domain modules in one repository and application deployment while preserving the module boundaries already chosen.
-
-This stack favors shared TypeScript contracts and a conventional structure for the growing Match and rules code. React with Vite suits the private, highly interactive tabletop without requiring server rendering. NestJS's modules and testing support provide structure for the planned Room, Match, and Card Catalog responsibilities. The native WebSocket protocol keeps the real-time transport simple; reconnecting clients restore the persisted Match snapshot, revision, and participant-specific view through application behavior rather than relying on transport event replay. PostgreSQL provides transactional persistence for concurrent Match actions. The trade-off is accepting NestJS's additional framework and dependency surface, and implementing client reconnection and Match resynchronization explicitly.
+Use TypeScript with React/Vite for the browser, NestJS for the modular backend, native WebSockets for Match updates, and PostgreSQL for Room and active Match snapshots, deployed together through Docker Compose. Shared contracts and NestJS modules suit the growing rules code while keeping one application deployment; the trade-off is framework overhead and explicit reconnect/resynchronization behavior instead of transport replay. [ADR-0014](0014-versioned-card-catalog-records.md) keeps the released Card Catalog in Git-tracked JSON rather than PostgreSQL.
