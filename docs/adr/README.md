@@ -28,8 +28,8 @@ Reviewed against repository code and specs on 2026-10-05. This index tracks deci
 
 - Room scope, guest recovery, replacement consent, revisions, and expiry: [Room service](../../src/server/room/room.service.ts).
 - Snapshot transactions: [Database](../../src/server/storage/database.ts); consent recovery: [recovery tests](../../tests/recovery.spec.ts).
-- Commander setup, legacy rejection, and Practice Opponent: [Match service](../../src/server/match/match.service.ts), [Commander validation](../../src/server/match/commander.ts), and [rules spec](../../.scratch/mono-u-rules-automation/spec.md).
+- Commander setup, legacy rejection, and Practice Opponent: [Match service](../../src/server/match/match.service.ts), [Commander validation](../../src/server/match/commander.ts), and [rules spec](https://github.com/FelipeVolkweis/mtg/issues/4).
 - Identity and supported compositions: [shared model](../../src/shared/model.ts), [rules model](../../src/shared/rules.ts), and [Game Object lifecycle](../../src/server/match/game-objects.ts).
-- Catalog release and import policy: [catalog files](../../src/server/catalog/catalog-files.ts), [import CLI](../../src/server/catalog/import-cli.ts), and [catalog spec](../../.scratch/versioned-card-catalog/spec.md).
+- Catalog release and import policy: [catalog files](../../src/server/catalog/catalog-files.ts), [import CLI](../../src/server/catalog/import-cli.ts), and [catalog spec](https://github.com/FelipeVolkweis/mtg/issues/7).
 - Application boundaries and transport: [app modules](../../src/server/app.module.ts), [server bootstrap](../../src/server/main.ts), [dependencies](../../package.json), and [Compose](../../compose.yaml).
 - Automatic layout: [rules presentation](../../src/client/rules-presentation.ts) and [Rules Board](../../src/client/RulesBoard.tsx).

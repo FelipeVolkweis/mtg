@@ -2,7 +2,7 @@
 
 ### Issue tracker
 
-Issues live as markdown files under `.scratch/`. See `docs/agents/issue-tracker.md`.
+Issues and specs live as GitHub issues. Use the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

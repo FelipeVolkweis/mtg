@@ -1,6 +1,6 @@
 # Card model guidance
 
-Read when changing Card Catalog or Game Object structures. These are modeling constraints retained from the original card review, not a claim that every represented mechanic is executable. Current release behavior is defined by the [rules automation spec](../.scratch/mono-u-rules-automation/spec.md); the glossary defines names and the [ADR index](adr/README.md) records decisions and their supersessions.
+Read when changing Card Catalog or Game Object structures. These are modeling constraints retained from the original card review, not a claim that every represented mechanic is executable. Current release behavior is defined by the [Mono-U Rules Automation issue](https://github.com/FelipeVolkweis/mtg/issues/4); the glossary defines names and the [ADR index](adr/README.md) records decisions and their supersessions.
 
 ## Card forms and characteristics
 
@@ -29,7 +29,7 @@ Sticker Sheets and Definitions remain separate catalog concepts; availability an
 ## Sources
 
 - [Initial card-model review](../.scratch/multiplayer-manual-tabletop/card-model-review.md): original examples and rationale.
-- [Catalog spec](../.scratch/versioned-card-catalog/spec.md): imported/authored ownership and release records.
+- [Git-Versioned Card Catalog issue](https://github.com/FelipeVolkweis/mtg/issues/7): imported/authored ownership and release records.
 - [Shared model](../src/shared/model.ts) and [rules model](../src/shared/rules.ts): implemented structures.
 
 The former glossary suggestion to choose specialized Zone subclasses was implementation guidance, not a domain definition or a new architectural decision. Consult [zones.ts](../src/server/match/zones.ts) when changing Zone behavior.

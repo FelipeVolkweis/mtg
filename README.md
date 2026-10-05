@@ -67,8 +67,8 @@ Tests use the real browser, NestJS transport, importer CLI, and PostgreSQL. They
 
 ## Scope
 
-The [mono-U rules automation spec](.scratch/mono-u-rules-automation/spec.md) supersedes manual gameplay. Existing Rooms, saved Decklists, and legacy active Matches remain persisted. A legacy Match displays a replacement notice and requires its human players' consent to start an automated Match; arbitrary manual mutation commands are retired.
+The [Mono-U Rules Automation issue](https://github.com/FelipeVolkweis/mtg/issues/4) supersedes manual gameplay. Existing Rooms, saved Decklists, and legacy active Matches remain persisted. A legacy Match displays a replacement notice and requires its human players' consent to start an automated Match; arbitrary manual mutation commands are retired.
 
-The [Git-Versioned Card Catalog](.scratch/versioned-card-catalog/spec.md) remains local and reviewable. Imported facts and keywords do not infer executable behavior. Unsupported Decklists, arbitrary opposing pools, additional formats, and three- or four-human Matches are outside this release. Card images use stored artwork URLs without card API lookups.
+The [Git-Versioned Card Catalog issue](https://github.com/FelipeVolkweis/mtg/issues/7) records the catalog release policy. Imported facts and keywords do not infer executable behavior. Unsupported Decklists, arbitrary opposing pools, additional formats, and three- or four-human Matches are outside this release. Card images use stored artwork URLs without card API lookups.
 
 The authoritative protocol is native WebSocket at `/ws`. Authenticate with `{ event: "authenticate", data: { invite, credential } }`, then submit `{ event: "command", data: { requestId, command } }`. Match commands include the Match ID and revision; stale, unauthorized, and invalid commands return `rejected` with the latest permitted view. Accepted commands return `view` and broadcast a fresh projection to all Room participants. There is no action replay log or completed-Match archive.

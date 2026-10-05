@@ -1,30 +1,37 @@
-# Issue tracker: Local Markdown
+# Issue tracker: GitHub
 
-Issues and specs for this repo live as markdown files in `.scratch/`.
+Issues and specs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 
 ## Conventions
 
-- One feature per directory: `.scratch/<feature-slug>/`
-- The spec is `.scratch/<feature-slug>/spec.md`
-- Implementation issues are one file per ticket at `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`, never a single combined tickets file
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
+- Create an issue with `gh issue create --title "..." --body "..."`; use a heredoc for multi-line bodies.
+- Read an issue with `gh issue view <number> --comments`; include labels when checking triage state.
+- List issues with `gh issue list --state open --json number,title,body,labels,comments` and filter by label or state as needed.
+- Comment with `gh issue comment <number> --body "..."`.
+- Apply or remove triage labels with `gh issue edit <number> --add-label "..."` or `--remove-label "..."`.
+- Close an issue with `gh issue close <number> --comment "..."`.
+
+The `gh` CLI infers the repository from `git remote -v` when run in this checkout.
+
+## Pull requests as a request surface
+
+No. Pull requests are not a request surface for triage in this repo.
 
 ## When a skill says "publish to the issue tracker"
 
-Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
+Create a GitHub issue.
 
 ## When a skill says "fetch the relevant ticket"
 
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
+Run `gh issue view <number> --comments`.
 
 ## Wayfinding operations
 
-Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
+Used by `/wayfinder`. The map is a GitHub issue with child tickets linked as GitHub sub-issues.
 
-- **Map**: `.scratch/<effort>/map.md` (the Notes / Decisions-so-far / Fog body).
-- **Child ticket**: `.scratch/<effort>/issues/NN-<slug>.md`, numbered from `01`, with the question in the body. A `Type:` line records the ticket type (`research`/`prototype`/`grilling`/`task`); a `Status:` line records `claimed`/`resolved`.
-- **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `resolved`.
-- **Frontier**: scan `.scratch/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
-- **Claim**: set `Status: claimed` and save before any work.
-- **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
+- **Map**: one issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body.
+- **Child ticket**: a GitHub issue linked to the map as a sub-issue and labelled `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`). If sub-issues are unavailable, add the child to a task list in the map and put `Part of #<map>` at the top of its body.
+- **Blocking**: use GitHub's native issue dependencies. Add a blocker with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-database-id>`; use the blocker's numeric database `id`, not its issue number or node ID. If native dependencies are unavailable, write `Blocked by: #<number>` in the child body. A ticket is unblocked when every blocker is closed.
+- **Frontier**: scan the map's open child issues, then exclude issues with an open blocker or assignee; first in map order wins.
+- **Claim**: assign the issue with `gh issue edit <number> --add-assignee @me` before working on it.
+- **Resolve**: add the answer with `gh issue comment <number> --body "..."`, close the issue, then add a context pointer to the map's Decisions-so-far.
