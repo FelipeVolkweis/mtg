@@ -28,7 +28,6 @@ Sticker Sheets and Definitions remain separate catalog concepts; availability an
 
 ## Sources
 
-- [Initial card-model review](../.scratch/multiplayer-manual-tabletop/card-model-review.md): original examples and rationale.
 - [Git-Versioned Card Catalog issue](https://github.com/FelipeVolkweis/mtg/issues/7): imported/authored ownership and release records.
 - [Shared model](../src/shared/model.ts) and [rules model](../src/shared/rules.ts): implemented structures.
 
