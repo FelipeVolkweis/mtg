@@ -5,6 +5,8 @@ import type {
   RulesValue,
   SelectionOption,
 } from "../../shared/rules.js";
+import { manaCost, spendMana } from "./mana.js";
+import { Combat } from "./combat.js";
 import { ObjectEffects } from "./object-effects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
@@ -70,10 +72,88 @@ export class Resolution {
             ? effect.then
             : effect.otherwise),
         );
-      else if (effect.kind === "draw") {
+      else if (
+        effect.kind === "tap-choice" ||
+        effect.kind === "pay-mana" ||
+        effect.kind === "redirect-attack"
+      ) {
+        progress.actionChoice = effect;
+        if (effect.kind === "tap-choice") {
+          const ids = Object.values(this.engine.match.objects)
+            .filter((o) =>
+              this.engine.matches(
+                o,
+                effect.filter,
+                progress.playerId,
+                source.sourceObjectId,
+              ),
+            )
+            .map((o) => o.id);
+          this.prompt(
+            {
+              select: {
+                count: ids.length,
+                minCount: 0,
+                objectIds: ids,
+                label: "Tap any number of eligible objects (optional)",
+              },
+            },
+            "Choose an optional tap payment.",
+          );
+        } else if (effect.kind === "pay-mana") {
+          this.prompt(
+            {},
+            "You may pay mana to draw a card. Choose Pay or Decline.",
+          );
+          this.engine.rules.pending!.stage = "payment";
+          this.engine.rules.pending!.totalCost = manaCost(effect.symbols);
+        } else {
+          const attacker = this.engine.rules.combat?.attackers.find(
+            (a) => a.objectId === source.resolution?.targetIds[0],
+          );
+          if (!attacker) {
+            delete progress.actionChoice;
+            continue;
+          }
+          const defenders = new Combat(this.engine).redirectDestinations(
+            attacker.objectId,
+          );
+          this.prompt(
+            {
+              select: {
+                count: 1,
+                minCount: 0,
+                objectIds: defenders.map((d) => d.id),
+                labels: Object.fromEntries(
+                  defenders.map((d) => [d.id, d.name]),
+                ),
+                label: "Choose a new attack destination (optional)",
+              },
+            },
+            "Reselect the attack destination.",
+          );
+        }
+        return;
+      } else if (effect.kind === "lose-life") {
+        const players = this.engine.match.players.filter((p) =>
+          effect.player === "opponents"
+            ? p.id !== progress.playerId
+            : p.id ===
+              (effect.player === "event-player"
+                ? source.resolution?.event?.playerId
+                : progress.playerId),
+        );
+        for (const player of players)
+          player.life = String(
+            BigInt(player.life) - BigInt(this.value(effect.amount)),
+          );
+      } else if (effect.kind === "draw") {
         const before = this.engine.zone("hand", progress.playerId).objectIds
           .length;
-        this.engine.draw(progress.playerId, this.value(effect.count));
+        for (const playerId of effect.player === "each"
+          ? this.engine.match.turn.order
+          : [progress.playerId])
+          this.engine.draw(playerId, this.value(effect.count));
         if (effect.bind)
           progress.bindings[effect.bind] =
             this.engine.zone("hand", progress.playerId).objectIds.length -
@@ -267,7 +347,14 @@ export class Resolution {
         ];
       } else if (effect.select) {
         for (const id of ids) {
-          this.engine.move(id, this.engine.zone("hand", progress.playerId));
+          const fresh = this.engine.move(
+            id,
+            this.engine.zone("hand", progress.playerId),
+          );
+          if (effect.revealSelected) {
+            this.engine.rules.revealedHandIds ??= [];
+            this.engine.rules.revealedHandIds.push(fresh.id);
+          }
         }
         const remaining = progress.inspectedIds!.filter(
           (id) => !ids.includes(id),
@@ -312,6 +399,78 @@ export class Resolution {
     this.resume();
   }
   answer(action: Extract<MatchAction, { type: "rules-input" }>) {
+    if (this.progress.actionChoice) {
+      const effect = this.progress.actionChoice;
+      if (effect.kind === "pay-mana") {
+        if (action.selections || action.variables || action.targetIds)
+          throw new Error("Choose Pay or Decline.");
+        let paid = 0;
+        if (action.confirm !== false) {
+          const pool = { ...this.engine.rules.mana[this.progress.playerId] };
+          for (const lot of this.engine.rules.restrictedMana?.[
+            this.progress.playerId
+          ] ?? [])
+            pool[lot.type] -= lot.amount;
+          const payment = spendMana(pool, manaCost(effect.symbols));
+          if (!payment)
+            throw new Error("The effect's mana payment cannot be paid yet.");
+          for (const type of payment.spent)
+            this.engine.rules.mana[this.progress.playerId][type]--;
+          paid = 1;
+        }
+        this.progress.bindings[effect.bind] = paid;
+      } else {
+        const option = this.engine.rules.pending!.options!.select;
+        const ids = action.selections?.select ?? [];
+        if (
+          Object.keys(action.selections ?? {}).some((k) => k !== "select") ||
+          ids.length > option.count ||
+          new Set(ids).size !== ids.length ||
+          ids.some((id) => !option.objectIds.includes(id))
+        )
+          throw new Error(
+            "Choose eligible, distinct objects in the permitted quantity.",
+          );
+        if (effect.kind === "tap-choice") {
+          if (
+            ids.some(
+              (id) =>
+                !this.engine.matches(
+                  this.engine.object(id),
+                  effect.filter,
+                  this.progress.playerId,
+                ),
+            )
+          )
+            throw new Error("Choose untapped eligible objects.");
+          for (const id of ids) this.engine.object(id).status.tapped = true;
+          this.progress.bindings[effect.bind] = ids.length;
+        } else if (ids.length) {
+          const stack = this.engine.object(this.progress.sourceId);
+          const attacker = this.engine.rules.combat?.attackers.find(
+            (a) => a.objectId === stack.resolution?.targetIds[0],
+          );
+          const defender =
+            attacker &&
+            new Combat(this.engine)
+              .redirectDestinations(attacker.objectId)
+              .find((d) => d.id === ids[0]);
+          if (
+            !attacker ||
+            !defender ||
+            this.engine.match.objects[defender.id]?.controllerId ===
+              this.engine.object(attacker.objectId).controllerId
+          )
+            throw new Error("Choose a legal attack destination.");
+          attacker.defenderId = defender.id;
+          attacker.defendingPlayerId = defender.playerId;
+        }
+      }
+      delete this.progress.actionChoice;
+      delete this.engine.rules.pending;
+      this.resume();
+      return;
+    }
     if (this.progress.choiceEffect) {
       this.answerObjectChoice(action);
       return;

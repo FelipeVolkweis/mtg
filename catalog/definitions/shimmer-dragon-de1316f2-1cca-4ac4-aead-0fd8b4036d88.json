@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Creature \u2014 Dragon",
+      "typeLine": "Creature — Dragon",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -35,7 +35,7 @@
     "Flying"
   ],
   "manaValue": 6,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "flying",
@@ -46,6 +46,68 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
+      }
+    },
+    {
+      "id": "conditional-hexproof",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "condition": {
+            "value": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            },
+            "atLeast": 4
+          },
+          "changes": [
+            {
+              "kind": "grant-keyword",
+              "keyword": "Hexproof"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ],
+              "untapped": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
       }
     }
   ]

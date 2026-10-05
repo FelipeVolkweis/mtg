@@ -10,7 +10,7 @@ export async function seedRulesScenario(
   invite: string,
   spellName?: string,
   synergies = false,
-  scenario?: "combat" | "flash",
+  scenario?: "combat" | "flash" | "draw" | "inspect",
 ) {
   const pool = new Pool({
     connectionString:
@@ -71,7 +71,9 @@ export async function seedRulesScenario(
     }
     const target = add(
       spellName ?? "Sol Ring",
-      spellName || combat ? "hand" : "stack",
+      spellName || combat || scenario === "draw" || scenario === "inspect"
+        ? "hand"
+        : "stack",
     );
     if (spellName) add("Mind Stone", "hand");
     add("Counterspell", "hand");
@@ -83,6 +85,23 @@ export async function seedRulesScenario(
     match.turn.stepIndex = scenario === "flash" ? 4 : 3;
     match.priority = { playerId: player.id, passedPlayerIds: [] };
     match.rules!.mana[player.id].U = combat ? 0 : spellName ? 5 : 2;
+    if (scenario === "draw") {
+      add("Mind's Eye", "battlefield");
+      add("Mind Stone", "battlefield", 1);
+      match.rules!.mana[player.id].U = 0;
+      match.rules!.mana[match.players[1].id].U = 1;
+      match.priority = { playerId: match.players[1].id, passedPlayerIds: [] };
+    }
+    if (scenario === "inspect") {
+      const creature = add("Silver Myr", "battlefield");
+      add("Adaptive Omnitool", "battlefield").attachmentTo = creature.id;
+      const artifact = add("Mind Stone", "library");
+      const library = match.zones.find((z) => z.id === artifact.zoneId)!;
+      library.objectIds = [
+        artifact.id,
+        ...library.objectIds.filter((id) => id !== artifact.id),
+      ];
+    }
     match.revision++;
     room.revision++;
     await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [

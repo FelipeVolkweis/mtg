@@ -57,7 +57,9 @@ export function matchesFilter(
       )) &&
     (!filter.excludeTypes ||
       filter.excludeTypes.every((t) => !types.includes(t))) &&
-    (!filter.untapped || !object.status.tapped)
+    (!filter.untapped || !object.status.tapped) &&
+    (!filter.attacking ||
+      !!match.rules?.combat?.attackers.some((a) => a.objectId === object.id))
   );
 }
 
@@ -81,6 +83,25 @@ export class CharacteristicsCalculator {
       return value.sum.reduce<number>(
         (sum, part) => sum + this.value(part, playerId, sourceId, bindings),
         0,
+      );
+    if ("handSize" in value)
+      return this.match.zones.find(
+        (z) => z.kind === "hand" && z.ownerId === playerId,
+      )!.objectIds.length;
+    if ("greatestManaValue" in value)
+      return Math.max(
+        0,
+        ...Object.values(this.match.objects)
+          .filter((o) =>
+            matchesFilter(
+              this.match,
+              o,
+              value.greatestManaValue,
+              playerId,
+              sourceId,
+            ),
+          )
+          .map((o) => o.characteristics.manaValue ?? 0),
       );
     const result = bindings[value.binding];
     if (!Number.isSafeInteger(result) || result < 0)

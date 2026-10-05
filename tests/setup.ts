@@ -107,6 +107,8 @@ export async function seedCatalog() {
     "Silver Myr",
     "Propaganda",
     "Shimmer Myr",
+    "Mind's Eye",
+    "Adaptive Omnitool",
   ]) {
     const card = Object.values(release.definitions).find(
       (card) => card.canonicalName === name,

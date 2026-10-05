@@ -23,6 +23,43 @@
   "oracleText": "Whenever an opponent draws a card, you may pay {1}. If you do, draw a card.",
   "keywords": [],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "opponent-draw",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "pay-mana",
+            "symbols": [
+              "{1}"
+            ],
+            "bind": "paid"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "paid",
+              "atLeast": 1
+            },
+            "then": [
+              {
+                "kind": "draw",
+                "count": 1
+              }
+            ],
+            "otherwise": []
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "opponent"
+        }
+      }
+    }
+  ]
 }

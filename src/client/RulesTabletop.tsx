@@ -314,6 +314,19 @@ function Procedure({
         </form>
       ) : (
         <>
+          {pending.kind === "resolve" && pending.stage === "payment" && (
+            <button
+              onClick={() =>
+                act({
+                  type: "rules-input",
+                  procedureId: pending.id,
+                  confirm: false,
+                })
+              }
+            >
+              Decline payment
+            </button>
+          )}
           {pending.stage === "payment" && (
             <p>
               Locked mana cost: {pending.totalCost.generic} generic
@@ -376,19 +389,24 @@ function Procedure({
               act({
                 type: "rules-input",
                 procedureId: pending.id,
-                ...(pending.kind === "attack-payment" ? {} : { selections }),
+                ...(pending.kind === "attack-payment" ||
+                (pending.kind === "resolve" && pending.stage === "payment")
+                  ? {}
+                  : { selections }),
                 confirm: true,
               })
             }
           >
-            {pending.kind === "cleanup" || pending.kind === "resolve"
-              ? pending.kind === "resolve" &&
-                !Object.values(pending.selectionOptions).some(
-                  (option) => option.requestedCount !== undefined,
-                )
-                ? "Confirm choice"
-                : "Discard selected cards"
-              : "Complete payment"}
+            {pending.kind === "resolve" && pending.stage === "payment"
+              ? "Pay mana"
+              : pending.kind === "cleanup" || pending.kind === "resolve"
+                ? pending.kind === "resolve" &&
+                  !Object.values(pending.selectionOptions).some(
+                    (option) => option.requestedCount !== undefined,
+                  )
+                  ? "Confirm choice"
+                  : "Discard selected cards"
+                : "Complete payment"}
           </button>
         </>
       )}
@@ -564,11 +582,17 @@ export function RulesTabletop({
                 {zone.name} ({zone.count})
               </h2>
               {zone.kind !== "library" &&
-                zone.objectIds?.map((id) => {
+                (
+                  zone.objectIds ??
+                  Object.values(match.objects)
+                    .filter((object) => object.zoneId === zone.id)
+                    .map((object) => object.id)
+                ).map((id) => {
                   const object = match.objects[id];
                   return (
                     object && (
                       <article key={id} className="rules-card">
+                        {!zone.objectIds && <span>Revealed card: </span>}
                         <strong>{object.characteristics.name}</strong>
                         {object.status.tapped && <span> · Tapped</span>}
                         <p>

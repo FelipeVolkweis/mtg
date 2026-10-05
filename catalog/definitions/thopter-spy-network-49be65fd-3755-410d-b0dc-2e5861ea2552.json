@@ -27,6 +27,68 @@
   "oracleText": "At the beginning of your upkeep, if you control an artifact, create a 1/1 colorless Thopter artifact creature token with flying.\nWhenever one or more artifact creatures you control deal combat damage to a player, draw a card.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "combat-draw",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "damage",
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ]
+          },
+          "combat": true,
+          "recipientKind": "player",
+          "grouped": true
+        }
+      }
+    },
+    {
+      "id": "upkeep-thopter",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "upkeep",
+          "player": "you"
+        },
+        "intervening": {
+          "value": {
+            "count": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          },
+          "atLeast": 1
+        }
+      }
+    }
+  ]
 }

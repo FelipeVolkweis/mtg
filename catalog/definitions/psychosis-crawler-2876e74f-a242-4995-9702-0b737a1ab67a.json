@@ -29,6 +29,55 @@
   "oracleText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
   "keywords": [],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "hand-stats",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "characteristicDefining": true,
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "handSize": "you"
+              },
+              "toughness": {
+                "handSize": "you"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "draw-life-loss",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "lose-life",
+            "amount": 1,
+            "player": "opponents"
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "you"
+        }
+      }
+    }
+  ]
 }

@@ -205,12 +205,11 @@ test("lands and simple spells use selected mana sources and retain casting ident
     seat: number,
     action: import("../src/shared/model").MatchAction,
   ) => service.execute(match, room.participants[seat], action, catalog);
-  for (const seat of [0, 1])
+  for (let seat = 0; seat < 2; seat++)
     command(seat, { type: "keep-hand", bottomIds: [] });
-  for (let step = 0; step < 2; step++) {
-    command(0, { type: "pass-priority" });
-    command(1, { type: "pass-priority" });
-  }
+  for (let step = 0; step < 2; step++)
+    for (let seat = 0; seat < 2; seat++)
+      command(seat, { type: "pass-priority" });
   const hand = matchView(match, room.participants[0].id).zones.find(
     (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
   )!;
@@ -681,7 +680,7 @@ test("pending casts expose their private source and legal choices only to their 
   ).toBe("rejected");
 });
 
-test("Sai is supported, Padeem remains unfinished, and Graaz cannot lead blue cards", async () => {
+test("Sai and Padeem are supported commanders, and Graaz cannot lead blue cards", async () => {
   const release = structuredClone(await readCatalog("catalog"));
   for (const name of [
     "Sai, Master Thopterist",
@@ -697,7 +696,7 @@ test("Sai is supported, Padeem remains unfinished, and Graaz cannot lead blue ca
       id: commander,
       defaultPrintingId: catalog.definitions[commander].defaultPrintingId,
     };
-    if (name === "Sai, Master Thopterist") {
+    if (name !== "Graaz, Unstoppable Juggernaut") {
       expect(() =>
         new MatchService().createCommander(room, catalog),
       ).not.toThrow();
@@ -1929,25 +1928,37 @@ for (const name of [
   "Research Thief",
   "Thopter Fabricator",
   "Skysovereign, Consul Flagship",
+  "Myr Battlesphere",
+  "Adaptive Omnitool",
+  "Misleading Signpost",
+  "Steel Hellkite",
+  "Scrawling Crawler",
+  "Psychosis Crawler",
+  "Mind's Eye",
+  "Thought Vessel",
+  "Thopter Spy Network",
+  "Shimmer Dragon",
 ]) {
-  test(`${name} retains partial data without promising complete automation`, async () => {
+  test(`${name} passes Commander setup with complete validated automation`, async () => {
     const release = structuredClone(await readCatalog("catalog"));
     const { room, catalog, commander } = commanderFixture();
     const card = Object.values(release.definitions).find(
       (c) => c.canonicalName === name,
     )!;
-    expect(card.automationStatus).toBe("unimplemented");
+    expect(card.automationStatus).toBe("implemented");
     expect(card.abilities.length).toBeGreaterThan(0);
     catalog.definitions[card.id] = card;
+    catalog.printings[card.defaultPrintingId] =
+      release.printings[card.defaultPrintingId];
     room.participants[0].decklists[0].entries[1].quantity = 98;
     room.participants[0].decklists[0].entries.push({
       definitionId: card.id,
       printingId: card.defaultPrintingId,
       quantity: 1,
     });
-    expect(() => new MatchService().createCommander(room, catalog)).toThrow(
-      "Unsupported cards",
-    );
+    expect(() =>
+      new MatchService().createCommander(room, catalog),
+    ).not.toThrow();
   });
 }
 
@@ -3750,4 +3761,907 @@ test("damage attribution expires at the next turn while surviving the current tu
   pass(); // Postcombat main, end step and cleanup, then next turn.
   expect(view().turn.number).toBe(2);
   expect(view().rules!.damageEvents).toEqual([]);
+});
+
+test("Battlesphere creates Myr and binds an optional attack payment across recovery", async () => {
+  const game = await rulesGame();
+  const sphere = game.seed("Myr Battlesphere", "hand");
+  game.match.rules!.mana[game.match.players[0].id].C = 7;
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  expect(
+    game.command(0, { type: "cast-spell", objectId: sphere.id }).kind,
+  ).toBe("accepted");
+  pass();
+  pass();
+  expect(
+    Object.values(view().objects).filter(
+      (o) => o.kind === "token" && o.characteristics.subtypes?.includes("Myr"),
+    ),
+  ).toHaveLength(4);
+  // The next turn's initial scenario supplies attack eligibility.
+  const attacker = Object.values(game.match.objects).find(
+    (o) => o.characteristics.name === "Myr Battlesphere",
+  )!;
+  game.match.rules!.controlledSinceTurn[attacker.id] = 0;
+  pass();
+  pass();
+  const declare = view().rules!.pending!;
+  game.command(0, {
+    type: "rules-input",
+    procedureId: declare.id,
+    selections: { [attacker.id]: [game.match.players[1].id] },
+  });
+  pass();
+  const choice = view().rules!.pending!;
+  expect(choice.kind).toBe("resolve");
+  const ids = Object.values(view().objects)
+    .filter((o) => o.kind === "token")
+    .slice(0, 2)
+    .map((o) => o.id);
+  const recovered = JSON.parse(JSON.stringify(game.match));
+  expect(
+    game.service.execute(
+      recovered,
+      game.room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: choice.id,
+        selections: { select: ids },
+      },
+      game.catalog,
+    ).kind,
+  ).toBe("accepted");
+  const result = matchView(
+    recovered,
+    game.room.participants[0].id,
+    game.catalog,
+  );
+  expect(result.objects[attacker.id].characteristics.power).toBe("6");
+  expect(result.players[1].life).toBe("38");
+  expect(ids.every((id) => result.objects[id].status.tapped)).toBe(true);
+});
+
+test("Omnitool privately inspects a short Library and reveals only its selected artifact", async () => {
+  const game = await rulesGame();
+  const creature = game.seed("Silver Myr", "battlefield");
+  const tool = game.seed("Adaptive Omnitool", "battlefield");
+  tool.attachmentTo = creature.id;
+  const artifact = game.seed("Mind Stone", "hand");
+  const library = game.match.zones.find(
+    (z) => z.kind === "library" && z.ownerId === game.match.players[0].id,
+  )!;
+  const hand = game.match.zones.find((z) => z.id === artifact.zoneId)!;
+  hand.objectIds.splice(hand.objectIds.indexOf(artifact.id), 1);
+  artifact.zoneId = library.id;
+  library.objectIds = [artifact.id, ...library.objectIds.slice(0, 2)];
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  for (let i = 0; i < 2; i++) {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  }
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: { [creature.id]: [game.match.players[1].id] },
+  });
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "pass-priority" });
+  const choice = view().rules!.pending!;
+  expect(choice.kind).toBe("resolve");
+  expect(view().objects[artifact.id]).toBeDefined();
+  expect(view(1).objects[artifact.id]).toBeUndefined();
+  const recovered = JSON.parse(JSON.stringify(game.match));
+  expect(
+    game.service.execute(
+      recovered,
+      game.room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: choice.id,
+        selections: { select: [artifact.id] },
+      },
+      game.catalog,
+    ).kind,
+  ).toBe("accepted");
+  const publicView = matchView(
+    recovered,
+    game.room.participants[1].id,
+    game.catalog,
+  );
+  expect(
+    Object.values(publicView.objects).some(
+      (o) => o.characteristics.name === "Mind Stone",
+    ),
+  ).toBe(true);
+  expect(publicView.zones.find((z) => z.id === library.id)!.count).toBe(2);
+});
+
+test("individual and grouped artifact combat triggers differ and Hellkite uses chosen X once per turn", async () => {
+  const game = await rulesGame();
+  const hellkite = game.seed("Steel Hellkite", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  game.seed("Research Thief", "battlefield");
+  game.seed("Thopter Spy Network", "battlefield");
+  const victim = game.seed("Mind Stone", "battlefield", 1);
+  const survivor = game.seed("Sol Ring", "battlefield", 1);
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  pass();
+  pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    selections: {
+      [hellkite.id]: [game.match.players[1].id],
+      [myr.id]: [game.match.players[1].id],
+    },
+  });
+  pass();
+  game.command(1, {
+    type: "rules-input",
+    procedureId: game.match.rules!.pending!.id,
+    selections: {},
+  });
+  pass();
+  const order = view().rules!.pending!;
+  expect(order.kind).toBe("trigger-order");
+  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
+  const handBefore = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+  )!.count;
+  game.command(0, {
+    type: "rules-input",
+    procedureId: order.id,
+    selections: { order: order.selectionOptions.order.objectIds },
+  });
+  pass();
+  pass();
+  pass();
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+    )!.count,
+  ).toBe(handBefore + 3);
+  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: hellkite.id,
+      abilityId: "destroy-damaged",
+    }).kind,
+  ).toBe("pending");
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    variables: { X: 2 },
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: view().rules!.pending!.id,
+    confirm: true,
+  });
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: hellkite.id,
+      abilityId: "destroy-damaged",
+    }).kind,
+  ).toBe("rejected");
+  pass();
+  expect(view().objects[victim.id]).toBeUndefined();
+  expect(view().objects[survivor.id]).toBeDefined();
+});
+
+test("draw ordinals, live Hand size and optional effect payment resume without duplicating draws", async () => {
+  const game = await rulesGame();
+  game.seed("Thopter Fabricator", "battlefield");
+  const crawler = game.seed("Psychosis Crawler", "battlefield");
+  game.seed("Scrawling Crawler", "battlefield", 1);
+  game.seed("Mind's Eye", "battlefield", 1);
+  const archive = game.seed("Hedron Archive", "battlefield");
+  game.match.rules!.mana[game.match.players[0].id].C = 2;
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    game.command(0, { type: "pass-priority" });
+    game.command(1, { type: "pass-priority" });
+  };
+  const before = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+  )!.count;
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: archive.id,
+      abilityId: "draw",
+    }).kind,
+  ).toBe("accepted");
+  pass();
+  const order = view().rules!.pending!;
+  expect(order.kind).toBe("trigger-order");
+  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
+  game.command(0, {
+    type: "rules-input",
+    procedureId: order.id,
+    selections: { order: order.selectionOptions.order.objectIds },
+  });
+  const order2 = view(1).rules!.pending!;
+  expect(order2.selectionOptions.order.objectIds).toHaveLength(4);
+  game.command(1, {
+    type: "rules-input",
+    procedureId: order2.id,
+    selections: { order: order2.selectionOptions.order.objectIds },
+  });
+  expect(view().objects[crawler.id].characteristics.power).toBe(
+    String(before + 2),
+  );
+  pass();
+  const pay = view(1).rules!.pending!;
+  expect(pay.kind).toBe("resolve");
+  const recovered = JSON.parse(JSON.stringify(game.match));
+  // Recover the persisted choice and the already-present mana pool.
+  recovered.rules.mana[game.match.players[1].id].U = 1;
+  expect(
+    game.service.execute(
+      recovered,
+      game.room.participants[1],
+      { type: "rules-input", procedureId: pay.id, confirm: true },
+      game.catalog,
+    ).kind,
+  ).toBe("accepted");
+  expect(
+    matchView(recovered, game.room.participants[1].id, game.catalog).zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[1].id,
+    )!.count,
+  ).toBe(8);
+  expect(recovered.rules.mana[game.match.players[1].id].U).toBe(0);
+  expect(
+    game.service.execute(
+      recovered,
+      game.room.participants[1],
+      { type: "rules-input", procedureId: pay.id, confirm: true },
+      game.catalog,
+    ).kind,
+  ).toBe("rejected");
+});
+
+test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants follow current artifact counts", async () => {
+  const game = await rulesGame();
+  game.seed("Padeem, Consul of Innovation", "battlefield");
+  const dragon = game.seed("Shimmer Dragon", "battlefield");
+  const own = game.seed("Mind Stone", "battlefield");
+  game.seed("Mind Stone", "battlefield", 1);
+  const artifacts = [
+    own,
+    game.seed("Sol Ring", "battlefield"),
+    game.seed("Silver Myr", "battlefield"),
+    game.seed("Thought Vessel", "battlefield"),
+  ];
+  const view = () =>
+    matchView(game.match, game.room.participants[0].id, game.catalog);
+  expect(view().objects[own.id].characteristics.keywords).toContain("Hexproof");
+  expect(view().objects[dragon.id].characteristics.keywords).toContain(
+    "Hexproof",
+  );
+  // Start just before the next upkeep, exercising the ordinary turn commands.
+  game.match.turn.stepIndex = 10;
+  game.seed("Thought Vessel", "battlefield", 1);
+  const pass = () => {
+    const id = game.match.priority!.playerId;
+    const seat = game.match.players.findIndex((p) => p.id === id);
+    game.command(seat, { type: "pass-priority" });
+    game.command(1 - seat, { type: "pass-priority" });
+  };
+  pass();
+  for (let i = 0; i < 8; i++) pass();
+  expect(game.match.turn.activePlayerId).toBe(game.match.players[0].id);
+  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
+  const before = view().zones.find(
+    (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+  )!.count;
+  // Respond with a higher-valued artifact; the intervening condition must fail.
+  const archive = game.seed("Hedron Archive", "hand", 1);
+  game.match.rules!.mana[game.match.players[1].id].C = 4;
+  game.seed("Shimmer Myr", "battlefield", 1);
+  game.command(0, { type: "pass-priority" });
+  game.command(1, { type: "cast-spell", objectId: archive.id });
+  pass();
+  pass();
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+    )!.count,
+  ).toBe(before);
+  // Selected-object tap costs can use newly controlled artifacts.
+  game.match.rules!.controlledSinceTurn[artifacts[0].id] =
+    game.match.turn.number;
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: dragon.id,
+      abilityId: "draw",
+    }).kind,
+  ).toBe("pending");
+  const pending = view().rules!.pending!;
+  game.command(0, {
+    type: "rules-input",
+    procedureId: pending.id,
+    selections: { "0": artifacts.slice(0, 2).map((o) => o.id) },
+    confirm: true,
+  });
+  pass();
+  expect(
+    view().zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+    )!.count,
+  ).toBe(before + 1);
+});
+
+async function triggerGame() {
+  const game = await rulesGame();
+  const view = (seat = 0) =>
+    matchView(game.match, game.room.participants[seat].id, game.catalog);
+  const pass = () => {
+    const seat = game.match.players.findIndex(
+      (p) => p.id === game.match.priority!.playerId,
+    );
+    for (let i = 0; i < 2; i++)
+      expect(["accepted", "pending"]).toContain(
+        game.command((seat + i) % 2, { type: "pass-priority" }).kind,
+      );
+  };
+  const answer = (selections: Record<string, string[]>, seat = 0) =>
+    game.command(seat, {
+      type: "rules-input",
+      procedureId: view(seat).rules!.pending!.id,
+      selections,
+    });
+  const handCount = (seat = 0) =>
+    view(seat).zones.find(
+      (z) => z.kind === "hand" && z.ownerId === game.match.players[seat].id,
+    )!.count;
+  return { ...game, view, pass, answer, handCount };
+}
+
+for (const count of [0, 1, 3]) {
+  test(`Battlesphere can tap ${count} Myr and its bound bonus expires during cleanup`, async () => {
+    const game = await triggerGame();
+    const sphere = game.seed("Myr Battlesphere", "battlefield");
+    const myr = Array.from({ length: 3 }, () =>
+      game.seed("Silver Myr", "battlefield"),
+    );
+    const tapped = game.seed("Silver Myr", "battlefield");
+    tapped.status.tapped = true;
+    game.pass();
+    game.pass();
+    game.answer({ [sphere.id]: [game.match.players[1].id] });
+    game.pass();
+    expect(
+      game.view().rules!.pending!.selectionOptions.select.objectIds,
+    ).not.toContain(tapped.id);
+    expect(
+      game.answer({ select: myr.slice(0, count).map((o) => o.id) }).kind,
+    ).toBe("accepted");
+    expect(game.view().objects[sphere.id].characteristics.power).toBe(
+      String(4 + count),
+    );
+    expect(game.view().players[1].life).toBe(String(40 - count));
+    game.match.turn.stepIndex = 10;
+    game.pass();
+    expect(game.view().objects[sphere.id].characteristics.power).toBe("4");
+  });
+}
+
+for (const selection of ["decline", "no-artifact", "empty"] as const) {
+  test(`Omnitool handles ${selection} without exposing the inspected Library`, async () => {
+    const game = await triggerGame();
+    const myr = game.seed("Silver Myr", "battlefield");
+    game.seed("Adaptive Omnitool", "battlefield").attachmentTo = myr.id;
+    const library = game.match.zones.find(
+      (z) => z.kind === "library" && z.ownerId === game.match.players[0].id,
+    )!;
+    if (selection === "empty") library.objectIds = [];
+    const initial = [...library.objectIds];
+    const count = game.handCount();
+    game.pass();
+    game.pass();
+    game.answer({ [myr.id]: [game.match.players[1].id] });
+    game.pass();
+    if (selection !== "empty") {
+      const pending = game.view().rules!.pending!;
+      expect(pending.selectionOptions.select.objectIds).toEqual([]);
+      expect(initial.slice(0, 6).every((id) => !game.view(1).objects[id])).toBe(
+        true,
+      );
+      game.answer({ select: [] });
+      const recovered = JSON.parse(JSON.stringify(game.match));
+      expect(
+        game.service.execute(
+          recovered,
+          game.room.participants[0],
+          {
+            type: "rules-input",
+            procedureId: pending.id,
+            selections: { select: [] },
+          },
+          game.catalog,
+        ).kind,
+      ).toBe("rejected");
+    }
+    expect(game.handCount()).toBe(count);
+    expect(game.view().zones.find((z) => z.id === library.id)!.count).toBe(
+      initial.length,
+    );
+  });
+}
+
+test("Signpost redirects an existing attack before Battlesphere reads its defender and rejects the attacker's permanents", async () => {
+  const game = await triggerGame();
+  const sphere = game.seed("Myr Battlesphere", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  const walker = game.seed("Mind Stone", "battlefield", 1);
+  walker.characteristics.types = ["Planeswalker"];
+  walker.counters = [{ kind: "loyalty", quantity: "8" }];
+  const ownWalker = game.seed("Mind Stone", "battlefield");
+  ownWalker.characteristics.types = ["Planeswalker"];
+  ownWalker.counters = [{ kind: "loyalty", quantity: "8" }];
+  const sign = game.seed("Misleading Signpost", "hand", 1);
+  game.pass();
+  game.pass();
+  game.answer({ [sphere.id]: [game.match.players[1].id] });
+  game.match.rules!.mana[game.match.players[1].id].U = 3;
+  game.command(0, { type: "pass-priority" });
+  expect(game.command(1, { type: "cast-spell", objectId: sign.id }).kind).toBe(
+    "accepted",
+  );
+  game.pass();
+  const target = game.view(1).rules!.pending!;
+  expect(target.kind).toBe("trigger-target");
+  game.command(1, {
+    type: "rules-input",
+    procedureId: target.id,
+    targetIds: [sphere.id],
+  });
+  game.pass();
+  const choice = game.view(1).rules!.pending!;
+  expect(choice.selectionOptions.select.objectIds).not.toContain(ownWalker.id);
+  expect(game.answer({ select: [ownWalker.id] }, 1).kind).toBe("rejected");
+  expect(game.answer({ select: [game.match.players[0].id] }, 1).kind).toBe(
+    "rejected",
+  );
+  expect(game.answer({ select: [walker.id] }, 1).kind).toBe("accepted");
+  expect(game.view().rules!.combat!.attackers).toHaveLength(1);
+  expect(game.view().rules!.combat!.attackers[0].objectId).toBe(sphere.id);
+  game.pass();
+  game.answer({ select: [myr.id] });
+  expect(game.view().players[1].life).toBe("40");
+  expect(game.view().objects[walker.id].counters[0].quantity).toBe("7");
+  expect(game.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+});
+
+test("Skysovereign's entry and attack damage use opponent targets and stay separate from combat damage", async () => {
+  const game = await triggerGame();
+  const sky = game.seed("Skysovereign, Consul Flagship", "hand");
+  const victim = game.seed("Steel Hellkite", "battlefield", 1);
+  const pilot = game.seed("Steel Hellkite", "battlefield");
+  game.match.rules!.mana[game.match.players[0].id].C = 5;
+  game.command(0, { type: "cast-spell", objectId: sky.id });
+  game.pass();
+  let pending = game.view().rules!.pending!;
+  expect(pending.legalTargetIds).toContain(victim.id);
+  expect(pending.legalTargetIds).not.toContain(pilot.id);
+  game.command(0, {
+    type: "rules-input",
+    procedureId: pending.id,
+    targetIds: [victim.id],
+  });
+  game.pass();
+  expect(game.view().rules!.markedDamage![victim.id]).toBe(3);
+  const vehicle = Object.values(game.view().objects).find(
+    (o) => o.characteristics.name === "Skysovereign, Consul Flagship",
+  )!;
+  game.match.rules!.controlledSinceTurn[vehicle.id] = 0;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: vehicle.id,
+    abilityId: "crew",
+  });
+  game.answer({ "0": [pilot.id] });
+  game.pass();
+  game.pass();
+  game.pass();
+  game.answer({ [vehicle.id]: [game.match.players[1].id] });
+  pending = game.view().rules!.pending!;
+  game.command(0, {
+    type: "rules-input",
+    procedureId: pending.id,
+    targetIds: [victim.id],
+  });
+  game.pass();
+  expect(game.view().objects[victim.id]).toBeUndefined();
+  expect(game.view().players[1].life).toBe("40");
+  expect(game.view().rules!.damageEvents!.every((e) => !e.combat)).toBe(true);
+});
+
+test("Mind's Eye accepts mana sources during its private effect payment and can decline without spending", async () => {
+  for (const pay of [false, true]) {
+    const game = await triggerGame();
+    game.seed("Mind's Eye", "battlefield", 1);
+    const ring = game.seed("Sol Ring", "battlefield", 1);
+    const stone = game.seed("Mind Stone", "battlefield");
+    game.match.rules!.mana[game.match.players[0].id].U = 1;
+    game.command(0, {
+      type: "activate-ability",
+      objectId: stone.id,
+      abilityId: "draw",
+    });
+    game.pass();
+    game.pass();
+    const choice = game.view(1).rules!.pending!;
+    expect(game.view().rules!.pending).toBeUndefined();
+    expect(choice.stage).toBe("payment");
+    expect(
+      game.command(1, {
+        type: "rules-input",
+        procedureId: choice.id,
+        confirm: true,
+      }).kind,
+    ).toBe("rejected");
+    expect(
+      game.command(1, {
+        type: "activate-ability",
+        objectId: ring.id,
+        abilityId: "mana",
+      }).kind,
+    ).toBe("pending");
+    const before = game.handCount(1);
+    expect(
+      game.command(1, {
+        type: "rules-input",
+        procedureId: choice.id,
+        confirm: pay,
+      }).kind,
+    ).toBe("accepted");
+    expect(game.handCount(1)).toBe(before + (pay ? 1 : 0));
+    expect(game.view(1).rules!.mana[game.match.players[1].id].C).toBe(
+      pay ? 1 : 2,
+    );
+  }
+});
+
+test("Scrawling upkeep draws for each player, Fabricator resets ordinals, and Vessel removes cleanup's discard", async () => {
+  const game = await triggerGame();
+  game.seed("Scrawling Crawler", "battlefield", 1);
+  game.seed("Thought Vessel", "battlefield");
+  game.seed("Thought Vessel", "battlefield", 1);
+  game.seed("Thopter Fabricator", "battlefield", 1);
+  const archive = game.seed("Hedron Archive", "battlefield");
+  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: archive.id,
+    abilityId: "draw",
+  });
+  game.pass();
+  const order = game.view(1).rules!.pending!;
+  game.answer({ order: order.selectionOptions.order.objectIds }, 1);
+  game.pass();
+  game.pass();
+  expect(game.handCount()).toBe(9);
+  expect(game.view().players[0].life).toBe("38");
+  expect(game.view().rules!.damageEvents ?? []).toHaveLength(0);
+  game.match.turn.stepIndex = 10;
+  game.pass();
+  expect(game.match.turn.stepIndex).toBe(1);
+  expect(game.match.turn.activePlayerId).toBe(game.match.players[1].id);
+  const before = [game.handCount(), game.handCount(1)];
+  game.pass();
+  expect(game.handCount()).toBe(before[0] + 1);
+  expect(game.handCount(1)).toBe(before[1] + 1);
+  expect(
+    Object.values(game.view().objects).filter((o) => o.kind === "token"),
+  ).toHaveLength(0);
+  game.pass(); // opponent draw life loss
+  game.pass(); // normal draw step gives the second draw
+  expect(game.view(1).zones.find((z) => z.kind === "stack")!.count).toBe(1);
+  game.pass();
+  expect(
+    Object.values(game.view().objects).filter((o) => o.kind === "token"),
+  ).toHaveLength(1);
+});
+
+test("Psychosis survives temporarily empty Hand inside a resolving draw sequence", async () => {
+  const game = await triggerGame();
+  const crawler = game.seed("Psychosis Crawler", "battlefield");
+  const spell = game.seed("Thirst for Knowledge", "hand");
+  const card =
+    game.catalog.definitions[
+      game.match.instances[spell.cardInstanceIds[0]].definitionId
+    ];
+  card.abilities = [
+    {
+      id: "empty-then-draw",
+      kind: "spell",
+      origin: "printed",
+      rules: {
+        costs: [],
+        effects: [
+          { kind: "discard", count: 7 },
+          { kind: "draw", count: 1 },
+        ],
+      },
+    },
+  ];
+  const hand = game.match.zones.find(
+    (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
+  )!;
+  hand.objectIds = hand.objectIds.slice(0, 7).concat(spell.id);
+  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  game.command(0, { type: "cast-spell", objectId: spell.id });
+  game.pass();
+  expect(
+    game.answer({
+      discard: game.view().rules!.pending!.selectionOptions.discard.objectIds,
+    }).kind,
+  ).toBe("accepted");
+  expect(game.view().objects[crawler.id].characteristics.toughness).toBe("1");
+  game.pass();
+  expect(game.view().players[1].life).toBe("39");
+});
+
+for (const artifacts of ["none", "ties", "smaller"] as const) {
+  test(`Padeem upkeep with ${artifacts} uses current greatest artifact mana values`, async () => {
+    const game = await triggerGame();
+    game.seed("Padeem, Consul of Innovation", "battlefield", 1);
+    if (artifacts !== "none") {
+      game.seed("Mind Stone", "battlefield", 1);
+      game.seed(
+        artifacts === "ties" ? "Mind Stone" : "Hedron Archive",
+        "battlefield",
+      );
+    }
+    game.match.turn.stepIndex = 10;
+    game.pass();
+    expect(game.view().zones.find((z) => z.kind === "stack")!.count).toBe(
+      artifacts === "ties" ? 1 : 0,
+    );
+    if (artifacts === "ties") {
+      const before = game.handCount(1);
+      game.pass();
+      expect(game.handCount(1)).toBe(before + 1);
+    }
+  });
+}
+
+test("Spy Network rechecks its artifact condition and Shimmer Dragon loses hexproof when its artifact count drops", async () => {
+  const game = await triggerGame();
+  game.seed("Thopter Spy Network", "battlefield", 1);
+  const dragon = game.seed("Shimmer Dragon", "battlefield", 1);
+  const artifacts = Array.from({ length: 4 }, () =>
+    game.seed("Mind Stone", "battlefield", 1),
+  );
+  const transmuter = game.seed("Master Transmuter", "battlefield", 1);
+  game.match.turn.stepIndex = 10;
+  game.pass();
+  expect(game.view().objects[dragon.id].characteristics.keywords).toContain(
+    "Hexproof",
+  );
+  game.match.rules!.mana[game.match.players[1].id].U = 1;
+  game.command(1, {
+    type: "activate-ability",
+    objectId: transmuter.id,
+    abilityId: "transmute",
+  });
+  game.answer({ "2": [transmuter.id] }, 1);
+  game.pass();
+  game.answer({ select: [] }, 1);
+  // Remove the four remaining artifacts through paid draw abilities, retaining the upkeep trigger.
+  for (const artifact of artifacts) {
+    game.match.rules!.mana[game.match.players[1].id].U = 1;
+    game.command(1, {
+      type: "activate-ability",
+      objectId: artifact.id,
+      abilityId: "draw",
+    });
+    game.pass();
+  }
+  expect(game.view().objects[dragon.id].characteristics.keywords).not.toContain(
+    "Hexproof",
+  );
+  game.pass();
+  expect(
+    Object.values(game.view().objects).filter((o) => o.kind === "token"),
+  ).toHaveLength(0);
+});
+
+test("Hellkite's fresh object lifetime has no prior combat recipients", async () => {
+  const game = await triggerGame();
+  game.seed("Research Thief", "battlefield");
+  game.seed("Thopter Spy Network", "battlefield");
+  const hellkite = game.seed("Steel Hellkite", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  const victim = game.seed("Mind Stone", "battlefield", 1);
+  const untouched = game.seed("Sol Ring", "battlefield", 1);
+  const transmuter = game.seed("Master Transmuter", "battlefield");
+  game.pass();
+  game.pass();
+  game.answer({
+    [hellkite.id]: [game.match.players[1].id],
+    [myr.id]: [game.match.players[1].id],
+  });
+  game.pass();
+  game.answer({}, 1);
+  game.pass();
+  let order = game.view().rules!.pending!;
+  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
+  game.answer({ order: order.selectionOptions.order.objectIds });
+  for (let i = 0; i < 3; i++) game.pass();
+  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  game.command(0, {
+    type: "activate-ability",
+    objectId: hellkite.id,
+    abilityId: "destroy-damaged",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    variables: { X: 2 },
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    confirm: true,
+  });
+  game.pass();
+  expect(game.view().objects[victim.id]).toBeUndefined();
+  expect(game.view().objects[untouched.id]).toBeDefined();
+  game.command(0, {
+    type: "activate-ability",
+    objectId: transmuter.id,
+    abilityId: "transmute",
+  });
+  game.answer({ "2": [hellkite.id] });
+  game.pass();
+  const returned = game
+    .view()
+    .rules!.pending!.selectionOptions.select.objectIds.find(
+      (id) => game.view().objects[id].characteristics.name === "Steel Hellkite",
+    )!;
+  game.answer({ select: [returned] });
+  const fresh = Object.values(game.view().objects).find(
+    (o) => o.characteristics.name === "Steel Hellkite",
+  )!;
+  expect(fresh.id).not.toBe(hellkite.id);
+  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: fresh.id,
+      abilityId: "destroy-damaged",
+    }).kind,
+  ).toBe("pending");
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    variables: { X: 1 },
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    confirm: true,
+  });
+  game.pass();
+  expect(game.view().objects[untouched.id]).toBeDefined();
+});
+
+test("Hellkite's power bonus expires and once-per-turn use clears on the next turn", async () => {
+  const game = await triggerGame();
+  const hellkite = game.seed("Steel Hellkite", "battlefield");
+  const ring = game.seed("Sol Ring", "battlefield");
+  game.command(0, {
+    type: "activate-ability",
+    objectId: ring.id,
+    abilityId: "mana",
+  });
+  game.command(0, {
+    type: "activate-ability",
+    objectId: hellkite.id,
+    abilityId: "pump",
+  });
+  game.pass();
+  expect(game.view().objects[hellkite.id].characteristics.power).toBe("6");
+  game.command(0, {
+    type: "activate-ability",
+    objectId: hellkite.id,
+    abilityId: "destroy-damaged",
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    variables: { X: 0 },
+  });
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    confirm: true,
+  });
+  game.pass();
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: hellkite.id,
+      abilityId: "destroy-damaged",
+    }).kind,
+  ).toBe("rejected");
+  game.match.turn.stepIndex = 10;
+  game.pass();
+  expect(game.view().objects[hellkite.id].characteristics.power).toBe("5");
+  game.command(1, { type: "pass-priority" });
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: hellkite.id,
+      abilityId: "destroy-damaged",
+    }).kind,
+  ).toBe("pending");
+});
+
+test("Battlesphere retains its selected bonus when the attacked planeswalker leaves before its trigger resolves", async () => {
+  const game = await triggerGame();
+  const sphere = game.seed("Myr Battlesphere", "battlefield");
+  const myr = game.seed("Silver Myr", "battlefield");
+  const walker = game.seed("Mind Stone", "battlefield", 1);
+  walker.characteristics.types = ["Planeswalker"];
+  walker.counters = [{ kind: "loyalty", quantity: "8" }];
+  game.seed("Shimmer Myr", "battlefield");
+  const golem = game.seed("Meteor Golem", "hand");
+  game.pass();
+  game.pass();
+  game.answer({ [sphere.id]: [walker.id] });
+  game.match.rules!.mana[game.match.players[0].id].U = 7;
+  game.command(0, { type: "cast-spell", objectId: golem.id });
+  game.pass();
+  game.command(0, {
+    type: "rules-input",
+    procedureId: game.view().rules!.pending!.id,
+    targetIds: [walker.id],
+  });
+  game.pass();
+  expect(game.view().objects[walker.id]).toBeUndefined();
+  game.pass();
+  game.answer({ select: [myr.id] });
+  expect(game.view().objects[sphere.id].characteristics.power).toBe("5");
+  expect(game.view().players[1].life).toBe("40");
+  expect(game.view().rules!.damageEvents ?? []).toHaveLength(0);
+});
+
+test("Signpost outside declare attackers has no redirection trigger and retains its blue mana ability", async () => {
+  const game = await triggerGame();
+  const sign = game.seed("Misleading Signpost", "hand");
+  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  game.command(0, { type: "cast-spell", objectId: sign.id });
+  game.pass();
+  expect(game.view().rules!.pending).toBeUndefined();
+  expect(game.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+  const source = Object.values(game.view().objects).find(
+    (o) => o.characteristics.name === "Misleading Signpost",
+  )!;
+  expect(
+    game.command(0, {
+      type: "activate-ability",
+      objectId: source.id,
+      abilityId: "mana",
+    }).kind,
+  ).toBe("accepted");
+  expect(game.view().rules!.mana[game.match.players[0].id].U).toBe(1);
 });

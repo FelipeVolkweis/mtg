@@ -31,6 +31,70 @@
     "Flash"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "keyword": "Flash"
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "U"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "redirect-attack",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "redirect-attack"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "step": 5
+        },
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ],
+          "attacking": true
+        }
+      }
+    }
+  ]
 }

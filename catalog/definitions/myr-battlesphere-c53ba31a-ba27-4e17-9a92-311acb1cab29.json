@@ -29,6 +29,79 @@
   "oracleText": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.\nWhenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
   "keywords": [],
   "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "entry-myr",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "myr",
+            "count": 4
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "attack-payment",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "tap-choice",
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "subtypes": [
+                "Myr"
+              ],
+              "untapped": true
+            },
+            "bind": "tapped"
+          },
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": {
+                  "binding": "tapped"
+                },
+                "toughness": 0
+              }
+            ]
+          },
+          {
+            "kind": "damage",
+            "amount": {
+              "binding": "tapped"
+            },
+            "recipient": "defender"
+          }
+        ],
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ]
 }

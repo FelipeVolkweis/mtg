@@ -9,7 +9,7 @@
       "name": "Skysovereign, Consul Flagship",
       "manaCost": "{5}",
       "colors": [],
-      "typeLine": "Legendary Artifact \u2014 Vehicle",
+      "typeLine": "Legendary Artifact — Vehicle",
       "manaValue": 5,
       "supertypes": [
         "Legendary"
@@ -35,7 +35,7 @@
     "Crew"
   ],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "crew",
@@ -81,6 +81,66 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
+      }
+    },
+    {
+      "id": "entry-attack-damage",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        },
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        }
+      }
+    },
+    {
+      "id": "attack-damage",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        },
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        }
       }
     }
   ]

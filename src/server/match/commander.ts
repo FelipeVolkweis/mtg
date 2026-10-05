@@ -38,6 +38,17 @@ function resolvingEffectSupported(
       "add-counters",
       "animate-source",
       "damage",
+      "move",
+      "destroy",
+      "exile",
+      "sacrifice",
+      "inspect",
+      "attach",
+      "gain-life",
+      "tap-choice",
+      "pay-mana",
+      "redirect-attack",
+      "lose-life",
     ].includes(effect.kind) ||
     (allowMana && effect.kind === "add-mana")
   );
@@ -53,6 +64,11 @@ export function automationEligible(card: CardDefinition): boolean {
         const name = keyword.toLowerCase();
         if (["cycling", "affinity"].includes(name))
           return ability.keyword?.toLowerCase() === name;
+        if (name === "equip")
+          return (
+            ability.id === "equip" &&
+            ability.rules.effects.some((e) => e.kind === "attach")
+          );
         if (name === "crew")
           return (
             ability.rules.costs.some((cost) => cost.kind === "crew") &&
@@ -68,14 +84,12 @@ export function automationEligible(card: CardDefinition): boolean {
         ability.rules &&
         rulesAbilitySchema.safeParse(ability.rules).success &&
         ((ability.kind === "activated" &&
-          !ability.rules.chosenVariables?.length &&
           ability.rules.effects.every((effect) =>
             resolvingEffectSupported(effect, true),
           )) ||
           (ability.kind === "triggered" &&
             !!ability.rules.trigger &&
             !ability.rules.costs.length &&
-            !ability.rules.target &&
             ability.rules.effects.every((effect) =>
               resolvingEffectSupported(effect),
             )) ||

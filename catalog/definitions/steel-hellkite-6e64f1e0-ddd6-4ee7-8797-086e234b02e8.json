@@ -9,7 +9,7 @@
       "name": "Steel Hellkite",
       "manaCost": "{6}",
       "colors": [],
-      "typeLine": "Artifact Creature \u2014 Dragon",
+      "typeLine": "Artifact Creature — Dragon",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -32,7 +32,7 @@
     "Flying"
   ],
   "manaValue": 6,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "flying",
@@ -43,6 +43,70 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
+      }
+    },
+    {
+      "id": "pump",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "destroy-damaged",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{X}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "excludeTypes": [
+                "Land"
+              ],
+              "manaValue": {
+                "binding": "X"
+              },
+              "damagedBySource": true
+            }
+          }
+        ],
+        "chosenVariables": [
+          "X"
+        ],
+        "oncePerTurn": true
       }
     }
   ]

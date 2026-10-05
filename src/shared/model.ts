@@ -381,6 +381,7 @@ export interface MatchView extends Omit<
     | "priorityAfterTriggers"
     | "controlledSinceTurn"
     | "turnStarted"
+    | "revealedHandIds"
   > & {
     waiting?: { playerId: string; kind: string };
     pending?: import("./rules.js").PendingProcedure & {

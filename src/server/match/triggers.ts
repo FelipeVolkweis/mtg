@@ -61,7 +61,12 @@ export class Triggers {
       }
     }
   }
-  collect(event: SemanticEvent, affected: GameObject, sources: GameObject[]) {
+  collect(
+    event: SemanticEvent,
+    affected: GameObject,
+    sources: GameObject[],
+    groups = new Set<string>(),
+  ) {
     for (const source of sources) {
       for (const ability of this.engine.definition(source)?.abilities ?? []) {
         const trigger = ability.rules?.trigger;
@@ -74,21 +79,39 @@ export class Triggers {
             : trigger.event === event.kind;
         if (
           !matchesEvent ||
+          (trigger.player &&
+            (trigger.player === "you"
+              ? event.playerId !== source.controllerId
+              : !event.playerId || event.playerId === source.controllerId)) ||
+          (trigger.ordinal !== undefined &&
+            trigger.ordinal !== event.ordinal) ||
+          (trigger.step !== undefined &&
+            trigger.step !== this.engine.match.turn.stepIndex) ||
+          (ability.rules?.intervening &&
+            !this.engine.conditionSatisfied(
+              ability.rules.intervening,
+              source.controllerId,
+              source.id,
+            )) ||
           (trigger.combat !== undefined &&
             event.damage?.combat !== trigger.combat) ||
           (trigger.recipientKind !== undefined &&
             event.damage?.recipientKind !== trigger.recipientKind) ||
           (trigger.event === "state" &&
             !this.stateSatisfied(source, trigger)) ||
-          !matchesFilter(
-            this.engine.match,
-            { ...affected, characteristics: event.before ?? event.after },
-            trigger.filter,
-            source.controllerId,
-            source.id,
-          )
+          (trigger.filter &&
+            !matchesFilter(
+              this.engine.match,
+              { ...affected, characteristics: event.before ?? event.after },
+              trigger.filter,
+              source.controllerId,
+              source.id,
+            ))
         )
           continue;
+        const groupKey = `${source.id}:${ability.id}:${event.damage?.recipientId}`;
+        if (trigger.grouped && groups.has(groupKey)) continue;
+        if (trigger.grouped) groups.add(groupKey);
         this.engine.rules.waitingTriggers ??= [];
         this.engine.rules.waitingTriggers.push({
           id: randomUUID(),

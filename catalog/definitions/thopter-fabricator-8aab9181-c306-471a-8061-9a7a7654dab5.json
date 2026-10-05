@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact \u2014 Vehicle",
+      "typeLine": "Artifact — Vehicle",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -37,7 +37,7 @@
     "Crew"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "crew",
@@ -83,6 +83,27 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
+      }
+    },
+    {
+      "id": "second-draw",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "you",
+          "ordinal": 2
+        }
       }
     }
   ]

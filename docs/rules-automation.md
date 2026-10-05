@@ -1,12 +1,11 @@
-# Rules automation: tickets 01–20
+# Rules automation: tickets 01–25
 
 Commander is available alongside the temporary Tabletop compatibility path. The
 rules slices require two ready Room Participants, a selected legendary
 creature commander in each Decklist, exactly 100 cards, singleton nonbasic cards,
 compatible Color Identity, and complete authored automation support. The mono-U
 sample still contains unsupported cards and is deliberately rejected. Sai and
-Padeem satisfy commander eligibility; Sai is now fully supported, while Padeem
-awaits later slices. Graaz cannot lead the unchanged blue Decklist. Solo automated
+Padeem satisfy commander eligibility; Sai and Padeem are now fully supported. Graaz cannot lead the unchanged blue Decklist. Solo automated
 practice, commander tax and commander return choices belong to later
 tickets. The existing Tabletop remains available until ticket 30 removes it.
 
@@ -61,7 +60,6 @@ choices; revision and identifier checks prevent duplicate completion. Cancelling
 an unfinished procedure pays none of its costs. Separately completed mana
 abilities remain completed, with their mana in the player's pool.
 
-
 Ordered spell resolution persists a queue of remaining instructions and numeric
 bindings. Authored sequences, result-bound quantities and conditions share this
 interpreter. Discard alternatives declare whether complete performance is
@@ -78,7 +76,6 @@ and explanatory context. The progress queue and bindings stay server-private.
 Insufficient Library contents do not interrupt later instructions: the failed-draw
 checkpoint runs only after resolution completes. Browser reconnect tests restore
 both cards' choices from persisted Room state without repeating draws.
-
 
 Semantic entering, casting, and Zone-change events retain controllers, owners and
 pre-change effective characteristics. Battlefield-to-Graveyard events collect
@@ -123,7 +120,6 @@ now combine their authored stats, affinity and entry behavior with enforced
 flying, indestructible or attack requirements and are implemented. The complete
 mono-U Decklist remains ineligible until the remaining slices are delivered.
 
-
 Private Library inspection persists the looked-at object IDs and choice stage only
 in the resolving procedure. Its controller can select bottomed cards and order
 the remaining top cards without revealing the Library to another player. Tome's
@@ -151,16 +147,14 @@ Equipment Attachments are separate from Object Links. Sorcery-timed equip target
 controlled creatures, and living weapon creates a black 0/0 Phyrexian Germ before
 attaching Nettlecyst. State-based checks wait until both instructions finish.
 Equipment bonuses count each artifact/enchantment once, update as the board
-changes and stop when their source leaves. Adaptive Omnitool has equip and its
-artifact-count bonus but remains unimplemented until ticket 22 authors its attack
-ability.
+changes and stop when their source leaves. Adaptive Omnitool combines equip and its artifact-count bonus with private
+attack-time inspection and optional revealed artifact retrieval.
 
 Duplicant's optional nontoken-creature exile records the new Exile object's ID in
 an Object Link. Its continuous ability reads that creature card's current
 characteristics in Exile, retaining Shapeshifter; unrelated exiled cards do not
 apply. Departed linked cards and new Duplicant lifetimes do not reuse an old link.
 The link is persisted with Match state and projected only through visible objects.
-
 
 Combat declarations are persisted turn-based choices at the start of the declare
 attackers and declare blockers steps, followed by ordinary Priority windows.
@@ -188,17 +182,16 @@ Typed keyword grants participate in effective characteristics and opponent
 hexproof target legality, including revalidation during resolution. Costs and
 untargeted effects do not target. Flash and source-based artifact casting
 permission use the normal casting/payment procedure and require Priority.
-Darksteel Citadel and Shimmer Myr are fully implemented; Research Thief retains
-flash and flying but remains unimplemented pending its combat-damage trigger.
+Darksteel Citadel, Shimmer Myr and Research Thief are fully implemented. Research
+Thief combines flash and flying with individual combat-damage draw triggers.
 
 Crew selects untapped controlled creatures by total effective power. It can use
 newly controlled creatures and remains separate from tap-symbol costs. The
 resolved ability adds Artifact and Creature types until end of turn, preserving
 Vehicle stats and subtypes, Counters and other changes. Equipment uses effective
 creature types when attaching and detaches at a checkpoint if animation ends. The Vehicle's own attack
-and tap-symbol timing is checked independently. Cultivator's Caravan is complete;
-Thopter Fabricator and Skysovereign retain flying and crew but remain unimplemented
-until their remaining triggers are delivered.
+and tap-symbol timing is checked independently. Cultivator's Caravan, Thopter Fabricator and Skysovereign are complete, including
+flying, crew and their draw or entry/attack triggers.
 
 Propaganda opens a per-attacker mana payment using the existing source controls.
 No attackers are tapped or declared before the complete payment succeeds;
@@ -214,3 +207,52 @@ state-based actions or triggers require Priority, cleanup waits, offers Priority
 and repeats after the Stack clears before advancing to the next turn. Persisted
 choices retain their identifiers across reconnects, including attack payment and
 combat damage assignments.
+
+Attack declarations emit one event per declared creature. Battlesphere creates
+four Myr on entry; its attack trigger offers any number of eligible untapped Myr,
+binds the tapped count, applies a fixed temporary power bonus, and deals separate
+noncombat damage to its current defending player or planeswalker at resolution.
+A departed recipient receives no damage. Skysovereign's entry and attack triggers
+choose opposing creatures or planeswalkers and revalidate them before damage.
+
+Omnitool inspects at most six Library cards privately, permits declining an artifact
+selection, reveals a selected artifact in Hand to every participant, and randomly
+bottoms the rest. The server retains known revealed Hand identities until those
+objects leave; the browser displays only those known cards to opponents. Signpost
+has flash and blue mana; entering during declare attackers permits a targeted,
+optional legal defender reselection. The same destination filter supplies the
+prompt and validates the answer. Reselection preserves the declared attack and
+does not emit another attack event.
+
+Damage trigger collection distinguishes individual sources from grouped
+one-or-more events within a simultaneous damage batch, separately for each damaged
+player. Research Thief draws per qualifying creature; Spy Network draws per damaged
+player. Hellkite's chosen-X destruction reads only current-turn combat recipients
+at resolution and matches their nonland permanents' mana values. Activation usage
+belongs to the source Game Object and ability. Both usage and damage attribution
+reset each turn; a fresh Game Object does not inherit them. Its power activation
+uses the same temporary-effect machinery.
+
+Draw instructions emit an event for each successfully drawn card, recording each
+player's turn ordinal without performing state-based checks midway through
+resolution. Fabricator triggers on the second draw. Scrawling Crawler draws for each
+player at its controller's upkeep and applies life loss for opponents' draws.
+Psychosis Crawler derives live Hand-size stats and causes each opponent to lose
+life on its controller's draws. Temporary zero toughness between resolving
+instructions does not cause premature death.
+
+Mind's Eye suspends resolution for a private optional mana payment. Players can
+activate mana abilities in that payment window; automatic pool allocation follows
+the existing spending policy and excludes mana restricted to casting/activation.
+Pay and Decline are distinct browser controls. The result binding controls the
+follow-up draw, and persisted choice identifiers prevent duplicate completion.
+Thought Vessel's no-maximum-Hand-size grant applies only while its controller has
+that source on the Battlefield.
+
+Padeem grants controlled artifacts hexproof and compares live greatest artifact
+mana values, including ties and requiring an actual controlled artifact. Its
+upkeep condition and Spy Network's controlled-artifact upkeep condition are
+checked both when triggering and when resolving. Shimmer Dragon's conditional
+hexproof follows the live four-artifact threshold. Its draw cost selects two
+untapped artifacts and can use newly controlled artifacts, independently of
+creature tap-symbol restrictions. Printed characteristics remain unchanged.

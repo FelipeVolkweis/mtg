@@ -9,7 +9,7 @@
       "name": "Adaptive Omnitool",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact \u2014 Equipment",
+      "typeLine": "Artifact — Equipment",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -29,7 +29,7 @@
     "Equip"
   ],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "equipped-bonus",
@@ -100,6 +100,36 @@
             "Creature"
           ],
           "controller": "you"
+        }
+      }
+    },
+    {
+      "id": "attack-inspection",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "inspect",
+            "count": 6,
+            "select": {
+              "zone": "library",
+              "types": [
+                "Artifact"
+              ]
+            },
+            "randomBottom": true,
+            "revealSelected": true
+          }
+        ],
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "attached": true
+          }
         }
       }
     }

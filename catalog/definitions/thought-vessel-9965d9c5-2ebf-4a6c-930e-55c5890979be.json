@@ -23,6 +23,41 @@
   "oracleText": "You have no maximum hand size.\n{T}: Add {C}.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "hand-size",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "maximumHandSize": "unlimited"
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ]
 }

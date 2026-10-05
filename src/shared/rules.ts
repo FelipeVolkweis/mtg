@@ -36,6 +36,9 @@ export const objectFilterSchema = z
     types: z.array(z.string().min(1)).optional(),
     excludeTypes: z.array(z.string().min(1)).optional(),
     untapped: z.boolean().optional(),
+    attacking: z.boolean().optional(),
+    manaValue: z.lazy(() => valueSchema).optional(),
+    damagedBySource: z.boolean().optional(),
   })
   .strict();
 export type ObjectFilter = z.infer<typeof objectFilterSchema>;
@@ -54,7 +57,7 @@ export const rulesCostSchema = z.discriminatedUnion("kind", [
   z
     .object({
       kind: z.literal("mana"),
-      symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)).max(100),
+      symbols: z.array(z.string().regex(/^\{(?:[WUBRGCX]|\d+)\}$/)).max(100),
     })
     .strict(),
   z.object({ kind: z.literal("tap-source") }).strict(),
@@ -80,11 +83,15 @@ export type RulesValue =
   | number
   | { binding: string }
   | { count: ObjectFilter }
-  | { sum: RulesValue[] };
+  | { sum: RulesValue[] }
+  | { handSize: "you" }
+  | { greatestManaValue: ObjectFilter };
 export const valueSchema: z.ZodType<RulesValue> = z.lazy(() =>
   z.union([
     z.number().int().nonnegative().max(1000),
     z.object({ binding: z.string().min(1) }).strict(),
+    z.object({ handSize: z.literal("you") }).strict(),
+    z.object({ greatestManaValue: objectFilterSchema }).strict(),
     z.object({ count: objectFilterSchema }).strict(),
     z.object({ sum: z.array(valueSchema).min(1).max(20) }).strict(),
   ]),
@@ -184,11 +191,40 @@ const inspectSchema = z
     count: z.number().int().positive().max(100),
     select: objectFilterSchema.optional(),
     randomBottom: z.boolean().optional(),
+    revealSelected: z.boolean().optional(),
   })
   .strict();
 export type InspectEffect = z.infer<typeof inspectSchema>;
 const primitiveEffectSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("damage"), amount: valueSchema }).strict(),
+  z
+    .object({
+      kind: z.literal("damage"),
+      amount: valueSchema,
+      recipient: z.literal("defender").optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("tap-choice"),
+      filter: objectFilterSchema,
+      bind: z.string().min(1),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("pay-mana"),
+      symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)),
+      bind: z.string().min(1),
+    })
+    .strict(),
+  z.object({ kind: z.literal("redirect-attack") }).strict(),
+  z
+    .object({
+      kind: z.literal("lose-life"),
+      amount: valueSchema,
+      player: z.enum(["you", "opponents", "event-player"]),
+    })
+    .strict(),
   z
     .object({
       kind: z.literal("animate-source"),
@@ -227,6 +263,7 @@ const primitiveEffectSchema = z.discriminatedUnion("kind", [
       kind: z.literal("draw"),
       count: valueSchema,
       bind: z.string().min(1).optional(),
+      player: z.enum(["you", "each"]).optional(),
     })
     .strict(),
   z.object({ kind: z.literal("counter-target") }).strict(),
@@ -305,6 +342,14 @@ export const rulesEffectSchema: z.ZodType<RulesEffect> = z.lazy(() =>
   ]),
 );
 
+export const conditionSchema = z
+  .object({
+    value: valueSchema,
+    atLeast: valueSchema,
+    requireObjects: objectFilterSchema.optional(),
+  })
+  .strict();
+
 export const rulesAbilitySchema = z
   .object({
     attackCost: z
@@ -314,6 +359,9 @@ export const rulesAbilitySchema = z
       .strict()
       .optional(),
     keyword: supportedKeywordSchema.optional(),
+    maximumHandSize: z.literal("unlimited").optional(),
+    oncePerTurn: z.boolean().optional(),
+    intervening: conditionSchema.optional(),
     castingPermission: objectFilterSchema.optional(),
     timing: z.literal("sorcery").optional(),
     chosenVariables: z.array(z.literal("X")).max(1).optional(),
@@ -351,8 +399,21 @@ export const rulesAbilitySchema = z
     target: objectFilterSchema.optional(),
     trigger: z
       .object({
-        event: z.enum(["enter", "cast", "dies", "state", "damage"]),
-        filter: objectFilterSchema,
+        event: z.enum([
+          "enter",
+          "cast",
+          "dies",
+          "state",
+          "damage",
+          "attack",
+          "draw",
+          "upkeep",
+        ]),
+        filter: objectFilterSchema.optional(),
+        player: z.enum(["you", "opponent"]).optional(),
+        ordinal: z.number().int().positive().optional(),
+        grouped: z.boolean().optional(),
+        step: z.number().int().nonnegative().optional(),
         combat: z.boolean().optional(),
         recipientKind: z.enum(["player", "object"]).optional(),
         counter: z.string().min(1).optional(),
@@ -373,8 +434,19 @@ export const rulesAbilitySchema = z
       if ("sum" in value)
         for (const term of value.sum) checkValue(term, available);
     };
+    const checkFilter = (
+      filter: ObjectFilter | undefined,
+      available: Set<string>,
+    ) => {
+      if (filter?.manaValue !== undefined)
+        checkValue(filter.manaValue, available);
+    };
     const check = (effects: RulesEffect[], available: Set<string>) => {
       for (const effect of effects) {
+        if ("filter" in effect) checkFilter(effect.filter, available);
+        if (effect.kind === "lose-life") checkValue(effect.amount, available);
+        if (effect.kind === "redirect-attack" && !ability.target?.attacking)
+          invalid("Redirection requires an attacking target.");
         if (effect.kind === "sequence") check(effect.effects, available);
         else if (effect.kind === "if") {
           if (!available.has(effect.condition.binding))
@@ -396,13 +468,23 @@ export const rulesAbilitySchema = z
               invalid("Result bindings must be unique.");
             available.add(effect.bind);
           }
+        } else if (effect.kind === "animate-source") {
+          for (const change of effect.changes)
+            if (
+              change.kind === "add-stats" ||
+              change.kind === "set-stats" ||
+              change.kind === "define-stats"
+            ) {
+              checkValue(change.power, available);
+              checkValue(change.toughness, available);
+            }
         } else if ("bind" in effect && effect.bind) {
           if (available.has(effect.bind))
             invalid("Result bindings must be unique.");
           available.add(effect.bind);
         } else if (effect.kind === "damage") {
           checkValue(effect.amount, available);
-          if (!ability.target)
+          if (!ability.target && effect.recipient !== "defender")
             invalid("Damage effects require a target declaration.");
         } else if (effect.kind === "counter-target" && !ability.target)
           invalid("Counter effects require a target declaration.");
@@ -412,7 +494,7 @@ export const rulesAbilitySchema = z
       ability.trigger?.event === "state" &&
       (!ability.trigger.counter ||
         !ability.trigger.atLeast ||
-        ability.trigger.filter.self !== "only")
+        ability.trigger.filter?.self !== "only")
     )
       invalid("State triggers require a source counter threshold.");
     const validateMovements = (effects: RulesEffect[]) => {
@@ -442,7 +524,28 @@ export const rulesAbilitySchema = z
       }
     };
     validateMovements(ability.effects);
+    if (
+      ability.costs.some(
+        (c) => c.kind === "mana" && c.symbols.includes("{X}"),
+      ) &&
+      !ability.chosenVariables?.includes("X")
+    )
+      invalid("Variable mana costs require a chosen X.");
+    if (
+      ability.trigger &&
+      !ability.trigger.filter &&
+      !["draw", "upkeep"].includes(ability.trigger.event)
+    )
+      invalid("Object events require an object filter.");
+    if (ability.trigger?.grouped && ability.trigger.event !== "damage")
+      invalid("Grouped triggers require damage events.");
     const available = new Set(ability.chosenVariables ?? []);
+    checkFilter(ability.target, available);
+    checkFilter(ability.trigger?.filter, available);
+    if (ability.intervening) {
+      checkValue(ability.intervening.value, available);
+      checkValue(ability.intervening.atLeast, available);
+    }
     check(ability.effects, new Set(available));
     for (const modifier of ability.costModifiers ?? [])
       checkValue(modifier.amount, available);
@@ -527,6 +630,10 @@ export interface ResolutionProgress {
   bindings: Record<string, number>;
   choices?: Record<string, DiscardEffect>;
   choiceEffect?: MovementEffect | InspectEffect;
+  actionChoice?: Extract<
+    RulesEffect,
+    { kind: "tap-choice" | "pay-mana" | "redirect-attack" }
+  >;
   inspectedIds?: string[];
   createdIds?: string[];
   selectionPlayers?: string[];
@@ -563,6 +670,9 @@ export interface DamageChoice {
 export interface RulesState {
   markedDamage?: Record<string, number>;
   damageEvents?: DamageEvent[];
+  drawsThisTurn?: Record<string, number>;
+  activationUsage?: Record<string, number>;
+  revealedHandIds?: string[];
   temporaryEffects?: ActiveContinuousEffect[];
   combat?: CombatState;
   orderedTriggerPlayerIds?: string[];
@@ -583,7 +693,17 @@ export interface RulesState {
 }
 
 export interface SemanticEvent {
-  kind: "enter" | "cast" | "zone-change" | "state" | "damage";
+  kind:
+    | "enter"
+    | "cast"
+    | "zone-change"
+    | "state"
+    | "damage"
+    | "attack"
+    | "draw"
+    | "upkeep";
+  playerId?: string;
+  ordinal?: number;
   damage?: DamageAssignment & {
     combat: boolean;
     recipientKind: "player" | "object";

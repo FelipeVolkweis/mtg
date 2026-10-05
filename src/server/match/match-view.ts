@@ -91,6 +91,22 @@ export function matchView(
         instances[instanceId] = match.instances[instanceId];
     }
   }
+  for (const id of match.rules?.revealedHandIds ?? []) {
+    const object = match.objects[id];
+    if (
+      !object ||
+      match.zones.find((z) => z.id === object.zoneId)?.kind !== "hand"
+    )
+      continue;
+    objects[id] = {
+      ...structuredClone(object),
+      hidden: false,
+      melded: false,
+      canTurnFaceUp: false,
+    };
+    for (const instanceId of object.cardInstanceIds)
+      instances[instanceId] = match.instances[instanceId];
+  }
   const copiableValues: MatchView["copiableValues"] = {};
   for (const object of Object.values(objects)) {
     if (object.hidden) continue;
@@ -132,6 +148,7 @@ export function matchView(
             priorityAfterTriggers,
             controlledSinceTurn,
             turnStarted,
+            revealedHandIds,
             ...rules
           } = match.rules;
           const engine = catalog ? new RulesEngine(match, catalog) : undefined;

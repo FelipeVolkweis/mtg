@@ -212,6 +212,11 @@ export class RulesEngine {
       for (const ability of this.abilities(object)) {
         const rules = ability.rules!;
         if (pending && !rules.manaAbility) continue;
+        if (
+          rules.oncePerTurn &&
+          this.rules.activationUsage?.[`${object.id}:${ability.id}`]
+        )
+          continue;
         if (rules.timing === "sorcery" && !this.mainTiming(playerId)) continue;
         if (!this.canActivateFromZone(object, playerId, ability)) continue;
         if (
@@ -260,7 +265,9 @@ export class RulesEngine {
     if (pending.kind === "cleanup")
       return {
         discard: {
-          count: this.zone("hand", pending.playerId).objectIds.length - 7,
+          count:
+            this.zone("hand", pending.playerId).objectIds.length -
+            this.maximumHandSize(pending.playerId),
           objectIds: [...this.zone("hand", pending.playerId).objectIds],
         },
       };
@@ -406,6 +413,9 @@ export class RulesEngine {
     const sources = snapshotSources ?? this.battlefieldSources();
     const before = snapshotCharacteristics ?? this.effective(object);
     const fresh = moveObject(this.match, id, destination);
+    this.rules.revealedHandIds = this.rules.revealedHandIds?.filter(
+      (revealed) => revealed !== id,
+    );
     new Triggers(this).collect(
       {
         kind: "zone-change",
@@ -431,6 +441,29 @@ export class RulesEngine {
     playerId: string,
     sourceId?: string,
   ) {
+    if (
+      filter.manaValue !== undefined &&
+      this.effective(object).manaValue !==
+        this.value(
+          filter.manaValue,
+          playerId,
+          sourceId,
+          this.rules.resolving?.bindings,
+        )
+    )
+      return false;
+    if (
+      filter.damagedBySource &&
+      !this.rules.damageEvents?.some(
+        (e) =>
+          e.sourceId === sourceId &&
+          e.combat &&
+          e.recipientKind === "player" &&
+          e.recipientId === object.controllerId &&
+          e.turn === this.match.turn.number,
+      )
+    )
+      return false;
     return matchesFilter(
       this.match,
       { ...object, characteristics: this.effective(object) },
@@ -456,6 +489,31 @@ export class RulesEngine {
       sourceId,
       bindings,
     );
+  }
+  conditionSatisfied(
+    condition: NonNullable<RulesAbility["intervening"]>,
+    playerId: string,
+    sourceId: string,
+  ) {
+    return (
+      (!condition.requireObjects ||
+        Object.values(this.match.objects).some((o) =>
+          this.matches(o, condition.requireObjects!, playerId, sourceId),
+        )) &&
+      this.value(condition.value, playerId, sourceId) >=
+        this.value(condition.atLeast, playerId, sourceId)
+    );
+  }
+  maximumHandSize(playerId: string) {
+    return this.battlefieldSources().some(
+      (o) =>
+        o.controllerId === playerId &&
+        this.definition(o)?.abilities.some(
+          (a) => a.rules?.maximumHandSize === "unlimited",
+        ),
+    )
+      ? Infinity
+      : 7;
   }
   targetSource(pending: PendingProcedure) {
     const object = this.match.objects[pending.sourceId ?? ""];
@@ -582,6 +640,11 @@ export class RulesEngine {
     const ability = rulesAbilitySchema.parse(authored.rules);
     if (!this.canActivateFromZone(source, playerId, authored))
       throw new Error("You cannot activate this source from that Zone.");
+    if (
+      ability.oncePerTurn &&
+      this.rules.activationUsage?.[`${source.id}:${authored.id}`]
+    )
+      throw new Error("Activate this ability only once each turn.");
     if (ability.timing === "sorcery" && !this.mainTiming(playerId))
       throw new Error("Activate this ability only as a sorcery.");
     if (
@@ -595,7 +658,11 @@ export class RulesEngine {
       id: randomUUID(),
       playerId,
       kind: "activate",
-      stage: ability.target ? "targets" : "payment",
+      stage: ability.chosenVariables?.length
+        ? "variable"
+        : ability.target
+          ? "targets"
+          : "payment",
       sourceId: source.id,
       abilityId: authored.id,
       ability,
@@ -604,11 +671,12 @@ export class RulesEngine {
       color: action.color,
       totalCost: manaCost(
         ability.costs.flatMap((cost) =>
-          cost.kind === "mana" ? cost.symbols : [],
+          cost.kind === "mana" ? cost.symbols.filter((s) => s !== "{X}") : [],
         ),
       ),
     };
-    if (!ability.target) this.lockCost(procedure);
+    if (!ability.target && !ability.chosenVariables?.length)
+      this.lockCost(procedure);
     if (ability.manaAbility) {
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
@@ -617,7 +685,8 @@ export class RulesEngine {
       if (!duringPayment) this.priority(playerId);
     } else {
       this.rules.pending = procedure;
-      if (!ability.target) this.tryComplete(playerId);
+      if (!ability.target && !ability.chosenVariables?.length)
+        this.tryComplete(playerId);
     }
   }
   input(
@@ -664,9 +733,13 @@ export class RulesEngine {
         throw new Error("Choose a nonnegative integer for X, at most 1000.");
       pending.variables = { X: value };
       const symbols =
-        this.object(pending.sourceId!).characteristics.manaCost?.match(
-          /\{[^{}]+\}/g,
-        ) ?? [];
+        pending.kind === "activate"
+          ? pending.ability!.costs.flatMap((c) =>
+              c.kind === "mana" ? c.symbols : [],
+            )
+          : (this.object(pending.sourceId!).characteristics.manaCost?.match(
+              /\{[^{}]+\}/g,
+            ) ?? []);
       pending.totalCost.generic +=
         symbols.filter((symbol) => symbol === "{X}").length * value;
       if (!pending.ability?.target) this.lockCost(pending);
@@ -680,7 +753,7 @@ export class RulesEngine {
       const hand = this.zone("hand", playerId);
       const ids = action.selections?.discard ?? [];
       if (
-        ids.length !== hand.objectIds.length - 7 ||
+        ids.length !== hand.objectIds.length - this.maximumHandSize(playerId) ||
         new Set(ids).size !== ids.length ||
         ids.some((id) => !hand.objectIds.includes(id))
       )
@@ -727,6 +800,9 @@ export class RulesEngine {
       const object = this.object(source);
       const sourceZoneId = object.zoneId;
       const spell = moveObject(this.match, source, this.zone("stack"));
+      this.rules.revealedHandIds = this.rules.revealedHandIds?.filter(
+        (id) => id !== source,
+      );
       spell.resolution = {
         ability: pending.ability!,
         targetIds: pending.targetIds,
@@ -746,12 +822,19 @@ export class RulesEngine {
       };
       this.emit("cast", spell);
     } else {
+      if (pending.ability?.oncePerTurn) {
+        this.rules.activationUsage ??= {};
+        this.rules.activationUsage[`${source}:${pending.abilityId}`] = 1;
+      }
       const object = gameObject("ability", this.zone("stack").id, playerId, {
         name: `${this.lastSourceName}: ${pending.abilityId}`,
         colors: [],
         typeLine: "Ability",
         rulesText: "",
       });
+      object.variables = Object.entries(pending.variables ?? {}).map(
+        ([name, value]) => ({ name, value: String(value) }),
+      );
       object.sourceObjectId = source;
       object.sourceAbilityId = pending.abilityId;
       object.resolution = {
@@ -991,7 +1074,27 @@ export class RulesEngine {
             abilityId: stack?.sourceAbilityId ?? "animation",
             playerId,
             filter: { zone: "battlefield", self: "only" },
-            changes: effect.changes,
+            changes: effect.changes.map((change) =>
+              change.kind === "add-stats" ||
+              change.kind === "set-stats" ||
+              change.kind === "define-stats"
+                ? {
+                    ...change,
+                    power: this.value(
+                      change.power,
+                      playerId,
+                      source.id,
+                      this.rules.resolving?.bindings,
+                    ),
+                    toughness: this.value(
+                      change.toughness,
+                      playerId,
+                      source.id,
+                      this.rules.resolving?.bindings,
+                    ),
+                  }
+                : change,
+            ),
             applicability: "until-end-of-turn",
           });
         }
@@ -999,7 +1102,25 @@ export class RulesEngine {
         const stackSource = this.rules.resolving?.sourceId;
         if (stackSource)
           this.damage(
-            targets.map((recipientId) => ({
+            (effect.recipient === "defender"
+              ? (() => {
+                  const attacker = this.rules.combat?.attackers.find(
+                    (a) =>
+                      a.objectId === this.object(stackSource).sourceObjectId,
+                  );
+                  if (!attacker) return [];
+                  const recipient = this.match.objects[attacker.defenderId];
+                  return this.match.players.some(
+                    (p) =>
+                      p.id === attacker.defenderId && p.outcome === "playing",
+                  ) ||
+                    (recipient?.zoneId === this.zone("battlefield").id &&
+                      this.effective(recipient).types?.includes("Planeswalker"))
+                    ? [attacker.defenderId]
+                    : [];
+                })()
+              : targets
+            ).map((recipientId) => ({
               sourceId: stackSource,
               recipientId,
               amount: this.value(
@@ -1093,19 +1214,25 @@ export class RulesEngine {
       object = this.object(stack.objectIds.at(-1)!);
     const resolution = object.resolution;
     const valid =
-      !resolution?.ability.target ||
-      resolution.targetIds.some(
-        (id) =>
-          this.match.objects[id] &&
-          this.targetEligible(
-            this.match.objects[id],
-            resolution.ability.target!,
-            object.controllerId,
-            resolution.ability.trigger?.event === "dies"
-              ? resolution.event?.affectedId
-              : (object.sourceObjectId ?? object.id),
-          ),
-      );
+      (!resolution?.ability.intervening ||
+        this.conditionSatisfied(
+          resolution.ability.intervening,
+          object.controllerId,
+          object.sourceObjectId ?? object.id,
+        )) &&
+      (!resolution?.ability.target ||
+        resolution.targetIds.some(
+          (id) =>
+            this.match.objects[id] &&
+            this.targetEligible(
+              this.match.objects[id],
+              resolution.ability.target!,
+              object.controllerId,
+              resolution.ability.trigger?.event === "dies"
+                ? resolution.event?.affectedId
+                : (object.sourceObjectId ?? object.id),
+            ),
+        ));
     if (valid && resolution) {
       delete this.match.priority;
       this.rules.resolving = {
@@ -1142,6 +1269,7 @@ export class RulesEngine {
   ) {
     // Capture all sources before the checkpoint so lethal damage is simultaneous.
     const sources = structuredClone(this.battlefieldSources());
+    const groups = new Set<string>();
     for (const assignment of assignments) {
       if (!Number.isSafeInteger(assignment.amount) || assignment.amount < 0)
         throw new Error("Invalid damage amount.");
@@ -1219,6 +1347,7 @@ export class RulesEngine {
         },
         source,
         sources,
+        groups,
       );
     }
   }
@@ -1232,10 +1361,30 @@ export class RulesEngine {
           this.rules.failedDrawPlayerIds.push(playerId);
         break;
       }
-      moveObject(this.match, library.objectIds[0], hand);
+      const card = moveObject(this.match, library.objectIds[0], hand);
+      this.rules.drawsThisTurn ??= {};
+      const ordinal = (this.rules.drawsThisTurn[playerId] =
+        (this.rules.drawsThisTurn[playerId] ?? 0) + 1);
+      new Triggers(this).collect(
+        {
+          kind: "draw",
+          playerId,
+          ordinal,
+          sourceId: card.id,
+          affectedId: card.id,
+          controllerId: playerId,
+          ownerId: playerId,
+          after: card.characteristics,
+        },
+        card,
+        this.battlefieldSources(),
+      );
     }
   }
   beginTurn() {
+    this.rules.drawsThisTurn = {};
+    this.rules.activationUsage = {};
+    this.rules.damageEvents = [];
     this.match.turn.stepIndex = 0;
     this.rules.turnStarted[this.match.turn.activePlayerId] =
       this.match.turn.number;
@@ -1253,6 +1402,22 @@ export class RulesEngine {
       this.rules.mana[player.id] = emptyMana();
     this.rules.restrictedMana = {};
     this.match.turn.stepIndex++;
+    if (this.match.turn.stepIndex === 1) {
+      for (const source of this.battlefieldSources())
+        new Triggers(this).collect(
+          {
+            kind: "upkeep",
+            playerId: this.match.turn.activePlayerId,
+            sourceId: source.id,
+            affectedId: source.id,
+            controllerId: source.controllerId,
+            ownerId: this.owner(source),
+            after: this.effective(source),
+          },
+          source,
+          [source],
+        );
+    }
     if (this.match.turn.stepIndex === 5) {
       new Combat(this).beginAttackers();
       return;
@@ -1279,7 +1444,10 @@ export class RulesEngine {
   }
   cleanup() {
     const playerId = this.match.turn.activePlayerId;
-    if (this.zone("hand", playerId).objectIds.length > 7) {
+    if (
+      this.zone("hand", playerId).objectIds.length >
+      this.maximumHandSize(playerId)
+    ) {
       this.rules.pending = {
         id: randomUUID(),
         playerId,
@@ -1302,7 +1470,6 @@ export class RulesEngine {
     else this.nextTurn();
   }
   nextTurn() {
-    this.rules.damageEvents = [];
     const turn = this.match.turn;
     turn.number++;
     turn.activePlayerId =

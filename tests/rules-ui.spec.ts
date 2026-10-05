@@ -771,3 +771,136 @@ test("flash and source artifact casting permission use normal browser casting an
     await Promise.all(contexts.map((context) => context.close()));
   }
 });
+
+test("Mind's Eye restores its private mana choice and uses the shared source and decline controls", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  try {
+    await seedRulesScenario(
+      invitation.split("/").pop()!,
+      undefined,
+      false,
+      "draw",
+    );
+    await alice.reload();
+    await bob.reload();
+    const pass = async (first = bob, second = alice) => {
+      await first
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await second
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    };
+    await bob
+      .getByRole("button", { name: "Mind Stone: draw", exact: true })
+      .click();
+    await pass();
+    await pass(alice, bob);
+    await expect(
+      alice.getByRole("button", { name: "Decline payment", exact: true }),
+    ).toBeVisible();
+    await expect(
+      bob.getByRole("button", { name: "Decline payment", exact: true }),
+    ).toHaveCount(0);
+    const pending = (await snapshot(alice)).match!.rules!.pending!;
+    await alice.reload();
+    await expect(
+      alice.getByRole("button", { name: "Pay mana", exact: true }),
+    ).toBeVisible();
+    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(pending.id);
+    const before = (await snapshot(alice)).match!.zones.find(
+      (z) => z.kind === "hand" && z.name === "Alice's Hand",
+    )!.count;
+    await alice
+      .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
+      .click();
+    await alice.getByRole("button", { name: "Pay mana", exact: true }).click();
+    await expect(
+      alice.getByRole("button", { name: "Pay mana", exact: true }),
+    ).toHaveCount(0);
+    await expect
+      .poll(
+        async () =>
+          (await snapshot(alice)).match!.zones.find(
+            (z) => z.kind === "hand" && z.name === "Alice's Hand",
+          )!.count,
+      )
+      .toBe(before + 1);
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});
+
+test("Omnitool's private Library choice survives reload and publicly displays only the revealed artifact", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await preparedRulesTable(browser);
+  try {
+    await seedRulesScenario(
+      invitation.split("/").pop()!,
+      undefined,
+      false,
+      "inspect",
+    );
+    await alice.reload();
+    await bob.reload();
+    const pass = async () => {
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    };
+    await pass();
+    await pass();
+    await alice
+      .getByLabel("Attack with Silver Myr", { exact: true })
+      .selectOption({ label: "Bob" });
+    await alice
+      .getByRole("button", { name: "Confirm attackers", exact: true })
+      .click();
+    await pass();
+    const selection = alice.getByRole("group", {
+      name: /Select a card \(optional\)/,
+    });
+    await expect(
+      selection.getByLabel("Mind Stone", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      bob.getByRole("group", { name: /Select a card \(optional\)/ }),
+    ).toHaveCount(0);
+    const pending = (await snapshot(alice)).match!.rules!.pending!;
+    await alice.reload();
+    await expect(
+      selection.getByLabel("Mind Stone", { exact: true }),
+    ).toBeVisible();
+    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(pending.id);
+    await selection.getByLabel("Mind Stone", { exact: true }).check();
+    await alice
+      .getByRole("button", { name: "Confirm choice", exact: true })
+      .click();
+    await expect(bob.getByTestId("zone-hand-Alice")).toContainText(
+      "Revealed card: Mind Stone",
+    );
+    await expect(bob.getByTestId("zone-hand-Alice")).not.toContainText(
+      "Island",
+    );
+    await bob.reload();
+    await expect(bob.getByTestId("zone-hand-Alice")).toContainText(
+      "Revealed card: Mind Stone",
+    );
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});

@@ -6,6 +6,7 @@ import type {
   SelectionOption,
 } from "../../shared/rules.js";
 import { manaCost, spendMana } from "./mana.js";
+import { Triggers } from "./triggers.js";
 import { emptyMana, type RulesEngine } from "./rules-engine.js";
 
 // Declarations are turn-based actions. Their choices finish before Priority is offered.
@@ -48,6 +49,13 @@ export class Combat {
           : [];
       }),
     ];
+  }
+  redirectDestinations(attackerId: string) {
+    const attacker = this.engine.object(attackerId);
+    return this.defenders(attacker.controllerId).filter(
+      (d) =>
+        this.engine.match.objects[d.id]?.controllerId !== attacker.controllerId,
+    );
   }
   prompt(
     kind: "declare-attackers" | "declare-blockers",
@@ -263,6 +271,18 @@ export class Combat {
         blocked: false,
       });
       if (!e.hasKeyword(attacker, "Vigilance")) attacker.status.tapped = true;
+      new Triggers(e).collect(
+        {
+          kind: "attack",
+          sourceId: id,
+          affectedId: id,
+          controllerId: playerId,
+          ownerId: e.owner(attacker),
+          after: e.effective(attacker),
+        },
+        attacker,
+        e.battlefieldSources(),
+      );
     }
   }
   payAttackers(action: Extract<MatchAction, { type: "rules-input" }>) {

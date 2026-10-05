@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature \u2014 Moonfolk Wizard",
+      "typeLine": "Artifact Creature — Moonfolk Wizard",
       "manaValue": 5,
       "supertypes": [],
       "types": [
@@ -39,7 +39,7 @@
     "Flash"
   ],
   "manaValue": 5,
-  "automationStatus": "unimplemented",
+  "automationStatus": "implemented",
   "abilities": [
     {
       "id": "flash",
@@ -61,6 +61,34 @@
         "costs": [],
         "effects": [],
         "keyword": "Flying"
+      }
+    },
+    {
+      "id": "combat-draw",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "damage",
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ]
+          },
+          "combat": true,
+          "recipientKind": "player"
+        }
       }
     }
   ]
