@@ -9,7 +9,7 @@
       "name": "Nettlecyst",
       "manaCost": "{3}",
       "colors": [],
-      "typeLine": "Artifact — Equipment",
+      "typeLine": "Artifact \u2014 Equipment",
       "manaValue": 3,
       "supertypes": [],
       "types": [
@@ -31,6 +31,108 @@
     "Living weapon"
   ],
   "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "living-weapon",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "germ",
+            "count": 1
+          },
+          {
+            "kind": "attach",
+            "to": "created"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "equipped-bonus",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "attached": true,
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact",
+                    "Enchantment"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact",
+                    "Enchantment"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "equip",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "attach",
+            "to": "target"
+          }
+        ],
+        "timing": "sorcery",
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ],
+          "controller": "you"
+        }
+      }
+    }
+  ]
 }

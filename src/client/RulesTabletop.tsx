@@ -8,6 +8,8 @@ function CardChoices({
   match,
   ids,
   count,
+  minCount,
+  ordered,
   label,
   selected,
   onChange,
@@ -15,6 +17,8 @@ function CardChoices({
   match: MatchView;
   ids: string[];
   count: number;
+  minCount?: number;
+  ordered?: boolean;
   label: string;
   selected: string[];
   onChange: (ids: string[]) => void;
@@ -22,24 +26,55 @@ function CardChoices({
   return (
     <fieldset>
       <legend>
-        {label} — choose {count}
+        {label} — choose{" "}
+        {minCount !== undefined ? `${minCount}–${count}` : count}
       </legend>
-      {ids.map((id) => (
-        <label key={id}>
-          <input
-            type="checkbox"
-            checked={selected.includes(id)}
-            onChange={(event) =>
-              onChange(
-                event.target.checked
-                  ? [...selected, id]
-                  : selected.filter((entry) => entry !== id),
-              )
-            }
-          />
-          {match.objects[id]?.characteristics.name ?? "Card"}
-        </label>
-      ))}
+      {ordered && minCount === undefined
+        ? Array.from({ length: count }, (_, index) => (
+            <label key={index}>
+              Position {index + 1}
+              <select
+                required
+                value={selected[index] ?? ""}
+                onChange={(event) => {
+                  const next = [...selected];
+                  next[index] = event.target.value;
+                  onChange(next);
+                }}
+              >
+                <option value="">Choose card</option>
+                {ids.map((id) => (
+                  <option key={id} value={id}>
+                    {match.objects[id]?.characteristics.name ?? "Card"}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))
+        : ids.map((id) => (
+            <label key={id}>
+              <input
+                type="checkbox"
+                checked={selected.includes(id)}
+                onChange={(event) =>
+                  onChange(
+                    event.target.checked
+                      ? [...selected, id]
+                      : selected.filter((entry) => entry !== id),
+                  )
+                }
+              />
+              {match.objects[id]?.characteristics.name ?? "Card"}
+            </label>
+          ))}
+      {ordered && minCount !== undefined && selected.length > 0 && (
+        <p>
+          Selected order:{" "}
+          {selected
+            .map((id) => match.objects[id]?.characteristics.name ?? "Card")
+            .join(" → ")}
+        </p>
+      )}
     </fieldset>
   );
 }
@@ -146,7 +181,7 @@ function Procedure({
               value={targetId}
               onChange={(event) => setTargetId(event.target.value)}
             >
-              <option value="">Choose a spell</option>
+              <option value="">Choose an object</option>
               {pending.legalTargetIds.map((id) => (
                 <option key={id} value={id}>
                   {match.objects[id]?.characteristics.name}
@@ -203,6 +238,8 @@ function Procedure({
                 match={match}
                 ids={option.objectIds}
                 count={option.count}
+                minCount={option.minCount}
+                ordered={option.ordered}
                 label={
                   option.label ??
                   (key === "discard"
@@ -224,14 +261,20 @@ function Procedure({
             }
           >
             {pending.kind === "cleanup" || pending.kind === "resolve"
-              ? "Discard selected cards"
+              ? pending.kind === "resolve" &&
+                !Object.values(pending.selectionOptions).some(
+                  (option) => option.requestedCount !== undefined,
+                )
+                ? "Confirm choice"
+                : "Discard selected cards"
               : "Complete payment"}
           </button>
         </>
       )}
       {pending.kind !== "cleanup" &&
         pending.kind !== "resolve" &&
-        pending.kind !== "trigger-order" && (
+        pending.kind !== "trigger-order" &&
+        pending.kind !== "trigger-target" && (
           <button
             onClick={() =>
               act({ type: "cancel-procedure", procedureId: pending.id })
@@ -396,6 +439,29 @@ export function RulesTabletop({
                             {object.characteristics.toughness}
                           </p>
                         )}
+                        {object.attachmentTo &&
+                          match.objects[object.attachmentTo] && (
+                            <p>
+                              Attached to{" "}
+                              {
+                                match.objects[object.attachmentTo]
+                                  .characteristics.name
+                              }
+                            </p>
+                          )}
+                        {object.links
+                          ?.filter((link) => link.objectIds.length)
+                          .map((link, index) => (
+                            <p key={index}>
+                              {link.label}:{" "}
+                              {link.objectIds
+                                .map(
+                                  (id) =>
+                                    match.objects[id]?.characteristics.name,
+                                )
+                                .join(", ")}
+                            </p>
+                          ))}
                         {object.counters.map((counter) => (
                           <p key={counter.kind}>
                             {counter.quantity} {counter.kind} counters

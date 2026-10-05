@@ -376,6 +376,7 @@ export interface MatchView extends Omit<
     | "pending"
     | "resolving"
     | "waitingTriggers"
+    | "orderedTriggerPlayerIds"
     | "priorityAfterTriggers"
     | "controlledSinceTurn"
     | "turnStarted"

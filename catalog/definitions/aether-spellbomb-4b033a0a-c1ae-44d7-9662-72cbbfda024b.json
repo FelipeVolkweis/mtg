@@ -25,6 +25,64 @@
   "oracleText": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.\n{1}, Sacrifice this artifact: Draw a card.",
   "keywords": [],
   "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "bounce",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "target",
+            "destination": "hand"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ]
 }

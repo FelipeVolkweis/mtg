@@ -1,11 +1,65 @@
 import { randomUUID } from "node:crypto";
 import type { GameObject, MatchAction } from "../../shared/model.js";
-import type { SemanticEvent, WaitingTrigger } from "../../shared/rules.js";
+import type {
+  RulesAbility,
+  SemanticEvent,
+  WaitingTrigger,
+} from "../../shared/rules.js";
 import { gameObject } from "./game-objects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
 export class Triggers {
   constructor(readonly engine: RulesEngine) {}
+  stateSatisfied(
+    source: GameObject,
+    trigger: NonNullable<RulesAbility["trigger"]>,
+  ) {
+    return (
+      !!trigger.counter &&
+      !!trigger.atLeast &&
+      BigInt(
+        source.counters.find((c) => c.kind === trigger.counter)?.quantity ??
+          "0",
+      ) >= BigInt(trigger.atLeast)
+    );
+  }
+  collectStates() {
+    for (const source of this.engine.battlefieldSources()) {
+      for (const ability of this.engine.definition(source)?.abilities ?? []) {
+        const trigger = ability.rules?.trigger;
+        if (
+          ability.kind !== "triggered" ||
+          trigger?.event !== "state" ||
+          !trigger.counter ||
+          !trigger.atLeast
+        )
+          continue;
+        if (!this.stateSatisfied(source, trigger)) continue;
+        const pending = this.engine.rules.waitingTriggers?.some(
+          (t) => t.sourceId === source.id && t.abilityId === ability.id,
+        );
+        const stacked = this.engine.zone("stack").objectIds.some((id) => {
+          const o = this.engine.object(id);
+          return (
+            o.sourceObjectId === source.id && o.sourceAbilityId === ability.id
+          );
+        });
+        if (!pending && !stacked)
+          this.collect(
+            {
+              kind: "state",
+              sourceId: source.id,
+              affectedId: source.id,
+              controllerId: source.controllerId,
+              ownerId: this.engine.owner(source),
+              after: this.engine.effective(source),
+            },
+            source,
+            [source],
+          );
+      }
+    }
+  }
   collect(event: SemanticEvent, affected: GameObject, sources: GameObject[]) {
     for (const source of sources) {
       for (const ability of this.engine.definition(source)?.abilities ?? []) {
@@ -19,6 +73,8 @@ export class Triggers {
             : trigger.event === event.kind;
         if (
           !matchesEvent ||
+          (trigger.event === "state" &&
+            !this.stateSatisfied(source, trigger)) ||
           !this.engine.matches(
             { ...affected, characteristics: event.before ?? event.after },
             trigger.filter,
@@ -40,6 +96,25 @@ export class Triggers {
       }
     }
   }
+  answerTarget(action: Extract<MatchAction, { type: "rules-input" }>) {
+    const pending = this.engine.rules.pending!;
+    const object = this.engine.object(pending.sourceId!);
+    const ids = action.targetIds ?? [];
+    if (
+      ids.length !== 1 ||
+      !this.engine
+        .legalTargets(
+          pending.playerId,
+          pending.ability!.target!,
+          this.engine.targetSource(pending),
+        )
+        .includes(ids[0])
+    )
+      throw new Error("Choose one legal trigger target.");
+    object.resolution!.targetIds = ids;
+    delete this.engine.rules.pending;
+    this.flush();
+  }
   place(trigger: WaitingTrigger) {
     const engine = this.engine;
     const object = gameObject(
@@ -60,8 +135,33 @@ export class Triggers {
       event: structuredClone(trigger.event),
       targetIds: [],
     };
+    if (
+      trigger.ability.target &&
+      !engine.legalTargets(
+        trigger.playerId,
+        trigger.ability.target,
+        trigger.ability.trigger?.event === "dies"
+          ? trigger.event.affectedId
+          : trigger.sourceId,
+      ).length
+    )
+      return;
     engine.match.objects[object.id] = object;
     engine.zone("stack").objectIds.push(object.id);
+    if (trigger.ability.target) {
+      engine.rules.pending = {
+        id: randomUUID(),
+        playerId: trigger.playerId,
+        kind: "trigger-target",
+        stage: "targets",
+        sourceId: object.id,
+        ability: trigger.ability,
+        targetIds: [],
+        selections: {},
+        totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
+      };
+      delete engine.match.priority;
+    }
   }
   flush() {
     const engine = this.engine,
@@ -71,7 +171,10 @@ export class Triggers {
     for (let i = 0; i < order.length; i++) {
       const playerId = order[(start + i) % order.length];
       const group = waiting.filter((t) => t.playerId === playerId);
-      if (group.length > 1) {
+      if (
+        group.length > 1 &&
+        !engine.rules.orderedTriggerPlayerIds?.includes(playerId)
+      ) {
         engine.rules.pending = {
           id: randomUUID(),
           playerId,
@@ -99,9 +202,11 @@ export class Triggers {
       for (const trigger of group) {
         this.place(trigger);
         waiting.splice(waiting.indexOf(trigger), 1);
+        if (engine.rules.pending) return;
       }
     }
     delete engine.rules.waitingTriggers;
+    delete engine.rules.orderedTriggerPlayerIds;
     const playerId =
       engine.rules.priorityAfterTriggers ?? engine.match.turn.activePlayerId;
     delete engine.rules.priorityAfterTriggers;
@@ -119,11 +224,14 @@ export class Triggers {
       ids.some((id) => !group.some((t) => t.id === id))
     )
       throw new Error("Order each waiting trigger exactly once.");
-    for (const id of ids) this.place(group.find((t) => t.id === id)!);
-    this.engine.rules.waitingTriggers =
-      this.engine.rules.waitingTriggers!.filter(
+    this.engine.rules.waitingTriggers = [
+      ...ids.map((id) => group.find((t) => t.id === id)!),
+      ...this.engine.rules.waitingTriggers!.filter(
         (t) => t.playerId !== pending.playerId,
-      );
+      ),
+    ];
+    this.engine.rules.orderedTriggerPlayerIds ??= [];
+    this.engine.rules.orderedTriggerPlayerIds.push(pending.playerId);
     delete this.engine.rules.pending;
     this.flush();
   }

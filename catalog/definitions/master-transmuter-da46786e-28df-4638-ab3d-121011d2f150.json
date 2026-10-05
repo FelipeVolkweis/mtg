@@ -13,7 +13,7 @@
       "colors": [
         "U"
       ],
-      "typeLine": "Artifact Creature — Human Artificer",
+      "typeLine": "Artifact Creature \u2014 Human Artificer",
       "manaValue": 4,
       "supertypes": [],
       "types": [
@@ -33,6 +33,52 @@
   "oracleText": "{U}, {T}, Return an artifact you control to its owner's hand: You may put an artifact card from your hand onto the battlefield.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "transmute",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "return",
+            "count": 1,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "choice",
+            "filter": {
+              "zone": "hand",
+              "types": [
+                "Artifact"
+              ],
+              "owner": "you"
+            },
+            "destination": "battlefield",
+            "optional": true
+          }
+        ]
+      }
+    }
+  ]
 }

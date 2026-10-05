@@ -73,6 +73,24 @@ export function matchView(
       ...(visible ? { objectIds: [...zone.objectIds] } : {}),
     };
   });
+  if (
+    match.rules &&
+    match.rules.pending?.playerId === playerId &&
+    match.rules.resolving?.inspectedIds
+  ) {
+    for (const id of match.rules.resolving.inspectedIds) {
+      const object = match.objects[id];
+      if (!object) continue;
+      objects[id] = {
+        ...structuredClone(object),
+        hidden: false,
+        melded: false,
+        canTurnFaceUp: false,
+      };
+      for (const instanceId of object.cardInstanceIds)
+        instances[instanceId] = match.instances[instanceId];
+    }
+  }
   const copiableValues: MatchView["copiableValues"] = {};
   for (const object of Object.values(objects)) {
     if (object.hidden) continue;
@@ -107,6 +125,7 @@ export function matchView(
       ? (() => {
           const {
             pending,
+            orderedTriggerPlayerIds,
             resolving,
             waitingTriggers,
             continuousEffects,
@@ -140,6 +159,7 @@ export function matchView(
                           ? engine.legalTargets(
                               playerId!,
                               pending.ability.target,
+                              engine.targetSource(pending),
                             )
                           : [],
                       selectionOptions: engine

@@ -9,7 +9,7 @@
       "name": "Duplicant",
       "manaCost": "{6}",
       "colors": [],
-      "typeLine": "Artifact Creature — Shapeshifter",
+      "typeLine": "Artifact Creature \u2014 Shapeshifter",
       "manaValue": 6,
       "supertypes": [],
       "types": [
@@ -22,16 +22,73 @@
       "keywords": [
         "Imprint"
       ],
-      "rulesText": "Imprint — When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
+      "rulesText": "Imprint \u2014 When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
       "power": "2",
       "toughness": "4"
     }
   ],
-  "oracleText": "Imprint — When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
+  "oracleText": "Imprint \u2014 When this creature enters, you may exile target nontoken creature.\nAs long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
   "keywords": [
     "Imprint"
   ],
   "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "imprint",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "target",
+            "optional": true,
+            "link": "imprint"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        },
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ],
+          "nontoken": true
+        }
+      }
+    },
+    {
+      "id": "imprinted-characteristics",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "linked-characteristics",
+              "link": "imprint",
+              "retainSubtypes": [
+                "Shapeshifter"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
 }

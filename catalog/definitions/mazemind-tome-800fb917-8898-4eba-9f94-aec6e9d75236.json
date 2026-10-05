@@ -9,7 +9,7 @@
       "name": "Mazemind Tome",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact — Book",
+      "typeLine": "Artifact \u2014 Book",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -29,6 +29,100 @@
     "Scry"
   ],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "scry",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "counter-source",
+            "counter": "page",
+            "count": 1
+          }
+        ],
+        "effects": [
+          {
+            "kind": "inspect",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "counter-source",
+            "counter": "page",
+            "count": 1
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "four-pages",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "trigger": {
+          "event": "state",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "counter": "page",
+          "atLeast": 4
+        },
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "source",
+            "bind": "exiled"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "exiled",
+              "atLeast": 1
+            },
+            "then": [
+              {
+                "kind": "gain-life",
+                "amount": 4
+              }
+            ],
+            "otherwise": []
+          }
+        ],
+        "costs": []
+      }
+    }
+  ]
 }

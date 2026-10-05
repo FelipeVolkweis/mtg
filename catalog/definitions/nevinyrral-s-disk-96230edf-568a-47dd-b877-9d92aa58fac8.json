@@ -23,6 +23,54 @@
   "oracleText": "This artifact enters tapped.\n{1}, {T}: Destroy all artifacts, creatures, and enchantments.",
   "keywords": [],
   "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "tapped-entry",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "enter-tapped"
+          }
+        ]
+      }
+    },
+    {
+      "id": "destroy",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "types": [
+                "Artifact",
+                "Creature",
+                "Enchantment"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -9,7 +9,7 @@
       "name": "Meteor Golem",
       "manaCost": "{7}",
       "colors": [],
-      "typeLine": "Artifact Creature — Golem",
+      "typeLine": "Artifact Creature \u2014 Golem",
       "manaValue": 7,
       "supertypes": [],
       "types": [
@@ -28,6 +28,36 @@
   "oracleText": "When this creature enters, destroy target nonland permanent an opponent controls.",
   "keywords": [],
   "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "destroy",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "target"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        },
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "excludeTypes": [
+            "Land"
+          ]
+        }
+      }
+    }
+  ]
 }

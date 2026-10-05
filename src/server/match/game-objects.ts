@@ -61,6 +61,15 @@ export function moveObject(
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
+  if (
+    match.rules &&
+    destination.kind !== "stack" &&
+    destination.kind !== "battlefield"
+  )
+    fresh.controllerId =
+      match.instances[object.cardInstanceIds[0]]?.ownerId ??
+      object.ownerId ??
+      object.controllerId;
   fresh.ownerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;
@@ -82,6 +91,9 @@ export function moveObject(
     fresh.casting = object.casting;
     fresh.choices = object.choices;
     fresh.variables = object.variables;
+  }
+  for (const other of Object.values(match.objects)) {
+    if (other.attachmentTo === objectId) other.attachmentTo = null;
   }
   delete match.objects[objectId];
   delete match.layout.positions[objectId];

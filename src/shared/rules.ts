@@ -16,12 +16,23 @@ export interface RestrictedMana {
 }
 export const objectFilterSchema = z
   .object({
-    zone: z.enum(["battlefield", "hand", "stack"]),
+    zone: z.enum([
+      "battlefield",
+      "hand",
+      "stack",
+      "graveyard",
+      "exile",
+      "library",
+    ]),
     kind: z.enum(["card", "spell", "permanent"]).optional(),
     subtypes: z.array(z.string().min(1)).optional(),
     allTypes: z.array(z.string().min(1)).optional(),
     self: z.enum(["only", "exclude"]).optional(),
-    controller: z.literal("you").optional(),
+    controller: z.enum(["you", "opponent"]).optional(),
+    owner: z.enum(["you", "opponent"]).optional(),
+    nontoken: z.boolean().optional(),
+    colored: z.boolean().optional(),
+    attached: z.boolean().optional(),
     types: z.array(z.string().min(1)).optional(),
     excludeTypes: z.array(z.string().min(1)).optional(),
     untapped: z.boolean().optional(),
@@ -45,7 +56,14 @@ export const rulesCostSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("life"), amount: quantitySchema }).strict(),
   z
     .object({
-      kind: z.enum(["tap", "sacrifice", "discard"]),
+      kind: z.literal("counter-source"),
+      counter: z.string().min(1),
+      count: z.number().int().positive(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.enum(["tap", "sacrifice", "discard", "return"]),
       count: z.number().int().min(1).max(100),
       filter: objectFilterSchema,
     })
@@ -65,6 +83,13 @@ export const valueSchema: z.ZodType<RulesValue> = z.lazy(() =>
   ]),
 );
 export const continuousChangeSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("linked-characteristics"),
+      link: z.string().min(1),
+      retainSubtypes: z.array(z.string()),
+    })
+    .strict(),
   z
     .object({
       kind: z.literal("define-stats"),
@@ -97,7 +122,42 @@ const discardSchema = z
     bind: z.string().min(1).optional(),
   })
   .strict();
+const movementSchema = z
+  .object({
+    kind: z.enum(["move", "destroy", "exile", "sacrifice"]),
+    subject: z.enum(["source", "target", "set", "choice"]),
+    filter: objectFilterSchema.optional(),
+    destination: z
+      .enum(["hand", "battlefield", "graveyard", "exile"])
+      .optional(),
+    optional: z.boolean().optional(),
+    eachPlayer: z.boolean().optional(),
+    link: z.string().min(1).optional(),
+    bind: z.string().min(1).optional(),
+  })
+  .strict();
+export type MovementEffect = z.infer<typeof movementSchema>;
+const inspectSchema = z
+  .object({
+    kind: z.literal("inspect"),
+    count: z.number().int().positive().max(100),
+    select: objectFilterSchema.optional(),
+    randomBottom: z.boolean().optional(),
+  })
+  .strict();
+export type InspectEffect = z.infer<typeof inspectSchema>;
 const primitiveEffectSchema = z.discriminatedUnion("kind", [
+  movementSchema,
+  inspectSchema,
+  z
+    .object({
+      kind: z.literal("gain-life"),
+      amount: z.number().int().positive(),
+    })
+    .strict(),
+  z
+    .object({ kind: z.literal("attach"), to: z.enum(["target", "created"]) })
+    .strict(),
   discardSchema,
   z
     .object({
@@ -110,7 +170,7 @@ const primitiveEffectSchema = z.discriminatedUnion("kind", [
   z
     .object({
       kind: z.literal("create-token"),
-      token: z.enum(["thopter", "myr"]),
+      token: z.enum(["thopter", "myr", "germ"]),
       count: z.number().int().min(1).max(100),
     })
     .strict(),
@@ -199,6 +259,7 @@ export const rulesEffectSchema: z.ZodType<RulesEffect> = z.lazy(() =>
 
 export const rulesAbilitySchema = z
   .object({
+    timing: z.literal("sorcery").optional(),
     chosenVariables: z.array(z.literal("X")).max(1).optional(),
     costs: z.array(rulesCostSchema).max(100).default([]),
     effects: z.array(rulesEffectSchema).max(100).default([]),
@@ -227,8 +288,10 @@ export const rulesAbilitySchema = z
     target: objectFilterSchema.optional(),
     trigger: z
       .object({
-        event: z.enum(["enter", "cast", "dies"]),
+        event: z.enum(["enter", "cast", "dies", "state"]),
         filter: objectFilterSchema,
+        counter: z.string().min(1).optional(),
+        atLeast: z.number().int().positive().optional(),
       })
       .strict()
       .optional(),
@@ -268,17 +331,57 @@ export const rulesAbilitySchema = z
               invalid("Result bindings must be unique.");
             available.add(effect.bind);
           }
+        } else if ("bind" in effect && effect.bind) {
+          if (available.has(effect.bind))
+            invalid("Result bindings must be unique.");
+          available.add(effect.bind);
         } else if (effect.kind === "counter-target" && !ability.target)
           invalid("Counter effects require a target declaration.");
       }
     };
+    if (
+      ability.trigger?.event === "state" &&
+      (!ability.trigger.counter ||
+        !ability.trigger.atLeast ||
+        ability.trigger.filter.self !== "only")
+    )
+      invalid("State triggers require a source counter threshold.");
+    const validateMovements = (effects: RulesEffect[]) => {
+      for (const effect of effects) {
+        if (effect.kind === "sequence") validateMovements(effect.effects);
+        else if (effect.kind === "if") {
+          validateMovements(effect.then);
+          validateMovements(effect.otherwise);
+        } else if ("subject" in effect) {
+          if (effect.kind === "move" && !effect.destination)
+            invalid("Movement requires a destination.");
+          if (
+            (effect.subject === "set" || effect.subject === "choice") &&
+            !effect.filter
+          )
+            invalid("Object selection requires a filter.");
+          if (effect.subject === "target" && !ability.target)
+            invalid("Targeted movement requires a target declaration.");
+          if (
+            effect.eachPlayer &&
+            (effect.kind !== "sacrifice" || effect.subject !== "set")
+          )
+            invalid("Each-player selections require a sacrifice set.");
+          if (effect.link && effect.kind !== "exile")
+            invalid("Exile links require an exile operation.");
+        }
+      }
+    };
+    validateMovements(ability.effects);
     const available = new Set(ability.chosenVariables ?? []);
     check(ability.effects, new Set(available));
     for (const modifier of ability.costModifiers ?? [])
       checkValue(modifier.amount, available);
     for (const change of ability.continuous?.changes ?? []) {
-      checkValue(change.power, available);
-      checkValue(change.toughness, available);
+      if (change.kind !== "linked-characteristics") {
+        checkValue(change.power, available);
+        checkValue(change.toughness, available);
+      }
     }
     if (
       ability.continuous?.characteristicDefining &&
@@ -310,7 +413,13 @@ export type RulesCost = z.infer<typeof rulesCostSchema>;
 export interface PendingProcedure {
   id: string;
   playerId: string;
-  kind: "cast" | "activate" | "cleanup" | "resolve" | "trigger-order";
+  kind:
+    | "cast"
+    | "activate"
+    | "cleanup"
+    | "resolve"
+    | "trigger-order"
+    | "trigger-target";
   stage: "variable" | "targets" | "payment" | "selection";
   variables?: Record<string, number>;
   context?: string;
@@ -325,6 +434,8 @@ export interface PendingProcedure {
 }
 export interface SelectionOption {
   count: number;
+  minCount?: number;
+  ordered?: boolean;
   requestedCount?: number;
   objectIds: string[];
   label?: string;
@@ -337,8 +448,14 @@ export interface ResolutionProgress {
   remaining: RulesEffect[];
   bindings: Record<string, number>;
   choices?: Record<string, DiscardEffect>;
+  choiceEffect?: MovementEffect | InspectEffect;
+  inspectedIds?: string[];
+  createdIds?: string[];
+  selectionPlayers?: string[];
+  simultaneousIds?: string[];
 }
 export interface RulesState {
+  orderedTriggerPlayerIds?: string[];
   continuousEffects?: ActiveContinuousEffect[];
   waitingTriggers?: WaitingTrigger[];
   priorityAfterTriggers?: string;
@@ -356,7 +473,7 @@ export interface RulesState {
 }
 
 export interface SemanticEvent {
-  kind: "enter" | "cast" | "zone-change";
+  kind: "enter" | "cast" | "zone-change" | "state";
   sourceId: string;
   affectedId: string;
   controllerId: string;

@@ -1,10 +1,11 @@
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import type { MatchAction } from "../../shared/model.js";
 import type {
   DiscardEffect,
   RulesValue,
   SelectionOption,
 } from "../../shared/rules.js";
+import { ObjectEffects } from "./object-effects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
 // The queue and bindings are Match data: each completed instruction is removed
@@ -41,6 +42,20 @@ export class Resolution {
       types: effect.types,
     };
   }
+  prompt(options: Record<string, SelectionOption>, context: string) {
+    this.engine.rules.pending = {
+      id: randomUUID(),
+      playerId: this.progress.playerId,
+      kind: "resolve",
+      stage: "selection",
+      sourceId: this.progress.sourceId,
+      targetIds: [],
+      selections: {},
+      totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
+      options,
+      context,
+    };
+  }
   resume() {
     const progress = this.progress;
     const source = this.engine.object(progress.sourceId);
@@ -63,6 +78,86 @@ export class Resolution {
           progress.bindings[effect.bind] =
             this.engine.zone("hand", progress.playerId).objectIds.length -
             before;
+      } else if (effect.kind === "inspect") {
+        const ids = this.engine
+          .zone("library", progress.playerId)
+          .objectIds.slice(0, effect.count);
+        if (!ids.length) continue;
+        progress.inspectedIds = ids;
+        progress.choiceEffect = effect;
+        this.prompt(
+          effect.select
+            ? {
+                select: {
+                  count: 1,
+                  minCount: 0,
+                  objectIds: ids.filter((id) =>
+                    this.engine.matches(
+                      this.engine.object(id),
+                      effect.select!,
+                      progress.playerId,
+                    ),
+                  ),
+                  label: "Select a card (optional)",
+                },
+              }
+            : {
+                bottom: {
+                  count: ids.length,
+                  minCount: 0,
+                  ordered: true,
+                  objectIds: ids,
+                  label: "Put cards on the bottom (selected order)",
+                },
+              },
+          "Inspect your Library privately.",
+        );
+        return;
+      } else if (
+        ["move", "destroy", "exile", "sacrifice"].includes(effect.kind)
+      ) {
+        if (!("subject" in effect)) continue;
+        const operations = new ObjectEffects(this.engine);
+        const ids = operations.candidates(effect);
+        if (effect.eachPlayer && ids.length) {
+          progress.choiceEffect = effect;
+          progress.selectionPlayers = this.engine.match.turn.order.filter(
+            (playerId) =>
+              ids.some(
+                (id) => this.engine.object(id).controllerId === playerId,
+              ),
+          );
+          progress.simultaneousIds = [];
+          this.promptSacrifice();
+          return;
+        }
+        if ((effect.optional || effect.subject === "choice") && ids.length) {
+          progress.choiceEffect = effect;
+          this.prompt(
+            {
+              select: {
+                count: effect.subject === "choice" ? 1 : ids.length,
+                minCount: effect.optional ? 0 : undefined,
+                objectIds: ids,
+                label: `${effect.kind} selected object(s)`,
+              },
+            },
+            "Choose objects for the resolving effect.",
+          );
+          return;
+        }
+        operations.move(effect, effect.subject === "choice" ? [] : ids);
+      } else if (effect.kind === "gain-life") {
+        const player = this.engine.match.players.find(
+          (p) => p.id === progress.playerId,
+        )!;
+        player.life = String(BigInt(player.life) + BigInt(effect.amount));
+      } else if (effect.kind === "attach") {
+        new ObjectEffects(this.engine).attach(
+          effect.to === "created"
+            ? (progress.createdIds?.at(-1) ?? "")
+            : source.resolution!.targetIds[0],
+        );
       } else if (effect.kind === "discard" || effect.kind === "alternative") {
         const candidates =
           effect.kind === "discard"
@@ -96,18 +191,10 @@ export class Resolution {
         progress.choices = Object.fromEntries(
           selectable.map((o) => [o.id, o.effect]),
         );
-        this.engine.rules.pending = {
-          id: randomUUID(),
-          playerId: progress.playerId,
-          kind: "resolve",
-          stage: "selection",
-          sourceId: source.id,
-          targetIds: [],
-          selections: {},
-          totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
-          context: `${source.characteristics.name}: choose a discard option from your current Hand.`,
-          options: Object.fromEntries(selectable.map((o) => [o.id, o.option])),
-        };
+        this.prompt(
+          Object.fromEntries(selectable.map((o) => [o.id, o.option])),
+          `${source.characteristics.name}: choose a discard option from your current Hand.`,
+        );
         return;
       } else
         this.engine.effects(
@@ -122,7 +209,113 @@ export class Resolution {
     this.engine.finishResolution(source, true);
     this.engine.priority();
   }
+  promptSacrifice() {
+    const progress = this.progress;
+    const playerId = progress.selectionPlayers![0];
+    const ids = new ObjectEffects(this.engine)
+      .candidates(
+        progress.choiceEffect as import("../../shared/rules.js").MovementEffect,
+      )
+      .filter((id) => this.engine.object(id).controllerId === playerId);
+    this.prompt(
+      {
+        select: {
+          count: ids.length,
+          objectIds: ids,
+          label: "Sacrifice all your eligible permanents",
+        },
+      },
+      "Select your colored permanents. All players' selections leave together.",
+    );
+    this.engine.rules.pending!.playerId = playerId;
+  }
+  answerObjectChoice(action: Extract<MatchAction, { type: "rules-input" }>) {
+    const progress = this.progress;
+    const effect = progress.choiceEffect!;
+    const pending = this.engine.rules.pending!;
+    const entries = Object.entries(action.selections ?? {});
+    if (entries.some(([key]) => !pending.options?.[key]) || entries.length > 1)
+      throw new Error("Choose a legal option.");
+    const key = Object.keys(pending.options!)[0];
+    const ids = action.selections?.[key] ?? [];
+    const option = pending.options![key];
+    if (
+      ids.length < (option.minCount ?? option.count) ||
+      ids.length > option.count ||
+      new Set(ids).size !== ids.length ||
+      ids.some((id) => !option.objectIds.includes(id))
+    )
+      throw new Error(
+        "Choose eligible, distinct objects in the permitted quantity.",
+      );
+    if (effect.kind !== "inspect" && effect.eachPlayer) {
+      progress.simultaneousIds!.push(...ids);
+      progress.selectionPlayers!.shift();
+      if (progress.selectionPlayers!.length) {
+        this.promptSacrifice();
+        return;
+      }
+      new ObjectEffects(this.engine).move(effect, progress.simultaneousIds);
+      delete progress.selectionPlayers;
+      delete progress.simultaneousIds;
+    } else if (effect.kind === "inspect") {
+      const library = this.engine.zone("library", progress.playerId);
+      if (key === "top") {
+        library.objectIds = [
+          ...ids,
+          ...library.objectIds.filter((id) => !ids.includes(id)),
+        ];
+      } else if (effect.select) {
+        for (const id of ids) {
+          this.engine.move(id, this.engine.zone("hand", progress.playerId));
+        }
+        const remaining = progress.inspectedIds!.filter(
+          (id) => !ids.includes(id),
+        );
+        if (effect.randomBottom) {
+          for (let i = remaining.length - 1; i > 0; i--) {
+            const j = randomInt(i + 1);
+            [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+          }
+        }
+        for (const id of remaining) {
+          library.objectIds.splice(library.objectIds.indexOf(id), 1);
+          library.objectIds.push(id);
+        }
+      } else {
+        for (const id of ids) {
+          library.objectIds.splice(library.objectIds.indexOf(id), 1);
+          library.objectIds.push(id);
+        }
+        const top = progress.inspectedIds!.filter((id) => !ids.includes(id));
+        if (top.length > 1) {
+          progress.inspectedIds = top;
+          this.prompt(
+            {
+              top: {
+                count: top.length,
+                ordered: true,
+                objectIds: top,
+                label: "Order remaining cards on top",
+              },
+            },
+            "Choose top-to-bottom order.",
+          );
+          // The second answer orders the remaining top cards instead of bottoming them.
+          return;
+        }
+      }
+      delete progress.inspectedIds;
+    } else new ObjectEffects(this.engine).move(effect, ids);
+    delete progress.choiceEffect;
+    delete this.engine.rules.pending;
+    this.resume();
+  }
   answer(action: Extract<MatchAction, { type: "rules-input" }>) {
+    if (this.progress.choiceEffect) {
+      this.answerObjectChoice(action);
+      return;
+    }
     const entries = Object.entries(action.selections ?? {});
     const nonempty = entries.filter(([, ids]) => ids.length);
     if (

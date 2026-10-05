@@ -77,7 +77,8 @@ export class RulesEngine {
         action.procedureId === pending.id &&
         pending.kind !== "cleanup" &&
         pending.kind !== "resolve" &&
-        pending.kind !== "trigger-order"
+        pending.kind !== "trigger-order" &&
+        pending.kind !== "trigger-target"
       ) {
         delete this.rules.pending;
         this.priority(player.id);
@@ -140,6 +141,7 @@ export class RulesEngine {
   }
   priority(playerId = this.match.turn.activePlayerId) {
     this.checkpoint();
+    new Triggers(this).collectStates();
     this.rules.priorityAfterTriggers = playerId;
     new Triggers(this).flush();
   }
@@ -204,7 +206,13 @@ export class RulesEngine {
       for (const ability of this.abilities(object)) {
         const rules = ability.rules!;
         if (pending && !rules.manaAbility) continue;
+        if (rules.timing === "sorcery" && !this.mainTiming(playerId)) continue;
         if (!this.canActivateFromZone(object, playerId, ability)) continue;
+        if (
+          rules.target &&
+          !this.legalTargets(playerId, rules.target, object.id).length
+        )
+          continue;
         if (
           rules.costs.some((cost) => cost.kind === "tap-source") &&
           !this.canPayTapSymbol(object, playerId)
@@ -389,9 +397,15 @@ export class RulesEngine {
       bindings,
     );
   }
-  legalTargets(playerId: string, filter: ObjectFilter) {
+  targetSource(pending: PendingProcedure) {
+    const object = this.match.objects[pending.sourceId ?? ""];
+    return object?.resolution?.ability.trigger?.event === "dies"
+      ? object.resolution.event?.affectedId
+      : (object?.sourceObjectId ?? pending.sourceId);
+  }
+  legalTargets(playerId: string, filter: ObjectFilter, sourceId?: string) {
     return Object.values(this.match.objects)
-      .filter((object) => this.matches(object, filter, playerId))
+      .filter((object) => this.matches(object, filter, playerId, sourceId))
       .map((object) => object.id);
   }
   abilities(object: GameObject) {
@@ -508,6 +522,13 @@ export class RulesEngine {
     const ability = rulesAbilitySchema.parse(authored.rules);
     if (!this.canActivateFromZone(source, playerId, authored))
       throw new Error("You cannot activate this source from that Zone.");
+    if (ability.timing === "sorcery" && !this.mainTiming(playerId))
+      throw new Error("Activate this ability only as a sorcery.");
+    if (
+      ability.target &&
+      !this.legalTargets(playerId, ability.target, source.id).length
+    )
+      throw new Error("No legal targets are available.");
     if (duringPayment && !ability.manaAbility)
       throw new Error("Only mana abilities may be used in the payment window.");
     const procedure: PendingProcedure = {
@@ -544,6 +565,10 @@ export class RulesEngine {
     action: Extract<MatchAction, { type: "rules-input" }>,
   ) {
     const pending = this.rules.pending!;
+    if (pending.kind === "trigger-target") {
+      new Triggers(this).answerTarget(action);
+      return;
+    }
     if (pending.kind === "trigger-order") {
       new Triggers(this).answer(action);
       return;
@@ -596,9 +621,11 @@ export class RulesEngine {
       const targets = action.targetIds ?? [];
       if (
         targets.length !== 1 ||
-        !this.legalTargets(playerId, pending.ability!.target!).includes(
-          targets[0],
-        )
+        !this.legalTargets(
+          playerId,
+          pending.ability!.target!,
+          this.targetSource(pending),
+        ).includes(targets[0])
       )
         throw new Error("Choose one legal target.");
       pending.targetIds = targets;
@@ -726,6 +753,12 @@ export class RulesEngine {
         )
           throw new Error("The source cannot pay its tap-symbol cost.");
         tapped.add(source.id);
+      } else if (cost.kind === "counter-source") {
+        if (
+          removed.has(source.id) ||
+          source.zoneId !== this.zone("battlefield").id
+        )
+          throw new Error("Counter costs require a present permanent.");
       } else if (cost.kind === "life")
         life +=
           cost.amount === "commander-colors" ? colors.length : cost.amount;
@@ -740,7 +773,9 @@ export class RulesEngine {
         if (removed.has(source.id) || source.zoneId !== zone.id)
           throw new Error("The source cannot pay this removal cost.");
         removed.add(source.id);
-      } else if (["tap", "sacrifice", "discard"].includes(cost.kind)) {
+      } else if (
+        ["tap", "sacrifice", "discard", "return"].includes(cost.kind)
+      ) {
         if (!("filter" in cost)) continue;
         const ids = pending.selections[String(index)] ?? [];
         if (ids.length !== cost.count) return false;
@@ -756,7 +791,7 @@ export class RulesEngine {
               (tapped.has(id) ||
                 object.status.tapped ||
                 object.zoneId !== this.zone("battlefield").id)) ||
-            (cost.kind === "sacrifice" &&
+            (["sacrifice", "return"].includes(cost.kind) &&
               object.zoneId !== this.zone("battlefield").id) ||
             (cost.kind === "discard" &&
               object.zoneId !== this.zone("hand", playerId).id)
@@ -798,19 +833,38 @@ export class RulesEngine {
     player.life = (BigInt(player.life) - BigInt(life)).toString();
     for (const [index, cost] of costs.entries()) {
       if (cost.kind === "tap-source") source.status.tapped = true;
-      else if (
+      else if (cost.kind === "counter-source") {
+        const counter = source.counters.find((c) => c.kind === cost.counter);
+        if (counter)
+          counter.quantity = String(
+            BigInt(counter.quantity) + BigInt(cost.count),
+          );
+        else
+          source.counters.push({
+            kind: cost.counter,
+            quantity: String(cost.count),
+          });
+      } else if (
         cost.kind === "sacrifice-source" ||
         cost.kind === "discard-source"
       )
-        this.move(source.id, this.zone("graveyard", playerId));
+        this.move(source.id, this.zone("graveyard", this.owner(source)));
       else if (
         cost.kind === "tap" ||
         cost.kind === "sacrifice" ||
-        cost.kind === "discard"
+        cost.kind === "discard" ||
+        cost.kind === "return"
       )
         for (const id of pending.selections[String(index)] ?? []) {
           if (cost.kind === "tap") this.object(id).status.tapped = true;
-          else this.move(id, this.zone("graveyard", playerId));
+          else
+            this.move(
+              id,
+              this.zone(
+                cost.kind === "return" ? "hand" : "graveyard",
+                this.owner(this.object(id)),
+              ),
+            );
         }
     }
     return true;
@@ -860,6 +914,7 @@ export class RulesEngine {
             });
         }
       } else if (effect.kind === "create-token") {
+        if (this.rules.resolving) this.rules.resolving.createdIds = [];
         for (let i = 0; i < effect.count; i++) {
           const token = gameObject(
             "token",
@@ -868,6 +923,7 @@ export class RulesEngine {
             tokenCharacteristics[effect.token],
           );
           token.ownerId = playerId;
+          this.rules.resolving?.createdIds?.push(token.id);
           this.match.objects[token.id] = token;
           this.zone("battlefield").objectIds.push(token.id);
           this.rules.controlledSinceTurn[token.id] = this.match.turn.number;
@@ -878,6 +934,13 @@ export class RulesEngine {
         if (target && !target.cannotBeCountered) this.toGraveyard(target);
       }
     }
+  }
+  owner(object: GameObject) {
+    return (
+      this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
+      object.ownerId ??
+      object.controllerId
+    );
   }
   toGraveyard(object: GameObject) {
     const ownerId =
@@ -904,6 +967,9 @@ export class RulesEngine {
             this.match.objects[id],
             resolution.ability.target!,
             object.controllerId,
+            resolution.ability.trigger?.event === "dies"
+              ? resolution.event?.affectedId
+              : (object.sourceObjectId ?? object.id),
           ),
       );
     if (valid && resolution) {

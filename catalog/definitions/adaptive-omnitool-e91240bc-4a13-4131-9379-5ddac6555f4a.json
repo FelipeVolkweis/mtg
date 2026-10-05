@@ -9,7 +9,7 @@
       "name": "Adaptive Omnitool",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact — Equipment",
+      "typeLine": "Artifact \u2014 Equipment",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -30,5 +30,78 @@
   ],
   "manaValue": 2,
   "automationStatus": "unimplemented",
-  "abilities": []
+  "abilities": [
+    {
+      "id": "equipped-bonus",
+      "kind": "static",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "attached": true,
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "equip",
+      "kind": "activated",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{3}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "attach",
+            "to": "target"
+          }
+        ],
+        "timing": "sorcery",
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ],
+          "controller": "you"
+        }
+      }
+    }
+  ]
 }

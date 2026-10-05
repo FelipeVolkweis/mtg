@@ -1,4 +1,4 @@
-# Rules automation: tickets 01–10
+# Rules automation: tickets 01–15
 
 Commander is available alongside the temporary Tabletop compatibility path. The
 rules slices require two ready Room Participants, a selected legendary
@@ -123,3 +123,41 @@ Darksteel Juggernaut, Broodstar, Memory Guardian, Spire Golem and Thought Monito
 retain their authored stat, affinity and available entry behavior but remain
 unimplemented pending flying, indestructible or attack requirements. The complete
 mono-U Decklist remains ineligible until the remaining slices are delivered.
+
+
+Private Library inspection persists the looked-at object IDs and choice stage only
+in the resolving procedure. Its controller can select bottomed cards and order
+the remaining top cards without revealing the Library to another player. Tome's
+page-counter costs collect a distinct state trigger at Priority checkpoints;
+waiting or stacked instances prevent duplicates. Its activation remains pending
+independently of its source, and the exile result controls its life gain.
+Tapped-entry replacements run whenever an effect puts a card onto the Battlefield.
+
+Shared movement filters distinguish owners and controllers, public Graveyards,
+nontoken objects, opponents, colors and type unions. Returning an artifact is a
+cost, separate from resolution-time selection from the updated Hand. Card
+Instances survive fresh Game Object lifetimes with reset counters, status, links
+and Attachments. Spellbomb, Buried Ruin, Myr Retriever and Transmuter are supported.
+
+Destruction, exile and sacrifice have separate semantics. Destruction respects
+indestructible characteristics; sacrifice does not. Disk snapshots its complete
+union before simultaneous destruction. All Is Dust collects each player's colored
+permanent selection, then sacrifices every selection together. Death-trigger
+sources and effective pre-change values survive simultaneous departures. Meteor
+Golem and Lantern use target choices when their entry triggers reach the Stack;
+targets are revalidated at resolution. Target selection and trigger ordering
+resume without granting Priority midway through Stack placement.
+
+Equipment Attachments are separate from Object Links. Sorcery-timed equip targets
+controlled creatures, and living weapon creates a black 0/0 Phyrexian Germ before
+attaching Nettlecyst. State-based checks wait until both instructions finish.
+Equipment bonuses count each artifact/enchantment once, update as the board
+changes and stop when their source leaves. Adaptive Omnitool has equip and its
+artifact-count bonus but remains unimplemented until ticket 22 authors its attack
+ability.
+
+Duplicant's optional nontoken-creature exile records the new Exile object's ID in
+an Object Link. Its continuous ability reads that creature card's current
+characteristics in Exile, retaining Shapeshifter; unrelated exiled cards do not
+apply. Departed linked cards and new Duplicant lifetimes do not reuse an old link.
+The link is persisted with Match state and projected only through visible objects.

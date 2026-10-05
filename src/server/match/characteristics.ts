@@ -23,7 +23,22 @@ export function matchesFilter(
     zone.kind === filter.zone &&
     !object.status.phasedOut &&
     (zone.visibility !== "private" || zone.ownerId === playerId) &&
-    (!filter.controller || object.controllerId === playerId) &&
+    (!filter.controller ||
+      (filter.controller === "you"
+        ? object.controllerId === playerId
+        : object.controllerId !== playerId)) &&
+    (!filter.owner ||
+      (filter.owner === "you"
+        ? (match.instances[object.cardInstanceIds[0]]?.ownerId ??
+            object.ownerId ??
+            object.controllerId) === playerId
+        : (match.instances[object.cardInstanceIds[0]]?.ownerId ??
+            object.ownerId ??
+            object.controllerId) !== playerId)) &&
+    (!filter.nontoken || object.kind !== "token") &&
+    (!filter.colored || !!object.characteristics.colors.length) &&
+    (!filter.attached ||
+      match.objects[sourceId ?? ""]?.attachmentTo === object.id) &&
     (!filter.self ||
       (filter.self === "only"
         ? object.id === sourceId
@@ -126,11 +141,50 @@ export class CharacteristicsCalculator {
       (c) => c.change.kind === "define-stats",
     )) {
       result.power = String(
-        this.value(change.power, effect.playerId, effect.sourceId),
+        this.value(
+          change.kind === "linked-characteristics" ? 0 : change.power,
+          effect.playerId,
+          effect.sourceId,
+        ),
       );
       result.toughness = String(
-        this.value(change.toughness, effect.playerId, effect.sourceId),
+        this.value(
+          change.kind === "linked-characteristics" ? 0 : change.toughness,
+          effect.playerId,
+          effect.sourceId,
+        ),
       );
+    }
+    for (const { effect, change } of changes) {
+      if (change.kind !== "linked-characteristics") continue;
+      const source = this.match.objects[effect.sourceId];
+      const linked = source.links
+        .filter((link) => link.label === change.link)
+        .flatMap((link) => link.objectIds)
+        .map((id) => this.match.objects[id])
+        .filter(
+          (card) =>
+            card &&
+            card.kind === "card" &&
+            card.characteristics.types?.includes("Creature") &&
+            this.match.zones.find((z) => z.id === card.zoneId)?.kind ===
+              "exile",
+        )
+        .at(-1);
+      if (!linked) continue;
+      const characteristics = this.effective(linked);
+      result.power = characteristics.power;
+      result.toughness = characteristics.toughness;
+      result.subtypes = [
+        ...new Set([
+          ...(characteristics.subtypes ?? []),
+          ...change.retainSubtypes,
+        ]),
+      ];
+      result.typeLine =
+        [...(result.supertypes ?? []), ...(result.types ?? [])].join(" ") +
+        " — " +
+        result.subtypes.join(" ");
     }
     for (const stat of ["power", "toughness"] as const) {
       if (!/^-?\d+$/.test(result[stat] ?? "")) continue;
@@ -139,7 +193,11 @@ export class CharacteristicsCalculator {
         (c) => c.change.kind === "add-stats",
       ))
         amount += BigInt(
-          this.value(change[stat], effect.playerId, effect.sourceId),
+          this.value(
+            change.kind === "linked-characteristics" ? 0 : change[stat],
+            effect.playerId,
+            effect.sourceId,
+          ),
         );
       for (const counter of object.counters) {
         if (counter.kind === "+1/+1") amount += BigInt(counter.quantity);

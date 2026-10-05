@@ -9,7 +9,7 @@
       "name": "Myr Retriever",
       "manaCost": "{2}",
       "colors": [],
-      "typeLine": "Artifact Creature — Myr",
+      "typeLine": "Artifact Creature \u2014 Myr",
       "manaValue": 2,
       "supertypes": [],
       "types": [
@@ -28,6 +28,39 @@
   "oracleText": "When this creature dies, return another target artifact card from your graveyard to your hand.",
   "keywords": [],
   "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "automationStatus": "implemented",
+  "abilities": [
+    {
+      "id": "retrieve",
+      "kind": "triggered",
+      "origin": "printed",
+      "applicableZone": "battlefield",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "target",
+            "destination": "hand"
+          }
+        ],
+        "trigger": {
+          "event": "dies",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        },
+        "target": {
+          "zone": "graveyard",
+          "types": [
+            "Artifact"
+          ],
+          "kind": "card",
+          "owner": "you",
+          "self": "exclude"
+        }
+      }
+    }
+  ]
 }

@@ -90,6 +90,8 @@ export async function seedCatalog() {
   };
   const release = await readCatalog("catalog");
   for (const name of [
+    "Mazemind Tome",
+    "Nettlecyst",
     "Sol Ring",
     "Counterspell",
     "Negate",

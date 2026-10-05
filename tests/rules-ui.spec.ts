@@ -426,3 +426,164 @@ test("simultaneous trigger controls restore their order choice after reconnect a
     for (const context of contexts) await context.close();
   }
 });
+
+test("Tome restores private scry controls after reconnect and permits keeping the inspected card", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await table(browser);
+  try {
+    for (const page of [alice, bob]) {
+      await saveDeck(
+        page,
+        "Supported Commander",
+        "99 Island (TST) 1\n1 Rules Commander",
+      );
+      await page.getByLabel("Match format").selectOption("commander");
+      await page
+        .getByLabel("Commander", { exact: true })
+        .selectOption({ label: "Rules Commander" });
+      await page
+        .getByRole("button", { name: "Mark ready", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Not ready", exact: true }),
+      ).toBeVisible();
+    }
+    await alice
+      .getByLabel("Starting player")
+      .selectOption((await snapshot(alice)).participantId);
+    await alice
+      .getByRole("button", { name: "Start Match", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Commander Match" }),
+    ).toBeVisible();
+    await seedRulesScenario(invitation.split("/").pop()!, "Mazemind Tome");
+    await alice.reload();
+    await bob.reload();
+    await alice
+      .getByRole("button", { name: "Cast Mazemind Tome", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await bob
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Mazemind Tome: scry", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await bob
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    const prompt = alice.getByRole("region", { name: "Pending rules choice" });
+    await expect(
+      prompt.getByRole("checkbox", { name: "Island", exact: true }),
+    ).toBeVisible();
+    const before = (await snapshot(alice)).match!.rules!.pending!;
+    const inspected = before.selectionOptions.bottom.objectIds[0];
+    expect((await snapshot(bob)).match!.objects[inspected]).toBeUndefined();
+    await expect(
+      bob.getByRole("region", { name: "Pending rules choice" }),
+    ).toHaveCount(0);
+    await alice.reload();
+    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(before.id);
+    await prompt
+      .getByRole("button", { name: "Confirm choice", exact: true })
+      .click();
+    await expect(prompt).toHaveCount(0);
+    expect((await snapshot(alice)).match!.objects[inspected]).toBeUndefined();
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});
+
+test("living weapon shows its Attachment and equip offers only controlled creatures", async ({
+  browser,
+}) => {
+  const {
+    pages: [alice, bob],
+    contexts,
+    invitation,
+  } = await table(browser);
+  try {
+    for (const page of [alice, bob]) {
+      await saveDeck(
+        page,
+        "Supported Commander",
+        "99 Island (TST) 1\n1 Rules Commander",
+      );
+      await page.getByLabel("Match format").selectOption("commander");
+      await page
+        .getByLabel("Commander", { exact: true })
+        .selectOption({ label: "Rules Commander" });
+      await page
+        .getByRole("button", { name: "Mark ready", exact: true })
+        .click();
+      await expect(
+        page.getByRole("button", { name: "Not ready", exact: true }),
+      ).toBeVisible();
+    }
+    await alice
+      .getByLabel("Starting player")
+      .selectOption((await snapshot(alice)).participantId);
+    await alice
+      .getByRole("button", { name: "Start Match", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Commander Match" }),
+    ).toBeVisible();
+    await seedRulesScenario(invitation.split("/").pop()!, "Nettlecyst");
+    await alice.reload();
+    await bob.reload();
+    await alice
+      .getByRole("button", { name: "Cast Nettlecyst", exact: true })
+      .click();
+    for (let i = 0; i < 2; i++) {
+      await alice
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+      await bob
+        .getByRole("button", { name: "Pass Priority", exact: true })
+        .click();
+    }
+    const battlefield = alice.getByTestId("zone-battlefield-shared");
+    await expect(battlefield).toContainText("Attached to Phyrexian Germ");
+    await expect(battlefield).toContainText("Power / Toughness: 3 / 3");
+    await alice
+      .getByRole("button", { name: "Nettlecyst: equip", exact: true })
+      .click();
+    await expect(
+      alice.getByRole("heading", { name: "Choose target", exact: true }),
+    ).toBeVisible();
+    const pending = (await snapshot(alice)).match!.rules!.pending!;
+    expect(pending.legalTargetIds).toHaveLength(1);
+    await alice
+      .getByLabel("Legal target")
+      .selectOption(pending.legalTargetIds[0]);
+    await alice
+      .getByRole("button", { name: "Confirm target", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Complete payment", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await bob
+      .getByRole("button", { name: "Pass Priority", exact: true })
+      .click();
+    await expect(bob.getByTestId("zone-battlefield-shared")).toContainText(
+      "Attached to Phyrexian Germ",
+    );
+  } finally {
+    await Promise.all(contexts.map((context) => context.close()));
+  }
+});
