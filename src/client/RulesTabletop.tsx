@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
+import { cardArtwork } from "./rules-presentation";
+import { RulesBoard, type BoardSelection } from "./RulesBoard";
 import type { MatchAction, MatchView, RoomView } from "../shared/model";
 import { phaseSteps } from "../shared/model";
 import { manaTypes } from "../shared/rules";
@@ -52,7 +54,7 @@ function CardChoices({
             </label>
           ))
         : ids.map((id) => (
-            <label key={id}>
+            <label key={id} data-inspect-id={id}>
               <input
                 type="checkbox"
                 checked={selected.includes(id)}
@@ -64,6 +66,16 @@ function CardChoices({
                   )
                 }
               />
+              {match.objects[id] && cardArtwork(match.objects[id]) && (
+                <img
+                  className="choice-printing"
+                  alt=""
+                  src={cardArtwork(match.objects[id])}
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                  }}
+                />
+              )}
               {match.objects[id]?.characteristics.name ?? "Card"}
             </label>
           ))}
@@ -82,12 +94,15 @@ function CardChoices({
 function CombatProcedure({
   match,
   act,
+  selections,
+  setSelections,
 }: {
   match: MatchView;
   act: (action: MatchAction) => void;
+  selections: Record<string, string[]>;
+  setSelections: (selections: Record<string, string[]>) => void;
 }) {
   const pending = match.rules!.pending!;
-  const [selections, setSelections] = useState<Record<string, string[]>>({});
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const attacking = pending.kind === "declare-attackers";
   const damage = pending.kind === "combat-damage";
@@ -129,40 +144,43 @@ function CombatProcedure({
           });
         }}
       >
-        {damage
-          ? (pending.damageChoices ?? []).map((choice) => (
-              <fieldset key={choice.sourceId}>
-                <legend>
-                  {name(choice.sourceId)}: assign {choice.amount} damage
-                </legend>
-                {choice.recipientIds.map((id) => (
-                  <label key={id}>
-                    Damage from {name(choice.sourceId)} to {name(id)}
-                    <input
-                      aria-label={`Damage from ${name(choice.sourceId)} to ${name(id)}`}
-                      type="number"
-                      min={0}
-                      max={choice.amount}
-                      step={1}
-                      required
-                      value={
-                        amounts[`${choice.sourceId}:${id}`] ??
-                        (choice.recipientIds.length === 1 ? choice.amount : 0)
-                      }
-                      onChange={(event) =>
-                        setAmounts({
-                          ...amounts,
-                          [`${choice.sourceId}:${id}`]: Number(
-                            event.target.value,
-                          ),
-                        })
-                      }
-                    />
-                  </label>
-                ))}
-              </fieldset>
-            ))
-          : Object.entries(pending.selectionOptions).map(([id, option]) => (
+        {damage ? (
+          (pending.damageChoices ?? []).map((choice) => (
+            <fieldset key={choice.sourceId}>
+              <legend>
+                {name(choice.sourceId)}: assign {choice.amount} damage
+              </legend>
+              {choice.recipientIds.map((id) => (
+                <label key={id}>
+                  Damage from {name(choice.sourceId)} to {name(id)}
+                  <input
+                    aria-label={`Damage from ${name(choice.sourceId)} to ${name(id)}`}
+                    type="number"
+                    min={0}
+                    max={choice.amount}
+                    step={1}
+                    required
+                    value={
+                      amounts[`${choice.sourceId}:${id}`] ??
+                      (choice.recipientIds.length === 1 ? choice.amount : 0)
+                    }
+                    onChange={(event) =>
+                      setAmounts({
+                        ...amounts,
+                        [`${choice.sourceId}:${id}`]: Number(
+                          event.target.value,
+                        ),
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </fieldset>
+          ))
+        ) : (
+          <details>
+            <summary>Review assignments</summary>
+            {Object.entries(pending.selectionOptions).map(([id, option]) => (
               <label key={id}>
                 {option.label}
                 <select
@@ -186,6 +204,8 @@ function CombatProcedure({
                 </select>
               </label>
             ))}
+          </details>
+        )}
         <button>
           {damage
             ? "Confirm damage"
@@ -201,14 +221,17 @@ function CombatProcedure({
 function Procedure({
   match,
   act,
+  targetId,
+  setTargetId,
 }: {
   match: MatchView;
   act: (action: MatchAction) => void;
+  targetId: string;
+  setTargetId: (id: string) => void;
 }) {
   const pending = match.rules!.pending!;
   const [chosenX, setChosenX] = useState(0);
   const [alternative, setAlternative] = useState("");
-  const [targetId, setTargetId] = useState("");
   const [selections, setSelections] = useState(pending.selections);
   return (
     <section aria-label="Pending rules choice">
@@ -466,9 +489,18 @@ export function RulesTabletop({
   const match = view.match!;
   const rules = match.rules!;
   const player = match.players.find(
-    (player) => player.participantId === view.participantId,
+    (p) => p.participantId === view.participantId,
   );
+  const pending = rules.pending;
   const [bottom, setBottom] = useState<string[]>([]);
+  const [targetId, setTargetId] = useState("");
+  const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [sourceId, setSourceId] = useState("");
+  useLayoutEffect(() => {
+    setTargetId("");
+    setSelections({});
+    setSourceId("");
+  }, [pending?.id, pending?.stage, match.id]);
   const act = (action: MatchAction) =>
     send({
       type: "match-action",
@@ -478,212 +510,220 @@ export function RulesTabletop({
     });
   const opening = player && !rules.setup.keptPlayerIds.includes(player.id);
   const hand = match.zones.find(
-    (zone) => zone.kind === "hand" && zone.ownerId === player?.id,
+    (z) => z.kind === "hand" && z.ownerId === player?.id,
   );
-  const pending = rules.pending;
+  const declaration =
+    pending && ["declare-attackers", "declare-blockers"].includes(pending.kind);
   const [phase, step] = phaseSteps[match.turn.stepIndex];
+  const name = (id: string) =>
+    match.objects[id]?.characteristics.name ??
+    match.players.find((p) => p.id === id)?.name ??
+    "Departed object";
+  const sources = declaration ? Object.keys(pending.selectionOptions) : [];
+  const selection: BoardSelection = {
+    eligible:
+      pending?.stage === "targets"
+        ? pending.legalTargetIds
+        : declaration
+          ? [
+              ...sources,
+              ...(pending.selectionOptions[sourceId]?.objectIds ?? []),
+            ]
+          : [],
+    selected:
+      pending?.stage === "targets"
+        ? [targetId]
+        : declaration
+          ? [
+              sourceId,
+              ...Object.entries(selections)
+                .filter(([, ids]) => ids.length)
+                .map(([id]) => id),
+            ]
+          : [],
+    assigning: !!declaration && !!sourceId,
+    links: [
+      ...(pending?.kind === "declare-attackers"
+        ? []
+        : (rules.combat?.attackers ?? []).flatMap((a) => [
+            { from: a.objectId, to: a.defenderId },
+            ...a.blockerIds.map((id) => ({ from: id, to: a.objectId })),
+          ])),
+      ...(declaration
+        ? Object.entries(selections).flatMap(([from, ids]) =>
+            ids.map((to) => ({ from, to })),
+          )
+        : []),
+    ],
+    choose(id) {
+      if (pending?.stage === "targets") {
+        if (pending.legalTargetIds.includes(id)) setTargetId(id);
+        return true;
+      }
+      if (!declaration) return false;
+      if (
+        sourceId &&
+        pending.selectionOptions[sourceId]?.objectIds.includes(id)
+      ) {
+        setSelections((previous) => ({
+          ...previous,
+          [sourceId]: previous[sourceId]?.includes(id) ? [] : [id],
+        }));
+        setSourceId("");
+      } else if (sources.includes(id)) {
+        if (sourceId === id) {
+          setSelections((previous) => ({ ...previous, [id]: [] }));
+          setSourceId("");
+        } else setSourceId(id);
+      }
+      return true;
+    },
+  };
+  const pass = match.actions?.find((a) => a.action.type === "pass-priority");
   return (
     <main data-testid="match" className="tabletop rules-tabletop">
-      <fieldset disabled={busy}>
-        <h1>Commander Match</h1>
-        <p data-testid="match-revision">
-          Revision {match.revision} · {match.outcome}
-        </p>
-        <p>
-          Turn {match.turn.number} ·{" "}
-          {
-            match.players.find(
-              (player) => player.id === match.turn.activePlayerId,
-            )?.name
-          }{" "}
-          · {phase}: {step}
-        </p>
-        <p>
+      <div className="rules-heading">
+        <div>
+          <h1>Commander Match</h1>
+          <span data-testid="match-revision">
+            Revision {match.revision} · {match.outcome}
+          </span>
+        </div>
+        <span>
+          Turn {match.turn.number} · {name(match.turn.activePlayerId)} · {phase}
+          : {step}
+          <br />
           Priority:{" "}
           {match.priority
-            ? match.players.find(
-                (player) => player.id === match.priority!.playerId,
-              )?.name
+            ? name(match.priority.playerId)
             : "Opening or required choices"}
-        </p>
-        {rules.monarchId && (
-          <p>
-            Monarch: {match.players.find((p) => p.id === rules.monarchId)?.name}
-          </p>
-        )}
-        {rules.practice && (
-          <p>
-            Solo practice · the practice opponent passes Priority automatically.
-            You make its required choices.
-          </p>
-        )}
-        <section data-testid="match-players">
-          {match.players.map((player) => (
-            <p key={player.id}>
-              {player.name}: {player.life} life · Mana{" "}
-              {manaTypes
-                .map((type) => `${rules.mana[player.id][type]} ${type}`)
-                .join(" · ")}
-            </p>
-          ))}
-        </section>
-        {opening && hand?.objectIds && (
-          <section aria-label="Opening Hand">
-            <h2>Keep or mulligan</h2>
-            <p>
-              Your mulligans: {player.mulliganCount}. Two-player Commander
-              requires one bottomed card for each mulligan.
-            </p>
-            {player.mulliganCount > 0 && (
-              <CardChoices
-                match={match}
-                ids={hand.objectIds}
-                count={player.mulliganCount}
-                label="Bottom cards"
-                selected={bottom}
-                onChange={setBottom}
-              />
-            )}
-            <button
-              onClick={() => {
-                setBottom([]);
-                act({ type: "mulligan", playerId: player.id });
-              }}
-            >
-              Mulligan
+        </span>
+        {pass && (
+          <div className="priority-control">
+            <button disabled={busy} onClick={() => act(pass.action)}>
+              Pass Priority
             </button>
-            <button
-              onClick={() => act({ type: "keep-hand", bottomIds: bottom })}
-            >
-              Keep Hand
-            </button>
-          </section>
+            <small>
+              {match.zones.find((z) => z.kind === "stack")?.count
+                ? "Everyone passing resolves the top object"
+                : "Everyone passing advances the step"}
+            </small>
+          </div>
         )}
-        {rules.setup.keptPlayerIds.length < match.players.length &&
-          !opening && (
-            <p>Waiting for the other player to keep their opening Hand.</p>
-          )}
-        {pending ? (
-          ["declare-attackers", "declare-blockers", "combat-damage"].includes(
-            pending.kind,
-          ) ? (
-            <CombatProcedure key={pending.id} match={match} act={act} />
-          ) : (
-            <Procedure
-              key={`${pending.id}:${pending.stage}`}
-              match={match}
-              act={act}
-            />
-          )
-        ) : (
-          rules.waiting && (
-            <p>
-              Waiting for{" "}
-              {
-                match.players.find(
-                  (player) => player.id === rules.waiting!.playerId,
-                )?.name
-              }{" "}
-              to complete {rules.waiting.kind}.
-            </p>
-          )
-        )}
-        <section aria-label="Legal rules actions" className="button-row">
-          {match.actions?.map(({ label, action }, index) => (
-            <button key={index} onClick={() => act(action)}>
-              {label}
-            </button>
-          ))}
-        </section>
-        {rules.combat && (
-          <section aria-label="Combat state">
-            <h2>Combat</h2>
-            {rules.combat.attackers.map((attacker) => (
-              <p key={attacker.objectId}>
-                {match.objects[attacker.objectId]?.characteristics.name} attacks{" "}
-                {match.players.find((p) => p.id === attacker.defenderId)
-                  ?.name ??
-                  match.objects[attacker.defenderId]?.characteristics.name}
-                {attacker.blocked
-                  ? ` · Blocked by ${attacker.blockerIds.map((id) => match.objects[id]?.characteristics.name).join(", ") || "departed blockers"}`
-                  : " · Unblocked"}
+      </div>
+      <RulesBoard
+        key={match.id}
+        match={match}
+        participantId={view.participantId}
+        act={act}
+        busy={busy}
+        selection={selection}
+      >
+        <aside
+          className={`choice-panel ${opening || pending ? "has-choice" : "quiet-panel"}`}
+        >
+          <fieldset disabled={busy}>
+            {rules.practice && (
+              <p className="practice-hint">
+                Solo practice · the practice opponent passes Priority
+                automatically. You make its required choices.
               </p>
-            ))}
-          </section>
-        )}
-        <div className="rules-zones">
-          {match.zones.map((zone) => (
-            <section
-              key={zone.id}
-              data-testid={`zone-${zone.kind}-${match.players.find((player) => player.id === zone.ownerId)?.name ?? "shared"}`}
-            >
-              <h2>
-                {zone.name} ({zone.count})
-              </h2>
-              {zone.kind !== "library" &&
-                (
-                  zone.objectIds ??
-                  Object.values(match.objects)
-                    .filter((object) => object.zoneId === zone.id)
-                    .map((object) => object.id)
-                ).map((id) => {
-                  const object = match.objects[id];
-                  return (
-                    object && (
-                      <article key={id} className="rules-card">
-                        {!zone.objectIds && <span>Revealed card: </span>}
-                        <strong>{object.characteristics.name}</strong>
-                        {object.status.tapped && <span> · Tapped</span>}
-                        <p>
-                          {object.characteristics.manaCost} ·{" "}
-                          {object.characteristics.typeLine}
-                        </p>
-                        <p>{object.characteristics.rulesText}</p>
-                        {object.characteristics.power !== undefined && (
-                          <p>
-                            Power / Toughness: {object.characteristics.power} /{" "}
-                            {object.characteristics.toughness}
-                          </p>
-                        )}
-                        {object.attachmentTo &&
-                          match.objects[object.attachmentTo] && (
-                            <p>
-                              Attached to{" "}
-                              {
-                                match.objects[object.attachmentTo]
-                                  .characteristics.name
-                              }
-                            </p>
-                          )}
-                        {object.links
-                          ?.filter((link) => link.objectIds.length)
-                          .map((link, index) => (
-                            <p key={index}>
-                              {link.label}:{" "}
-                              {link.objectIds
-                                .map(
-                                  (id) =>
-                                    match.objects[id]?.characteristics.name,
-                                )
-                                .join(", ")}
-                            </p>
-                          ))}
-                        {!!rules.markedDamage?.[id] && (
-                          <p>{rules.markedDamage[id]} damage</p>
-                        )}
-                        {object.counters.map((counter) => (
-                          <p key={counter.kind}>
-                            {counter.quantity} {counter.kind} counters
-                          </p>
-                        ))}
-                      </article>
-                    )
-                  );
-                })}
-            </section>
-          ))}
-        </div>
-      </fieldset>
+            )}
+            {opening && hand?.objectIds && (
+              <section aria-label="Opening Hand">
+                <h2>Keep or mulligan</h2>
+                <p>
+                  Your mulligans: {player.mulliganCount}. Two-player Commander
+                  requires one bottomed card for each mulligan.
+                </p>
+                {player.mulliganCount > 0 && (
+                  <CardChoices
+                    match={match}
+                    ids={hand.objectIds}
+                    count={player.mulliganCount}
+                    label="Bottom cards"
+                    selected={bottom}
+                    onChange={setBottom}
+                  />
+                )}
+                <button
+                  onClick={() => {
+                    setBottom([]);
+                    act({ type: "mulligan", playerId: player.id });
+                  }}
+                >
+                  Mulligan
+                </button>
+                <button
+                  onClick={() => act({ type: "keep-hand", bottomIds: bottom })}
+                >
+                  Keep Hand
+                </button>
+              </section>
+            )}
+            {rules.setup.keptPlayerIds.length < match.players.length &&
+              !opening && (
+                <p>Waiting for the other player to keep their opening Hand.</p>
+              )}
+            {pending ? (
+              [
+                "declare-attackers",
+                "declare-blockers",
+                "combat-damage",
+              ].includes(pending.kind) ? (
+                <>
+                  <p>
+                    {sourceId
+                      ? `Choose a destination for ${name(sourceId)}. Click it again to remove its assignment.`
+                      : "Click a creature, then its destination. Confirm when ready."}
+                  </p>
+                  <CombatProcedure
+                    key={pending.id}
+                    match={match}
+                    act={act}
+                    selections={selections}
+                    setSelections={setSelections}
+                  />
+                </>
+              ) : (
+                <Procedure
+                  key={`${pending.id}:${pending.stage}`}
+                  match={match}
+                  act={act}
+                  targetId={targetId}
+                  setTargetId={setTargetId}
+                />
+              )
+            ) : (
+              rules.waiting && (
+                <p>
+                  Waiting for {name(rules.waiting.playerId)} to complete{" "}
+                  {rules.waiting.kind}.
+                </p>
+              )
+            )}
+            {rules.combat && (
+              <section aria-label="Combat state">
+                <h2>Combat</h2>
+                {rules.combat.attackers.map((a) => (
+                  <p key={a.objectId}>
+                    {name(a.objectId)} attacks {name(a.defenderId)}
+                    {a.blocked
+                      ? ` · Blocked by ${a.blockerIds.map(name).join(", ") || "departed blockers"}`
+                      : " · Unblocked"}
+                  </p>
+                ))}
+              </section>
+            )}
+            {!pending && !opening && !rules.waiting && (
+              <p>
+                Drag a playable card onto the Battlefield. Click a permanent for
+                abilities. Alt + hover to enlarge.
+              </p>
+            )}
+          </fieldset>
+        </aside>
+      </RulesBoard>
     </main>
   );
 }

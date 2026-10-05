@@ -63,6 +63,9 @@ export async function startTable(browser: Browser) {
     ).toBeVisible();
   }
   await result.pages[0]
+    .getByLabel("Starting player")
+    .selectOption((await snapshot(result.pages[0])).participantId);
+  await result.pages[0]
     .getByRole("button", { name: "Start Match", exact: true })
     .click();
   await expect(result.pages[0].getByTestId("match")).toBeVisible();

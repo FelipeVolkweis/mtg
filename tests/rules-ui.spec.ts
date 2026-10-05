@@ -1,3 +1,4 @@
+import { cardAction } from "./support/card-actions";
 import { expect, test, type Browser } from "@playwright/test";
 import { table, saveDeck } from "./support/table";
 import { snapshot, exchange } from "./support/peer";
@@ -37,7 +38,7 @@ test("two players configure Commander, keep private opening Hands, pass Priority
     await expect(
       alice.getByRole("heading", { name: "Commander Match" }),
     ).toBeVisible();
-    await expect(alice.getByTestId("match-players")).toContainText(
+    await expect(alice.getByTestId("player-Alice")).toContainText(
       "Alice: 40 life",
     );
     await expect(alice.getByTestId("zone-hand-Alice")).toContainText("Island");
@@ -58,16 +59,13 @@ test("two players configure Commander, keep private opening Hands, pass Priority
         .getByRole("button", { name: "Pass Priority", exact: true })
         .click();
     }
-    await alice
-      .getByRole("button", { name: "Play Island", exact: true })
-      .first()
-      .click();
+    await cardAction(alice, "Play Island");
     await expect(
-      alice.getByRole("button", { name: "Play Island", exact: true }),
+      alice
+        .locator('.rules-hand .rules-tile[draggable="true"]')
+        .filter({ hasText: "Island" }),
     ).toHaveCount(0);
-    await alice
-      .getByRole("button", { name: "Island: add 1 U", exact: true })
-      .click();
+    await cardAction(alice, "Island: add 1 U");
     await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
       "Tapped",
     );
@@ -151,9 +149,7 @@ test("target choices and activation payment resume after reload and stale input 
     const scenario = await seedRulesScenario(invitation.split("/").pop()!);
     await alice.reload();
     await bob.reload();
-    await alice
-      .getByRole("button", { name: "Cast Counterspell", exact: true })
-      .click();
+    await cardAction(alice, "Cast Counterspell");
     await expect(
       alice.getByRole("heading", { name: "Choose target", exact: true }),
     ).toBeVisible();
@@ -181,23 +177,19 @@ test("target choices and activation payment resume after reload and stale input 
     await expect(alice.getByTestId("zone-stack-shared")).toContainText(
       "Stack (0)",
     );
-    await alice
-      .getByRole("button", { name: "Mind Stone: draw", exact: true })
-      .click();
+    await cardAction(alice, "Mind Stone: draw");
     await expect(
       alice.getByRole("heading", { name: "Pay costs", exact: true }),
     ).toBeVisible();
     const activation = (await snapshot(alice)).match!.rules!.pending!.id;
     await alice.reload();
     expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(activation);
-    await alice
-      .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
-      .click();
+    await cardAction(alice, "Sol Ring: add 2 C");
     await alice
       .getByRole("button", { name: "Complete payment", exact: true })
       .click();
     await expect(
-      alice.getByTestId("zone-battlefield-shared"),
+      alice.locator(".local-area .battlefield-groups"),
     ).not.toContainText("Mind Stone");
     await expect(alice.getByTestId("zone-stack-shared")).toContainText(
       "Mind Stone: draw",
@@ -265,9 +257,7 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
       await seedRulesScenario(invitation.split("/").pop()!, name);
       await alice.reload();
       await bob.reload();
-      await alice
-        .getByRole("button", { name: `Cast ${name}`, exact: true })
-        .click();
+      await cardAction(alice, `Cast ${name}`);
       if (name === "Pull from Tomorrow") {
         await alice.getByLabel("X", { exact: true }).fill("2");
         const variableId = (await snapshot(alice)).match!.rules!.pending!.id;
@@ -384,11 +374,9 @@ test("simultaneous trigger controls restore their order choice after reconnect a
     await alice.reload();
     await bob.reload();
     await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
-      "Power / Toughness: 2 / 2",
+      "2/2",
     );
-    await alice
-      .getByRole("button", { name: "Cast Sol Ring", exact: true })
-      .click();
+    await cardAction(alice, "Cast Sol Ring");
     await expect(
       alice.getByRole("heading", { name: "Order simultaneous triggers" }),
     ).toBeVisible();
@@ -465,18 +453,14 @@ test("Tome restores private scry controls after reconnect and permits keeping th
     await seedRulesScenario(invitation.split("/").pop()!, "Mazemind Tome");
     await alice.reload();
     await bob.reload();
-    await alice
-      .getByRole("button", { name: "Cast Mazemind Tome", exact: true })
-      .click();
+    await cardAction(alice, "Cast Mazemind Tome");
     await alice
       .getByRole("button", { name: "Pass Priority", exact: true })
       .click();
     await bob
       .getByRole("button", { name: "Pass Priority", exact: true })
       .click();
-    await alice
-      .getByRole("button", { name: "Mazemind Tome: scry", exact: true })
-      .click();
+    await cardAction(alice, "Mazemind Tome: scry");
     await alice
       .getByRole("button", { name: "Pass Priority", exact: true })
       .click();
@@ -543,9 +527,7 @@ test("living weapon shows its Attachment and equip offers only controlled creatu
     await seedRulesScenario(invitation.split("/").pop()!, "Nettlecyst");
     await alice.reload();
     await bob.reload();
-    await alice
-      .getByRole("button", { name: "Cast Nettlecyst", exact: true })
-      .click();
+    await cardAction(alice, "Cast Nettlecyst");
     for (let i = 0; i < 2; i++) {
       await alice
         .getByRole("button", { name: "Pass Priority", exact: true })
@@ -556,10 +538,8 @@ test("living weapon shows its Attachment and equip offers only controlled creatu
     }
     const battlefield = alice.getByTestId("zone-battlefield-shared");
     await expect(battlefield).toContainText("Attached to Phyrexian Germ");
-    await expect(battlefield).toContainText("Power / Toughness: 3 / 3");
-    await alice
-      .getByRole("button", { name: "Nettlecyst: equip", exact: true })
-      .click();
+    await expect(battlefield).toContainText("3/3");
+    await cardAction(alice, "Nettlecyst: equip");
     await expect(
       alice.getByRole("heading", { name: "Choose target", exact: true }),
     ).toBeVisible();
@@ -642,9 +622,7 @@ test("players crew, pay attack costs, declare blocks and assign combat damage th
     );
     await alice.reload();
     await bob.reload();
-    await alice
-      .getByRole("button", { name: "Cultivator's Caravan: crew", exact: true })
-      .click();
+    await cardAction(alice, "Cultivator's Caravan: crew");
     await alice
       .getByRole("group", { name: /Crew: at least 3/ })
       .getByLabel("Silver Myr", { exact: true })
@@ -673,18 +651,23 @@ test("players crew, pay attack costs, declare blocks and assign combat damage th
       bob.getByLabel("Attack with Cultivator's Caravan"),
     ).toHaveCount(0);
     await alice
-      .getByLabel("Attack with Cultivator's Caravan", { exact: true })
-      .selectOption({ label: "Bob" });
+      .getByLabel("Creatures — Alice")
+      .getByRole("button", { name: "Card: Cultivator's Caravan", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Player: Bob", exact: true })
+      .click();
+    await expect(alice.locator(".combat-lines line")).toHaveCount(1);
     await alice
       .getByRole("button", { name: "Confirm attackers", exact: true })
       .click();
     await expect(
       alice.getByRole("heading", { name: "Pay attack costs", exact: true }),
     ).toBeVisible();
-    await alice
-      .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
-      .click();
-    await expect(alice.getByTestId("match-players")).toContainText("2 C");
+    await cardAction(alice, "Sol Ring: add 2 C");
+    await expect(
+      alice.getByLabel("Alice mana").getByLabel("2 C", { exact: true }),
+    ).toBeVisible();
     await alice.reload();
     await alice
       .getByRole("button", { name: "Complete payment", exact: true })
@@ -693,10 +676,26 @@ test("players crew, pay attack costs, declare blocks and assign combat damage th
       "Cultivator's Caravan attacks Bob",
     );
     await pass();
-    const blocks = bob.getByLabel("Block with Silver Myr", { exact: true });
+    const creatures = bob.getByLabel("Creatures — Bob");
+    await creatures
+      .getByRole("button", { name: "Expand Silver Myr pile (2)", exact: true })
+      .click();
+    const blocks = creatures.getByRole("button", {
+      name: "Card: Silver Myr",
+      exact: true,
+    });
     await expect(blocks).toHaveCount(2);
-    for (const block of await blocks.all())
-      await block.selectOption({ label: "Cultivator's Caravan" });
+    for (const block of await blocks.all()) {
+      await block.click();
+      await bob
+        .getByLabel("Creatures — Alice")
+        .getByRole("button", {
+          name: "Card: Cultivator's Caravan",
+          exact: true,
+        })
+        .click();
+    }
+    await expect(bob.locator(".combat-lines line")).toHaveCount(3);
     await bob
       .getByRole("button", { name: "Confirm blockers", exact: true })
       .click();
@@ -741,11 +740,11 @@ test("flash and source artifact casting permission use normal browser casting an
     await alice.reload();
     await bob.reload();
     await expect(
-      alice.getByRole("button", { name: "Cast Mind Stone", exact: true }),
+      alice
+        .locator('.rules-hand .rules-tile[draggable="true"]')
+        .filter({ hasText: "Mind Stone" }),
     ).toHaveCount(0);
-    await alice
-      .getByRole("button", { name: "Cast Shimmer Myr", exact: true })
-      .click();
+    await cardAction(alice, "Cast Shimmer Myr");
     const pass = async () => {
       await alice
         .getByRole("button", { name: "Pass Priority", exact: true })
@@ -758,9 +757,7 @@ test("flash and source artifact casting permission use normal browser casting an
     await expect(alice.getByTestId("zone-battlefield-shared")).toContainText(
       "Shimmer Myr",
     );
-    await alice
-      .getByRole("button", { name: "Cast Mind Stone", exact: true })
-      .click();
+    await cardAction(alice, "Cast Mind Stone");
     await expect(bob.getByTestId("zone-stack-shared")).toContainText(
       "Mind Stone",
     );
@@ -798,9 +795,7 @@ test("Mind's Eye restores its private mana choice and uses the shared source and
         .getByRole("button", { name: "Pass Priority", exact: true })
         .click();
     };
-    await bob
-      .getByRole("button", { name: "Mind Stone: draw", exact: true })
-      .click();
+    await cardAction(bob, "Mind Stone: draw");
     await pass();
     await pass(alice, bob);
     await expect(
@@ -818,9 +813,7 @@ test("Mind's Eye restores its private mana choice and uses the shared source and
     const before = (await snapshot(alice)).match!.zones.find(
       (z) => z.kind === "hand" && z.name === "Alice's Hand",
     )!.count;
-    await alice
-      .getByRole("button", { name: "Sol Ring: add 2 C", exact: true })
-      .click();
+    await cardAction(alice, "Sol Ring: add 2 C");
     await alice.getByRole("button", { name: "Pay mana", exact: true }).click();
     await expect(
       alice.getByRole("button", { name: "Pay mana", exact: true }),
@@ -865,9 +858,16 @@ test("Omnitool's private Library choice survives reload and publicly displays on
     };
     await pass();
     await pass();
+    await expect(
+      alice.getByRole("heading", { name: "Declare attackers", exact: true }),
+    ).toBeVisible();
     await alice
-      .getByLabel("Attack with Silver Myr", { exact: true })
-      .selectOption({ label: "Bob" });
+      .getByLabel("Creatures — Alice")
+      .getByRole("button", { name: "Card: Silver Myr", exact: true })
+      .click();
+    await alice
+      .getByRole("button", { name: "Player: Bob", exact: true })
+      .click();
     await alice
       .getByRole("button", { name: "Confirm attackers", exact: true })
       .click();
@@ -1047,9 +1047,7 @@ test("improvise choices survive reload and share the locked payment controls", a
     await seedRulesScenario(invitation.split("/").pop()!, "Kappa Cannoneer");
     await alice.reload();
     await bob.reload();
-    await alice
-      .getByRole("button", { name: "Cast Kappa Cannoneer", exact: true })
-      .click();
+    await cardAction(alice, "Cast Kappa Cannoneer");
     await expect(
       alice.getByRole("group", { name: /Improvise: tap artifacts/ }),
     ).toBeVisible();

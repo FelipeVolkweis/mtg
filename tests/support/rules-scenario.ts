@@ -10,7 +10,8 @@ export async function seedRulesScenario(
   invite: string,
   spellName?: string,
   synergies = false,
-  scenario?: "combat" | "flash" | "draw" | "inspect",
+  scenario?:
+    "combat" | "flash" | "draw" | "inspect" | "presentation" | "crowded",
   databaseUrl?: string,
 ) {
   const pool = new Pool({
@@ -51,6 +52,7 @@ export async function seedRulesScenario(
       };
       const object = gameObject("card", zone.id, player.id, card.components[0]);
       object.cardInstanceIds = [instanceId];
+      object.artwork = catalog.printings[card.defaultPrintingId].artwork;
       match.objects[object.id] = object;
       zone.objectIds.push(object.id);
       match.rules!.controlledSinceTurn[object.id] = 0;
@@ -64,6 +66,34 @@ export async function seedRulesScenario(
       add("Silver Myr", "battlefield", 1);
       add("Propaganda", "battlefield", 1);
       match.rules!.mana[player.id].U = 0;
+    }
+    if (scenario === "crowded") {
+      for (let i = 0; i < 104; i++) add("Silver Myr", "battlefield");
+    }
+    if (scenario === "presentation") {
+      add("Silver Myr", "battlefield");
+      add("Silver Myr", "battlefield");
+      add("Silver Myr", "battlefield").status.tapped = true;
+      add("Silver Myr", "battlefield").counters = [
+        { kind: "+1/+1", quantity: "1" },
+      ];
+      const host = add("Silver Myr", "battlefield");
+      add("Adaptive Omnitool", "battlefield").attachmentTo = host.id;
+      const hidden = add("Silver Myr", "battlefield", 1);
+      hidden.faceDown = {
+        mode: "morph",
+        inspectableBy: [],
+        turnUpProcedure: "",
+        characteristics: {
+          name: "Face-down creature",
+          typeLine: "Creature",
+          types: ["Creature"],
+          colors: [],
+          rulesText: "",
+          power: "2",
+          toughness: "2",
+        },
+      };
     }
     if (synergies) {
       add("Sai, Master Thopterist", "battlefield");

@@ -50,6 +50,9 @@ test("a server restart restores the persisted revision and private participant v
     await pages[0]
       .getByRole("button", { name: "Keep Hand", exact: true })
       .click();
+    await expect(
+      pages[0].getByRole("button", { name: "Keep Hand", exact: true }),
+    ).toHaveCount(0);
     await expect(pages[0].getByTestId("zone-hand-Alice")).toContainText(
       "Island",
     );

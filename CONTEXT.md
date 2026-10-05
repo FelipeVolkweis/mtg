@@ -180,6 +180,14 @@ The shared play area containing cards in play, visible to all participants.
 **Player Area**:
 The portion of the shared Battlefield visually associated with a Match Player. It is not a separate Zone.
 
+**Battlefield Group**:
+A visual grouping of permanents within a Player Area according to their current card types. It is not a separate Zone and does not change a permanent's gameplay relationships.
+_Avoid_: Zone (for a visual type group)
+
+**Card Pile**:
+An expandable visual collection of same-name permanents within a Battlefield Group that share current stats, counters, attachments, and other status, including tapped state. Each member remains an individual Game Object for gameplay choices and actions.
+_Avoid_: Stack (for grouped Battlefield permanents)
+
 **Battlefield Layout**:
 The shared visual arrangement of cards across Player Areas on the Battlefield, stored separately from gameplay state so the layout can change without changing rules behavior.
 
