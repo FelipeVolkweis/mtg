@@ -758,6 +758,7 @@ export function RulesBoard({
   return (
     <div
       className="rules-board"
+      aria-busy={busy}
       ref={root}
       onMouseOver={(event) => {
         const node = (event.target as Element).closest<HTMLElement>(

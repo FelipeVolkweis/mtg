@@ -1115,6 +1115,9 @@ body:has(.tabletop) .room-panel[open] {
   min-height: 0;
   height: 100%;
 }
+.rules-board[aria-busy="true"] button:disabled {
+  opacity: 1;
+}
 .rules-player-areas {
   height: calc(100% - var(--dock-height));
   display: flex;
