@@ -1,6 +1,8 @@
-import type { GameObject } from "../../../shared/model.js";
-import type { SelectionOption } from "../../../shared/rules.js";
-import type { Cost, Predicate } from "../../../shared/rules-v2.js";
+import type {
+  GameObject,
+  SelectionOption,
+} from "../../../shared/rules-state.js";
+import type { Cost, Predicate } from "../../../shared/card-dsl.js";
 import type {
   ComponentPlan,
   CostContext,

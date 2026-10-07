@@ -7,7 +7,7 @@ import {
   MandatoryLoop,
 } from "../../../src/server/rules/mandatory-loop";
 import { StateBasedRuntime } from "../../../src/server/rules/state-based/state-based-runtime";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";
 

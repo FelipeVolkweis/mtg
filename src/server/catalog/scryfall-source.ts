@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { createInterface } from "node:readline";
 import { createGunzip } from "node:zlib";
+import { colors } from "../../shared/card-dsl.js";
 import type { NameEntry } from "../../shared/model.js";
 import { nameCardSchema, nameEntries, nameKey } from "./card-names.js";
 
@@ -12,8 +13,8 @@ const faceSchema = z.object({
   mana_cost: z.string().optional(),
   cmc: z.number().nonnegative().optional(),
   keywords: z.array(z.string()).optional(),
-  colors: z.array(z.enum(["W", "U", "B", "R", "G"])).optional(),
-  color_indicator: z.array(z.enum(["W", "U", "B", "R", "G"])).optional(),
+  colors: z.array(z.enum(colors)).optional(),
+  color_indicator: z.array(z.enum(colors)).optional(),
   type_line: z.string().default(""),
   oracle_text: z.string().optional(),
   power: z.string().optional(),
@@ -30,7 +31,7 @@ export const sourceCardSchema = faceSchema.extend({
   layout: z.string().min(1),
   cmc: z.number().nonnegative(),
   keywords: z.array(z.string()),
-  color_identity: z.array(z.enum(["W", "U", "B", "R", "G"])),
+  color_identity: z.array(z.enum(colors)),
   card_faces: z.array(faceSchema).optional(),
 });
 export type SourceCard = z.infer<typeof sourceCardSchema>;

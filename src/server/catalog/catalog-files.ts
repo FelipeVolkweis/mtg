@@ -11,11 +11,11 @@ import {
 } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { z } from "zod";
-import type { Catalog, CardDefinition } from "../../shared/model.js";
+import type { CardDefinition, Catalog } from "../../shared/model.js";
 import {
-  cardDefinitionFileSchema,
   type CardDefinitionFile,
-} from "../../shared/rules-v2.js";
+  cardDefinitionFileSchema,
+} from "../../shared/card-dsl.js";
 import { compileCard, type CompileError } from "../rules/compiler.js";
 import { checkSupport } from "../rules/support.js";
 import { readRegistries, type Registries } from "../rules/registries.js";

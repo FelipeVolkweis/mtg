@@ -1,4 +1,4 @@
-import type { CardForm } from "../../shared/rules-v2.js";
+import type { CardForm } from "../../shared/card-dsl.js";
 
 // Values derived from a Card Definition's components instead of being stored
 // (card-model-refactor.md §3.3). The importer's rules (catalog.service.ts,

@@ -1,28 +1,25 @@
 import { randomUUID } from "node:crypto";
+import type { Catalog, Participant } from "../../shared/model.js";
 import type {
-  Catalog,
   GameObject,
+  ManaPool,
   MatchAction,
   MatchPlayer,
   MatchState,
-  Participant,
-  ZoneKind,
-  ZoneState,
-} from "../../shared/model.js";
-import type {
-  ManaPool,
-  ManaType,
   PendingProcedure,
   SelectionOption,
-} from "../../shared/rules.js";
+  ZoneState,
+} from "../../shared/rules-state.js";
 import type {
   Ability,
   Condition,
   Effect,
   ManaProduction,
+  ManaType,
   Predicate,
   Value,
-} from "../../shared/rules-v2.js";
+  ZoneKind,
+} from "../../shared/card-dsl.js";
 import {
   activatable,
   activationZone,

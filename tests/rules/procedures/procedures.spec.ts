@@ -4,8 +4,11 @@
 
 import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
-import type { MatchAction, MatchState } from "../../../src/shared/model";
-import type { PendingProcedure } from "../../../src/shared/rules";
+import type {
+  MatchAction,
+  MatchState,
+  PendingProcedure,
+} from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { triggerGame } from "../../support/rules-game";
 import { scenarios } from "../../support/procedure-scenarios";

@@ -1,4 +1,4 @@
-import type { Characteristics } from "../../shared/model.js";
+import type { Characteristics } from "../../shared/card-dsl.js";
 
 // Shared explicit descriptors: each token has its own Match state and no Card
 // Instance. Keyed by token registry id (catalog/tokens/).

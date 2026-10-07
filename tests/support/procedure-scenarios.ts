@@ -1,5 +1,7 @@
-import type { MatchAction } from "../../src/shared/model";
-import type { PendingProcedure } from "../../src/shared/rules";
+import type {
+  MatchAction,
+  PendingProcedure,
+} from "../../src/shared/rules-state";
 import { triggerGame } from "./rules-game";
 import { force } from "./force";
 

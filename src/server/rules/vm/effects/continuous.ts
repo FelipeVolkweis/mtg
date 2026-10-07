@@ -1,9 +1,9 @@
-import type { AppliedChange } from "../../../../shared/rules.js";
+import type { AppliedChange } from "../../../../shared/rules-state.js";
 import type {
   ContinuousChange,
   Duration,
   Selector,
-} from "../../../../shared/rules-v2.js";
+} from "../../../../shared/card-dsl.js";
 import {
   appliedChange,
   grantKeyword,

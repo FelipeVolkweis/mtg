@@ -1,5 +1,5 @@
 import { MatchService } from "../../src/server/match/match.service";
-import type { MatchState } from "../../src/shared/model";
+import type { MatchState } from "../../src/shared/rules-state";
 
 // Round-trip mode (ROUND_TRIP=1): every command loads the Match the way the
 // Room store does (a JSON document) and saves it the same way afterwards, so

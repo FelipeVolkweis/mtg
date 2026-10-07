@@ -1,11 +1,10 @@
+import type { Catalog } from "../../shared/model.js";
+import type { Characteristics, Value } from "../../shared/card-dsl.js";
 import type {
-  Catalog,
-  Characteristics,
+  ActiveContinuousEffect,
   GameObject,
   MatchState,
-} from "../../shared/model.js";
-import type { ActiveContinuousEffect } from "../../shared/rules.js";
-import type { Value } from "../../shared/rules-v2.js";
+} from "../../shared/rules-state.js";
 import { ownKeyword, staticContinuous } from "../rules/abilities.js";
 import type { RulesQuery } from "../rules/context.js";
 import { Evaluator } from "../rules/vm/evaluate.js";

@@ -1,15 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { randomInt, randomUUID } from "node:crypto";
+import type { Catalog, Participant, RoomState } from "../../shared/model.js";
+import type { Characteristics, ZoneKind } from "../../shared/card-dsl.js";
 import type {
-  Catalog,
-  Characteristics,
   GameObject,
   MatchAction,
   MatchState,
-  Participant,
-  RoomState,
-  ZoneKind,
-} from "../../shared/model.js";
+} from "../../shared/rules-state.js";
 import { phaseSteps } from "../../shared/model.js";
 import { Library, zoneFor } from "./zones.js";
 import { validateCommanderDeck } from "./commander.js";

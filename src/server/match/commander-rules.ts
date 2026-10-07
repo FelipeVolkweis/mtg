@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
-import type { GameObject, ZoneState } from "../../shared/model.js";
-import type { PendingProcedure } from "../../shared/rules.js";
+import type {
+  GameObject,
+  PendingProcedure,
+  ZoneState,
+} from "../../shared/rules-state.js";
 import type { RulesEngine } from "./rules-engine.js";
 
 export class CommanderReplacement extends Error {

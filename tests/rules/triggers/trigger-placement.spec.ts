@@ -7,12 +7,12 @@ import {
   TriggerPlacement,
   type PlacementPart,
 } from "../../../src/server/rules/triggers/trigger-placement";
-import type { WaitingTrigger } from "../../../src/shared/rules";
+import type { WaitingTrigger } from "../../../src/shared/rules-state";
 import type {
   Ability,
   ManaTrigger,
   Trigger,
-} from "../../../src/shared/rules-v2";
+} from "../../../src/shared/card-dsl";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";
 

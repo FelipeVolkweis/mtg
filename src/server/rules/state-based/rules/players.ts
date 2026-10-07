@@ -1,4 +1,4 @@
-import type { MatchPlayer } from "../../../../shared/model.js";
+import type { MatchPlayer } from "../../../../shared/rules-state.js";
 import type { RulesQuery } from "../../context.js";
 import { changes, type StateBasedRule } from "../types.js";
 

@@ -1,6 +1,8 @@
-import type { GameObject } from "../../../shared/model.js";
-import type { SelectionOption } from "../../../shared/rules.js";
-import type { Cost } from "../../../shared/rules-v2.js";
+import type {
+  GameObject,
+  SelectionOption,
+} from "../../../shared/rules-state.js";
+import type { Cost } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 
 // Cost Runtime types (rules-engine-refactor.md §35–38). A cost is fully

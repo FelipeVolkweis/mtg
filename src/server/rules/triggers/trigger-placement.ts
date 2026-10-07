@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
-import type { MatchAction } from "../../../shared/model.js";
-import type { WaitingTrigger } from "../../../shared/rules.js";
-import type { ManaTrigger, Trigger } from "../../../shared/rules-v2.js";
+import type {
+  MatchAction,
+  WaitingTrigger,
+} from "../../../shared/rules-state.js";
+import type { ManaTrigger, Trigger } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { PutTriggeredAbilityOnStackProcedure } from "./put-triggered-ability.js";
 import { triggerOf } from "./trigger-runtime.js";

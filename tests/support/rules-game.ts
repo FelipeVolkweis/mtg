@@ -5,12 +5,8 @@ import { force } from "./force";
 import { MatchService } from "../../src/server/match/match.service";
 import { matchView } from "../../src/server/match/match-view";
 import { currentSnapshotVersion } from "../../src/server/room/room-upgrade";
-import type {
-  Catalog,
-  MatchAction,
-  Participant,
-  RoomState,
-} from "../../src/shared/model";
+import type { Catalog, Participant, RoomState } from "../../src/shared/model";
+import type { MatchAction } from "../../src/shared/rules-state";
 
 // Shared Match fixtures for the rules suites (rules test plan §15-16).
 

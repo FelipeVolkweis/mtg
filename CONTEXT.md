@@ -55,7 +55,7 @@ One card and quantity in a decklist, optionally identifying a specific printing.
 ### Match state
 
 **Game state**:
-The current players, Card Instances, Game Objects, Zones, Life Totals, Turn State, and Game Outcome in a match, including information each player may see.
+The current players, Card Instances, Game Objects, Zones, Life Totals, Turn State, and Game Outcome in a match, including information each player may see. In code, it is `MatchState` in `src/shared/rules-state.ts`, with the rules state and the Match actions players send.
 
 **Game Outcome**:
 The rules-determined state of each Match Player as playing, won, or lost, and of the Match as ongoing, complete, or a draw.
@@ -114,7 +114,7 @@ Context-specific characteristics linked to a Card Component. Partial alternative
 A rules-defined property of a Magic object, including its name, mana cost, color, types, rules text, abilities, power, and toughness. Both an ability and a value that the ability defines are characteristics of that object.
 
 **Card Characteristics**:
-The characteristic data belonging to a Card Component or Alternative Characteristics, including name, mana cost, colors, types, rules text, abilities, and stats.
+The characteristic data belonging to a Card Component or Alternative Characteristics, including name, mana cost, colors, types, rules text, abilities, and stats. In code, they are `Characteristics` in `src/shared/card-dsl.ts`, the card DSL, which also defines colors, mana types and zone kinds.
 
 **Oracle Text**:
 The current official wording of a card used to determine how it plays, regardless of wording printed on a particular Card Printing. It is distinct from the structured Card Ability data used to represent that behavior.

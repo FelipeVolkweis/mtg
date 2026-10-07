@@ -65,7 +65,7 @@ test("opening choices and explicit Priority passes perform the first turn draw a
   const match = service.createCommander(room, catalog, room.participants[0].id);
   const command = (
     seat: number,
-    action: import("../../../src/shared/model").MatchAction,
+    action: import("../../../src/shared/rules-state").MatchAction,
   ) => service.execute(match, room.participants[seat], action, catalog);
   expect(command(0, { type: "pass-priority" }).kind).toBe("rejected");
   expect(

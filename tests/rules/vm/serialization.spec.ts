@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import "../../support/round-trip";
 import { effectGame } from "../../support/effects";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 
 // Rule VM serialization (rules-test-plan.md §18): execution state is plain
 // Match data. A Match saved and restored while suspended resumes at the

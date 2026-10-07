@@ -10,11 +10,11 @@ import {
 } from "./catalog-files.js";
 import { nameEntries, nameKey as key } from "./card-names.js";
 import {
+  type CardDefinitionFile,
   cardDefinitionFileSchema,
   cardForms,
-  type CardDefinitionFile,
   type ComponentCharacteristics,
-} from "../../shared/rules-v2.js";
+} from "../../shared/card-dsl.js";
 import { readRegistries } from "../rules/registries.js";
 
 function characteristics(

@@ -21,7 +21,7 @@
 
 import { expect, test } from "@playwright/test";
 import { matchView } from "../../../src/server/match/match-view";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";

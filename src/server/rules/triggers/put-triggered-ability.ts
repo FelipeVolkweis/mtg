@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { MatchAction } from "../../../shared/model.js";
-import type { WaitingTrigger } from "../../../shared/rules.js";
+import type {
+  MatchAction,
+  WaitingTrigger,
+} from "../../../shared/rules-state.js";
 import { gameObject } from "../../match/game-objects.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { isDiesTrigger, targetFilter } from "../abilities.js";

@@ -1,5 +1,5 @@
-import type { JsonValue } from "../../../../shared/rules.js";
-import type { Effect } from "../../../../shared/rules-v2.js";
+import type { JsonValue } from "../../../../shared/rules-state.js";
+import type { Effect } from "../../../../shared/card-dsl.js";
 import { reselectDefender } from "./combat.js";
 import { applyContinuous, applyGrant } from "./continuous.js";
 import {

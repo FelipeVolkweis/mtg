@@ -17,7 +17,7 @@ import {
 import { CatalogService } from "../../../src/server/catalog/catalog.service";
 import type { ScryfallSource } from "../../../src/server/catalog/scryfall-source";
 import { readRegistries } from "../../../src/server/rules/registries";
-import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
+import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 import { initializeTestCatalog } from "../../support/empty-catalog";
 
 // The version 2 catalog (card-model-refactor.md §3, §6; dsl-redesign.md §9):

@@ -1,13 +1,19 @@
 import { z } from "zod";
-import type {
-  Ability,
-  ContinuousChange,
-  Effect,
-  Selector,
-} from "./rules-v2.js";
+import {
+  type Ability,
+  type Characteristics,
+  type ContinuousChange,
+  type Effect,
+  type ManaType,
+  manaTypes,
+  type Selector,
+  type ZoneKind,
+} from "./card-dsl.js";
 
-export const manaTypes = ["W", "U", "B", "R", "G", "C"] as const;
-export type ManaType = (typeof manaTypes)[number];
+// The runtime Match state the server persists in a Room: the Match, its
+// players, Zones and Game Objects, the rules state of a Rules-Automated Match,
+// and the actions a player sends to change it.
+
 export type ManaPool = Record<ManaType, number>;
 export const manaRestrictionSchema = z
   .object({
@@ -107,7 +113,7 @@ export interface StackProposal {
   stackObjectId: string;
   /** The total cost is locked (CR 601.2f); abort is no longer offered. */
   locked: boolean;
-  base: import("./model.js").MatchState;
+  base: MatchState;
 }
 export interface SelectionOption {
   count: number;
@@ -170,7 +176,7 @@ export interface DamageAssignment {
   amount: number;
 }
 export interface DamageEvent extends DamageAssignment {
-  sourceCharacteristics: import("./model.js").Characteristics;
+  sourceCharacteristics: Characteristics;
   combat: boolean;
   controllerId: string;
   recipientKind: "player" | "object";
@@ -198,7 +204,7 @@ export interface RulesState {
   commanderDamage?: Record<string, Record<string, number>>;
   commanderReturns?: string[];
   commanderReplay?: {
-    action: import("./model.js").MatchAction;
+    action: MatchAction;
     participantId: string;
     previousPriority?: { playerId: string; passedPlayerIds: string[] };
     previousPending?: PendingProcedure;
@@ -255,10 +261,10 @@ export interface SemanticEvent {
   affectedId: string;
   controllerId: string;
   ownerId: string;
-  from?: import("./model.js").ZoneKind;
-  to?: import("./model.js").ZoneKind;
-  before?: import("./model.js").Characteristics;
-  after: import("./model.js").Characteristics;
+  from?: ZoneKind;
+  to?: ZoneKind;
+  before?: Characteristics;
+  after: Characteristics;
   /** Zone changes: the object as it last existed (rules-engine-refactor.md §56). */
   lastKnown?: LastKnownInformation;
 }
@@ -271,14 +277,14 @@ export interface LastKnownInformation {
   zoneId: string;
   controllerId: string;
   ownerId: string;
-  characteristics: import("./model.js").Characteristics;
-  counters: import("./model.js").Counter[];
+  characteristics: Characteristics;
+  counters: Counter[];
   attachmentTo: string | null;
   tapped: boolean;
 }
 export interface WaitingTrigger {
   sourceSnapshot?: {
-    characteristics: import("./model.js").Characteristics;
+    characteristics: Characteristics;
     ownerId: string;
   };
   id: string;
@@ -289,3 +295,157 @@ export interface WaitingTrigger {
   ability: Ability;
   event: SemanticEvent;
 }
+
+// ------------------------------------------------------------ Match state
+
+export const statusSchema = z
+  .object({
+    tapped: z.boolean(),
+  })
+  .strict();
+/**
+ * What was chosen while a spell or ability was proposed (CR 601.2b–h,
+ * card-model-refactor.md §4.2). It stays with a permanent spell onto the
+ * Battlefield, because a permanent can ask how it was cast.
+ */
+export interface ProposalRecord {
+  /** Spells only: the Zone the card was cast from. */
+  sourceZone?: ZoneKind;
+  /** X and other chosen values. */
+  variables: Record<string, number>;
+  /** DSL version 2 mode ids. */
+  modes: string[];
+  /** Paid optional cost ids, such as "kicker". */
+  optionalCosts: string[];
+  alternativeCost?: string;
+  manaSpent: ManaType[];
+}
+export interface ObjectLink {
+  label: string;
+  objectIds: string[];
+  abilityId?: string;
+}
+export interface Counter {
+  kind: string;
+  quantity: string;
+}
+export interface MatchPlayer {
+  id: string;
+  participantId: string;
+  name: string;
+  seat: number;
+  life: string;
+  mulliganCount: number;
+  outcome: "playing" | "won" | "lost";
+  counters: Counter[];
+}
+export interface ZoneState {
+  id: string;
+  kind: ZoneKind;
+  name: string;
+  ownerId?: string;
+  visibility: "public" | "private";
+  objectIds: string[];
+}
+export interface CardInstance {
+  id: string;
+  definitionId: string;
+  printingId: string;
+  ownerId: string;
+  commander?: boolean;
+}
+export const objectKinds = ["card", "token", "ability"] as const;
+export interface GameObject {
+  id: string;
+  kind: (typeof objectKinds)[number];
+  zoneId: string;
+  cardInstanceIds: string[];
+  controllerId: string;
+  characteristics: Characteristics;
+  components: Characteristics[];
+  artwork: string[];
+  currentFace: number;
+  status: z.infer<typeof statusSchema>;
+  counters: Counter[];
+  attachmentTo: string | null;
+  links: ObjectLink[];
+  proposal: ProposalRecord | null;
+  sourceObjectId?: string;
+  sourceAbilityId?: string;
+  resolution?: {
+    sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
+    ability: Ability;
+    event?: SemanticEvent;
+    targetIds: string[];
+    color?: ManaType;
+  };
+  ownerId: string;
+}
+export interface MatchState {
+  id: string;
+  rules: RulesState;
+  revision: number;
+  players: MatchPlayer[];
+  instances: Record<string, CardInstance>;
+  objects: Record<string, GameObject>;
+  zones: ZoneState[];
+  turn: {
+    activePlayerId: string;
+    number: number;
+    stepIndex: number;
+    order: string[];
+  };
+  outcome: "ongoing" | "complete" | "draw";
+  priority?: { playerId: string; passedPlayerIds: string[] };
+}
+
+// ---------------------------------------------------------- Match actions
+
+const id = z.uuid();
+export const matchActionSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("pass-priority") }).strict(),
+  z.object({ type: z.literal("play-land"), objectId: id }).strict(),
+  z.object({ type: z.literal("cast-spell"), objectId: id }).strict(),
+  z
+    .object({
+      type: z.literal("activate-ability"),
+      objectId: id,
+      abilityId: z.string().min(1).max(200),
+      color: z.enum(manaTypes).optional(),
+    })
+    .strict(),
+  z
+    .object({
+      type: z.literal("rules-input"),
+      procedureId: id,
+      damageAssignments: z
+        .array(
+          z
+            .object({
+              sourceId: id,
+              recipientId: id,
+              amount: z.number().int().nonnegative().max(1000000),
+            })
+            .strict(),
+        )
+        .max(100)
+        .optional(),
+      targetIds: z.array(id).max(100).optional(),
+      selections: z.record(z.string(), z.array(id).max(100)).optional(),
+      color: z.enum(manaTypes).optional(),
+      variables: z
+        .record(z.string(), z.number().int().nonnegative().max(1000))
+        .optional(),
+      confirm: z.boolean().optional(),
+    })
+    .strict(),
+  z.object({ type: z.literal("cancel-procedure"), procedureId: id }).strict(),
+  // Reverses a cast or activation whose locked total cost can't be paid
+  // (rules-engine-refactor.md §16).
+  z.object({ type: z.literal("reverse-proposal"), procedureId: id }).strict(),
+  z
+    .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
+    .strict(),
+  z.object({ type: z.literal("mulligan"), playerId: id }).strict(),
+]);
+export type MatchAction = z.infer<typeof matchActionSchema>;

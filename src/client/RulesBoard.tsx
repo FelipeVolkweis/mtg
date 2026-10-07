@@ -7,14 +7,9 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import type {
-  MatchAction,
-  MatchPlayer,
-  MatchView,
-  ObjectView,
-  ZoneView,
-} from "../shared/model";
-import { manaTypes } from "../shared/rules";
+import type { MatchAction, MatchPlayer } from "../shared/rules-state";
+import type { MatchView, ObjectView, ZoneView } from "../shared/model";
+import { manaTypes } from "../shared/card-dsl";
 import {
   battlefieldTypes,
   battlefieldType,
