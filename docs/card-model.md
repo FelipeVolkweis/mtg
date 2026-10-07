@@ -20,6 +20,8 @@ A Library Sequence records source Zone, operation, stop predicate, selected/rest
 
 ## Match relationships
 
+The relationships below describe modeling capacity. Under proposed [ADR-0018](adr/0018-runtime-model-carries-supported-capacity.md), only those used by supported cards stay in the runtime model: meld, face-down state, Battle Protector, stickers, Opening-Hand Actions, Captured Copiable Values and variant Zones become catalog-level capacity until a supported card needs them. See [card-model-refactor.md](plans/card-model-refactor.md).
+
 Card Instances preserve identity and Owner across Game Object lifetimes; Zone changes generally create fresh Game Objects with rule-specific exceptions. Meld can relate multiple Instances to one Object. Attachments and Object Links are separate relationships. Ability Game Objects have no Card Instance and can retain source references, variable bindings, and relevant Object Links.
 
 Casting Records retain source Zone, choices, and payment facts and remain available when later objects need them. Objects put onto the Battlefield without casting have no Casting Record. Opening-Hand Actions retain whether they occurred and their result. Face-Down State retains underlying identity, applicable characteristics, turning procedures, and inspection permissions. Battle Protector is distinct from Owner and Controller.
