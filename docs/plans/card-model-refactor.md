@@ -41,11 +41,11 @@ Other findings:
 
 ## 2.2 Runtime model
 
-Manual Matches are legacy: `match.service.ts:272` rejects them and requires replacement with an automated Commander Match. New matches always set `mode: "rules"` (`match.service.ts:55`, `:186`).
+Manual Matches are legacy: `match.service.ts:272` rejects their actions and the Room offers replacement with an automated Commander Match, with every human player's consent (`tests/rules-ui.spec.ts`, "legacy Matches preserve Decklists…"). New matches always set `mode: "rules"` (`match.service.ts:55`, `:186`).
 
 | Field | Writers outside initialization and copying | Readers |
 |---|---|---|
-| `MatchState.mode`, optional `MatchState.rules` | none (always `"rules"` with `rules` present) | `match.rules &&` guards across the engine |
+| `MatchState.mode`, optional `MatchState.rules` | stored legacy documents keep `mode: "manual"` without `rules` | legacy detection in `MatchService.execute`, `matchView` and `App.tsx` (**kept**, see §4.1) |
 | `objectPatchSchema` | none (manual-mode edit schema; only its types are reused) | — |
 | `GameObject.designations` | none | client display |
 | `GameObject.choices` | none | — |
@@ -58,11 +58,11 @@ Manual Matches are legacy: `match.service.ts:272` rejects them and requires repl
 | `status.flipped` | none | client |
 | `status.phasedOut` | none | 5 checks in engine and combat, client |
 | `GameObject.copiableValuesId`, `MatchState.copiableValues` | none (no copy effect exists; Duplicant uses linked characteristics) | view |
-| `GameObject.cannotBeCountered` | only a test (`tests/rules.spec.ts:632`) | counter resolution |
+| `GameObject.cannotBeCountered` | only a test, through `force.uncounterable` (`tests/rules/characterization/resolution.spec.ts`) | counter resolution |
 | object kinds `dungeon`, `plane`, `phenomenon`, `conspiracy`, `attraction`, `contraption` | none | — |
 | zone kinds `supplementary`, `special` | none | — |
 
-Ownership is stored three ways: `CardInstance.ownerId`, an optional `GameObject.ownerId` (set only on ability and token objects: `triggers.ts:56`, `rules-engine.ts:559`, `:774`, `:894`), and `controllerId` as a last resort. The chain `instances[object.cardInstanceIds[0]]?.ownerId ?? object.ownerId ?? object.controllerId` appears 14 times.
+Ownership is stored three ways: `CardInstance.ownerId`, an optional `GameObject.ownerId` (set only on tokens, `rules-engine.ts` token creation; the other `ownerId:` sites are events and source snapshots), and `controllerId` as a last resort. The chain `instances[object.cardInstanceIds[0]]?.ownerId ?? object.ownerId ?? object.controllerId` appears 14 times.
 
 X is stored twice on spells: `variables` (`rules-engine.ts:915`) and `casting.chosenX` (`:918`). The casting record keeps `modes`, `alternativeCost` and `additionalCosts` as free text.
 
@@ -148,14 +148,17 @@ One pure function in `src/server/catalog/` derives these values when the catalog
 
 Each field listed in §2.2 as having no writer is removed from `src/shared/model.ts`, together with the code that only initializes, copies or projects it:
 
-- `MatchState.mode`. `MatchState.rules` becomes required, and the `match.rules &&` guards go away.
+- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11).
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
-- `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`, `cannotBeCountered`.
+- `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
+- `GameObject.cannotBeCountered`: removed with the counter effect handler (roadmap issue 7). "Can't be countered" is the DSL v2 static grant `cant-be-countered`, which the counter handler reads from the spell's definition.
 - `status.flipped` and `status.phasedOut`, leaving `status.tapped`. Keep `status` as an object so later statuses don't change the shape again.
 - `MatchState.diceRolls`, `openingHandActions`, `stickerSheets`, `copiableValues`, `layout`, and the `position` match action.
 - Object kinds other than `card`, `token` and `ability`. Zone kinds `supplementary` and `special`.
 
 Client code that reads these fields (`RulesBoard.tsx` status badges, `rules-presentation.ts` `designations`/`faceDown`/`protector`) is removed with them.
+
+As built (issue #66): `src/server/match/object-visibility.ts` (face-down inspection) and `src/shared/table-layout.ts` (spatial positions) had no other purpose and are deleted. Without face-down state every object in a visible Zone is fully visible, so `ObjectView` loses `hidden`, `melded` and `canTurnFaceUp`. Combat no longer offers Battles as defenders, since there is no Battle Protector. The face-down part of the UI presentation test is removed (classified Change).
 
 ## 4.2 Changed
 
@@ -226,6 +229,8 @@ The script is shared with the DSL redesign (dsl-redesign.md §9):
 
 The importer (`catalog.service.ts`) and the catalog reader (`catalog-files.ts`) switch to version 2 in the same change.
 
+**As built (roadmap issue 6):** the in-memory `CardDefinition` keeps the derived fields and the down-compiled `abilities`, and adds `authoredAbilities` (the DSL v2 abilities as authored), so `publishCatalog` writes each definition back as its version 2 file (`definitionFile`). The importer builds the `imported` section from Scryfall and copies `authored` from the existing definition unchanged. `CardAbility.origin` is `"printed" | "granted"`; the engine's intrinsic basic land mana abilities are `"printed"` (CR 305.6).
+
 ---
 
 # 7. Tests
@@ -238,7 +243,7 @@ Added to the test plan (rules-test-plan.md, M1 Phase 2):
 - **Import ownership:** re-importing a set leaves `authored` byte-identical.
 - **Snapshot upgrade:** fixtures of version 1 rooms (mid-casting, mid-resolution, with tokens and stack abilities) upgrade to valid version 2 rooms, and the characterization scenarios continue from them.
 - **Owner:** every object created by setup, casting, token creation, triggers and zone changes has `ownerId` set. No fallback chain remains (lint-style grep test or code review).
-- `cannotBeCountered`: the test at `tests/rules.spec.ts:632` uses a `force` helper until DSL v2 provides a "can't be countered" grant, then a real card definition.
+- `cannotBeCountered`: removed in roadmap issue 7; its test authors Silver Myr with a DSL v2 `cant-be-countered` grant instead of the removed `force.uncounterable`.
 
 ---
 
@@ -252,9 +257,9 @@ Every current field, and what happens to it.
 
 **`Characteristics`:** all kept except `typeLine` (derived).
 
-**`GameObject`:** `id`, `kind` (narrowed), `zoneId`, `cardInstanceIds`, `controllerId`, `characteristics`, `components`, `artwork`, `currentFace`, `status` (tapped only), `counters`, `attachmentTo`, `links`, `sourceObjectId`, `sourceAbilityId`, `resolution` kept · `ownerId` required · `variables` + `casting` become the proposal record · `designations`, `faceDown`, `protectorId`, `choices`, `copiableValuesId`, `stickerPlacements`, `meldParts`, `cannotBeCountered` removed.
+**`GameObject`:** `id`, `kind` (narrowed), `zoneId`, `cardInstanceIds`, `controllerId`, `characteristics`, `components`, `artwork`, `currentFace`, `status` (tapped only), `counters`, `attachmentTo`, `links`, `sourceObjectId`, `sourceAbilityId`, `resolution` kept · `ownerId` required · `variables` + `casting` become the proposal record · `designations`, `faceDown`, `protectorId`, `choices`, `copiableValuesId`, `stickerPlacements`, `meldParts` removed · `cannotBeCountered` removed with the counter effect handler (roadmap issue 7).
 
-**`MatchState`:** `id`, `revision`, `players`, `instances`, `objects`, `zones`, `turn`, `outcome`, `priority` kept · `rules` required · `mode`, `layout`, `openingHandActions`, `copiableValues`, `diceRolls`, `stickerSheets` removed.
+**`MatchState`:** `id`, `revision`, `players`, `instances`, `objects`, `zones`, `turn`, `outcome`, `priority`, `mode`, optional `rules` kept (legacy Matches, §4.1) · `layout`, `openingHandActions`, `copiableValues`, `diceRolls`, `stickerSheets` removed.
 
 ---
 

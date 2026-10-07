@@ -75,6 +75,7 @@ export async function seedCatalog() {
     manaValue: 3,
     automationStatus: "implemented",
     abilities: [],
+    authoredAbilities: [],
   };
   catalog.definitions[commander.id] = commander;
   catalog.printings[commander.defaultPrintingId] = {

@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "16629f59-bae8-4c19-bf50-443eb0ed6856",
-  "canonicalName": "Felidar Retreat",
-  "defaultPrintingId": "89e3cc09-5057-4c05-88fc-d6cda809fc74",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Felidar Retreat",
-      "manaCost": "{3}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Landfall"
-      ],
-      "rulesText": "Landfall — Whenever a land you control enters, choose one —\n• Create a 2/2 white Cat Beast creature token.\n• Put a +1/+1 counter on each creature you control. Those creatures gain vigilance until end of turn."
-    }
-  ],
-  "oracleText": "Landfall — Whenever a land you control enters, choose one —\n• Create a 2/2 white Cat Beast creature token.\n• Put a +1/+1 counter on each creature you control. Those creatures gain vigilance until end of turn.",
-  "keywords": [
-    "Landfall"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Felidar Retreat",
+        "manaCost": "{3}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Landfall"
+        ],
+        "rulesText": "Landfall — Whenever a land you control enters, choose one —\n• Create a 2/2 white Cat Beast creature token.\n• Put a +1/+1 counter on each creature you control. Those creatures gain vigilance until end of turn."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "89e3cc09-5057-4c05-88fc-d6cda809fc74"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,151 +1,111 @@
 {
+  "catalogVersion": 2,
   "id": "50b14338-9318-4327-a1dd-c0ef38903cc4",
-  "canonicalName": "Skysovereign, Consul Flagship",
-  "defaultPrintingId": "0c254f4d-31ed-436a-92cb-85bb3709743e",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Skysovereign, Consul Flagship",
-      "manaCost": "{5}",
-      "colors": [],
-      "typeLine": "Legendary Artifact \u2014 Vehicle",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Vehicle"
-      ],
-      "keywords": [
-        "Flying",
-        "Crew"
-      ],
-      "rulesText": "Flying\nWhenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
-      "power": "6",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nWhenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
-  "keywords": [
-    "Flying",
-    "Crew"
-  ],
-  "manaValue": 5,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "crew",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Skysovereign, Consul Flagship",
+        "manaCost": "{5}",
+        "colors": [],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "keywords": [
+          "Flying",
+          "Crew"
+        ],
+        "rulesText": "Flying\nWhenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "power": "6",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "0c254f4d-31ed-436a-92cb-85bb3709743e"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "crew",
+        "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "crew",
+          "power": 3
+        }
+      },
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      },
+      {
+        "id": "entry-attack-damage",
+        "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
           {
-            "kind": "crew",
-            "power": 3,
+            "id": "target-0",
             "filter": {
               "zone": "battlefield",
-              "controller": "you",
-              "types": [
-                "Creature"
-              ]
+              "type": [
+                "Creature",
+                "Planeswalker"
+              ],
+              "controller": "opponents"
             }
           }
         ],
         "effects": [
           {
-            "kind": "animate-source",
-            "changes": [
-              {
-                "kind": "add-types",
-                "types": [
-                  "Artifact",
-                  "Creature"
-                ]
-              }
-            ]
+            "kind": "damage",
+            "amount": 3,
+            "to": "target"
           }
         ]
       },
-      "keyword": "Crew",
-      "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)"
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
-      },
-      "description": "Flying"
-    },
-    {
-      "id": "entry-attack-damage",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "attack-damage",
+        "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature",
+                "Planeswalker"
+              ],
+              "controller": "opponents"
+            }
+          }
+        ],
         "effects": [
           {
             "kind": "damage",
-            "amount": 3
+            "amount": 3,
+            "to": "target"
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        },
-        "target": {
-          "zone": "battlefield",
-          "controller": "opponent",
-          "types": [
-            "Creature",
-            "Planeswalker"
-          ]
-        }
-      },
-      "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls."
-    },
-    {
-      "id": "attack-damage",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "damage",
-            "amount": 3
-          }
-        ],
-        "trigger": {
-          "event": "attack",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        },
-        "target": {
-          "zone": "battlefield",
-          "controller": "opponent",
-          "types": [
-            "Creature",
-            "Planeswalker"
-          ]
-        }
-      },
-      "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

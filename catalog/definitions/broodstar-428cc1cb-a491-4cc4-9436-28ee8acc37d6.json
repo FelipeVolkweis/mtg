@@ -1,122 +1,98 @@
 {
+  "catalogVersion": 2,
   "id": "428cc1cb-a491-4cc4-9436-28ee8acc37d6",
-  "canonicalName": "Broodstar",
-  "defaultPrintingId": "77c699c3-c534-4ffa-bcaf-63c221e49243",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Broodstar",
-      "manaCost": "{8}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature \u2014 Beast",
-      "manaValue": 10,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Beast"
-      ],
-      "keywords": [
-        "Flying",
-        "Affinity"
-      ],
-      "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nBroodstar's power and toughness are each equal to the number of artifacts you control.",
-      "power": "*",
-      "toughness": "*"
-    }
-  ],
-  "oracleText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nBroodstar's power and toughness are each equal to the number of artifacts you control.",
-  "keywords": [
-    "Flying",
-    "Affinity"
-  ],
-  "manaValue": 10,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "affinity",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "costModifiers": [
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Broodstar",
+        "manaCost": "{8}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 10,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "keywords": [
+          "Flying",
+          "Affinity"
+        ],
+        "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nBroodstar's power and toughness are each equal to the number of artifacts you control.",
+        "power": "*",
+        "toughness": "*"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "77c699c3-c534-4ffa-bcaf-63c221e49243"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "affinity",
+        "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "affinity",
+          "for": {
+            "type": [
+              "Artifact"
+            ]
+          }
+        }
+      },
+      {
+        "id": "size",
+        "description": "Broodstar's power and toughness are each equal to the number of artifacts you control.",
+        "kind": "static",
+        "characteristicDefining": true,
+        "grants": [
           {
-            "use": "cast",
-            "scope": "source",
-            "component": "generic",
-            "amount": {
-              "count": {
-                "zone": "battlefield",
-                "controller": "you",
-                "types": [
-                  "Artifact"
-                ]
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "define-stats",
+                "power": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                },
+                "toughness": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                }
               }
-            }
+            ]
           }
         ]
       },
-      "keyword": "Affinity",
-      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)"
-    },
-    {
-      "id": "size",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "characteristicDefining": true,
-          "changes": [
-            {
-              "kind": "define-stats",
-              "power": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
-                }
-              },
-              "toughness": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
-                }
-              }
-            }
-          ]
-        }
-      },
-      "description": "Broodstar's power and toughness are each equal to the number of artifacts you control."
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
-      },
-      "description": "Flying"
-    }
-  ]
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      }
+    ]
+  }
 }

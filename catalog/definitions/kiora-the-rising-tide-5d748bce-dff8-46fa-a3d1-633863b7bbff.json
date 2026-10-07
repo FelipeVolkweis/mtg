@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "5d748bce-dff8-46fa-a3d1-633863b7bbff",
-  "canonicalName": "Kiora, the Rising Tide",
-  "defaultPrintingId": "83f20a32-9f5d-4a68-8995-549e57554da2",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Kiora, the Rising Tide",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Legendary Creature — Merfolk Noble",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Merfolk",
-        "Noble"
-      ],
-      "keywords": [
-        "Threshold"
-      ],
-      "rulesText": "When Kiora enters, draw two cards, then discard two cards.\nThreshold — Whenever Kiora attacks, if there are seven or more cards in your graveyard, you may create Scion of the Deep, a legendary 8/8 blue Octopus creature token.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When Kiora enters, draw two cards, then discard two cards.\nThreshold — Whenever Kiora attacks, if there are seven or more cards in your graveyard, you may create Scion of the Deep, a legendary 8/8 blue Octopus creature token.",
-  "keywords": [
-    "Threshold"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kiora, the Rising Tide",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Merfolk",
+          "Noble"
+        ],
+        "keywords": [
+          "Threshold"
+        ],
+        "rulesText": "When Kiora enters, draw two cards, then discard two cards.\nThreshold — Whenever Kiora attacks, if there are seven or more cards in your graveyard, you may create Scion of the Deep, a legendary 8/8 blue Octopus creature token.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "83f20a32-9f5d-4a68-8995-549e57554da2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

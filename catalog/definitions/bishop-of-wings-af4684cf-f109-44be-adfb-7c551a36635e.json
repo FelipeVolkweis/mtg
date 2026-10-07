@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "af4684cf-f109-44be-adfb-7c551a36635e",
-  "canonicalName": "Bishop of Wings",
-  "defaultPrintingId": "e4a34101-1be3-44ae-b709-f0398998d4c4",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Bishop of Wings",
-      "manaCost": "{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Human Cleric",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Cleric"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever an Angel you control enters, you gain 4 life.\nWhenever an Angel you control dies, create a 1/1 white Spirit creature token with flying.",
-      "power": "1",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Whenever an Angel you control enters, you gain 4 life.\nWhenever an Angel you control dies, create a 1/1 white Spirit creature token with flying.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bishop of Wings",
+        "manaCost": "{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Cleric"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever an Angel you control enters, you gain 4 life.\nWhenever an Angel you control dies, create a 1/1 white Spirit creature token with flying.",
+        "power": "1",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "e4a34101-1be3-44ae-b709-f0398998d4c4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

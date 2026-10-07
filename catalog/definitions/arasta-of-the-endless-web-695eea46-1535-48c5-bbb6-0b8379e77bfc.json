@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "695eea46-1535-48c5-bbb6-0b8379e77bfc",
-  "canonicalName": "Arasta of the Endless Web",
-  "defaultPrintingId": "0bb78900-984b-4eb0-b0c1-29eb5cbd6939",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Arasta of the Endless Web",
-      "manaCost": "{2}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Legendary Enchantment Creature — Spider",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Enchantment",
-        "Creature"
-      ],
-      "subtypes": [
-        "Spider"
-      ],
-      "keywords": [
-        "Reach"
-      ],
-      "rulesText": "Reach\nWhenever an opponent casts an instant or sorcery spell, create a 1/2 green Spider creature token with reach.",
-      "power": "3",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Reach\nWhenever an opponent casts an instant or sorcery spell, create a 1/2 green Spider creature token with reach.",
-  "keywords": [
-    "Reach"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Arasta of the Endless Web",
+        "manaCost": "{2}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Enchantment",
+          "Creature"
+        ],
+        "subtypes": [
+          "Spider"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "rulesText": "Reach\nWhenever an opponent casts an instant or sorcery spell, create a 1/2 green Spider creature token with reach.",
+        "power": "3",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "0bb78900-984b-4eb0-b0c1-29eb5cbd6939"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

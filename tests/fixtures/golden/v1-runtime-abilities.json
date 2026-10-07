@@ -1,0 +1,3326 @@
+{
+  "0498ea14-53d9-4655-a616-0ff3cf73de4e": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "tokens",
+      "kind": "activated",
+      "description": "{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{5}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "04c7f4fe-2098-4311-866d-6733c08d5178": [
+    {
+      "id": "living-weapon",
+      "kind": "triggered",
+      "description": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "germ",
+            "count": 1
+          },
+          {
+            "kind": "attach",
+            "to": "created"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "equipped-bonus",
+      "kind": "static",
+      "description": "Equipped creature gets +1/+1 for each artifact and/or enchantment you control.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "attached": true,
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact",
+                    "Enchantment"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact",
+                    "Enchantment"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "equip",
+      "kind": "activated",
+      "description": "Equip {2}",
+      "activationZone": "battlefield",
+      "rules": {
+        "timing": "sorcery",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "attach",
+            "to": "target"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "controller": "you",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    }
+  ],
+  "0bc7f093-bef0-4f1a-852c-4b75ebf54838": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add one mana of any color in your commander's color identity.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": "commander-colors"
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "0c7ba712-6a99-4d2f-9242-a2163a11f69c": [
+    {
+      "id": "artifact-hexproof",
+      "kind": "static",
+      "description": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "grant-keyword",
+              "keyword": "Hexproof"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "upkeep-draw",
+      "kind": "triggered",
+      "description": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+      "rules": {
+        "intervening": {
+          "value": {
+            "greatestManaValue": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          },
+          "atLeast": {
+            "greatestManaValue": {
+              "zone": "battlefield",
+              "types": [
+                "Artifact"
+              ]
+            }
+          },
+          "requireObjects": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          }
+        },
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "upkeep",
+          "player": "you"
+        }
+      }
+    }
+  ],
+  "14693689-d087-43b6-9c3f-63ab0648fc20": [
+    {
+      "id": "sacrifice",
+      "kind": "spell",
+      "description": "Each player sacrifices all permanents they control that are one or more colors.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "sacrifice",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "colored": true
+            },
+            "eachPlayer": true
+          }
+        ]
+      }
+    }
+  ],
+  "181e6b3e-c33e-49e7-acb8-67473289a856": [
+    {
+      "id": "size",
+      "kind": "static",
+      "description": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ],
+          "characteristicDefining": true
+        }
+      }
+    },
+    {
+      "id": "bonus",
+      "kind": "static",
+      "description": "Other artifact creatures you control get +1/+1.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "self": "exclude",
+            "controller": "you"
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": 1,
+              "toughness": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "18f22960-87ec-43cd-82ea-ec5cabf49ad3": [
+    {
+      "id": "discount",
+      "kind": "static",
+      "description": "Artifact spells you cast cost {1} less to cast.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "controller",
+            "component": "generic",
+            "filter": {
+              "zone": "stack",
+              "kind": "spell",
+              "types": [
+                "Artifact"
+              ]
+            },
+            "amount": 1
+          }
+        ]
+      }
+    }
+  ],
+  "1b5e6560-ff2e-4475-96cb-63f64c8a86db": [
+    {
+      "id": "exile-entry",
+      "kind": "triggered",
+      "description": "When this artifact enters, exile target card from a graveyard.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "target"
+          }
+        ],
+        "target": {
+          "zone": "graveyard",
+          "kind": "card"
+        },
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "exile-graveyards",
+      "kind": "activated",
+      "description": "{T}, Sacrifice this artifact: Exile each opponent's graveyard.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "set",
+            "filter": {
+              "zone": "graveyard",
+              "owner": "opponent"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{1}, {T}, Sacrifice this artifact: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "1d60c80d-9a95-4051-bbf7-02ca51ee1be2": [
+    {
+      "id": "upkeep-draw",
+      "kind": "triggered",
+      "description": "At the beginning of your upkeep, each player draws a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1,
+            "player": "each"
+          }
+        ],
+        "trigger": {
+          "event": "upkeep",
+          "player": "you"
+        }
+      }
+    },
+    {
+      "id": "opponent-draw",
+      "kind": "triggered",
+      "description": "Whenever an opponent draws a card, that player loses 1 life.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "lose-life",
+            "amount": 1,
+            "player": "event-player"
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "opponent"
+        }
+      }
+    }
+  ],
+  "24aebda0-315f-4d2f-8bd9-00bbaf5bd76a": [
+    {
+      "id": "enter-tapped",
+      "kind": "static",
+      "description": "This land enters tapped.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "enter-tapped"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {U}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "U"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "cycling",
+      "kind": "activated",
+      "description": "Cycling {2} ({2}, Discard this card: Draw a card.)",
+      "activationZone": "hand",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "discard-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "2876e74f-a242-4995-9702-0b737a1ab67a": [
+    {
+      "id": "hand-stats",
+      "kind": "static",
+      "description": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "handSize": "you"
+              },
+              "toughness": {
+                "handSize": "you"
+              }
+            }
+          ],
+          "characteristicDefining": true
+        }
+      }
+    },
+    {
+      "id": "draw-life-loss",
+      "kind": "triggered",
+      "description": "Whenever you draw a card, each opponent loses 1 life.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "lose-life",
+            "amount": 1,
+            "player": "opponents"
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "you"
+        }
+      }
+    }
+  ],
+  "32263baa-d3f0-463f-92b3-4e9938476add": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}{C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 2,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{2}, {T}, Sacrifice this artifact: Draw two cards.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "3407fe41-fdd3-4119-8f70-4bc4590a379f": [
+    {
+      "id": "counter",
+      "kind": "spell",
+      "description": "Counter target noncreature spell.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "counter-target"
+          }
+        ],
+        "target": {
+          "zone": "stack",
+          "kind": "spell",
+          "excludeTypes": [
+            "Creature"
+          ]
+        }
+      }
+    }
+  ],
+  "3644f316-f9a3-46c9-9b1e-747f86cf4ead": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "retrieve",
+      "kind": "activated",
+      "description": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "target",
+            "destination": "hand"
+          }
+        ],
+        "target": {
+          "zone": "graveyard",
+          "kind": "card",
+          "owner": "you",
+          "types": [
+            "Artifact"
+          ]
+        }
+      }
+    }
+  ],
+  "3a940dfa-a026-4969-8981-ef90cdfbe9ef": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add one mana of any color.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "W",
+              "U",
+              "B",
+              "R",
+              "G"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "428cc1cb-a491-4cc4-9436-28ee8acc37d6": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "size",
+      "kind": "static",
+      "description": "Broodstar's power and toughness are each equal to the number of artifacts you control.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ],
+          "characteristicDefining": true
+        }
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "4893a301-29a8-4a0e-845c-8ddb5cb8db25": [
+    {
+      "id": "size",
+      "kind": "static",
+      "description": "Darksteel Juggernaut's power and toughness are each equal to the number of artifacts you control.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "define-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ],
+          "characteristicDefining": true
+        }
+      }
+    },
+    {
+      "id": "indestructible",
+      "kind": "static",
+      "description": "Indestructible",
+      "rules": {
+        "keyword": "Indestructible",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "attack-requirement",
+      "kind": "static",
+      "description": "This creature attacks each combat if able.",
+      "rules": {
+        "keyword": "Must attack",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "49be65fd-3755-410d-b0dc-2e5861ea2552": [
+    {
+      "id": "combat-draw",
+      "kind": "triggered",
+      "description": "Whenever one or more artifact creatures you control deal combat damage to a player, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "damage",
+          "filter": {
+            "zone": "battlefield",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "controller": "you"
+          },
+          "grouped": true,
+          "combat": true,
+          "recipientKind": "player"
+        }
+      }
+    },
+    {
+      "id": "upkeep-thopter",
+      "kind": "triggered",
+      "description": "At the beginning of your upkeep, if you control an artifact, create a 1/1 colorless Thopter artifact creature token with flying.",
+      "rules": {
+        "intervening": {
+          "value": {
+            "count": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          },
+          "atLeast": 1
+        },
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "upkeep",
+          "player": "you"
+        }
+      }
+    }
+  ],
+  "4b033a0a-c1ae-44d7-9662-72cbbfda024b": [
+    {
+      "id": "bounce",
+      "kind": "activated",
+      "description": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "target",
+            "destination": "hand"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{1}, Sacrifice this artifact: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "4fdfa41a-75a5-4b36-8c9e-083e26d137e2": [
+    {
+      "id": "bonus",
+      "kind": "static",
+      "description": "Other artifact creatures you control get +1/+1.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "self": "exclude",
+            "controller": "you"
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": 1,
+              "toughness": 1
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "50b14338-9318-4327-a1dd-c0ef38903cc4": [
+    {
+      "id": "crew",
+      "kind": "activated",
+      "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 3,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "entry-attack-damage",
+      "kind": "triggered",
+      "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        },
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "attack-damage",
+      "kind": "triggered",
+      "description": "Whenever Skysovereign enters or attacks, it deals 3 damage to target creature or planeswalker an opponent controls.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": 3
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        },
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ],
+  "52241b9c-7a69-4176-9234-8bdab09d8e64": [
+    {
+      "id": "artifact-cast",
+      "kind": "triggered",
+      "description": "Whenever you cast an artifact spell, create a 1/1 colorless Thopter artifact creature token with flying.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "cast",
+          "filter": {
+            "zone": "stack",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{1}{U}, Sacrifice two artifacts: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}",
+              "{U}"
+            ]
+          },
+          {
+            "kind": "sacrifice",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "568cf486-0261-4634-ac36-a6507101b2d0": [
+    {
+      "id": "artifact-cast",
+      "kind": "triggered",
+      "description": "Whenever you cast an artifact spell, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "cast",
+          "filter": {
+            "zone": "stack",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "5b5ef43b-13fd-4461-8d2d-18be65e9a790": [
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "graveyard",
+      "kind": "triggered",
+      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "dies",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ],
+  "5d4ed768-0a37-4604-8121-43920ed9fb4a": [
+    {
+      "id": "counter-and-token",
+      "kind": "spell",
+      "description": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "counter-target"
+          },
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "target": {
+          "zone": "stack",
+          "kind": "spell",
+          "types": [
+            "Creature",
+            "Planeswalker"
+          ]
+        }
+      }
+    }
+  ],
+  "63fd2a57-7a47-4e07-947c-f4e9da7ee538": [
+    {
+      "id": "opponent-draw",
+      "kind": "triggered",
+      "description": "Whenever an opponent draws a card, you may pay {1}. If you do, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "pay-mana",
+            "symbols": [
+              "{1}"
+            ],
+            "bind": "paid"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "paid",
+              "atLeast": 1
+            },
+            "then": [
+              {
+                "kind": "draw",
+                "count": 1
+              }
+            ],
+            "otherwise": []
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "opponent"
+        }
+      }
+    }
+  ],
+  "66e8f7f8-3a6d-46ba-837c-b9713ddf7f40": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {U}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "U"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "6ad8011d-3471-4369-9d68-b264cc027487": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}{C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 2,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "6e64f1e0-ddd6-4ee7-8797-086e234b02e8": [
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "pump",
+      "kind": "activated",
+      "description": "{2}: This creature gets +1/+0 until end of turn.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "destroy-damaged",
+      "kind": "activated",
+      "description": "{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+      "activationZone": "battlefield",
+      "rules": {
+        "oncePerTurn": true,
+        "chosenVariables": [
+          "X"
+        ],
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{X}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "excludeTypes": [
+                "Land"
+              ],
+              "manaValue": {
+                "binding": "X"
+              },
+              "damagedBySource": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "7060f2c8-fca0-4b7a-bddf-37682f434596": [
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "description": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 2
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "unblockable",
+      "kind": "activated",
+      "description": "Tap two untapped artifacts you control: Target creature can't be blocked this turn.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ],
+              "untapped": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "recipient": "target",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "Unblockable"
+              }
+            ]
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    }
+  ],
+  "71c52bf5-2a5d-488e-8b15-7ef290e4b77d": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{3}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "life",
+            "amount": "commander-colors"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "765863c8-1be0-4bb1-9e9c-db7701cffde3": [
+    {
+      "id": "enter-tapped",
+      "kind": "static",
+      "description": "This land enters tapped.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "enter-tapped"
+          }
+        ]
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {U}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "U"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "cycling",
+      "kind": "activated",
+      "description": "Cycling {U} ({U}, Discard this card: Draw a card.)",
+      "activationZone": "hand",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "discard-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "7777fab1-df3f-467f-b9e2-46dd2bd2166e": [
+    {
+      "id": "colorless-bonus",
+      "kind": "static",
+      "description": "Colorless creatures you control get +2/+2.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "colorless": true,
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": 2,
+              "toughness": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "additional-mana",
+      "kind": "triggered",
+      "description": "Whenever you tap a permanent for {C}, add an additional {C}.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "trigger": {
+          "event": "mana",
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you"
+          }
+        },
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "colorless-cast",
+      "kind": "triggered",
+      "description": "Whenever you cast a colorless spell, you gain 2 life.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "gain-life",
+            "amount": 2
+          }
+        ],
+        "trigger": {
+          "event": "cast",
+          "filter": {
+            "zone": "stack",
+            "controller": "you",
+            "colorless": true
+          }
+        }
+      }
+    }
+  ],
+  "7b0767b8-b504-456e-93bd-218502f73b3d": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}{C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 2,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "7c779721-cd1b-4696-9ae9-68ccc284ed2a": [
+    {
+      "id": "return-attackers",
+      "kind": "spell",
+      "description": "Return all attacking creatures to their owner's hand.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "types": [
+                "Creature"
+              ],
+              "attacking": true
+            },
+            "destination": "hand"
+          }
+        ]
+      }
+    }
+  ],
+  "7fffbe7f-ad78-4bb6-a611-c37e495c6ee0": [
+    {
+      "id": "improvise",
+      "kind": "static",
+      "description": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)",
+      "rules": {
+        "improvise": true,
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "ward",
+      "kind": "triggered",
+      "description": "Ward {4}",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "pay-mana",
+            "symbols": [
+              "{4}"
+            ],
+            "bind": "paid",
+            "player": "event-player"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "paid",
+              "atLeast": 1
+            },
+            "then": [],
+            "otherwise": [
+              {
+                "kind": "counter-event"
+              }
+            ]
+          }
+        ],
+        "trigger": {
+          "event": "target",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "player": "opponent"
+        }
+      }
+    },
+    {
+      "id": "artifact-entry",
+      "kind": "triggered",
+      "description": "Whenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "filter": {
+              "zone": "battlefield",
+              "self": "only"
+            },
+            "counter": "+1/+1",
+            "count": 1
+          },
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "Unblockable"
+              }
+            ]
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "controller": "you",
+            "types": [
+              "Artifact"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "800fb917-8898-4eba-9f94-aec6e9d75236": [
+    {
+      "id": "scry",
+      "kind": "activated",
+      "description": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "counter-source",
+            "counter": "page",
+            "count": 1
+          }
+        ],
+        "effects": [
+          {
+            "kind": "inspect",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{2}, {T}, Put a page counter on this artifact: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "counter-source",
+            "counter": "page",
+            "count": 1
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "four-pages",
+      "kind": "triggered",
+      "description": "When there are four or more page counters on this artifact, exile it. If you do, you gain 4 life.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "source",
+            "bind": "exiled"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "binding": "exiled",
+              "atLeast": 1
+            },
+            "then": [
+              {
+                "kind": "gain-life",
+                "amount": 4
+              }
+            ],
+            "otherwise": []
+          }
+        ],
+        "trigger": {
+          "event": "state",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "counter": "page",
+          "atLeast": 4
+        }
+      }
+    }
+  ],
+  "8aab9181-c306-471a-8061-9a7a7654dab5": [
+    {
+      "id": "crew",
+      "kind": "activated",
+      "description": "Crew 2",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "second-draw",
+      "kind": "triggered",
+      "description": "Whenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "thopter",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "draw",
+          "player": "you",
+          "ordinal": 2
+        }
+      }
+    }
+  ],
+  "8dc067bf-f78f-4ac4-b6e7-b305c42cf0bc": [
+    {
+      "id": "indestructible",
+      "kind": "static",
+      "description": "Indestructible",
+      "rules": {
+        "keyword": "Indestructible",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "939e6f71-185e-41f2-9d54-72cce06f1dce": [
+    {
+      "id": "spell",
+      "kind": "spell",
+      "description": "Draw three cards. Then discard two cards unless you discard an artifact card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 3,
+            "bind": "drawn"
+          },
+          {
+            "kind": "alternative",
+            "options": [
+              {
+                "id": "artifact",
+                "label": "Discard one artifact card",
+                "requireComplete": true,
+                "effect": {
+                  "kind": "discard",
+                  "count": 1,
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              {
+                "id": "cards",
+                "label": "Discard two cards",
+                "effect": {
+                  "kind": "discard",
+                  "count": 2
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "96230edf-568a-47dd-b877-9d92aa58fac8": [
+    {
+      "id": "tapped-entry",
+      "kind": "static",
+      "description": "This artifact enters tapped.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "enter-tapped"
+          }
+        ]
+      }
+    },
+    {
+      "id": "destroy",
+      "kind": "activated",
+      "description": "{1}, {T}: Destroy all artifacts, creatures, and enchantments.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "set",
+            "filter": {
+              "zone": "battlefield",
+              "types": [
+                "Artifact",
+                "Creature",
+                "Enchantment"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "96b87445-6362-4a17-91b2-cbf203fd03fd": [
+    {
+      "id": "discount",
+      "kind": "static",
+      "description": "Artifact spells you cast cost {1} less to cast.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "controller",
+            "component": "generic",
+            "filter": {
+              "zone": "stack",
+              "kind": "spell",
+              "types": [
+                "Artifact"
+              ]
+            },
+            "amount": 1
+          }
+        ]
+      }
+    }
+  ],
+  "986ae327-f433-4c58-93dc-afc544b9bfcb": [
+    {
+      "id": "counters",
+      "kind": "activated",
+      "description": "{T}: Put a +1/+1 counter on each artifact creature you control.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "filter": {
+              "zone": "battlefield",
+              "allTypes": [
+                "Artifact",
+                "Creature"
+              ],
+              "controller": "you"
+            },
+            "counter": "+1/+1",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "9965d9c5-2ebf-4a6c-930e-55c5890979be": [
+    {
+      "id": "hand-size",
+      "kind": "static",
+      "description": "You have no maximum hand size.",
+      "rules": {
+        "maximumHandSize": "unlimited",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    }
+  ],
+  "9deded8b-cec4-4ede-a50b-131404d456d4": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "description": "When this creature enters, draw two cards.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "aebfdcc0-c5b9-4737-8498-764a5021b087": [
+    {
+      "id": "juggernauts",
+      "kind": "static",
+      "description": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "subtypes": [
+              "Juggernaut"
+            ],
+            "controller": "you",
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "grant-keyword",
+              "keyword": "Must attack"
+            },
+            {
+              "kind": "grant-keyword",
+              "keyword": "Cannot be blocked by Walls"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "other-creatures",
+      "kind": "static",
+      "description": "Other creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "exclude",
+            "controller": "you",
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-types",
+              "subtypes": [
+                "Juggernaut"
+              ]
+            },
+            {
+              "kind": "set-stats",
+              "power": 5,
+              "toughness": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "b1a23235-3076-475c-a68a-db29cf2a9dba": [
+    {
+      "id": "spell",
+      "kind": "spell",
+      "description": "Draw X cards, then discard a card.",
+      "rules": {
+        "chosenVariables": [
+          "X"
+        ],
+        "costs": [],
+        "effects": [
+          {
+            "kind": "sequence",
+            "effects": [
+              {
+                "kind": "draw",
+                "count": {
+                  "binding": "X"
+                },
+                "bind": "drawn"
+              },
+              {
+                "kind": "discard",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "ba5055ce-6809-47a4-bee6-fb97a5b60f8a": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "description": "Flash",
+      "rules": {
+        "keyword": "Flash",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "combat-draw",
+      "kind": "triggered",
+      "description": "Whenever an artifact creature you control deals combat damage to a player, draw a card.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "trigger": {
+          "event": "damage",
+          "filter": {
+            "zone": "battlefield",
+            "allTypes": [
+              "Artifact",
+              "Creature"
+            ],
+            "controller": "you"
+          },
+          "combat": true,
+          "recipientKind": "player"
+        }
+      }
+    }
+  ],
+  "bfdc6bbc-7402-40ae-91be-658afca2f145": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "description": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "subtypes": [
+                  "Island"
+                ],
+                "controller": "you"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "c1eb530c-dd36-40ae-8617-6bb6969565e1": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add one mana of any color.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "W",
+              "U",
+              "B",
+              "R",
+              "G"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "crew",
+      "kind": "activated",
+      "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "crew",
+            "power": 3,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-types",
+                "types": [
+                  "Artifact",
+                  "Creature"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "c53ba31a-ba27-4e17-9a92-311acb1cab29": [
+    {
+      "id": "entry-myr",
+      "kind": "triggered",
+      "description": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "myr",
+            "count": 4
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "attack-payment",
+      "kind": "triggered",
+      "description": "Whenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "tap-choice",
+            "filter": {
+              "zone": "battlefield",
+              "subtypes": [
+                "Myr"
+              ],
+              "controller": "you",
+              "untapped": true
+            },
+            "bind": "tapped"
+          },
+          {
+            "kind": "animate-source",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": {
+                  "binding": "tapped"
+                },
+                "toughness": 0
+              }
+            ]
+          },
+          {
+            "kind": "damage",
+            "amount": {
+              "binding": "tapped"
+            },
+            "recipient": "defender"
+          }
+        ],
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ],
+  "c97361b5-af16-4a7b-af85-a429dbaf4ad2": [
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {C}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "C"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{1}, {T}, Sacrifice this artifact: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "cc187110-1148-4090-bbb8-e205694a39f5": [
+    {
+      "id": "counter",
+      "kind": "spell",
+      "description": "Counter target spell.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "counter-target"
+          }
+        ],
+        "target": {
+          "zone": "stack",
+          "kind": "spell"
+        }
+      }
+    }
+  ],
+  "cce9bbff-82dc-4b2f-addd-d6715588de20": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "spell",
+      "description": "Draw two cards.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ]
+      }
+    }
+  ],
+  "d07d3be3-f69d-4484-8467-cffd43871788": [
+    {
+      "id": "retrieve",
+      "kind": "triggered",
+      "description": "When this creature dies, return another target artifact card from your graveyard to your hand.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "target",
+            "destination": "hand"
+          }
+        ],
+        "target": {
+          "zone": "graveyard",
+          "kind": "card",
+          "self": "exclude",
+          "owner": "you",
+          "types": [
+            "Artifact"
+          ]
+        },
+        "trigger": {
+          "event": "dies",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ],
+  "d9356199-4ce3-44fa-9463-90fc134088f9": [
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{5}",
+              "{U}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ],
+        "costModifiers": [
+          {
+            "use": "activate",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "self": "exclude",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "d9f11aa1-9219-42a8-85a9-a8f204160706": [
+    {
+      "id": "destroy",
+      "kind": "triggered",
+      "description": "When this creature enters, destroy target nonland permanent an opponent controls.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "destroy",
+            "subject": "target"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "controller": "opponent",
+          "excludeTypes": [
+            "Land"
+          ]
+        },
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    }
+  ],
+  "da46786e-28df-4638-ab3d-121011d2f150": [
+    {
+      "id": "transmute",
+      "kind": "activated",
+      "description": "{U}, {T}, Return an artifact you control to its owner's hand: You may put an artifact card from your hand onto the battlefield.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{U}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "return",
+            "count": 1,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "subject": "choice",
+            "filter": {
+              "zone": "hand",
+              "owner": "you",
+              "types": [
+                "Artifact"
+              ]
+            },
+            "destination": "battlefield",
+            "optional": true
+          }
+        ]
+      }
+    }
+  ],
+  "dac33359-0317-4b11-9078-fccfd2321e53": [
+    {
+      "id": "affinity",
+      "kind": "static",
+      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "costModifiers": [
+          {
+            "use": "cast",
+            "scope": "source",
+            "component": "generic",
+            "amount": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "de1316f2-1cca-4ac4-aead-0fd8b4036d88": [
+    {
+      "id": "flying",
+      "kind": "static",
+      "description": "Flying",
+      "rules": {
+        "keyword": "Flying",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "conditional-hexproof",
+      "kind": "static",
+      "description": "As long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "grant-keyword",
+              "keyword": "Hexproof"
+            }
+          ],
+          "condition": {
+            "value": {
+              "count": {
+                "zone": "battlefield",
+                "controller": "you",
+                "types": [
+                  "Artifact"
+                ]
+              }
+            },
+            "atLeast": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "draw",
+      "kind": "activated",
+      "description": "Tap two untapped artifacts you control: Draw a card.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap",
+            "count": 2,
+            "filter": {
+              "zone": "battlefield",
+              "controller": "you",
+              "types": [
+                "Artifact"
+              ],
+              "untapped": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    }
+  ],
+  "e110ee80-37af-4989-a5fb-95d51dc7f102": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "description": "Flash",
+      "rules": {
+        "keyword": "Flash",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "artifact-flash",
+      "kind": "static",
+      "description": "You may cast artifact spells as though they had flash.",
+      "rules": {
+        "castingPermission": {
+          "zone": "hand",
+          "controller": "you",
+          "types": [
+            "Artifact"
+          ]
+        },
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "e89e1fae-bac3-4cc0-a233-24b9e08a5290": [
+    {
+      "id": "enchant",
+      "kind": "static",
+      "description": "Enchant creature",
+      "rules": {
+        "aura": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ]
+        },
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "entry",
+      "kind": "triggered",
+      "description": "When this Aura enters, tap enchanted creature and you become the monarch.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "tap-attached"
+          },
+          {
+            "kind": "become-monarch"
+          }
+        ],
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "untap-restriction",
+      "kind": "static",
+      "description": "Enchanted creature doesn't untap during its controller's untap step unless that player is the monarch.",
+      "rules": {
+        "monarchUntap": true,
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "e91240bc-4a13-4131-9379-5ddac6555f4a": [
+    {
+      "id": "equipped-bonus",
+      "kind": "static",
+      "description": "Equipped creature gets +1/+1 for each artifact you control.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "attached": true,
+            "types": [
+              "Creature"
+            ]
+          },
+          "changes": [
+            {
+              "kind": "add-stats",
+              "power": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              },
+              "toughness": {
+                "count": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "types": [
+                    "Artifact"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "equip",
+      "kind": "activated",
+      "description": "Equip {3}",
+      "activationZone": "battlefield",
+      "rules": {
+        "timing": "sorcery",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{3}"
+            ]
+          }
+        ],
+        "effects": [
+          {
+            "kind": "attach",
+            "to": "target"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "controller": "you",
+          "types": [
+            "Creature"
+          ]
+        }
+      }
+    },
+    {
+      "id": "attack-inspection",
+      "kind": "triggered",
+      "description": "Whenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "inspect",
+            "count": 6,
+            "select": {
+              "zone": "library",
+              "types": [
+                "Artifact"
+              ]
+            },
+            "randomBottom": true,
+            "revealSelected": true
+          }
+        ],
+        "trigger": {
+          "event": "attack",
+          "filter": {
+            "zone": "battlefield",
+            "attached": true
+          }
+        }
+      }
+    }
+  ],
+  "ea86abfa-6cab-4ef0-8463-34136fc25b59": [
+    {
+      "id": "imprint",
+      "kind": "triggered",
+      "description": "Imprint — When this creature enters, you may exile target nontoken creature.",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "exile",
+            "subject": "target",
+            "optional": true,
+            "link": "imprint"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "nontoken": true,
+          "types": [
+            "Creature"
+          ]
+        },
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          }
+        }
+      }
+    },
+    {
+      "id": "imprinted-characteristics",
+      "kind": "static",
+      "description": "As long as a card exiled with this creature is a creature card, this creature has the power, toughness, and creature types of the last creature card exiled with it. It's still a Shapeshifter.",
+      "rules": {
+        "costs": [],
+        "effects": [],
+        "continuous": {
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "changes": [
+            {
+              "kind": "linked-characteristics",
+              "link": "imprint",
+              "retainSubtypes": [
+                "Shapeshifter"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd": [
+    {
+      "id": "attack-tax",
+      "kind": "static",
+      "description": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+      "rules": {
+        "attackCost": {
+          "symbols": [
+            "{2}"
+          ]
+        },
+        "costs": [],
+        "effects": []
+      }
+    }
+  ],
+  "eaffdf95-8e20-408d-99fa-3adc9e19523d": [
+    {
+      "id": "flash",
+      "kind": "static",
+      "description": "Flash",
+      "rules": {
+        "keyword": "Flash",
+        "costs": [],
+        "effects": []
+      }
+    },
+    {
+      "id": "mana",
+      "kind": "activated",
+      "description": "{T}: Add {U}.",
+      "activationZone": "battlefield",
+      "rules": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-mana",
+            "quantity": 1,
+            "colors": [
+              "U"
+            ]
+          }
+        ],
+        "manaAbility": true
+      }
+    },
+    {
+      "id": "redirect-attack",
+      "kind": "triggered",
+      "description": "When this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)",
+      "rules": {
+        "costs": [],
+        "effects": [
+          {
+            "kind": "redirect-attack"
+          }
+        ],
+        "target": {
+          "zone": "battlefield",
+          "types": [
+            "Creature"
+          ],
+          "attacking": true
+        },
+        "trigger": {
+          "event": "enter",
+          "filter": {
+            "zone": "battlefield",
+            "self": "only"
+          },
+          "step": 5
+        }
+      }
+    }
+  ]
+}

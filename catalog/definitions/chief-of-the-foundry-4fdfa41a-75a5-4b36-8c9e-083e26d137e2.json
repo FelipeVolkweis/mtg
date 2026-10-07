@@ -1,62 +1,72 @@
 {
+  "catalogVersion": 2,
   "id": "4fdfa41a-75a5-4b36-8c9e-083e26d137e2",
-  "canonicalName": "Chief of the Foundry",
-  "defaultPrintingId": "19bdccb3-d85a-4b9a-9d5e-6f8add7a3c77",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Chief of the Foundry",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Construct",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Construct"
-      ],
-      "keywords": [],
-      "rulesText": "Other artifact creatures you control get +1/+1.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Other artifact creatures you control get +1/+1.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "bonus",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "allTypes": [
-              "Artifact",
-              "Creature"
-            ],
-            "self": "exclude"
-          },
-          "changes": [
-            {
-              "kind": "add-stats",
-              "power": 1,
-              "toughness": 1
-            }
-          ]
-        }
-      },
-      "description": "Other artifact creatures you control get +1/+1."
-    }
-  ]
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Chief of the Foundry",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "keywords": [],
+        "rulesText": "Other artifact creatures you control get +1/+1.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "19bdccb3-d85a-4b9a-9d5e-6f8add7a3c77"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "bonus",
+        "description": "Other artifact creatures you control get +1/+1.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "controller": "you"
+                  },
+                  {
+                    "type": "Artifact"
+                  },
+                  {
+                    "type": "Creature"
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

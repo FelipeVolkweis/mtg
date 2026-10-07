@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "d3a0b660-358c-41bd-9cd2-41fbf3491b1a",
-  "canonicalName": "Birds of Paradise",
-  "defaultPrintingId": "6672f025-525d-41ca-bd81-d4029e04f5f2",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Birds of Paradise",
-      "manaCost": "{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Bird",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\n{T}: Add one mana of any color.",
-      "power": "0",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Flying\n{T}: Add one mana of any color.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Birds of Paradise",
+        "manaCost": "{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\n{T}: Add one mana of any color.",
+        "power": "0",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "6672f025-525d-41ca-bd81-d4029e04f5f2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

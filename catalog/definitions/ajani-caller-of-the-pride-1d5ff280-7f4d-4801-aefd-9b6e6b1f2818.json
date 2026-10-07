@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "1d5ff280-7f4d-4801-aefd-9b6e6b1f2818",
-  "canonicalName": "Ajani, Caller of the Pride",
-  "defaultPrintingId": "59793f1c-8c7e-433e-9c09-40aa3ce931a1",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Ajani, Caller of the Pride",
-      "manaCost": "{1}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Legendary Planeswalker — Ajani",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Planeswalker"
-      ],
-      "subtypes": [
-        "Ajani"
-      ],
-      "keywords": [],
-      "rulesText": "+1: Put a +1/+1 counter on up to one target creature.\n−3: Target creature gains flying and double strike until end of turn.\n−8: Create X 2/2 white Cat creature tokens, where X is your life total.",
-      "loyalty": "4"
-    }
-  ],
-  "oracleText": "+1: Put a +1/+1 counter on up to one target creature.\n−3: Target creature gains flying and double strike until end of turn.\n−8: Create X 2/2 white Cat creature tokens, where X is your life total.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ajani, Caller of the Pride",
+        "manaCost": "{1}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Planeswalker"
+        ],
+        "subtypes": [
+          "Ajani"
+        ],
+        "keywords": [],
+        "rulesText": "+1: Put a +1/+1 counter on up to one target creature.\n−3: Target creature gains flying and double strike until end of turn.\n−8: Create X 2/2 white Cat creature tokens, where X is your life total.",
+        "loyalty": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "59793f1c-8c7e-433e-9c09-40aa3ce931a1"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

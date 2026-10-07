@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "865a2194-fca0-446e-aae3-ca475cd66e00",
-  "canonicalName": "Dismal Backwater",
-  "defaultPrintingId": "dbb0df36-8467-4a41-8e1c-6c3584d4fd10",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Dismal Backwater",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {U} or {B}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {U} or {B}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dismal Backwater",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {U} or {B}."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "U"
+    ],
+    "defaultPrintingId": "dbb0df36-8467-4a41-8e1c-6c3584d4fd10"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,38 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "5ac65688-0a74-4dc4-b6cb-12bdf8aed01e",
-  "canonicalName": "Myojin of Night's Reach",
-  "defaultPrintingId": "73bc5505-7fa0-4ebf-a691-b4ca5f52b019",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Myojin of Night's Reach",
-      "manaCost": "{5}{B}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Legendary Creature — Spirit",
-      "manaValue": 8,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Spirit"
-      ],
-      "keywords": [],
-      "rulesText": "Myojin of Night's Reach enters with a divinity counter on it if you cast it from your hand.\nMyojin of Night's Reach has indestructible as long as it has a divinity counter on it.\nRemove a divinity counter from Myojin of Night's Reach: Each opponent discards their hand.",
-      "power": "5",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Myojin of Night's Reach enters with a divinity counter on it if you cast it from your hand.\nMyojin of Night's Reach has indestructible as long as it has a divinity counter on it.\nRemove a divinity counter from Myojin of Night's Reach: Each opponent discards their hand.",
-  "keywords": [],
-  "manaValue": 8,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Myojin of Night's Reach",
+        "manaCost": "{5}{B}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 8,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "keywords": [],
+        "rulesText": "Myojin of Night's Reach enters with a divinity counter on it if you cast it from your hand.\nMyojin of Night's Reach has indestructible as long as it has a divinity counter on it.\nRemove a divinity counter from Myojin of Night's Reach: Each opponent discards their hand.",
+        "power": "5",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "73bc5505-7fa0-4ebf-a691-b4ca5f52b019"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

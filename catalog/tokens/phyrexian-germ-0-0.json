@@ -1,0 +1,22 @@
+{
+  "id": "phyrexian-germ-0-0",
+  "characteristics": {
+    "name": "Phyrexian Germ",
+    "colors": [
+      "B"
+    ],
+    "supertypes": [],
+    "types": [
+      "Creature"
+    ],
+    "subtypes": [
+      "Phyrexian",
+      "Germ"
+    ],
+    "keywords": [],
+    "rulesText": "",
+    "power": "0",
+    "toughness": "0"
+  },
+  "abilities": []
+}

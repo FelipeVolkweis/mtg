@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "1b9ec782-0ba1-41f1-bc39-d3302494ecb3",
-  "canonicalName": "Bake into a Pie",
-  "defaultPrintingId": "2ab0e660-86a3-4b92-82fa-77dcb5db947d",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Bake into a Pie",
-      "manaCost": "{2}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Food"
-      ],
-      "rulesText": "Destroy target creature. Create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")"
-    }
-  ],
-  "oracleText": "Destroy target creature. Create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")",
-  "keywords": [
-    "Food"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bake into a Pie",
+        "manaCost": "{2}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Food"
+        ],
+        "rulesText": "Destroy target creature. Create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "2ab0e660-86a3-4b92-82fa-77dcb5db947d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

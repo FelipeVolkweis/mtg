@@ -1,0 +1,42 @@
+{
+  "id": "treasure",
+  "characteristics": {
+    "name": "Treasure",
+    "colors": [],
+    "supertypes": [],
+    "types": [
+      "Artifact"
+    ],
+    "subtypes": [
+      "Treasure"
+    ],
+    "keywords": [],
+    "rulesText": "{T}, Sacrifice this token: Add one mana of any color."
+  },
+  "abilities": [
+    {
+      "id": "mana",
+      "kind": "mana",
+      "activation": {
+        "costs": [
+          {
+            "kind": "tap-source"
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ]
+      },
+      "produce": {
+        "quantity": 1,
+        "colors": [
+          "W",
+          "U",
+          "B",
+          "R",
+          "G"
+        ]
+      }
+    }
+  ]
+}

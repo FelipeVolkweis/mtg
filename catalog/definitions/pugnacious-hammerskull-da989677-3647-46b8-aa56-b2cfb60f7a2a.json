@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "da989677-3647-46b8-aa56-b2cfb60f7a2a",
-  "canonicalName": "Pugnacious Hammerskull",
-  "defaultPrintingId": "f8676812-9ac5-4a99-9c19-6bfb8bd765a0",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Pugnacious Hammerskull",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature attacks while you don't control another Dinosaur, put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
-      "power": "6",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Whenever this creature attacks while you don't control another Dinosaur, put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Pugnacious Hammerskull",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature attacks while you don't control another Dinosaur, put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
+        "power": "6",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "f8676812-9ac5-4a99-9c19-6bfb8bd765a0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

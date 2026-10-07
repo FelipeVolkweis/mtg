@@ -80,22 +80,17 @@ The characterization suite protects against accidental regressions while interna
 
 `tests/rules.spec.ts` already runs in memory: it constructs `MatchService` directly and uses no database. It still runs under Playwright, though, and `playwright.config.ts` starts a `webServer` that builds the app and connects to Postgres before any test runs.
 
-Before adding subsystem tests, give the rules suites a runner without that web server:
-
-- either a separate Playwright project with no `webServer` and no `globalSetup`;
-- or vitest for `tests/rules/**` and Playwright only for browser and recovery tests.
-
-The choice is an implementation detail. The requirement is that rules tests run in seconds without Postgres, so that per-subsystem tests are cheap to write and run.
+The rules suites run with `npm run test:rules`: a separate Playwright config (`playwright.rules.config.ts`) with no `webServer` and no `globalSetup`. It keeps the existing `@playwright/test` API, so no test changes were needed. The rules suite runs in about 10 seconds without Postgres. It also picks up `tests/rules/**/*.spec.ts`, where the split suite and subsystem tests go.
 
 ## 3.2 Round-trip mode
 
-Add a test mode in which every `MatchService.execute()` call serializes the authoritative state, restores it and continues from the restored copy. Run the characterization suite in this mode in CI.
+`npm run test:rules:round-trip` sets `ROUND_TRIP=1`. `tests/support/round-trip.ts` then wraps `MatchService.execute()`: before and after every command it checks that the Match is JSON-safe (no `Map`, `Set`, `Date`, class instances, `BigInt`, functions, non-finite numbers or `undefined` array items) and replaces it with a JSON round trip of itself, as the Room store does. `tests/rules-round-trip.spec.ts` tests the check and proves the hook is active. Both modes are part of `npm run gates`.
 
 This covers most of the persistence matrix (§31) automatically: any pending procedure, resolution or trigger batch that holds non-serializable data, or behaves differently after a restore, fails an existing test. The explicit persistence tests in §31 remain for interruption points the suite doesn't reach.
 
 ## 3.3 Current coupling
 
-Measured in `tests/rules.spec.ts` (117 tests) at the time of writing:
+Measured in `tests/rules.spec.ts` (161 tests, counting parameterized cases) at the time of writing:
 
 | Coupling | Count | Impact |
 |---|---|---|
@@ -572,33 +567,14 @@ catalog definitions
 
 This is useful but strongly couples tests to MatchState structure.
 
-Introduce a reusable Scenario Builder.
+**As built (issue #65).** The Scenario Builder is the shared fixture module `tests/support/rules-game.ts`, not a fluent `scenario()` API:
 
-Example:
+- `rulesGame()` starts a two-player Commander Match from the released catalog, with both opening hands kept and the active player holding Priority in the first main phase. It returns `{ service, catalog, room, match, command, seed }`.
+- `seed(name, zone, seat)` puts a named card into a Hand or onto the Battlefield (it calls `force.card`).
+- `triggerGame()` adds `view`, `pass`, `answer` and `handCount` helpers on top of `rulesGame()`.
+- `commanderFixture()`, `emptyRoom()` and `emptyCatalog` build Rooms and Catalogs for setup tests.
 
-```ts
-const game = await scenario()
-  .withPlayers("Alice", "Bob")
-  .atStep("precombat-main")
-  .withPriority("Alice")
-  .withPermanent(
-    "Alice",
-    "Sai, Master Thopterist",
-  )
-  .withPermanent(
-    "Alice",
-    "Mind Stone",
-  )
-  .withCardInHand(
-    "Alice",
-    "Thoughtcast",
-  )
-  .withMana(
-    "Alice",
-    { U: 1, C: 2 },
-  )
-  .build();
-```
+Every characterization test already used `rulesGame()`, so promoting it kept the test diff small. A fluent builder can be layered on top later if setup code grows again.
 
 The Scenario Builder SHOULD operate at semantic game-state level rather than exposing storage details.
 
@@ -608,21 +584,20 @@ The Scenario Builder SHOULD operate at semantic game-state level rather than exp
 
 Some rules tests need to construct states that would be tedious or impossible to reach through normal commands.
 
-Support explicit low-level helpers:
+**As built (issue #65):** `tests/support/force.ts` exports a `force` object of free functions that take the Match (or the object) as their first argument, so they work on any Match value, including restored copies:
 
-```ts
-game.force.stackSpell(...);
+| Helper | Sets |
+|---|---|
+| `force.mana(match, playerId, pool)` | merges amounts into a mana pool |
+| `force.step(match, step)` | the turn step, by name (`"cleanup"`, `"declare-attackers"`, …) |
+| `force.activePlayer`, `force.priority` | the active player and Priority |
+| `force.card(match, definition, zone, playerId)` | a new Card Instance and Game Object in a Zone |
+| `force.move`, `force.zoneContents`, `force.clearZone`, `force.addObject` | Zone membership, keeping object identity |
+| `force.counters`, `force.attach`, `force.controller` | object state |
+| `force.controlledSince`, `force.commander` | continuous control and commander designation |
+| `force.rules(match, patch)` | one-off rules-state fields (monarch, marked damage, temporary effects, combat, …) |
 
-game.force.markDamage(...);
-
-game.force.turnStep(...);
-
-game.force.temporaryEffect(...);
-
-game.force.triggerBatch(...);
-
-game.force.mana(...);
-```
+`tests/rules/scenario.spec.ts` tests each helper. The characterization suite contains no direct writes to `match.objects`, `match.zones`, `match.rules` or `turn.stepIndex`.
 
 Using `force` in the name communicates:
 

@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "fa7d09aa-2ebc-4571-81da-836cd80cf554",
-  "canonicalName": "Wardens of the Cycle",
-  "defaultPrintingId": "83ea9b2c-5723-4eff-88ac-6669975939e3",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Wardens of the Cycle",
-      "manaCost": "{1}{B}{G}{G}",
-      "colors": [
-        "B",
-        "G"
-      ],
-      "typeLine": "Creature — Elf Warlock",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Warlock"
-      ],
-      "keywords": [
-        "Morbid"
-      ],
-      "rulesText": "Morbid — At the beginning of your end step, if a creature died this turn, choose one —\n• You gain 2 life.\n• You draw a card and you lose 1 life.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Morbid — At the beginning of your end step, if a creature died this turn, choose one —\n• You gain 2 life.\n• You draw a card and you lose 1 life.",
-  "keywords": [
-    "Morbid"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Wardens of the Cycle",
+        "manaCost": "{1}{B}{G}{G}",
+        "colors": [
+          "B",
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warlock"
+        ],
+        "keywords": [
+          "Morbid"
+        ],
+        "rulesText": "Morbid — At the beginning of your end step, if a creature died this turn, choose one —\n• You gain 2 life.\n• You draw a card and you lose 1 life.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "G"
+    ],
+    "defaultPrintingId": "83ea9b2c-5723-4eff-88ac-6669975939e3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

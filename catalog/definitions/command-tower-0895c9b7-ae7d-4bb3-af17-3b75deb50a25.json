@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "0895c9b7-ae7d-4bb3-af17-3b75deb50a25",
-  "canonicalName": "Command Tower",
-  "defaultPrintingId": "667b6c3b-75cc-4adf-b205-80925ca76d2a",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Command Tower",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add one mana of any color in your commander's color identity."
-    }
-  ],
-  "oracleText": "{T}: Add one mana of any color in your commander's color identity.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Command Tower",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add one mana of any color in your commander's color identity."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "667b6c3b-75cc-4adf-b205-80925ca76d2a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

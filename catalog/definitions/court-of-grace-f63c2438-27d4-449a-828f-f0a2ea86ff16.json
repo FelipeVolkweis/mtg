@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "f63c2438-27d4-449a-828f-f0a2ea86ff16",
-  "canonicalName": "Court of Grace",
-  "defaultPrintingId": "f0deb485-4895-4a3e-b1a7-e3c969593f97",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Court of Grace",
-      "manaCost": "{2}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "When this enchantment enters, you become the monarch.\nAt the beginning of your upkeep, create a 1/1 white Spirit creature token with flying. If you're the monarch, create a 4/4 white Angel creature token with flying instead."
-    }
-  ],
-  "oracleText": "When this enchantment enters, you become the monarch.\nAt the beginning of your upkeep, create a 1/1 white Spirit creature token with flying. If you're the monarch, create a 4/4 white Angel creature token with flying instead.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Court of Grace",
+        "manaCost": "{2}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "When this enchantment enters, you become the monarch.\nAt the beginning of your upkeep, create a 1/1 white Spirit creature token with flying. If you're the monarch, create a 4/4 white Angel creature token with flying instead."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "f0deb485-4895-4a3e-b1a7-e3c969593f97"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

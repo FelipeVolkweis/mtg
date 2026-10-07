@@ -1,35 +1,35 @@
 {
+  "catalogVersion": 2,
   "id": "580996d4-db9a-4b57-a0e1-a2dbb524121a",
-  "canonicalName": "Razorlash Transmogrant",
-  "defaultPrintingId": "a789aea2-bf82-430e-ab6d-8beac52964a8",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Razorlash Transmogrant",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Zombie",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [],
-      "rulesText": "This creature can't block.\n{4}{B}{B}: Return this card from your graveyard to the battlefield with a +1/+1 counter on it. This ability costs {4} less to activate if an opponent controls four or more nonbasic lands.",
-      "power": "3",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature can't block.\n{4}{B}{B}: Return this card from your graveyard to the battlefield with a +1/+1 counter on it. This ability costs {4} less to activate if an opponent controls four or more nonbasic lands.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Razorlash Transmogrant",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [],
+        "rulesText": "This creature can't block.\n{4}{B}{B}: Return this card from your graveyard to the battlefield with a +1/+1 counter on it. This ability costs {4} less to activate if an opponent controls four or more nonbasic lands.",
+        "power": "3",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "a789aea2-bf82-430e-ab6d-8beac52964a8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

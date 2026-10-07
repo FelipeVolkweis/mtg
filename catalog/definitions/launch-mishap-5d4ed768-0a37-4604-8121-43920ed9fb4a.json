@@ -1,61 +1,62 @@
 {
+  "catalogVersion": 2,
   "id": "5d4ed768-0a37-4604-8121-43920ed9fb4a",
-  "canonicalName": "Launch Mishap",
-  "defaultPrintingId": "803c058c-4ccc-40cd-a74d-1bda5a4c453b",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Launch Mishap",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying."
-    }
-  ],
-  "oracleText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "counter-and-token",
-      "kind": "spell",
-      "origin": "printed",
-      "applicableZone": "stack",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Launch Mishap",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "803c058c-4ccc-40cd-a74d-1bda5a4c453b"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "counter-and-token",
+        "description": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "stack",
+              "object": "spell",
+              "type": [
+                "Creature",
+                "Planeswalker"
+              ]
+            }
+          }
+        ],
         "effects": [
           {
-            "kind": "counter-target"
+            "kind": "counter",
+            "objects": "target"
           },
           {
             "kind": "create-token",
-            "token": "thopter",
+            "token": "thopter-1-1-flying",
             "count": 1
           }
-        ],
-        "target": {
-          "zone": "stack",
-          "kind": "spell",
-          "types": [
-            "Creature",
-            "Planeswalker"
-          ]
-        }
-      },
-      "description": "Counter target creature or planeswalker spell. Create a 1/1 colorless Thopter artifact creature token with flying."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

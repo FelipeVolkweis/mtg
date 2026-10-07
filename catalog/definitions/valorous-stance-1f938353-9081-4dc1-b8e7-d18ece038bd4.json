@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "1f938353-9081-4dc1-b8e7-d18ece038bd4",
-  "canonicalName": "Valorous Stance",
-  "defaultPrintingId": "16a9ebf9-694e-484b-a1b0-adf5192ca7a7",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Valorous Stance",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose one —\n• Target creature gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)\n• Destroy target creature with toughness 4 or greater."
-    }
-  ],
-  "oracleText": "Choose one —\n• Target creature gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)\n• Destroy target creature with toughness 4 or greater.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Valorous Stance",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose one —\n• Target creature gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)\n• Destroy target creature with toughness 4 or greater."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "16a9ebf9-694e-484b-a1b0-adf5192ca7a7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "ff8fb796-af5d-4d64-ab3c-7f2469dfa6bf",
-  "canonicalName": "Wildheart Invoker",
-  "defaultPrintingId": "60f42969-bb5c-4183-8bd3-ba87f008391d",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Wildheart Invoker",
-      "manaCost": "{2}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Shaman",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Shaman"
-      ],
-      "keywords": [],
-      "rulesText": "{8}: Target creature gets +5/+5 and gains trample until end of turn. (It can deal excess combat damage to the player or planeswalker it's attacking.)",
-      "power": "4",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "{8}: Target creature gets +5/+5 and gains trample until end of turn. (It can deal excess combat damage to the player or planeswalker it's attacking.)",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Wildheart Invoker",
+        "manaCost": "{2}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Shaman"
+        ],
+        "keywords": [],
+        "rulesText": "{8}: Target creature gets +5/+5 and gains trample until end of turn. (It can deal excess combat damage to the player or planeswalker it's attacking.)",
+        "power": "4",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "60f42969-bb5c-4183-8bd3-ba87f008391d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

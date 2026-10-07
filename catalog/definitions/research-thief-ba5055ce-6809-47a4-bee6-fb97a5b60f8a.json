@@ -1,98 +1,84 @@
 {
+  "catalogVersion": 2,
   "id": "ba5055ce-6809-47a4-bee6-fb97a5b60f8a",
-  "canonicalName": "Research Thief",
-  "defaultPrintingId": "f6287354-4503-43c6-bfc0-39efb6179428",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Research Thief",
-      "manaCost": "{4}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact Creature \u2014 Moonfolk Wizard",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Moonfolk",
-        "Wizard"
-      ],
-      "keywords": [
-        "Flying",
-        "Flash"
-      ],
-      "rulesText": "Flash\nFlying\nWhenever an artifact creature you control deals combat damage to a player, draw a card.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flash\nFlying\nWhenever an artifact creature you control deals combat damage to a player, draw a card.",
-  "keywords": [
-    "Flying",
-    "Flash"
-  ],
-  "manaValue": 5,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "flash",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flash"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Research Thief",
+        "manaCost": "{4}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Moonfolk",
+          "Wizard"
+        ],
+        "keywords": [
+          "Flying",
+          "Flash"
+        ],
+        "rulesText": "Flash\nFlying\nWhenever an artifact creature you control deals combat damage to a player, draw a card.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "f6287354-4503-43c6-bfc0-39efb6179428"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flash",
+        "description": "Flash",
+        "kind": "keyword",
+        "keyword": "flash"
       },
-      "keyword": "Flash",
-      "description": "Flash"
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
       },
-      "description": "Flying"
-    },
-    {
-      "id": "combat-draw",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "combat-draw",
+        "description": "Whenever an artifact creature you control deals combat damage to a player, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "deals-damage",
+          "source": {
+            "and": [
+              {
+                "zone": "battlefield",
+                "controller": "you"
+              },
+              {
+                "type": "Artifact"
+              },
+              {
+                "type": "Creature"
+              }
+            ]
+          },
+          "to": "player",
+          "combat": true
+        },
         "effects": [
           {
             "kind": "draw",
             "count": 1
           }
-        ],
-        "trigger": {
-          "event": "damage",
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "allTypes": [
-              "Artifact",
-              "Creature"
-            ]
-          },
-          "combat": true,
-          "recipientKind": "player"
-        }
-      },
-      "description": "Whenever an artifact creature you control deals combat damage to a player, draw a card."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

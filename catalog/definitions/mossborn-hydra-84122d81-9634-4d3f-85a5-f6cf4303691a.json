@@ -1,45 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "84122d81-9634-4d3f-85a5-f6cf4303691a",
-  "canonicalName": "Mossborn Hydra",
-  "defaultPrintingId": "7054a0d7-396f-40b4-ab24-db591c3b08f0",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Mossborn Hydra",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elemental Hydra",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elemental",
-        "Hydra"
-      ],
-      "keywords": [
-        "Trample",
-        "Double",
-        "Landfall"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nThis creature enters with a +1/+1 counter on it.\nLandfall — Whenever a land you control enters, double the number of +1/+1 counters on this creature.",
-      "power": "0",
-      "toughness": "0"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nThis creature enters with a +1/+1 counter on it.\nLandfall — Whenever a land you control enters, double the number of +1/+1 counters on this creature.",
-  "keywords": [
-    "Trample",
-    "Double",
-    "Landfall"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mossborn Hydra",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental",
+          "Hydra"
+        ],
+        "keywords": [
+          "Trample",
+          "Double",
+          "Landfall"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nThis creature enters with a +1/+1 counter on it.\nLandfall — Whenever a land you control enters, double the number of +1/+1 counters on this creature.",
+        "power": "0",
+        "toughness": "0"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "7054a0d7-396f-40b4-ab24-db591c3b08f0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

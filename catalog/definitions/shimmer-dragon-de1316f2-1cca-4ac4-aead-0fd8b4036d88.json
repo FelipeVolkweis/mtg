@@ -1,106 +1,94 @@
 {
+  "catalogVersion": 2,
   "id": "de1316f2-1cca-4ac4-aead-0fd8b4036d88",
-  "canonicalName": "Shimmer Dragon",
-  "defaultPrintingId": "826201fc-f7cb-43b5-988a-6b668d19fc2f",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Shimmer Dragon",
-      "manaCost": "{4}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature \u2014 Dragon",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nAs long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)\nTap two untapped artifacts you control: Draw a card.",
-      "power": "5",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Flying\nAs long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)\nTap two untapped artifacts you control: Draw a card.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 6,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Shimmer Dragon",
+        "manaCost": "{4}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nAs long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)\nTap two untapped artifacts you control: Draw a card.",
+        "power": "5",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "826201fc-f7cb-43b5-988a-6b668d19fc2f"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
       },
-      "description": "Flying"
-    },
-    {
-      "id": "conditional-hexproof",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "condition": {
-            "value": {
+      {
+        "id": "conditional-hexproof",
+        "description": "As long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)",
+        "kind": "static",
+        "condition": {
+          "compare": [
+            {
               "count": {
-                "zone": "battlefield",
-                "controller": "you",
-                "types": [
-                  "Artifact"
-                ]
+                "all": {
+                  "zone": "battlefield",
+                  "type": [
+                    "Artifact"
+                  ],
+                  "controller": "you"
+                }
               }
             },
-            "atLeast": 4
-          },
-          "changes": [
-            {
-              "kind": "grant-keyword",
-              "keyword": "Hexproof"
-            }
+            ">=",
+            4
           ]
-        }
+        },
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "hexproof"
+              }
+            ]
+          }
+        ]
       },
-      "description": "As long as you control four or more artifacts, this creature has hexproof. (It can't be the target of spells or abilities your opponents control.)"
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "Tap two untapped artifacts you control: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "tap",
             "count": 2,
             "filter": {
               "zone": "battlefield",
-              "controller": "you",
-              "types": [
+              "type": [
                 "Artifact"
               ],
-              "untapped": true
+              "controller": "you",
+              "status": "untapped"
             }
           }
         ],
@@ -110,8 +98,7 @@
             "count": 1
           }
         ]
-      },
-      "description": "Tap two untapped artifacts you control: Draw a card."
-    }
-  ]
+      }
+    ]
+  }
 }

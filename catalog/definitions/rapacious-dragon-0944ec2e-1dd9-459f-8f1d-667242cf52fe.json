@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "0944ec2e-1dd9-459f-8f1d-667242cf52fe",
-  "canonicalName": "Rapacious Dragon",
-  "defaultPrintingId": "271b249a-2cca-4a52-bbff-0f44f0ab51f9",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Rapacious Dragon",
-      "manaCost": "{4}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying",
-        "Treasure"
-      ],
-      "rulesText": "Flying\nWhen this creature enters, create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nWhen this creature enters, create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-  "keywords": [
-    "Flying",
-    "Treasure"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rapacious Dragon",
+        "manaCost": "{4}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying",
+          "Treasure"
+        ],
+        "rulesText": "Flying\nWhen this creature enters, create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "271b249a-2cca-4a52-bbff-0f44f0ab51f9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

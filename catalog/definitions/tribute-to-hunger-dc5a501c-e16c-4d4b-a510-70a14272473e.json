@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "dc5a501c-e16c-4d4b-a510-70a14272473e",
-  "canonicalName": "Tribute to Hunger",
-  "defaultPrintingId": "11f1b897-bb7d-4217-97a7-c89f2453c8fa",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Tribute to Hunger",
-      "manaCost": "{2}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target opponent sacrifices a creature of their choice. You gain life equal to that creature's toughness."
-    }
-  ],
-  "oracleText": "Target opponent sacrifices a creature of their choice. You gain life equal to that creature's toughness.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Tribute to Hunger",
+        "manaCost": "{2}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target opponent sacrifices a creature of their choice. You gain life equal to that creature's toughness."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "11f1b897-bb7d-4217-97a7-c89f2453c8fa"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

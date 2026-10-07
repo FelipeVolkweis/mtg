@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "498c10c9-253d-4b15-b48c-1509381b17e8",
-  "canonicalName": "Unexpected Windfall",
-  "defaultPrintingId": "374e1c0d-1dcc-4214-828a-624ef1af826a",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Unexpected Windfall",
-      "manaCost": "{2}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Treasure"
-      ],
-      "rulesText": "As an additional cost to cast this spell, discard a card.\nDraw two cards and create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")"
-    }
-  ],
-  "oracleText": "As an additional cost to cast this spell, discard a card.\nDraw two cards and create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-  "keywords": [
-    "Treasure"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Unexpected Windfall",
+        "manaCost": "{2}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Treasure"
+        ],
+        "rulesText": "As an additional cost to cast this spell, discard a card.\nDraw two cards and create two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "374e1c0d-1dcc-4214-828a-624ef1af826a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

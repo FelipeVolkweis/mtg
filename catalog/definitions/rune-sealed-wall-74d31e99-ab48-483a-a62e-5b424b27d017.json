@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "74d31e99-ab48-483a-a62e-5b424b27d017",
-  "canonicalName": "Rune-Sealed Wall",
-  "defaultPrintingId": "46674bd4-5160-44b2-bd2a-2da85c1e2697",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Rune-Sealed Wall",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact Creature — Wall",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Wall"
-      ],
-      "keywords": [
-        "Surveil",
-        "Defender"
-      ],
-      "rulesText": "Defender\n{T}: Surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
-      "power": "0",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Defender\n{T}: Surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
-  "keywords": [
-    "Surveil",
-    "Defender"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rune-Sealed Wall",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "keywords": [
+          "Surveil",
+          "Defender"
+        ],
+        "rulesText": "Defender\n{T}: Surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
+        "power": "0",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "46674bd4-5160-44b2-bd2a-2da85c1e2697"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,0 +1,81 @@
+{
+  "catalogVersion": 2,
+  "id": "ff5caed4-0276-476d-8fae-edae2536df7f",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Archangel of Tithes",
+        "manaCost": "{1}{W}{W}{W}",
+        "colors": ["W"],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": ["Creature"],
+        "subtypes": ["Angel"],
+        "keywords": ["Flying"],
+        "rulesText": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
+        "power": "3",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": ["W"],
+    "defaultPrintingId": "5699c00b-99a0-4db6-a592-e93efbe391bf"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      },
+      {
+        "id": "attack-tax",
+        "kind": "static",
+        "condition": {
+          "matches": {
+            "selector": "source",
+            "predicate": {
+              "status": "untapped"
+            }
+          }
+        },
+        "grants": [
+          {
+            "kind": "attack-tax",
+            "defender": "you",
+            "costPerAttacker": [
+              {
+                "kind": "mana",
+                "symbols": ["{1}"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "block-tax",
+        "kind": "static",
+        "condition": {
+          "matches": {
+            "selector": "source",
+            "predicate": {
+              "status": "attacking"
+            }
+          }
+        },
+        "grants": [
+          {
+            "kind": "block-tax",
+            "costPerBlocker": [
+              {
+                "kind": "mana",
+                "symbols": ["{1}"]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

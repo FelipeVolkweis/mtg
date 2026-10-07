@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "53d5d961-d6a3-49b1-b335-2c2b49972008",
-  "canonicalName": "Whiptongue Hydra",
-  "defaultPrintingId": "43f7ccca-7810-42de-86e2-ef09eb4a54c8",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Whiptongue Hydra",
-      "manaCost": "{5}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Lizard Hydra",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Lizard",
-        "Hydra"
-      ],
-      "keywords": [
-        "Reach"
-      ],
-      "rulesText": "Reach\nWhen this creature enters, destroy all creatures with flying. Put a +1/+1 counter on this creature for each creature destroyed this way.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Reach\nWhen this creature enters, destroy all creatures with flying. Put a +1/+1 counter on this creature for each creature destroyed this way.",
-  "keywords": [
-    "Reach"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Whiptongue Hydra",
+        "manaCost": "{5}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Lizard",
+          "Hydra"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "rulesText": "Reach\nWhen this creature enters, destroy all creatures with flying. Put a +1/+1 counter on this creature for each creature destroyed this way.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "43f7ccca-7810-42de-86e2-ef09eb4a54c8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

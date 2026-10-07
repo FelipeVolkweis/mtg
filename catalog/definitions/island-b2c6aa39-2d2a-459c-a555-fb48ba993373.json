@@ -1,34 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "b2c6aa39-2d2a-459c-a555-fb48ba993373",
-  "canonicalName": "Island",
-  "defaultPrintingId": "17e2b637-72b1-4457-aaba-66d51107be4c",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Island",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Basic Land \u2014 Island",
-      "manaValue": 0,
-      "supertypes": [
-        "Basic"
-      ],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Island"
-      ],
-      "keywords": [],
-      "rulesText": "({T}: Add {U}.)"
-    }
-  ],
-  "oracleText": "({T}: Add {U}.)",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Island",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Island"
+        ],
+        "keywords": [],
+        "rulesText": "({T}: Add {U}.)"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "17e2b637-72b1-4457-aaba-66d51107be4c"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": []
+  }
 }

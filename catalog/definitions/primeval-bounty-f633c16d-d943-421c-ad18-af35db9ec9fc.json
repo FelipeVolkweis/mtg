@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "f633c16d-d943-421c-ad18-af35db9ec9fc",
-  "canonicalName": "Primeval Bounty",
-  "defaultPrintingId": "332c9742-dc3b-48e5-8736-7724fae1b4c4",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Primeval Bounty",
-      "manaCost": "{5}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Landfall"
-      ],
-      "rulesText": "Whenever you cast a creature spell, create a 3/3 green Beast creature token.\nWhenever you cast a noncreature spell, put three +1/+1 counters on target creature you control.\nLandfall — Whenever a land you control enters, you gain 3 life."
-    }
-  ],
-  "oracleText": "Whenever you cast a creature spell, create a 3/3 green Beast creature token.\nWhenever you cast a noncreature spell, put three +1/+1 counters on target creature you control.\nLandfall — Whenever a land you control enters, you gain 3 life.",
-  "keywords": [
-    "Landfall"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Primeval Bounty",
+        "manaCost": "{5}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Landfall"
+        ],
+        "rulesText": "Whenever you cast a creature spell, create a 3/3 green Beast creature token.\nWhenever you cast a noncreature spell, put three +1/+1 counters on target creature you control.\nLandfall — Whenever a land you control enters, you gain 3 life."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "332c9742-dc3b-48e5-8736-7724fae1b4c4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

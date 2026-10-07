@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "ff5caed4-0276-476d-8fae-edae2536df7f",
-  "canonicalName": "Archangel of Tithes",
-  "defaultPrintingId": "5699c00b-99a0-4db6-a592-e93efbe391bf",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Archangel of Tithes",
-      "manaCost": "{1}{W}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
-      "power": "3",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Archangel of Tithes",
+        "manaCost": "{1}{W}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nAs long as this creature is untapped, creatures can't attack you or planeswalkers you control unless their controller pays {1} for each of those creatures.\nAs long as this creature is attacking, creatures can't block unless their controller pays {1} for each of those creatures.",
+        "power": "3",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "5699c00b-99a0-4db6-a592-e93efbe391bf"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

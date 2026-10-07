@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "e0b15374-b4f6-48e0-8477-4eb5d5c2a938",
-  "canonicalName": "Squad Rallier",
-  "defaultPrintingId": "65e1ee86-6f08-4aa0-bf63-ae12028ef080",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Squad Rallier",
-      "manaCost": "{3}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Human Scout",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Scout"
-      ],
-      "keywords": [],
-      "rulesText": "{2}{W}: Look at the top four cards of your library. You may reveal a creature card with power 2 or less from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "{2}{W}: Look at the top four cards of your library. You may reveal a creature card with power 2 or less from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Squad Rallier",
+        "manaCost": "{3}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Scout"
+        ],
+        "keywords": [],
+        "rulesText": "{2}{W}: Look at the top four cards of your library. You may reveal a creature card with power 2 or less from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "65e1ee86-6f08-4aa0-bf63-ae12028ef080"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

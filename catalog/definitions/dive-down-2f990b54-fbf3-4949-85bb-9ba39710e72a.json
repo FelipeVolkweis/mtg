@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "2f990b54-fbf3-4949-85bb-9ba39710e72a",
-  "canonicalName": "Dive Down",
-  "defaultPrintingId": "65d5cff9-a3ec-432d-9ce5-68949e524279",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Dive Down",
-      "manaCost": "{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target creature you control gets +0/+3 and gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)"
-    }
-  ],
-  "oracleText": "Target creature you control gets +0/+3 and gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dive Down",
+        "manaCost": "{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target creature you control gets +0/+3 and gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "65d5cff9-a3ec-432d-9ce5-68949e524279"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

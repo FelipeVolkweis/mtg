@@ -3,7 +3,9 @@ import type {
   Catalog,
   Participant,
 } from "../../shared/model.js";
-import { rulesAbilitySchema, type RulesEffect } from "../../shared/rules.js";
+import { rulesAbilitySchema } from "../../shared/rules.js";
+import type { Effect } from "../../shared/rules-v2.js";
+import { unsupportedEffect } from "../rules/vm/effects/registry.js";
 
 export function commanderEligible(card: CardDefinition): boolean {
   const face = card.components[0];
@@ -13,49 +15,26 @@ export function commanderEligible(card: CardDefinition): boolean {
   );
 }
 
-function resolvingEffectSupported(
-  effect: RulesEffect,
-  allowMana = false,
-): boolean {
-  if (effect.kind === "sequence")
-    return effect.effects.every((part) =>
-      resolvingEffectSupported(part, allowMana),
-    );
-  if (effect.kind === "if")
-    return [...effect.then, ...effect.otherwise].every((part) =>
-      resolvingEffectSupported(part, allowMana),
-    );
-  if (effect.kind === "alternative")
-    return effect.options.every((option) =>
-      resolvingEffectSupported(option.effect, allowMana),
-    );
-  return (
-    [
-      "counter-target",
-      "counter-event",
-      "become-monarch",
-      "tap-attached",
-      "draw",
-      "discard",
-      "create-token",
-      "add-counters",
-      "animate-source",
-      "damage",
-      "move",
-      "destroy",
-      "exile",
-      "sacrifice",
-      "inspect",
-      "attach",
-      "gain-life",
-      "tap-choice",
-      "pay-mana",
-      "redirect-attack",
-      "lose-life",
-    ].includes(effect.kind) ||
-    (allowMana && effect.kind === "add-mana")
-  );
+/** An instruction and every instruction nested in it. */
+function flatten(effects: Effect[]): Effect[] {
+  return effects.flatMap((effect) => [
+    effect,
+    ...flatten(
+      effect.kind === "if"
+        ? [...effect.then, ...(effect.else ?? [])]
+        : effect.kind === "may-pay"
+          ? [...(effect.then ?? []), ...(effect.else ?? [])]
+          : effect.kind === "choose-one"
+            ? effect.options.flatMap((option) => option.effects)
+            : "effects" in effect
+              ? effect.effects
+              : [],
+    ),
+  ]);
 }
+
+const supported = (effects: Effect[]) =>
+  effects.every((effect) => !unsupportedEffect(effect));
 
 export function automationEligible(card: CardDefinition): boolean {
   return (
@@ -65,6 +44,7 @@ export function automationEligible(card: CardDefinition): boolean {
       card.abilities.some((ability) => {
         if (!ability.rules) return false;
         const name = keyword.toLowerCase();
+        const effects = flatten(ability.rules.effects);
         if (name === "cycling")
           return (
             ability.kind === "activated" &&
@@ -73,7 +53,7 @@ export function automationEligible(card: CardDefinition): boolean {
               (cost) => cost.kind === "discard-source",
             ) &&
             ability.rules.costs.some((cost) => cost.kind === "mana") &&
-            ability.rules.effects.some(
+            effects.some(
               (effect) => effect.kind === "draw" && effect.count === 1,
             )
           );
@@ -102,53 +82,48 @@ export function automationEligible(card: CardDefinition): boolean {
             trigger?.event === "target" &&
             trigger.player === "opponent" &&
             trigger.filter?.self === "only" &&
-            ability.rules.effects.some((effect, index) => {
-              if (
-                effect.kind !== "pay-mana" ||
-                effect.player !== "event-player"
-              )
-                return false;
-              return ability
-                .rules!.effects.slice(index + 1)
-                .some(
-                  (followup) =>
-                    followup.kind === "if" &&
-                    followup.condition.binding === effect.bind &&
-                    followup.condition.atLeast === 1 &&
-                    followup.otherwise.some((e) => e.kind === "counter-event"),
-                );
-            })
+            effects.some(
+              (effect) =>
+                effect.kind === "may-pay" &&
+                JSON.stringify(effect.player) ===
+                  JSON.stringify({ event: "player" }) &&
+                !!effect.else?.some(
+                  (e) =>
+                    e.kind === "counter" &&
+                    JSON.stringify(e.objects) ===
+                      JSON.stringify({ event: "source" }),
+                ),
+            )
           );
         }
         if (name === "scry")
-          return ability.rules.effects.some(
-            (e) => e.kind === "inspect" && !e.select,
+          return effects.some(
+            (e) => e.kind === "library-sequence" && !e.select?.filter,
           );
         if (name === "imprint")
-          return ability.rules.effects.some(
-            (e) => e.kind === "exile" && !!e.link,
-          );
+          return effects.some((e) => e.kind === "exile" && !!e.linkAs);
         if (name === "living weapon")
           return (
-            ability.rules.effects.some(
-              (e) => e.kind === "create-token" && e.token === "germ",
+            effects.some(
+              (e) =>
+                e.kind === "create-token" && e.token === "phyrexian-germ-0-0",
             ) &&
-            ability.rules.effects.some(
-              (e) => e.kind === "attach" && e.to === "created",
+            effects.some(
+              (e) =>
+                e.kind === "attach" &&
+                typeof e.to === "object" &&
+                "binding" in e.to,
             )
           );
         if (name === "enchant") return !!ability.rules.aura;
         if (name === "equip")
           return (
-            ability.id === "equip" &&
-            ability.rules.effects.some((e) => e.kind === "attach")
+            ability.id === "equip" && effects.some((e) => e.kind === "attach")
           );
         if (name === "crew")
           return (
             ability.rules.costs.some((cost) => cost.kind === "crew") &&
-            ability.rules.effects.some(
-              (effect) => effect.kind === "animate-source",
-            )
+            effects.some((effect) => effect.kind === "apply-continuous")
           );
         return ability.rules.keyword?.toLowerCase() === name;
       }),
@@ -157,28 +132,20 @@ export function automationEligible(card: CardDefinition): boolean {
       (ability) =>
         ability.rules &&
         rulesAbilitySchema.safeParse(ability.rules).success &&
-        ((ability.kind === "activated" &&
-          ability.rules.effects.every((effect) =>
-            resolvingEffectSupported(effect, true),
-          )) ||
+        ((ability.kind === "activated" && supported(ability.rules.effects)) ||
           (ability.kind === "triggered" &&
             !!ability.rules.trigger &&
             !ability.rules.costs.length &&
-            ability.rules.effects.every((effect) =>
-              resolvingEffectSupported(effect, !!ability.rules?.manaAbility),
-            )) ||
+            supported(ability.rules.effects)) ||
           (ability.kind === "spell" &&
             !ability.rules.costs.length &&
             !ability.rules.manaAbility &&
-            ability.rules.effects.every((effect) =>
-              resolvingEffectSupported(effect),
-            )) ||
+            !ability.rules.produce &&
+            supported(ability.rules.effects)) ||
           (ability.kind === "static" &&
             !ability.rules.costs.length &&
             !ability.rules.target &&
-            ability.rules.effects.every(
-              (effect) => effect.kind === "enter-tapped",
-            ))),
+            !ability.rules.effects.length)),
     )
   );
 }

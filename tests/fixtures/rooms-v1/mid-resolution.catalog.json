@@ -1,0 +1,72 @@
+{
+  "definitions": {
+    "5879d70d-91f4-4141-a789-b55f769ce1ff": {
+      "id": "5879d70d-91f4-4141-a789-b55f769ce1ff",
+      "canonicalName": "Island",
+      "defaultPrintingId": "d9834090-8d52-40a5-a66e-680a4969677f",
+      "form": "normal",
+      "colorIdentity": ["U"],
+      "components": [
+        {
+          "name": "Island",
+          "typeLine": "Basic Land",
+          "types": ["Land"],
+          "supertypes": ["Basic"],
+          "subtypes": ["Island"],
+          "colors": [],
+          "rulesText": "",
+          "manaCost": "{U}",
+          "power": "2",
+          "toughness": "2"
+        }
+      ],
+      "oracleText": "",
+      "keywords": [],
+      "manaValue": 1,
+      "automationStatus": "implemented",
+      "abilities": []
+    },
+    "3c295401-7f56-47d5-82fc-c8568a6257a2": {
+      "id": "3c295401-7f56-47d5-82fc-c8568a6257a2",
+      "canonicalName": "Supported Commander",
+      "defaultPrintingId": "f3bc43a4-857f-4285-b942-187a0bf93739",
+      "form": "normal",
+      "colorIdentity": ["U"],
+      "components": [
+        {
+          "name": "Supported Commander",
+          "typeLine": "Legendary Creature",
+          "types": ["Creature"],
+          "supertypes": ["Legendary"],
+          "subtypes": ["Wizard"],
+          "colors": [],
+          "rulesText": "",
+          "manaCost": "{U}",
+          "power": "2",
+          "toughness": "2"
+        }
+      ],
+      "oracleText": "",
+      "keywords": [],
+      "manaValue": 1,
+      "automationStatus": "implemented",
+      "abilities": []
+    }
+  },
+  "printings": {
+    "d9834090-8d52-40a5-a66e-680a4969677f": {
+      "id": "d9834090-8d52-40a5-a66e-680a4969677f",
+      "definitionId": "5879d70d-91f4-4141-a789-b55f769ce1ff",
+      "setCode": "tst",
+      "collectorNumber": "1",
+      "artwork": []
+    },
+    "f3bc43a4-857f-4285-b942-187a0bf93739": {
+      "id": "f3bc43a4-857f-4285-b942-187a0bf93739",
+      "definitionId": "3c295401-7f56-47d5-82fc-c8568a6257a2",
+      "setCode": "tst",
+      "collectorNumber": "1",
+      "artwork": []
+    }
+  }
+}

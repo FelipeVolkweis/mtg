@@ -17,7 +17,6 @@ export class Combat {
     return (
       object.controllerId === playerId &&
       object.zoneId === e.zone("battlefield").id &&
-      !object.status.phasedOut &&
       !object.status.tapped &&
       e.effective(object).types?.includes("Creature") &&
       (!attacking ||
@@ -33,11 +32,10 @@ export class Combat {
         .map((p) => ({ id: p.id, playerId: p.id, name: p.name })),
       ...e.battlefieldSources().flatMap((object) => {
         const types = e.effective(object).types ?? [];
-        const defending = types.includes("Battle")
-          ? object.protectorId
-          : types.includes("Planeswalker")
-            ? object.controllerId
-            : undefined;
+        // Battles are not supported (ADR-0018): no runtime Battle Protector.
+        const defending = types.includes("Planeswalker")
+          ? object.controllerId
+          : undefined;
         return defending && defending !== playerId
           ? [
               {
@@ -381,7 +379,7 @@ export class Combat {
         if (power)
           all.push({ sourceId: id, recipientId: a.objectId, amount: power });
       }
-    e.damage(all, true);
+    e.propose({ kind: "damage", assignments: all, combat: true });
     e.priority();
   }
   prune() {
@@ -393,7 +391,6 @@ export class Combat {
       return (
         object &&
         object.zoneId === e.zone("battlefield").id &&
-        !object.status.phasedOut &&
         e.effective(object).types?.includes("Creature")
       );
     };

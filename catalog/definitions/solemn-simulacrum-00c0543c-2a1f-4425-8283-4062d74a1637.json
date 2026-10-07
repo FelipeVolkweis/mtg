@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "00c0543c-2a1f-4425-8283-4062d74a1637",
-  "canonicalName": "Solemn Simulacrum",
-  "defaultPrintingId": "5383f45e-3da2-40fb-beee-801448bbb60f",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Solemn Simulacrum",
-      "manaCost": "{4}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Golem",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Golem"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.\nWhen this creature dies, you may draw a card.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.\nWhen this creature dies, you may draw a card.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Solemn Simulacrum",
+        "manaCost": "{4}",
+        "colors": [],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, you may search your library for a basic land card, put that card onto the battlefield tapped, then shuffle.\nWhen this creature dies, you may draw a card.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "5383f45e-3da2-40fb-beee-801448bbb60f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

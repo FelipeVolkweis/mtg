@@ -1,39 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "1b09d0cf-403c-4a15-aeee-602a1bdaf0c1",
-  "canonicalName": "Darksteel Colossus",
-  "defaultPrintingId": "70197723-c61b-4600-b61d-41380c8f3067",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Darksteel Colossus",
-      "manaCost": "{11}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Golem",
-      "manaValue": 11,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Golem"
-      ],
-      "keywords": [
-        "Indestructible",
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nIndestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nIf Darksteel Colossus would be put into a graveyard from anywhere, reveal Darksteel Colossus and shuffle it into its owner's library instead.",
-      "power": "11",
-      "toughness": "11"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nIndestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nIf Darksteel Colossus would be put into a graveyard from anywhere, reveal Darksteel Colossus and shuffle it into its owner's library instead.",
-  "keywords": [
-    "Indestructible",
-    "Trample"
-  ],
-  "manaValue": 11,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Darksteel Colossus",
+        "manaCost": "{11}",
+        "colors": [],
+        "manaValue": 11,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "keywords": [
+          "Indestructible",
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nIndestructible (Damage and effects that say \"destroy\" don't destroy this creature.)\nIf Darksteel Colossus would be put into a graveyard from anywhere, reveal Darksteel Colossus and shuffle it into its owner's library instead.",
+        "power": "11",
+        "toughness": "11"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "70197723-c61b-4600-b61d-41380c8f3067"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

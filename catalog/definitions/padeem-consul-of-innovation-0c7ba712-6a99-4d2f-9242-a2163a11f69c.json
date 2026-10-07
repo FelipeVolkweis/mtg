@@ -1,112 +1,128 @@
 {
+  "catalogVersion": 2,
   "id": "0c7ba712-6a99-4d2f-9242-a2163a11f69c",
-  "canonicalName": "Padeem, Consul of Innovation",
-  "defaultPrintingId": "6303997b-784d-4710-9c56-a92b7d5a8786",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Padeem, Consul of Innovation",
-      "manaCost": "{3}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Legendary Creature \u2014 Vedalken Artificer",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vedalken",
-        "Artificer"
-      ],
-      "keywords": [],
-      "rulesText": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
-      "power": "1",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "artifact-hexproof",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Artifact"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Padeem, Consul of Innovation",
+        "manaCost": "{3}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vedalken",
+          "Artificer"
+        ],
+        "keywords": [],
+        "rulesText": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)\nAt the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+        "power": "1",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "6303997b-784d-4710-9c56-a92b7d5a8786"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "artifact-hexproof",
+        "description": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Artifact"
+                ],
+                "controller": "you"
+              }
+            },
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "hexproof"
+              }
             ]
-          },
-          "changes": [
+          }
+        ]
+      },
+      {
+        "id": "upkeep-draw",
+        "description": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "upkeep",
+          "player": "you"
+        },
+        "interveningIf": {
+          "and": [
             {
-              "kind": "grant-keyword",
-              "keyword": "Hexproof"
+              "compare": [
+                {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Artifact"
+                        ],
+                        "controller": "you"
+                      }
+                    },
+                    "name": "manaValue"
+                  }
+                },
+                ">=",
+                {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Artifact"
+                        ]
+                      }
+                    },
+                    "name": "manaValue"
+                  }
+                }
+              ]
+            },
+            {
+              "exists": {
+                "all": {
+                  "zone": "battlefield",
+                  "type": [
+                    "Artifact"
+                  ],
+                  "controller": "you"
+                }
+              }
             }
           ]
-        }
-      },
-      "description": "Artifacts you control have hexproof. (They can't be the targets of spells or abilities your opponents control.)"
-    },
-    {
-      "id": "upkeep-draw",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+        },
         "effects": [
           {
             "kind": "draw",
             "count": 1
           }
-        ],
-        "trigger": {
-          "event": "upkeep",
-          "player": "you"
-        },
-        "intervening": {
-          "value": {
-            "greatestManaValue": {
-              "zone": "battlefield",
-              "controller": "you",
-              "types": [
-                "Artifact"
-              ]
-            }
-          },
-          "atLeast": {
-            "greatestManaValue": {
-              "zone": "battlefield",
-              "types": [
-                "Artifact"
-              ]
-            }
-          },
-          "requireObjects": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Artifact"
-            ]
-          }
-        }
-      },
-      "description": "At the beginning of your upkeep, if you control the artifact with the greatest mana value or tied for the greatest mana value, draw a card."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

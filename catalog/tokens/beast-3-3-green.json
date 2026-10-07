@@ -1,0 +1,21 @@
+{
+  "id": "beast-3-3-green",
+  "characteristics": {
+    "name": "Beast",
+    "colors": [
+      "G"
+    ],
+    "supertypes": [],
+    "types": [
+      "Creature"
+    ],
+    "subtypes": [
+      "Beast"
+    ],
+    "keywords": [],
+    "rulesText": "",
+    "power": "3",
+    "toughness": "3"
+  },
+  "abilities": []
+}

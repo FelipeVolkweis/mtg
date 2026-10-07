@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "499d76c1-97ff-4006-922c-be1684a7754c",
-  "canonicalName": "Claws Out",
-  "defaultPrintingId": "4396049c-b976-4b7f-8ecd-564e24ebd631",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Claws Out",
-      "manaCost": "{3}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Affinity"
-      ],
-      "rulesText": "Affinity for Cats (This spell costs {1} less to cast for each Cat you control.)\nCreatures you control get +2/+2 until end of turn."
-    }
-  ],
-  "oracleText": "Affinity for Cats (This spell costs {1} less to cast for each Cat you control.)\nCreatures you control get +2/+2 until end of turn.",
-  "keywords": [
-    "Affinity"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Claws Out",
+        "manaCost": "{3}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Affinity"
+        ],
+        "rulesText": "Affinity for Cats (This spell costs {1} less to cast for each Cat you control.)\nCreatures you control get +2/+2 until end of turn."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "4396049c-b976-4b7f-8ecd-564e24ebd631"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

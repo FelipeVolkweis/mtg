@@ -116,7 +116,7 @@ These rules are normative for the authored AST and every future addition.
 
 # 4. Target authored AST (version 2)
 
-Types are written in TypeScript notation. The zod schema in `src/shared/rules.ts` is the source of truth once implemented.
+Types are written in TypeScript notation. The implemented schema is `src/shared/rules-v2.ts` (roadmap issue 4), and it is the source of truth: where this section and the schema differ, the schema wins. Decisions made while implementing it are recorded below in each subsection, marked **As built**.
 
 ## 4.1 Abilities
 
@@ -193,6 +193,16 @@ interface KeywordAbility extends AbilityBase {
 ```
 
 The mana-ability criteria from CR 605 (no targets, could produce mana, not a loyalty ability, no library interaction) are checked by the compiler, not trusted from an authored flag.
+
+**As built:** `origin` is optional (it defaults to printed). `ManaProduction` is:
+
+```ts
+interface ManaProduction {
+  quantity: number;
+  colors: ManaType[] | { commanderColors: PlayerRef };
+  restriction?: { use?: "cast" | "activate"; spellTypes?: string[] };
+}
+```
 
 ## 4.2 Selectors
 
@@ -303,6 +313,13 @@ type TurnFact = "attacks" | "casts" | "draws" | "gains-life" | "loses-life" | "l
 
 Bindings are typed. A binding produced by an object-moving instruction is an object set; by `draw`, `discard` or `pay`, a number. `{ count: { binding } }` turns an object binding into a number. The compiler checks types and scope.
 
+**As built:**
+- object results: `move`, `destroy`, `sacrifice`, `exile`, `counter`, `tap`, `untap`, `create-token`, `search`, `library-sequence`;
+- number results: `draw`, `discard`, `gain-life`, `lose-life`, `damage`, `add-counters`, `remove-counters`;
+- `may` binds a flag (did the player do it), read by `didPerform`; other instructions cannot bind.
+- Scope is sequential. A binding defined inside an `if`, `may`, `may-pay` or `choose-one` branch is visible only inside that branch.
+- `for-each-player` defines the player binding `player` inside its body, read as `{ binding: "player" }`.
+
 ## 4.5 Targets and modes
 
 ```ts
@@ -359,6 +376,8 @@ type Effect =
   | { kind: "attach"; object?: Selector; to: Selector }
   | { kind: "create-token"; token: string; count?: Value; controller?: PlayerRef; tapped?: true }
   | { kind: "apply-continuous"; objects: Selector; changes: ContinuousChange[]; duration: Duration }
+  | { kind: "apply-grant"; grant: StaticGrant; duration: Duration }   // a game-rule effect for a duration
+  | { kind: "scry"; player?: PlayerRef; count: Value }                 // keyword action; desugars to library-sequence
   | { kind: "reselect-defender"; attacker: Selector }
   | { kind: "create-delayed-trigger"; trigger: Trigger; effects: Effect[] }
   // control flow
@@ -380,6 +399,8 @@ type Duration = "end-of-turn" | "while-source-on-battlefield" | { until: EventPa
 
 Set semantics (runtime plan §24) apply to every effect whose `objects` selector can match more than one object.
 
+**As built:** `apply-grant` holds rule-modifying effects that last for a duration, such as "can't be blocked this turn" (Whirler Rogue, Kappa Cannoneer). They aren't characteristics, so they don't belong in `apply-continuous`.
+
 ## 4.7 Costs
 
 Costs keep their current kinds, with one change: object costs take a predicate and default to "you control, on the battlefield" where the rules require it (you can only sacrifice your own permanents).
@@ -391,8 +412,11 @@ type Cost =
   | { kind: "sacrifice-source" } | { kind: "discard-source" } | { kind: "exile-source" }
   | { kind: "life"; amount: Value }
   | { kind: "counter-source"; counter: string; count: number; operation: "put" | "remove" }
-  | { kind: "tap" | "sacrifice" | "discard" | "return" | "exile"; count: number; filter: Predicate };
+  | { kind: "tap" | "sacrifice" | "discard" | "return" | "exile"; count: number; filter: Predicate }
+  | { kind: "tap-total-power"; power: number; filter: Predicate };   // crew: "tap creatures with total power N"
 ```
+
+**As built:** implied filters are added when the predicate doesn't already constrain them. `tap`, `sacrifice`, `return` and `tap-total-power` default to the battlefield and you as controller; `discard` defaults to your hand; `exile` must name its Zone.
 
 `crew`, `improvise`, `kicker`, `escalate` and `flashback` are keywords (§4.10) that expand into costs or cost options.
 
@@ -419,6 +443,8 @@ type ManaTrigger = { event: "tapped-for-mana"; object: Predicate; produced?: Man
 
 `enters` and `dies` are shorthand for `zone-change`. Leaves-the-battlefield triggers look back in time (CR 603.10). The runtime uses last known information for the object and its attachments.
 
+**As built:** `zone-change` and `enters` take an optional `during: TurnStep` for triggers that only fire in one step ("enters during the declare attackers step", Misleading Signpost).
+
 ## 4.9 Static grants and replacements
 
 ```ts
@@ -435,6 +461,7 @@ type StaticGrant =
   | { kind: "attack-requirement"; objects: Selector }                 // "attacks each combat if able"
   | { kind: "block-restriction"; objects: Selector; by?: Predicate }  // "can't be blocked (by Walls)"
   | { kind: "cant-block"; objects: Selector }
+  | { kind: "cant-be-countered"; spells: "this" | Predicate }       // "can't be countered"
   | { kind: "untap-restriction"; objects: Selector; unless?: Condition };
 
 type ContinuousChange =
@@ -462,6 +489,8 @@ type Replacement =
 
 Each `ContinuousChange` maps to a CR 613 layer. The compiler records the layer, so the characteristics engine doesn't infer it.
 
+**As built** (`layer` field): `gain-control` 2, `add-types` 4, `grant-keyword` 6, `define-stats` 7a, `set-base-stats` 7b, `add-stats` 7c, `copy-linked` 4 and 7b (it sets creature types and base power and toughness).
+
 ## 4.10 Keywords
 
 Keywords come in two classes.
@@ -486,9 +515,11 @@ Keywords come in two classes.
 
 `"Must attack"`, `"Unblockable"` and `"Cannot be blocked by Walls"` are not keywords. They become `attack-requirement` and `block-restriction` grants.
 
+**As built:** affinity, ward, cycling, equip, crew and living weapon expand into ordinary abilities. Enchant, improvise, kicker, escalate and flashback stay keyword abilities in the Core AST. They change how a card is cast or paid for, which the casting and cost runtimes read directly; abilities can't express that. Rule keywords are lowercase (`"first strike"`).
+
 ## 4.11 Tokens and counters
 
-- **Tokens** are definitions in `catalog/tokens/*.json`, with the same characteristics and ability model as cards, referenced by id (`"thopter-1-1-flying"`, `"food"`, `"treasure"`). The compiler checks the reference.
+- **Tokens** are definitions in `catalog/tokens/*.json`, with the same characteristics and ability model as cards, referenced by id (`"thopter-1-1-flying"`, `"food"`, `"treasure"`). The compiler checks the reference. **As built:** `src/server/rules/registries.ts` reads them. Thopter, Myr, Germ, Treasure, Food, Beast and Zombie exist (`thopter-1-1-flying`, `myr-1-1`, `phyrexian-germ-0-0`, `treasure`, `food`, `beast-3-3-green`, `zombie-2-2-black`).
 - **Counter kinds** come from a registry (`+1/+1`, `-1/-1`, `page`, `loyalty`, …). Counters with rules meaning (`+1/+1`, `-1/-1`) carry it in the registry, not in the effect schema.
 
 ---
@@ -711,7 +742,7 @@ Every current construct maps to version 2 or is dropped.
 | `chosenVariables: ["X"]` | inferred from `{X}` in costs, read with `{ variable: "X" }` |
 | `continuous` | static `grants: [{ kind: "continuous" }]` with `condition` on the ability |
 | `continuous.characteristicDefining` | `characteristicDefining: true` on the static ability |
-| `costModifiers` | static `cost-modifier` grant, or `affinity` keyword |
+| `costModifiers` | static `cost-modifier` grant, or `affinity` keyword. On an activated ability (`use: "activate"`): a separate static ability `<id>-cost` with `applies: { abilitiesOf: "source" }` |
 | `keyword` | `kind: "keyword"` |
 | `aura` | `enchant` keyword |
 | `improvise` | `improvise` keyword |
@@ -759,17 +790,20 @@ Every current construct maps to version 2 or is dropped.
 | `types` (any of) | `type: [...]` |
 | `allTypes` | `and` of `type` |
 | `excludeTypes` | `not` of `type` |
-| `self: "only" / "exclude"` | `is: "source"` / `not: { is: "source" }` |
+| `self: "only" / "exclude"` | `is: "source"` / `not: { is: "source" }`. `{ zone: "battlefield", self: "only" }` as a trigger subject or effect object is the `"source"` selector |
 | `kind: "spell" / "card" / "permanent"` | `object` |
 | `colored` / `colorless` | `color: "any"` / `color: "colorless"` |
-| `untapped`, `attacking`, `attached` | `status` |
+| `untapped`, `attacking` | `status` |
+| `attached` | `is: { attachedTo: "source" }` (version 1 means "the object the source is attached to", not a status) |
 | `nontoken` | `not: { object: "token" }` |
 | `damagedBySource` | `dealtDamageBy: "source"` |
 | `manaValue: Value` | `manaValue: Comparison` |
 | `handSize: "you"` | `{ cardsIn: { zone: "hand", player: "you" } }` |
 | `greatestManaValue` | `{ greatest: { of, name: "manaValue" } }` |
 | `"commander-colors"` | `{ commanderColors: "you" }` |
-| `trigger.event: "upkeep"`, `step: 5` | `{ event: "step", step: "upkeep" | "declare-attackers" }` |
+| `trigger.event: "upkeep"` | `{ event: "step", step: "upkeep" }` |
+| `trigger.step` on an `enter` trigger | `enters.during` with the named step |
+| `trigger.event: "dies"` | `zone-change` from battlefield to graveyard. Version 1 doesn't check for a creature, so it is not the `dies` shorthand |
 | `trigger.ordinal` | `draws.nth` |
 | `trigger.grouped` | `deals-damage.batch: "one-or-more"` |
 | `trigger.combat`, `recipientKind` | `deals-damage.combat`, `to` |
@@ -801,11 +835,13 @@ The compiler sits between the authored AST and the Core AST in the runtime plan 
 
 1. **Schema validation:** zod discriminated unions. Most current `superRefine` rules disappear because the types make them unrepresentable.
 2. **Reference checks:** target ids, binding names and types, `linked` names, token ids, counter kinds and keywords all resolve.
-3. **Context checks:** `{ event: … }` selectors only inside triggered or replacement abilities; `{ variable: "X" }` only when a cost contains `{X}`; `activeFrom` legal for the ability kind.
+3. **Context checks:** `{ event: … }` selectors only inside triggered or replacement abilities; `{ variable: "X" }` only when a cost contains `{X}`, or in a `cost-modifier` with `applies: "this"` on a card whose mana cost contains `{X}` (X is chosen before the total cost is determined, CR 601.2b and 601.2f; found in roadmap issue 6); `activeFrom` legal for the ability kind.
 4. **CR-derived checks:** mana-ability criteria (CR 605); spell abilities only resolve from the stack; characteristic-defining abilities only define the source's own characteristics.
 5. **Desugaring:** string shorthand, `enters` / `dies`, the legacy single `target`, implicit owner destinations, implicit "you control" on sacrifice costs, and macro keyword expansion.
 6. **Layer tagging:** every `ContinuousChange` is tagged with its CR 613 layer.
 
+
+**As built:** `compileCard(source, registries)` in `src/server/rules/compiler.ts`. It returns Core abilities, or a list of errors with paths into the card. The Core AST uses the authored types with the invariants listed at the top of that file (no shorthand, normalized triggers and destinations, expanded keywords, layer tags). Tests: `tests/rules/compiler/`.
 ---
 
 # 8. Expressiveness test set
@@ -843,6 +879,8 @@ A card from this set is "expressible" when its full Oracle text can be written i
 
 Acceptance: every card in the table is written out in version 2 in `tests/fixtures/dsl-expressiveness/` and passes the compiler. Engine support follows as runtime milestones land.
 
+**As built:** the 26 files are in `tests/fixtures/dsl-expressiveness/`; `tests/rules/compiler/expressiveness.spec.ts` is the gate. The `imported` sections come from the migration of the catalog files. Writing them needed one AST change (`during` on `enters`, §4.8, found by the migration) and four token definitions. Two readings to check in review: Archangel of Tithes' `attack-tax` with `defender: "you"` covers "you or planeswalkers you control"; Count on Luck exiles with a `library-sequence` whose `rest` goes to exile, then grants `play-permission` for the bound cards.
+
 ---
 
 # 9. Migration
@@ -852,13 +890,17 @@ Acceptance: every card in the table is written out in version 2 in `tests/fixtur
    - Mechanical for the common cases (§6).
    - Hand-written for the one-offs in §2.1.
    - Emits a diff report per card and fails on any construct it can't map.
-   - Also covers inline rule definitions in tests: about 32 in `tests/rules.spec.ts` and 4 in `tests/catalog.spec.ts`. These are rewritten to version 2 in the same change as the catalog, or routed through the version 1 loader until then.
+   - Inline rule definitions in tests (about 32 in `tests/rules/characterization/`, 4 in `tests/catalog.spec.ts`) are not run through the script. They are rewritten to version 2 by hand in the same change as the catalog (roadmap issue 6).
 3. **Down-compile for the current runtime.** Until the VM and handlers from runtime milestone M2 exist, the compiler lowers the version 2 Core AST into the current runtime shapes. Constructs the current runtime can't run (modes, multiple targets, replacements) make the card fail to load as implemented, which keeps the engine untouched in M1.
 4. **Verify.**
    - The characterization suite passes on migrated definitions.
    - The catalog-wide compile test covers all 783 definitions.
    - Every card with `automationStatus: "implemented"` still compiles to an executable form.
 5. **Remove version 1** once no definition uses it.
+
+**As built:** `src/server/catalog/migrate-rules-v2.ts` maps what the engine runs today, not the Oracle text. `migrateDefinition` takes a version 1 file and returns a version 2 file plus notes, or the unmapped constructs with their paths. It checks the stored derived values first (CM §6) and returns version 2 input unchanged. `npx tsx --tsconfig tsconfig.server.json src/server/catalog/migrate-rules-v2.ts [catalog root]` is the dry run: it prints the diff report and writes no file. Macro keywords are recognized when an ability is exactly their expansion (ward, cycling, equip, crew, living weapon, affinity). The down-compiler is `src/server/rules/down-compiler.ts`. `tests/rules/compiler/down-compile.spec.ts` is the golden test; it compares the ability fields the engine reads (id, kind, description, an activated ability's zone, rules). The ability-level `keyword` and `origin` are never read.
+
+**As built (roadmap issue 6):** the script rewrote the 783 files once and was then deleted with the version 1 schema and loader; it remains in the history of issue 5's branch. The engine loads the catalog through compiler → down-compiler (`definitionFromFile` in `src/server/catalog/catalog-files.ts`). Before the rewrite, the version 1 runtime abilities of the implemented cards were captured in `tests/fixtures/golden/v1-runtime-abilities.json`; the golden test now compares the loaded catalog against that fixture. The `superRefine` of the runtime ability schema is gone (the compiler validates authored abilities); the runtime schema itself goes with the down-compiler in issue 8. Inline test definitions are authored in version 2 through `tests/support/authored.ts`.
 
 ---
 

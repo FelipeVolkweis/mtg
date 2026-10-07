@@ -36,7 +36,7 @@ Behavior stays the same through issue 9. A test whose expectation changes is cla
 | rules | issue 1 | the rules suite on the fast runner, with no web server or Postgres |
 | round-trip | issue 1 | the rules suite with state saved and restored after every command |
 | catalog | issue 4 (fixtures), issue 6 (whole catalog) | every definition compiles; every `implemented` definition compiles to an executable form |
-| expressiveness | issue 5 | the DSL §8 test cards compile |
+| expressiveness | issue 5 | the DSL §8 test cards compile (`tests/rules/compiler/expressiveness.spec.ts`, part of the rules suite) |
 
 `npm test` is the full Playwright suite (browser, recovery, persistence). It needs Postgres: `docker compose up -d db`.
 
@@ -88,8 +88,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] `RoomState.snapshotVersion` exists and `upgradeRoom` runs on load, tested with captured version 1 room documents (mid-casting, mid-resolution, tokens, stack abilities);
   - [ ] `GameObject.ownerId` is required and set at creation; `grep -n "ownerId ??" src` is empty;
-  - [ ] every field CM §8 marks removed is gone from types and code, the `position` action is removed, and `upgradeRoom` strips them;
-  - [ ] `cannotBeCountered` is a `force` helper in its one test;
+  - [ ] every field CM §8 marks removed is gone from types and code, the `position` action is removed, and `upgradeRoom` strips them (`mode` and the optional `rules` stay for legacy Matches, CM §4.1);
   - [ ] gates and `npm test` are green.
 
 ### 4. DSL v2 schema, registries and compiler
@@ -113,7 +112,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] the 26 DSL §8 cards are written in v2 and compile; AST gaps found are fixed in DSL §4 and the schema; the expressiveness gate is added;
   - [ ] derived name, mana value, keywords, Oracle text and type line equal the stored values for all 783 definitions, plus one fixture per layout in `supportedLayouts`;
-  - [ ] the migration dry run over all definitions and the inline test definitions reports zero unmapped constructs, is idempotent, and its diff report is attached to the pull request;
+  - [ ] the migration dry run over all definitions reports zero unmapped constructs, is idempotent, and its diff report is attached to the pull request. Inline test definitions are rewritten by hand in issue 6 (decided during issue 5);
   - [ ] for every implemented card, the script's output compiled and down-compiled equals the current runtime shapes (golden test); unsupported constructs fail with a clear error.
 - **Human review:** the 26 card definitions match their Oracle text.
 
@@ -122,7 +121,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Issue:** #69
 - **Depends:** 2, 3, 5
 - **Read:** CM §3, §3.4, §6; DSL §2.2, §9
-- **Scope:** `catalog/definitions/`, `catalog-files.ts`, `catalog.service.ts`, the catalog loading path, inline test definitions, `src/shared/rules.ts`, `docs/rules-engine.md`
+- **Scope:** `catalog/definitions/`, `catalog-files.ts`, `catalog.service.ts`, the catalog loading path, inline test definitions (rewritten to version 2 by hand; the migration script doesn't cover them), `src/shared/rules.ts`, `docs/rules-engine.md`
 - **Done when:**
   - [ ] definitions are `catalogVersion: 2` files with `imported` and `authored` sections;
   - [ ] the reader and importer use v2; the engine loads through compiler → down-compiler; re-importing leaves `authored` unchanged;
@@ -130,6 +129,20 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
   - [ ] `docs/rules-engine.md` describes the v2 pipeline;
   - [ ] the catalog gate covers the whole catalog; gates and `npm test` are green.
 - **Human review:** the diff report and a sample of migrated files. On merge, ADR-0018 becomes `accepted` and its index row is updated.
+
+### 11. Retire legacy manual Matches
+
+- **Issue:** #81
+- **Depends:** 3
+- **Read:** CM §2.2, §4.1, §5; ADR-0016, ADR-0018
+- **Scope:** `src/server/room/room-upgrade.ts`, `src/shared/model.ts`, `match.service.ts`, `match-view.ts`, `App.tsx`, the readers of `match.rules` that guard for a manual Match, `tests/rules-ui.spec.ts`
+- **Order:** numbered after the plan was written; runs in parallel with issues 5 and 6 and merges before issue 7, because issues 7–10 rewrite code behind the `match.rules` guards.
+- **Done when:**
+  - [ ] `upgradeRoom` ends a stored manual Match (the Room returns to its lobby with Decklists kept), tested with a captured legacy Room document;
+  - [ ] `MatchState.mode` is gone and `MatchState.rules` is required; `grep -n "match.rules &&\|match.rules?\.\|mode === \"rules\"" src` is empty or each remaining hit is recorded in the pull request;
+  - [ ] the legacy rejection in `MatchService.execute` and the legacy screen in `App.tsx` are removed; the legacy replacement test is deleted or rewritten as an upgrade test (classified **Change**);
+  - [ ] ADR-0016 and ADR-0018 no longer mention the legacy marker;
+  - [ ] gates and `npm test` are green.
 
 ### 7. Event seam and effect handlers
 
@@ -140,6 +153,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] zone changes, draws, damage and life changes go through `propose`, with last-known-information snapshots on zone-change events; no direct zone mutation remains outside it (grep recorded in the pull request);
   - [ ] every effect kind dispatches through the registry from the Core AST, with isolated tests per kind (zone changes, object effects, interactive effects);
+  - [ ] `GameObject.cannotBeCountered` is replaced by a DSL v2 "can't be countered" grant, and its test uses a card definition instead of `force.uncounterable` (CM §4.1);
   - [ ] the effect-kind branches are gone from `resolution.ts`, and the down-compiler no longer lowers effects.
 
 ### 8. Rule VM and Stack Resolution Runtime

@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "5370ee80-0354-454f-a16e-ec133e432ecb",
-  "canonicalName": "Breaching Dragonstorm",
-  "defaultPrintingId": "14f530e9-0eef-44df-9ef7-d9cf3536afd7",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Breaching Dragonstorm",
-      "manaCost": "{4}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "When this enchantment enters, exile cards from the top of your library until you exile a nonland card. You may cast it without paying its mana cost if that spell's mana value is 8 or less. If you don't, put that card into your hand.\nWhen a Dragon you control enters, return this enchantment to its owner's hand."
-    }
-  ],
-  "oracleText": "When this enchantment enters, exile cards from the top of your library until you exile a nonland card. You may cast it without paying its mana cost if that spell's mana value is 8 or less. If you don't, put that card into your hand.\nWhen a Dragon you control enters, return this enchantment to its owner's hand.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Breaching Dragonstorm",
+        "manaCost": "{4}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "When this enchantment enters, exile cards from the top of your library until you exile a nonland card. You may cast it without paying its mana cost if that spell's mana value is 8 or less. If you don't, put that card into your hand.\nWhen a Dragon you control enters, return this enchantment to its owner's hand."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "14f530e9-0eef-44df-9ef7-d9cf3536afd7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

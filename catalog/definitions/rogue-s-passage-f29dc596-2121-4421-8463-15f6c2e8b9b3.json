@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "f29dc596-2121-4421-8463-15f6c2e8b9b3",
-  "canonicalName": "Rogue's Passage",
-  "defaultPrintingId": "2e38a5d6-9e99-4ace-ad2b-8dced251a0f2",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Rogue's Passage",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{4}, {T}: Target creature can't be blocked this turn."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{4}, {T}: Target creature can't be blocked this turn.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rogue's Passage",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{4}, {T}: Target creature can't be blocked this turn."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "2e38a5d6-9e99-4ace-ad2b-8dced251a0f2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

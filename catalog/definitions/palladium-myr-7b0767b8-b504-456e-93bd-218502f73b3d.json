@@ -1,58 +1,52 @@
 {
+  "catalogVersion": 2,
   "id": "7b0767b8-b504-456e-93bd-218502f73b3d",
-  "canonicalName": "Palladium Myr",
-  "defaultPrintingId": "3679933e-6880-41e3-b9e0-43d002722d4e",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Palladium Myr",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Myr",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Myr"
-      ],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}{C}.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "{T}: Add {C}{C}.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Palladium Myr",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "C"
-            ],
-            "quantity": 2
-          }
+        "subtypes": [
+          "Myr"
         ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add {C}{C}."
-    }
-  ]
+        "keywords": [],
+        "rulesText": "{T}: Add {C}{C}.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "3679933e-6880-41e3-b9e0-43d002722d4e"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}{C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 2,
+          "colors": [
+            "C"
+          ]
+        }
+      }
+    ]
+  }
 }

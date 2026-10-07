@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "ec96cde2-f1e6-495c-94e2-3e8ae79e556c",
-  "canonicalName": "Thornwood Falls",
-  "defaultPrintingId": "42799f51-0f8c-444b-974e-dae281a5c697",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Thornwood Falls",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {U}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {U}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thornwood Falls",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {G} or {U}."
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "U"
+    ],
+    "defaultPrintingId": "42799f51-0f8c-444b-974e-dae281a5c697"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "a1cc5e37-b09a-4b7f-afd5-77c1c35aa425",
-  "canonicalName": "Carrion Feeder",
-  "defaultPrintingId": "b6b2df2b-7436-4359-9246-2d5a471621fb",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Carrion Feeder",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [],
-      "rulesText": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Carrion Feeder",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [],
+        "rulesText": "This creature can't block.\nSacrifice a creature: Put a +1/+1 counter on this creature.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b6b2df2b-7436-4359-9246-2d5a471621fb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

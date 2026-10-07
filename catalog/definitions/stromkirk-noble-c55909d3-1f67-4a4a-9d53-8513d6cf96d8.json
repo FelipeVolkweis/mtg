@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "c55909d3-1f67-4a4a-9d53-8513d6cf96d8",
-  "canonicalName": "Stromkirk Noble",
-  "defaultPrintingId": "0f306c7e-cacc-4c26-a3f1-fad4f3ff7cf3",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Stromkirk Noble",
-      "manaCost": "{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Vampire Noble",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Noble"
-      ],
-      "keywords": [],
-      "rulesText": "This creature can't be blocked by Humans.\nWhenever this creature deals combat damage to a player, put a +1/+1 counter on it.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature can't be blocked by Humans.\nWhenever this creature deals combat damage to a player, put a +1/+1 counter on it.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Stromkirk Noble",
+        "manaCost": "{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Noble"
+        ],
+        "keywords": [],
+        "rulesText": "This creature can't be blocked by Humans.\nWhenever this creature deals combat damage to a player, put a +1/+1 counter on it.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "0f306c7e-cacc-4c26-a3f1-fad4f3ff7cf3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

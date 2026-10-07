@@ -32,11 +32,7 @@ export function zoneObjects(
     .filter((o): o is ObjectView => !!o);
 }
 export function objectOwner(match: MatchView, object: ObjectView): string {
-  return (
-    object.ownerId ??
-    match.instances[object.cardInstanceIds?.[0] ?? ""]?.ownerId ??
-    object.controllerId
-  );
+  return object.ownerId;
 }
 export function objectActions(match: MatchView, id: string) {
   return (match.actions ?? []).filter(
@@ -70,7 +66,7 @@ export function cardPiles(
     );
     const combat = match.rules?.combat?.attackers;
     const key =
-      object.hidden || object.attachmentTo || attachments.length
+      object.attachmentTo || attachments.length
         ? object.id
         : JSON.stringify(
             canonical({
@@ -80,13 +76,9 @@ export function cardPiles(
               counters: [...object.counters].sort((a, b) =>
                 a.kind.localeCompare(b.kind),
               ),
-              designations: object.designations,
-              choices: object.choices,
               variables: object.variables,
               face: object.currentFace,
-              faceDown: !!object.faceDown,
               links: object.links,
-              protector: object.protectorId,
               damage: match.rules?.markedDamage?.[object.id] ?? 0,
               attacker: combat?.find((a) => a.objectId === object.id),
               blocks: combat
@@ -102,6 +94,5 @@ export function cardPiles(
   return [...piles.values()];
 }
 export function cardArtwork(object: ObjectView): string | undefined {
-  if (object.hidden || object.faceDown) return undefined;
   return object.artwork?.[object.currentFace ?? 0] ?? object.artwork?.[0];
 }

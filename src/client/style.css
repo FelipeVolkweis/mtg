@@ -1359,9 +1359,6 @@ body:has(.tabletop) .room-panel[open] {
 .printing-fallback span {
   display: block;
 }
-.concealed-printing {
-  background: #172735;
-}
 .card-state {
   position: absolute;
   bottom: 0;
