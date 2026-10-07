@@ -76,7 +76,7 @@ test("Room keepalives do not extend configurable inactivity expiry", async ({
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await createRoom(page, "Expiry player", server.origin);
+    await createRoom(page, "ExpiryPlayer", server.origin);
     await page.evaluate(() => {
       const invite = location.pathname.split("/").pop()!;
       const socket = new WebSocket(`ws://${location.host}/ws`);

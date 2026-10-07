@@ -131,6 +131,21 @@ export interface User {
   id: string;
   name: string;
 }
+export const credentialsSchema = z
+  .object({
+    username: z
+      .string()
+      .trim()
+      .regex(
+        /^[A-Za-z0-9_.-]{3,32}$/,
+        "Usernames are 3–32 letters, digits, dots, dashes or underscores.",
+      ),
+    password: z
+      .string()
+      .min(8, "Passwords need at least 8 characters.")
+      .max(200, "Passwords can have at most 200 characters."),
+  })
+  .strict();
 export interface Participant {
   id: string;
   userId: string;

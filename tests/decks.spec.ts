@@ -85,7 +85,7 @@ test("the My decks page lists, edits and deletes Decks outside any Room", async 
   page,
 }) => {
   await page.goto("/");
-  await createRoom(page, "Catalog page");
+  await createRoom(page, "CatalogPage");
   await page.getByRole("link", { name: "My decks" }).first().click();
   await expect(page.getByRole("heading", { name: "My decks" })).toBeVisible();
   await page.getByLabel("Decklist name").fill("Pauper brew");

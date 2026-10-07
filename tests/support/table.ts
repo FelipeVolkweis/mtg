@@ -2,9 +2,26 @@ import { expect, type Page, type Browser } from "@playwright/test";
 import { exchange, snapshot } from "./peer";
 import type { MatchAction } from "../../src/shared/model";
 
-/** Signs in with the development sign-in form on the current page. */
+export const testPassword = "correct horse battery";
+/**
+ * Signs in with the sign-in form on the current page, creating the account
+ * first if this test database does not have it yet.
+ */
 export async function signIn(page: Page, username: string) {
+  await page.evaluate(
+    async ([username, password]) => {
+      await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      // Registering signs in; sign out so the form signs in below.
+      await fetch("/api/auth/logout", { method: "POST" });
+    },
+    [username, testPassword],
+  );
   await page.getByLabel("Username").fill(username);
+  await page.getByLabel("Password").fill(testPassword);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page.getByTestId("signed-in-user")).toBeVisible();
 }
@@ -16,7 +33,6 @@ export async function clearDecks(page: Page) {
       await fetch(`/api/decks/${deck.id}`, { method: "DELETE" });
   });
 }
-/** Opens the home page, signs in and creates a Room. */
 /** Signs in on the home page with an empty Deck Catalog and creates a Room. */
 export async function createRoom(page: Page, username: string, origin = "") {
   await page.goto(`${origin}/`);

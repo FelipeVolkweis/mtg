@@ -15,10 +15,7 @@ docker compose up -d db
 npm start
 ```
 
-Open [localhost:3000](http://localhost:3000), sign in, and share the Room invitation. Signing in needs one of:
-
-- **Google**: create an OAuth client ("Web application") in Google Cloud Console, add `<PUBLIC_ORIGIN>/api/auth/google/callback` as an authorized redirect URI, and set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `PUBLIC_ORIGIN` (for example `http://localhost:3000`, or `http://localhost:5173` when using Vite). A User is named after their email address, before the @.
-- **Development sign-in**: set `AUTH_DEV_LOGIN=1` to sign in with any username. Never enable it on a public deployment.
+Open [localhost:3000](http://localhost:3000), create an account with a username and password, and share the Room invitation. There is no password reset; to reset one, replace the user's `password_hash` in the `users` table with a hash from `hashPassword` in `src/server/user/user.service.ts`.
 
 The importer writes The importer writes `catalog/definitions/<canonical-name-slug>-<oracle-id>.json`, `catalog/printings/<printing-id>.json`, `catalog/names.json`, and `catalog/sets.json`. Review and commit those files with the application revision before release. Import another set with the same command to grow the available pool. The importer also populates the independent full Card Name Directory from Scryfall's compressed bulk data and current name index; allow time for that download. Every fetched page and card must validate before the released catalog is replaced. An unchanged re-import produces no catalog diff.
 
@@ -28,7 +25,7 @@ Definitions start with `automationStatus: "unimplemented"` and `abilities: []`. 
 
 Each implemented Card Ability includes a `description` copied from the matching Oracle Text excerpt, including its costs and restrictions. Card action buttons display that description; mana abilities with multiple color choices identify each choice. Imports preserve these authored descriptions with the structured abilities.
 
-For development, run `npm run dev` and `npm run dev:client` in separate terminals; open Vite's printed URL. Configure `DATABASE_URL`, `PORT`, `ROOM_EXPIRY_DAYS` and the sign-in variables in the shell. `.env.example` documents defaults; Docker Compose reads `.env` for its password and expiry settings. Node does not load `.env` automatically.
+For development, run `npm run dev` and `npm run dev:client` in separate terminals; open Vite's printed URL. Configure `DATABASE_URL`, `PORT`, and `ROOM_EXPIRY_DAYS` in the shell. `.env.example` documents defaults; Docker Compose reads `.env` for its password and expiry settings. Node does not load `.env` automatically.
 
 ## Container deployment
 
@@ -36,7 +33,7 @@ For development, run `npm run dev` and `npm run dev:client` in separate terminal
 docker compose up --build -d
 ```
 
-Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. After importing more sets into a running Compose checkout, run `docker compose up -d --build app` so the app serves the new catalog. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Users, sessions, Deck Catalogs and Room and Match state in a persistent Compose volume. Set the Google sign-in variables (or `AUTH_DEV_LOGIN` for a private test deployment) in `.env`. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
+Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. After importing more sets into a running Compose checkout, run `docker compose up -d --build app` so the app serves the new catalog. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Users, sessions, Deck Catalogs and Room and Match state in a persistent Compose volume. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost; have the proxy send `X-Forwarded-Proto: https` so session cookies are marked Secure. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
 
 ## Decklists and play
 

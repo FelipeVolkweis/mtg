@@ -21,13 +21,13 @@ Reviewed against repository code and specs on 2026-10-05. This index tracks deci
 | [0015 — Oracle identity](0015-oracle-identity-for-card-definitions.md) | Accepted | Oracle IDs join printings; missing Oracle IDs require explicit mapping. |
 | [0016 — Automated Commander](0016-rules-automated-commander-and-practice.md) | Accepted | Supported Decklists, explicit human Priority, persisted choices, and mirror Solo Practice are current policy. |
 | [0017 — Automatic groups](0017-automatic-battlefield-groups.md) | Accepted | Current types drive groups; attachments follow hosts and layout does not affect rules. |
-| [0019 — Users and Deck Catalog](0019-user-accounts-and-deck-catalog.md) | Accepted | Google sign-in; Rooms require a User; each User's Decks have a Format; only legal Commander Decks are playable. |
+| [0019 — Users and Deck Catalog](0019-user-accounts-and-deck-catalog.md) | Accepted | Username and password accounts; Rooms require a User; each User's Decks have a Format; only legal Commander Decks are playable. |
 | [0018 — Supported runtime capacity](0018-runtime-model-carries-supported-capacity.md) | Proposed | The catalog keeps full form modeling; the runtime model drops unsupported and manual-mode fields. Accepted when the card model refactor ships with runtime milestone M1. |
 
 ## Verification sources
 
 - Room scope, participant recovery, replacement consent, revisions, and expiry: [Room service](../../src/server/room/room.service.ts).
-- Sign-in and sessions: [User service](../../src/server/user/user.service.ts) and [Google sign-in](../../src/server/user/google.ts); Deck Catalog and Format rules: [Deck service](../../src/server/deck/deck.service.ts) and [format rules](../../src/server/deck/format-rules.ts).
+- Accounts, passwords and sessions: [User service](../../src/server/user/user.service.ts); Deck Catalog and Format rules: [Deck service](../../src/server/deck/deck.service.ts) and [format rules](../../src/server/deck/format-rules.ts).
 - Snapshot transactions: [Database](../../src/server/storage/database.ts); consent recovery: [recovery tests](../../tests/recovery.spec.ts).
 - Commander setup and Practice Opponent: [Match service](../../src/server/match/match.service.ts), [Commander validation](../../src/server/match/commander.ts), and [rules spec](https://github.com/FelipeVolkweis/mtg/issues/4).
 - Identity and supported compositions: [shared model](../../src/shared/model.ts), [rules model](../../src/shared/rules.ts), and [Game Object lifecycle](../../src/server/match/game-objects.ts).

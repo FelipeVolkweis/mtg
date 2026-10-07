@@ -128,8 +128,20 @@ a.button.primary {
 .account button {
   padding: 0.35rem 0.75rem;
 }
-.sign-in {
-  margin-top: 2rem;
+.welcome form.sign-in {
+  flex-direction: column;
+  align-items: stretch;
+  max-width: 360px;
+}
+.sign-in label {
+  margin: 0;
+}
+button.link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: #d2b77c;
+  text-decoration: underline;
 }
 .deck-issues {
   color: #f0b4a4;

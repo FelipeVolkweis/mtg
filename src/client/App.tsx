@@ -5,13 +5,8 @@ import type {
   RoomCommand,
   User,
 } from "../shared/model";
-import {
-  request,
-  signInForDevelopment,
-  signOut,
-  useDecks,
-  type AuthConfig,
-} from "./api";
+import { request, signOut, useDecks } from "./api";
+import { SignIn } from "./SignIn";
 import { DeckCatalog } from "./DeckCatalog";
 import { Lobby } from "./Lobby";
 import { RulesTabletop } from "./RulesTabletop";
@@ -20,14 +15,9 @@ export function App() {
   const invite = location.pathname.match(/^\/room\/([a-f0-9]{48})$/)?.[1];
   const decksPage = location.pathname === "/decks";
   const [user, setUser] = useState<User | null>();
-  const [auth, setAuth] = useState<AuthConfig>({ google: false, dev: false });
   const [joined, setJoined] = useState<string>();
   const [view, setView] = useState<RoomView>();
-  const [error, setError] = useState(() =>
-    new URLSearchParams(location.search).get("signin") === "failed"
-      ? "Sign-in was not completed. Try again."
-      : "",
-  );
+  const [error, setError] = useState("");
   const [connection, setConnection] = useState("Connecting");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -35,14 +25,8 @@ export function App() {
   const socket = useRef<WebSocket | null>(null);
   const decks = useDecks(setError, !!user);
   useEffect(() => {
-    void Promise.all([
-      request<{ user: User | null }>("/api/auth/me"),
-      request<AuthConfig>("/api/auth/config"),
-    ])
-      .then(([me, config]) => {
-        setUser(me.user);
-        setAuth(config);
-      })
+    request<{ user: User | null }>("/api/auth/me")
+      .then((me) => setUser(me.user))
       .catch(() => {
         setUser(null);
         setError("The server is unavailable. Reload to try again.");
@@ -153,17 +137,6 @@ export function App() {
       setError(error instanceof Error ? error.message : "Unable to create");
     }
   }
-  async function devSignIn(form: HTMLFormElement) {
-    try {
-      const result = await signInForDevelopment(
-        String(new FormData(form).get("name")),
-      );
-      setError("");
-      setUser(result.user);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Unable to sign in");
-    }
-  }
   const lobby = <Lobby view={view!} send={send} busy={busy} decks={decks} />;
   return (
     <div className={`app ${view?.match ? "match-app" : ""}`}>
@@ -218,38 +191,7 @@ export function App() {
           {user === undefined ? (
             <p role="status">Loading…</p>
           ) : !user ? (
-            <div className="sign-in">
-              {auth.google && (
-                <a
-                  className="button primary"
-                  href={`/api/auth/google?returnTo=${encodeURIComponent(location.pathname)}`}
-                >
-                  Sign in with Google
-                </a>
-              )}
-              {auth.dev && (
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    void devSignIn(event.currentTarget);
-                  }}
-                >
-                  <label>
-                    Username
-                    <input
-                      name="name"
-                      required
-                      maxLength={64}
-                      autoComplete="nickname"
-                    />
-                  </label>
-                  <button className="primary">Sign in</button>
-                </form>
-              )}
-              {!auth.google && !auth.dev && (
-                <p role="status">Sign-in is not configured on this server.</p>
-              )}
-            </div>
+            <SignIn onSignedIn={setUser} report={setError} />
           ) : invite ? (
             <p role="status">{joined ? `${connection}…` : "Joining…"}</p>
           ) : (

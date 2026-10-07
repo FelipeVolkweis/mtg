@@ -10,7 +10,7 @@ Shared language for an invitation-only Magic tabletop where Room Participants pl
 An invitation-only online session for signed-in Users and successive Matches. A Room can hold waiting participants while one human plays Solo Practice or two humans play a Commander Match.
 
 **User**:
-A person with a persistent account, signed in through a provider such as Google. A User owns a Deck Catalog and is named after their email address, before the @.
+A person with an account, signed in with their username and password. A User owns a Deck Catalog and is known by their username.
 _Avoid_: Guest player (retired by ADR-0019)
 
 **Room Participant**:

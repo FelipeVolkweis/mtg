@@ -75,7 +75,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await createRoom(page, "Catalog player", app.origin);
+    await createRoom(page, "CatalogPlayer", app.origin);
     await page.getByLabel("Decklist name").fill("Before import");
     await page.getByLabel("Decklist text").fill("1 Island");
     await page

@@ -21,13 +21,14 @@ export async function request<T>(
   return data as T;
 }
 
-export interface AuthConfig {
-  google: boolean;
-  dev: boolean;
-}
 export const signOut = () => request<void>("/api/auth/logout", "POST");
-export const signInForDevelopment = (name: string) =>
-  request<{ user: User }>("/api/auth/dev", "POST", { name });
+/** Signs in, or creates the account first. */
+export const authenticate = (
+  mode: "login" | "register",
+  username: string,
+  password: string,
+) =>
+  request<{ user: User }>(`/api/auth/${mode}`, "POST", { username, password });
 
 /** The signed-in User's Deck Catalog. */
 export function useDecks(report: (message: string) => void, signedIn: boolean) {
