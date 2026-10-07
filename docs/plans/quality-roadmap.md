@@ -38,7 +38,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q1. Delete the unreachable Room upgrade chain
 
-- **Issue:** —
+- **Issue:** #92
 - **Depends:** none
 - **Read:** ADR-0019; `src/server/room/room-upgrade.ts`; `RoomService.onModuleInit`
 - **Scope:** `room-upgrade.ts`, `lift-v1-effects.ts`, `tests/rules/room-upgrade.spec.ts`, `tests/fixtures/rooms-v1/`
@@ -51,7 +51,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q2. Continuous integration and lint
 
-- **Issue:** —
+- **Issue:** #93
 - **Depends:** none
 - **Read:** `package.json` scripts; `compose.yaml`
 - **Scope:** `.github/workflows/`, a typescript-eslint config, `package.json`
@@ -65,7 +65,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q3. Name the shared modules for what they hold
 
-- **Issue:** —
+- **Issue:** #94
 - **Depends:** Q1
 - **Read:** `src/shared/rules.ts`, `src/shared/rules-v2.ts`, `src/shared/model.ts`
 - **Scope:** `src/shared/`, and import lines across `src/` and `tests/`
@@ -81,7 +81,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q4. A player-facing error type
 
-- **Issue:** —
+- **Issue:** #95
 - **Depends:** Q3
 - **Read:** `MatchService.execute`; `RoomService.command`; `RoomGateway.command`; `CommanderReplacement` in `commander-rules.ts`
 - **Scope:** `match.service.ts`, `room.service.ts`, `room.gateway.ts`, and the `throw` sites under `src/server/match/` and `src/server/rules/`
@@ -96,7 +96,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q5. Schema migrations
 
-- **Issue:** —
+- **Issue:** #96
 - **Depends:** Q1
 - **Read:** `src/server/storage/database.ts`; `RoomService.onModuleInit`; ADR-0012
 - **Scope:** `database.ts`, `room.service.ts` (`onModuleInit` only), a new `migrations/` directory, `Dockerfile` if the files must ship
@@ -110,7 +110,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q6. One source of truth for runtime support
 
-- **Issue:** —
+- **Issue:** #97
 - **Depends:** Q3
 - **Read:** `src/server/rules/support.ts`; `vm/effects/registry.ts`; `abilities.ts`; dsl-redesign.md §9
 - **Scope:** `support.ts`, `abilities.ts`, the effect, trigger, cost and static registries
@@ -124,7 +124,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q7. Split the board components
 
-- **Issue:** —
+- **Issue:** #98
 - **Depends:** Q3
 - **Read:** `src/client/RulesBoard.tsx`, `RulesTabletop.tsx`, `style.css`
 - **Scope:** `src/client/` only. Turn-step logic stays where it is; Q8 changes it.
@@ -139,7 +139,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q8. Named turn steps and a smaller RulesEngine
 
-- **Issue:** —
+- **Issue:** #99
 - **Depends:** Q4
 - **Read:** `src/server/match/rules-engine.ts`; `turnSteps` in the card DSL; `phaseSteps` in `model.ts`; `RulesTabletop.tsx`
 - **Scope:** `rules-engine.ts`, `combat.ts`, `model.ts`, `room-upgrade.ts`, `match-view.ts`, the client's step readers
@@ -153,7 +153,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q9. Gateway reads and broadcasts
 
-- **Issue:** —
+- **Issue:** #100
 - **Depends:** Q4, Q5
 - **Read:** `src/server/room/room.gateway.ts`; `RoomService.command`, `view`, `viewer`, `disconnect`
 - **Scope:** `room.gateway.ts`, `room.service.ts`
@@ -169,7 +169,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q10. Typed numbers and per-turn state
 
-- **Issue:** —
+- **Issue:** #101
 - **Depends:** Q8
 - **Read:** `src/shared/rules-state.ts`; `MatchPlayer` and `Counter` in `model.ts`; `event-runtime.ts`; `evaluate.ts`; ADR-0018
 - **Scope:** `model.ts`, `rules-state.ts`, `room-upgrade.ts`, the engine readers and writers of life, counters and per-turn fields, the client displays
@@ -183,7 +183,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q11. Cache effective characteristics
 
-- **Issue:** —
+- **Issue:** #102
 - **Depends:** Q8
 - **Read:** `src/server/match/characteristics.ts`; `vm/evaluate.ts`; the action listing module from Q8
 - **Scope:** `characteristics.ts`, `rules-engine.ts`, `evaluate.ts`
@@ -198,7 +198,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q12. Living docs instead of plan references
 
-- **Issue:** —
+- **Issue:** #103
 - **Depends:** every earlier wave
 - **Read:** `docs/plans/`; `docs/rules-engine.md`; `docs/card-model.md`
 - **Scope:** `docs/`, comments across `src/`, `AGENTS.md`
@@ -211,7 +211,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ### Q13. Small cleanups
 
-- **Issue:** —
+- **Issue:** #104
 - **Depends:** every earlier wave except Q12
 - **Read:** the review notes below
 - **Scope:** scattered
@@ -227,6 +227,6 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 ## Tracking
 
-Each issue above becomes a GitHub issue titled `Quality Q<n>: <title>`. Its body links to its section here, lists `Blocked by: #<issue>` for each dependency, and carries `ready-for-agent`. Each issue's number replaces the `—` under its heading.
+Each issue above becomes a GitHub issue titled `Quality Q<n>: <title>`. Its body links to its section here, lists `Blocked by: #<issue>` for each dependency, and carries `ready-for-agent`. Each issue's number is listed under its heading.
 
 This file is the source of truth for scope. If an issue body and this file disagree, update the issue.
