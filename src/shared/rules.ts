@@ -361,6 +361,11 @@ export const conditionSchema = z
   })
   .strict();
 
+/**
+ * The runtime ability the engine executes, as the down-compiler emits it
+ * (dsl-redesign.md §9 step 3). The Rules Compiler validates authored
+ * abilities; this schema only checks the shape and fills defaults.
+ */
 export const rulesAbilitySchema = z
   .object({
     improvise: z.boolean().optional(),
@@ -439,167 +444,7 @@ export const rulesAbilitySchema = z
       .optional(),
     manaAbility: z.boolean().optional(),
   })
-  .strict()
-  .superRefine((ability, ctx) => {
-    const invalid = (message: string) =>
-      ctx.addIssue({ code: "custom", message });
-    const checkValue = (value: RulesValue, available: Set<string>) => {
-      if (typeof value === "number") return;
-      if ("binding" in value && !available.has(value.binding))
-        invalid("Unknown quantity binding.");
-      if ("sum" in value)
-        for (const term of value.sum) checkValue(term, available);
-    };
-    const checkFilter = (
-      filter: ObjectFilter | undefined,
-      available: Set<string>,
-    ) => {
-      if (filter?.manaValue !== undefined)
-        checkValue(filter.manaValue, available);
-    };
-    const check = (effects: RulesEffect[], available: Set<string>) => {
-      for (const effect of effects) {
-        if ("filter" in effect) checkFilter(effect.filter, available);
-        if (effect.kind === "lose-life") checkValue(effect.amount, available);
-        if (effect.kind === "redirect-attack" && !ability.target?.attacking)
-          invalid("Redirection requires an attacking target.");
-        if (effect.kind === "sequence") check(effect.effects, available);
-        else if (effect.kind === "if") {
-          if (!available.has(effect.condition.binding))
-            invalid("Unknown condition binding.");
-          check(effect.then, new Set(available));
-          check(effect.otherwise, new Set(available));
-        } else if (effect.kind === "alternative") {
-          if (
-            new Set(effect.options.map((o) => o.id)).size !==
-            effect.options.length
-          )
-            invalid("Alternative identifiers must be unique.");
-          for (const option of effect.options)
-            check([option.effect], new Set(available));
-        } else if (effect.kind === "draw" || effect.kind === "discard") {
-          checkValue(effect.count, available);
-          if (effect.bind) {
-            if (available.has(effect.bind))
-              invalid("Result bindings must be unique.");
-            available.add(effect.bind);
-          }
-        } else if (effect.kind === "animate-source") {
-          for (const change of effect.changes)
-            if (
-              change.kind === "add-stats" ||
-              change.kind === "set-stats" ||
-              change.kind === "define-stats"
-            ) {
-              checkValue(change.power, available);
-              checkValue(change.toughness, available);
-            }
-        } else if ("bind" in effect && effect.bind) {
-          if (available.has(effect.bind))
-            invalid("Result bindings must be unique.");
-          available.add(effect.bind);
-        } else if (effect.kind === "damage") {
-          checkValue(effect.amount, available);
-          if (!ability.target && effect.recipient !== "defender")
-            invalid("Damage effects require a target declaration.");
-        } else if (effect.kind === "counter-target" && !ability.target)
-          invalid("Counter effects require a target declaration.");
-      }
-    };
-    if (
-      ability.trigger?.event === "state" &&
-      (!ability.trigger.counter ||
-        !ability.trigger.atLeast ||
-        ability.trigger.filter?.self !== "only")
-    )
-      invalid("State triggers require a source counter threshold.");
-    const validateMovements = (effects: RulesEffect[]) => {
-      for (const effect of effects) {
-        if (effect.kind === "sequence") validateMovements(effect.effects);
-        else if (effect.kind === "if") {
-          validateMovements(effect.then);
-          validateMovements(effect.otherwise);
-        } else if ("subject" in effect) {
-          if (effect.kind === "move" && !effect.destination)
-            invalid("Movement requires a destination.");
-          if (
-            (effect.subject === "set" || effect.subject === "choice") &&
-            !effect.filter
-          )
-            invalid("Object selection requires a filter.");
-          if (effect.subject === "target" && !ability.target)
-            invalid("Targeted movement requires a target declaration.");
-          if (
-            effect.eachPlayer &&
-            (effect.kind !== "sacrifice" || effect.subject !== "set")
-          )
-            invalid("Each-player selections require a sacrifice set.");
-          if (effect.link && effect.kind !== "exile")
-            invalid("Exile links require an exile operation.");
-        }
-      }
-    };
-    validateMovements(ability.effects);
-    if (
-      ability.costs.some(
-        (c) => c.kind === "mana" && c.symbols.includes("{X}"),
-      ) &&
-      !ability.chosenVariables?.includes("X")
-    )
-      invalid("Variable mana costs require a chosen X.");
-    if (
-      ability.trigger &&
-      !ability.trigger.filter &&
-      !["draw", "upkeep"].includes(ability.trigger.event)
-    )
-      invalid("Object events require an object filter.");
-    if (ability.trigger?.grouped && ability.trigger.event !== "damage")
-      invalid("Grouped triggers require damage events.");
-    const available = new Set(ability.chosenVariables ?? []);
-    checkFilter(ability.target, available);
-    checkFilter(ability.trigger?.filter, available);
-    if (ability.intervening) {
-      checkValue(ability.intervening.value, available);
-      checkValue(ability.intervening.atLeast, available);
-    }
-    check(ability.effects, new Set(available));
-    for (const modifier of ability.costModifiers ?? [])
-      checkValue(modifier.amount, available);
-    for (const change of ability.continuous?.changes ?? []) {
-      if (
-        change.kind === "define-stats" ||
-        change.kind === "set-stats" ||
-        change.kind === "add-stats"
-      ) {
-        checkValue(change.power, available);
-        checkValue(change.toughness, available);
-      }
-    }
-    if (
-      ability.continuous?.characteristicDefining &&
-      (ability.continuous.filter.self !== "only" ||
-        ability.continuous.changes.some((c) => c.kind !== "define-stats"))
-    )
-      invalid("Characteristic definitions must define only their own stats.");
-
-    if (
-      ability.manaAbility &&
-      (ability.target ||
-        ability.effects.some((effect) => effect.kind !== "add-mana"))
-    )
-      ctx.addIssue({
-        code: "custom",
-        message: "Mana abilities must only produce mana and cannot target.",
-      });
-    if (
-      ability.effects.some((effect) => effect.kind === "counter-target") &&
-      !ability.target
-    )
-      ctx.addIssue({
-        code: "custom",
-        message: "Counter effects require a target declaration.",
-      });
-  });
+  .strict();
 export type RulesAbility = z.infer<typeof rulesAbilitySchema>;
 export type RulesCost = z.infer<typeof rulesCostSchema>;
 export interface PendingProcedure {

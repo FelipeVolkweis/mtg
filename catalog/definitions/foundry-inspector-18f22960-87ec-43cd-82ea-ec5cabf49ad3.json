@@ -1,59 +1,54 @@
 {
+  "catalogVersion": 2,
   "id": "18f22960-87ec-43cd-82ea-ec5cabf49ad3",
-  "canonicalName": "Foundry Inspector",
-  "defaultPrintingId": "9ff34a25-85f9-40a4-a3fd-c27148bf7429",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Foundry Inspector",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Construct",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Construct"
-      ],
-      "keywords": [],
-      "rulesText": "Artifact spells you cast cost {1} less to cast.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Artifact spells you cast cost {1} less to cast.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "discount",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "costModifiers": [
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Foundry Inspector",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "keywords": [],
+        "rulesText": "Artifact spells you cast cost {1} less to cast.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "9ff34a25-85f9-40a4-a3fd-c27148bf7429"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "discount",
+        "description": "Artifact spells you cast cost {1} less to cast.",
+        "kind": "static",
+        "grants": [
           {
-            "use": "cast",
-            "scope": "controller",
-            "component": "generic",
-            "amount": 1,
-            "filter": {
-              "zone": "stack",
-              "types": [
-                "Artifact"
-              ],
-              "kind": "spell"
-            }
+            "kind": "cost-modifier",
+            "applies": {
+              "spells": {
+                "zone": "stack",
+                "object": "spell",
+                "type": [
+                  "Artifact"
+                ]
+              }
+            },
+            "reduce": 1
           }
         ]
-      },
-      "description": "Artifact spells you cast cost {1} less to cast."
-    }
-  ]
+      }
+    ]
+  }
 }

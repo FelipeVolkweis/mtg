@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "30afacd9-4680-4aac-8c22-584f9418822d",
-  "canonicalName": "Circuitous Route",
-  "defaultPrintingId": "a806dec2-d4f9-4f8d-a1dd-170777941131",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Circuitous Route",
-      "manaCost": "{3}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Search your library for up to two basic land cards and/or Gate cards, put them onto the battlefield tapped, then shuffle."
-    }
-  ],
-  "oracleText": "Search your library for up to two basic land cards and/or Gate cards, put them onto the battlefield tapped, then shuffle.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Circuitous Route",
+        "manaCost": "{3}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Search your library for up to two basic land cards and/or Gate cards, put them onto the battlefield tapped, then shuffle."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "a806dec2-d4f9-4f8d-a1dd-170777941131"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

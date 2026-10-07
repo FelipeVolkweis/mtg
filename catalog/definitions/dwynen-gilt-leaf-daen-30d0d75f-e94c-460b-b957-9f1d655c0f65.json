@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "30d0d75f-e94c-460b-b957-9f1d655c0f65",
-  "canonicalName": "Dwynen, Gilt-Leaf Daen",
-  "defaultPrintingId": "01c00d7b-7fac-4f8c-a1ea-de2cf4d06627",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Dwynen, Gilt-Leaf Daen",
-      "manaCost": "{2}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Legendary Creature — Elf Warrior",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Warrior"
-      ],
-      "keywords": [
-        "Reach"
-      ],
-      "rulesText": "Reach (This creature can block creatures with flying.)\nOther Elf creatures you control get +1/+1.\nWhenever Dwynen attacks, you gain 1 life for each attacking Elf you control.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Reach (This creature can block creatures with flying.)\nOther Elf creatures you control get +1/+1.\nWhenever Dwynen attacks, you gain 1 life for each attacking Elf you control.",
-  "keywords": [
-    "Reach"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dwynen, Gilt-Leaf Daen",
+        "manaCost": "{2}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warrior"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "rulesText": "Reach (This creature can block creatures with flying.)\nOther Elf creatures you control get +1/+1.\nWhenever Dwynen attacks, you gain 1 life for each attacking Elf you control.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "01c00d7b-7fac-4f8c-a1ea-de2cf4d06627"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

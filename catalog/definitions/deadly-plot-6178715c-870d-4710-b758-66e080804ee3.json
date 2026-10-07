@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "6178715c-870d-4710-b758-66e080804ee3",
-  "canonicalName": "Deadly Plot",
-  "defaultPrintingId": "b32fddc3-a38f-4eea-ae01-4158e3cbca6c",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Deadly Plot",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose one —\n• Destroy target creature or planeswalker.\n• Return target Zombie creature card from your graveyard to the battlefield tapped."
-    }
-  ],
-  "oracleText": "Choose one —\n• Destroy target creature or planeswalker.\n• Return target Zombie creature card from your graveyard to the battlefield tapped.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Deadly Plot",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose one —\n• Destroy target creature or planeswalker.\n• Return target Zombie creature card from your graveyard to the battlefield tapped."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b32fddc3-a38f-4eea-ae01-4158e3cbca6c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

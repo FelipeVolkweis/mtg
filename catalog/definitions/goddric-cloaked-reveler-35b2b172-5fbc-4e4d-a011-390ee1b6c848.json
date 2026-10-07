@@ -1,47 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "35b2b172-5fbc-4e4d-a011-390ee1b6c848",
-  "canonicalName": "Goddric, Cloaked Reveler",
-  "defaultPrintingId": "89950a60-8e6c-494e-93be-e0a44d81d598",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Goddric, Cloaked Reveler",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Legendary Creature — Human Noble",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Noble"
-      ],
-      "keywords": [
-        "Flying",
-        "Celebration",
-        "Haste"
-      ],
-      "rulesText": "Haste\nCelebration — As long as two or more nonland permanents entered the battlefield under your control this turn, Goddric is a Dragon with base power and toughness 4/4, flying, and \"{R}: Dragons you control get +1/+0 until end of turn.\" (He loses all other creature types.)",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Haste\nCelebration — As long as two or more nonland permanents entered the battlefield under your control this turn, Goddric is a Dragon with base power and toughness 4/4, flying, and \"{R}: Dragons you control get +1/+0 until end of turn.\" (He loses all other creature types.)",
-  "keywords": [
-    "Flying",
-    "Celebration",
-    "Haste"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Goddric, Cloaked Reveler",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Noble"
+        ],
+        "keywords": [
+          "Flying",
+          "Celebration",
+          "Haste"
+        ],
+        "rulesText": "Haste\nCelebration — As long as two or more nonland permanents entered the battlefield under your control this turn, Goddric is a Dragon with base power and toughness 4/4, flying, and \"{R}: Dragons you control get +1/+0 until end of turn.\" (He loses all other creature types.)",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "89950a60-8e6c-494e-93be-e0a44d81d598"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

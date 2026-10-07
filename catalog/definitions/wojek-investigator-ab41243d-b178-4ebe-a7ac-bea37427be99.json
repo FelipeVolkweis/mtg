@@ -1,45 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "ab41243d-b178-4ebe-a7ac-bea37427be99",
-  "canonicalName": "Wojek Investigator",
-  "defaultPrintingId": "59f11982-7822-4847-ab0f-de2022e750a7",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Wojek Investigator",
-      "manaCost": "{2}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel Detective",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel",
-        "Detective"
-      ],
-      "keywords": [
-        "Flying",
-        "Investigate",
-        "Vigilance"
-      ],
-      "rulesText": "Flying, vigilance\nAt the beginning of your upkeep, investigate once for each opponent who has more cards in hand than you. (To investigate, create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
-      "power": "2",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying, vigilance\nAt the beginning of your upkeep, investigate once for each opponent who has more cards in hand than you. (To investigate, create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
-  "keywords": [
-    "Flying",
-    "Investigate",
-    "Vigilance"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Wojek Investigator",
+        "manaCost": "{2}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel",
+          "Detective"
+        ],
+        "keywords": [
+          "Flying",
+          "Investigate",
+          "Vigilance"
+        ],
+        "rulesText": "Flying, vigilance\nAt the beginning of your upkeep, investigate once for each opponent who has more cards in hand than you. (To investigate, create a Clue token. It's an artifact with \"{2}, Sacrifice this token: Draw a card.\")",
+        "power": "2",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "59f11982-7822-4847-ab0f-de2022e750a7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "b9f4f96b-6e54-4fe6-8df7-623e0fc72409",
-  "canonicalName": "Mentor of the Meek",
-  "defaultPrintingId": "60790977-efd4-470a-823a-6929f84016e7",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Mentor of the Meek",
-      "manaCost": "{2}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Human Soldier",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Soldier"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mentor of the Meek",
+        "manaCost": "{2}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever another creature you control with power 2 or less enters, you may pay {1}. If you do, draw a card.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "60790977-efd4-470a-823a-6929f84016e7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

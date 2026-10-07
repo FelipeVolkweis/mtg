@@ -1,30 +1,30 @@
 {
+  "catalogVersion": 2,
   "id": "b9a7c722-6b24-4383-ac6e-2a30f7834269",
-  "canonicalName": "Rhonas's Monument",
-  "defaultPrintingId": "5e00229b-80cb-4abc-929f-fc7c6fe1cd17",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Rhonas's Monument",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Legendary Artifact",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Green creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, target creature you control gets +2/+2 and gains trample until end of turn."
-    }
-  ],
-  "oracleText": "Green creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, target creature you control gets +2/+2 and gains trample until end of turn.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rhonas's Monument",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Green creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, target creature you control gets +2/+2 and gains trample until end of turn."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "5e00229b-80cb-4abc-929f-fc7c6fe1cd17"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

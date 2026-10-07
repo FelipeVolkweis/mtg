@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "5001bf21-9dbb-4229-aeef-25805e71b832",
-  "canonicalName": "Icewind Elemental",
-  "defaultPrintingId": "c2bfdfb6-aa0b-4bd7-89ba-6435da730e5e",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Icewind Elemental",
-      "manaCost": "{4}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Elemental",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elemental"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhen this creature enters, draw a card, then discard a card.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhen this creature enters, draw a card, then discard a card.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Icewind Elemental",
+        "manaCost": "{4}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhen this creature enters, draw a card, then discard a card.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "c2bfdfb6-aa0b-4bd7-89ba-6435da730e5e"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

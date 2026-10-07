@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "e119869d-1f66-402b-8251-d351965cf0d3",
-  "canonicalName": "Paradise Druid",
-  "defaultPrintingId": "0e8f1205-fbe0-4a60-a215-172d94eba349",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Paradise Druid",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Druid",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Druid"
-      ],
-      "keywords": [],
-      "rulesText": "This creature has hexproof as long as it's untapped. (It can't be the target of spells or abilities your opponents control.)\n{T}: Add one mana of any color.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature has hexproof as long as it's untapped. (It can't be the target of spells or abilities your opponents control.)\n{T}: Add one mana of any color.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Paradise Druid",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Druid"
+        ],
+        "keywords": [],
+        "rulesText": "This creature has hexproof as long as it's untapped. (It can't be the target of spells or abilities your opponents control.)\n{T}: Add one mana of any color.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "0e8f1205-fbe0-4a60-a215-172d94eba349"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "27d98b94-a8a1-442b-8940-4ffab51b5164",
-  "canonicalName": "Soulless One",
-  "defaultPrintingId": "cb759501-d634-430b-b5c9-24338e2d7367",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Soulless One",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie Avatar",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Avatar"
-      ],
-      "keywords": [],
-      "rulesText": "Soulless One's power and toughness are each equal to the number of Zombies on the battlefield plus the number of Zombie cards in all graveyards.",
-      "power": "*",
-      "toughness": "*"
-    }
-  ],
-  "oracleText": "Soulless One's power and toughness are each equal to the number of Zombies on the battlefield plus the number of Zombie cards in all graveyards.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Soulless One",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Avatar"
+        ],
+        "keywords": [],
+        "rulesText": "Soulless One's power and toughness are each equal to the number of Zombies on the battlefield plus the number of Zombie cards in all graveyards.",
+        "power": "*",
+        "toughness": "*"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "cb759501-d634-430b-b5c9-24338e2d7367"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

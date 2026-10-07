@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "6103f294-f920-4307-af80-d44cc71167fd",
-  "canonicalName": "Kitesail Corsair",
-  "defaultPrintingId": "aa127602-10b2-4144-985b-38e075f1e1f7",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Kitesail Corsair",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Pirate",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Pirate"
-      ],
-      "keywords": [],
-      "rulesText": "This creature has flying as long as it's attacking.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature has flying as long as it's attacking.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kitesail Corsair",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Pirate"
+        ],
+        "keywords": [],
+        "rulesText": "This creature has flying as long as it's attacking.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "aa127602-10b2-4144-985b-38e075f1e1f7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

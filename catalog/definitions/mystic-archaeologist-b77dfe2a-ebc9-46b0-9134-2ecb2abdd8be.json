@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "b77dfe2a-ebc9-46b0-9134-2ecb2abdd8be",
-  "canonicalName": "Mystic Archaeologist",
-  "defaultPrintingId": "c069ff32-6759-48a2-8674-4f729c91dcd0",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Mystic Archaeologist",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Wizard",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "{3}{U}{U}: Draw two cards.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "{3}{U}{U}: Draw two cards.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mystic Archaeologist",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "{3}{U}{U}: Draw two cards.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "c069ff32-6759-48a2-8674-4f729c91dcd0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

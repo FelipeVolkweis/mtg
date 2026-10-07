@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "e1cfd1cb-44a5-429f-a5c1-e6d29bad1c71",
-  "canonicalName": "Kalitas, Traitor of Ghet",
-  "defaultPrintingId": "d188a93a-cd9b-4a0b-80fb-738907b228cf",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Kalitas, Traitor of Ghet",
-      "manaCost": "{2}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Legendary Creature — Vampire Warrior",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Warrior"
-      ],
-      "keywords": [
-        "Lifelink"
-      ],
-      "rulesText": "Lifelink\nIf a nontoken creature an opponent controls would die, instead exile that card and create a 2/2 black Zombie creature token.\n{2}{B}, Sacrifice another Vampire or Zombie: Put two +1/+1 counters on Kalitas.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Lifelink\nIf a nontoken creature an opponent controls would die, instead exile that card and create a 2/2 black Zombie creature token.\n{2}{B}, Sacrifice another Vampire or Zombie: Put two +1/+1 counters on Kalitas.",
-  "keywords": [
-    "Lifelink"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kalitas, Traitor of Ghet",
+        "manaCost": "{2}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Warrior"
+        ],
+        "keywords": [
+          "Lifelink"
+        ],
+        "rulesText": "Lifelink\nIf a nontoken creature an opponent controls would die, instead exile that card and create a 2/2 black Zombie creature token.\n{2}{B}, Sacrifice another Vampire or Zombie: Put two +1/+1 counters on Kalitas.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "d188a93a-cd9b-4a0b-80fb-738907b228cf"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

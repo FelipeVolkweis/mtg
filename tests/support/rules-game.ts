@@ -84,6 +84,7 @@ export function commanderFixture() {
       manaValue: 1,
       automationStatus: "implemented",
       abilities: [],
+      authoredAbilities: [],
     };
     catalog.printings[printingId] = {
       id: printingId,

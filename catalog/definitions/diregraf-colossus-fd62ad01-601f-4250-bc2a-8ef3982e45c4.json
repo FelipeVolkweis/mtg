@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "fd62ad01-601f-4250-bc2a-8ef3982e45c4",
-  "canonicalName": "Diregraf Colossus",
-  "defaultPrintingId": "89a24a9c-ad0d-49df-b7d8-e898da567e51",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Diregraf Colossus",
-      "manaCost": "{2}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie Giant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Giant"
-      ],
-      "keywords": [],
-      "rulesText": "This creature enters with a +1/+1 counter on it for each Zombie card in your graveyard.\nWhenever you cast a Zombie spell, create a tapped 2/2 black Zombie creature token.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "This creature enters with a +1/+1 counter on it for each Zombie card in your graveyard.\nWhenever you cast a Zombie spell, create a tapped 2/2 black Zombie creature token.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Diregraf Colossus",
+        "manaCost": "{2}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Giant"
+        ],
+        "keywords": [],
+        "rulesText": "This creature enters with a +1/+1 counter on it for each Zombie card in your graveyard.\nWhenever you cast a Zombie spell, create a tapped 2/2 black Zombie creature token.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "89a24a9c-ad0d-49df-b7d8-e898da567e51"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

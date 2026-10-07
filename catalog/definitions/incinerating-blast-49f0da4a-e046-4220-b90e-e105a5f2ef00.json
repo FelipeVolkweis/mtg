@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "49f0da4a-e046-4220-b90e-e105a5f2ef00",
-  "canonicalName": "Incinerating Blast",
-  "defaultPrintingId": "d58e20ab-c5ca-4295-884d-78efdaa83243",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Incinerating Blast",
-      "manaCost": "{4}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Incinerating Blast deals 6 damage to target creature.\nYou may discard a card. If you do, draw a card."
-    }
-  ],
-  "oracleText": "Incinerating Blast deals 6 damage to target creature.\nYou may discard a card. If you do, draw a card.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Incinerating Blast",
+        "manaCost": "{4}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Incinerating Blast deals 6 damage to target creature.\nYou may discard a card. If you do, draw a card."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "d58e20ab-c5ca-4295-884d-78efdaa83243"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

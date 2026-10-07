@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "54866c25-b332-46c8-a2c5-1a71b702ddc0",
-  "canonicalName": "Mindsparker",
-  "defaultPrintingId": "4c8b3e58-be07-451e-a5c7-61c70cc3a5a2",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Mindsparker",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Elemental",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elemental"
-      ],
-      "keywords": [
-        "First strike"
-      ],
-      "rulesText": "First strike (This creature deals combat damage before creatures without first strike.)\nWhenever an opponent casts a white or blue instant or sorcery spell, this creature deals 2 damage to that player.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "First strike (This creature deals combat damage before creatures without first strike.)\nWhenever an opponent casts a white or blue instant or sorcery spell, this creature deals 2 damage to that player.",
-  "keywords": [
-    "First strike"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mindsparker",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elemental"
+        ],
+        "keywords": [
+          "First strike"
+        ],
+        "rulesText": "First strike (This creature deals combat damage before creatures without first strike.)\nWhenever an opponent casts a white or blue instant or sorcery spell, this creature deals 2 damage to that player.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "4c8b3e58-be07-451e-a5c7-61c70cc3a5a2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

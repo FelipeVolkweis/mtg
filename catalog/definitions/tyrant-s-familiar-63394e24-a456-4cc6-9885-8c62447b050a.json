@@ -1,44 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "63394e24-a456-4cc6-9885-8c62447b050a",
-  "canonicalName": "Tyrant's Familiar",
-  "defaultPrintingId": "6cb14a03-4e8f-4b7e-90d6-eb1a29eb7b46",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Tyrant's Familiar",
-      "manaCost": "{5}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying",
-        "Haste",
-        "Lieutenant"
-      ],
-      "rulesText": "Flying, haste\nLieutenant — As long as you control your commander, this creature gets +2/+2 and has \"Whenever this creature attacks, it deals 7 damage to target creature defending player controls.\"",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying, haste\nLieutenant — As long as you control your commander, this creature gets +2/+2 and has \"Whenever this creature attacks, it deals 7 damage to target creature defending player controls.\"",
-  "keywords": [
-    "Flying",
-    "Haste",
-    "Lieutenant"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Tyrant's Familiar",
+        "manaCost": "{5}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying",
+          "Haste",
+          "Lieutenant"
+        ],
+        "rulesText": "Flying, haste\nLieutenant — As long as you control your commander, this creature gets +2/+2 and has \"Whenever this creature attacks, it deals 7 damage to target creature defending player controls.\"",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "6cb14a03-4e8f-4b7e-90d6-eb1a29eb7b46"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

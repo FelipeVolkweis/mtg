@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "326ba371-124c-4949-a048-3a0c8962e567",
-  "canonicalName": "Barren Moor",
-  "defaultPrintingId": "b4f6c5d3-9dce-48dc-aa0c-9324d6e2e77f",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Barren Moor",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Cycling"
-      ],
-      "rulesText": "This land enters tapped.\n{T}: Add {B}.\nCycling {B} ({B}, Discard this card: Draw a card.)"
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {B}.\nCycling {B} ({B}, Discard this card: Draw a card.)",
-  "keywords": [
-    "Cycling"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Barren Moor",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "rulesText": "This land enters tapped.\n{T}: Add {B}.\nCycling {B} ({B}, Discard this card: Draw a card.)"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b4f6c5d3-9dce-48dc-aa0c-9324d6e2e77f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

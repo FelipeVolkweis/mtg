@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "cf75dbd8-b65a-48d9-b96b-4afb43f336d1",
-  "canonicalName": "Macabre Waltz",
-  "defaultPrintingId": "4d1f3c84-89ba-4426-a80b-d524f172c912",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Macabre Waltz",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Return up to two target creature cards from your graveyard to your hand, then discard a card."
-    }
-  ],
-  "oracleText": "Return up to two target creature cards from your graveyard to your hand, then discard a card.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Macabre Waltz",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Return up to two target creature cards from your graveyard to your hand, then discard a card."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "4d1f3c84-89ba-4426-a80b-d524f172c912"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

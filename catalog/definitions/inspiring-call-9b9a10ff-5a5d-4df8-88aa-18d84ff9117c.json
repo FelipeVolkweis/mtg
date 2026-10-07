@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "9b9a10ff-5a5d-4df8-88aa-18d84ff9117c",
-  "canonicalName": "Inspiring Call",
-  "defaultPrintingId": "3e241642-5172-4437-b694-f6aa159d5cd9",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Inspiring Call",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Draw a card for each creature you control with a +1/+1 counter on it. Those creatures gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)"
-    }
-  ],
-  "oracleText": "Draw a card for each creature you control with a +1/+1 counter on it. Those creatures gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Inspiring Call",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw a card for each creature you control with a +1/+1 counter on it. Those creatures gain indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy them.)"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "3e241642-5172-4437-b694-f6aa159d5cd9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

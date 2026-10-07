@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "39cae244-96e1-4ea3-899a-3aa871cca31c",
-  "canonicalName": "Slumbering Cerberus",
-  "defaultPrintingId": "9d06faa8-201d-45db-b398-ad56f7b01848",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Slumbering Cerberus",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dog",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dog"
-      ],
-      "keywords": [
-        "Morbid"
-      ],
-      "rulesText": "This creature doesn't untap during your untap step.\nMorbid — At the beginning of each end step, if a creature died this turn, untap this creature.",
-      "power": "4",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "This creature doesn't untap during your untap step.\nMorbid — At the beginning of each end step, if a creature died this turn, untap this creature.",
-  "keywords": [
-    "Morbid"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Slumbering Cerberus",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dog"
+        ],
+        "keywords": [
+          "Morbid"
+        ],
+        "rulesText": "This creature doesn't untap during your untap step.\nMorbid — At the beginning of each end step, if a creature died this turn, untap this creature.",
+        "power": "4",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "9d06faa8-201d-45db-b398-ad56f7b01848"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

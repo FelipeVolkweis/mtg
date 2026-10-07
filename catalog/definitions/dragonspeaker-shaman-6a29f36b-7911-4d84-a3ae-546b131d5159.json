@@ -1,38 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "6a29f36b-7911-4d84-a3ae-546b131d5159",
-  "canonicalName": "Dragonspeaker Shaman",
-  "defaultPrintingId": "a44dbac8-756e-40a2-baed-2c7f4e20a962",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Dragonspeaker Shaman",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Human Barbarian Shaman",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Barbarian",
-        "Shaman"
-      ],
-      "keywords": [],
-      "rulesText": "Dragon spells you cast cost {2} less to cast.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Dragon spells you cast cost {2} less to cast.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dragonspeaker Shaman",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Barbarian",
+          "Shaman"
+        ],
+        "keywords": [],
+        "rulesText": "Dragon spells you cast cost {2} less to cast.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "a44dbac8-756e-40a2-baed-2c7f4e20a962"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

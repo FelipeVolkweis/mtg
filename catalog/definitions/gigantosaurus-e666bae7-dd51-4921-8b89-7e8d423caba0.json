@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "e666bae7-dd51-4921-8b89-7e8d423caba0",
-  "canonicalName": "Gigantosaurus",
-  "defaultPrintingId": "22c1d3c2-f038-4eab-8d6d-0e1001ee81cb",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Gigantosaurus",
-      "manaCost": "{G}{G}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "10",
-      "toughness": "10"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Gigantosaurus",
+        "manaCost": "{G}{G}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "10",
+        "toughness": "10"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "22c1d3c2-f038-4eab-8d6d-0e1001ee81cb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

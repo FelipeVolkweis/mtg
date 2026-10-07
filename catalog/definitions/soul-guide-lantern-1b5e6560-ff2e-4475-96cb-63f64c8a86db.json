@@ -1,63 +1,57 @@
 {
+  "catalogVersion": 2,
   "id": "1b5e6560-ff2e-4475-96cb-63f64c8a86db",
-  "canonicalName": "Soul-Guide Lantern",
-  "defaultPrintingId": "b005223d-aa57-4238-8c25-290141851177",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Soul-Guide Lantern",
-      "manaCost": "{1}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "When this artifact enters, exile target card from a graveyard.\n{T}, Sacrifice this artifact: Exile each opponent's graveyard.\n{1}, {T}, Sacrifice this artifact: Draw a card."
-    }
-  ],
-  "oracleText": "When this artifact enters, exile target card from a graveyard.\n{T}, Sacrifice this artifact: Exile each opponent's graveyard.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "exile-entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Soul-Guide Lantern",
+        "manaCost": "{1}",
+        "colors": [],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "When this artifact enters, exile target card from a graveyard.\n{T}, Sacrifice this artifact: Exile each opponent's graveyard.\n{1}, {T}, Sacrifice this artifact: Draw a card."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "b005223d-aa57-4238-8c25-290141851177"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "exile-entry",
+        "description": "When this artifact enters, exile target card from a graveyard.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "graveyard",
+              "object": "card"
+            }
+          }
+        ],
         "effects": [
           {
             "kind": "exile",
-            "subject": "target"
+            "objects": "target"
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        },
-        "target": {
-          "zone": "graveyard",
-          "kind": "card"
-        }
+        ]
       },
-      "description": "When this artifact enters, exile target card from a graveyard."
-    },
-    {
-      "id": "exile-graveyards",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "exile-graveyards",
+        "description": "{T}, Sacrifice this artifact: Exile each opponent's graveyard.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "tap-source"
@@ -69,22 +63,19 @@
         "effects": [
           {
             "kind": "exile",
-            "subject": "set",
-            "filter": {
-              "zone": "graveyard",
-              "owner": "opponent"
+            "objects": {
+              "all": {
+                "zone": "graveyard",
+                "owner": "opponents"
+              }
             }
           }
         ]
       },
-      "description": "{T}, Sacrifice this artifact: Exile each opponent's graveyard."
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{1}, {T}, Sacrifice this artifact: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -105,8 +96,7 @@
             "count": 1
           }
         ]
-      },
-      "description": "{1}, {T}, Sacrifice this artifact: Draw a card."
-    }
-  ]
+      }
+    ]
+  }
 }

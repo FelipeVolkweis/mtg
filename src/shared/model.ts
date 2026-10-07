@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { RulesAbility, RulesState } from "./rules.js";
+import type { Ability, CardForm } from "./rules-v2.js";
 
 export const id = z.uuid();
 const text = z.string().max(8000);
@@ -30,44 +31,35 @@ export const characteristicSchema = z
   })
   .strict();
 export type Characteristics = z.infer<typeof characteristicSchema>;
+/**
+ * A Card Definition as the engine uses it. The file stores only the imported
+ * facts and the authored abilities (card-model-refactor.md §3); the reader
+ * derives the name, mana value, keywords, Oracle text and type lines, and
+ * down-compiles the authored abilities into `abilities`.
+ */
 export interface CardDefinition {
   id: string;
   canonicalName: string;
   defaultPrintingId: string;
-  form: string;
+  form: CardForm;
   colorIdentity: string[];
   components: Characteristics[];
   oracleText: string;
   keywords: string[];
   manaValue: number;
   automationStatus: "unimplemented" | "implemented";
+  /** The runtime shapes the engine executes (down-compiled). */
   abilities: CardAbility[];
+  /** The DSL version 2 abilities, as authored in the file. */
+  authoredAbilities: Ability[];
 }
-export interface AbilityPrimitive {
-  primitive: string;
-  parameters?: Record<string, AbilityValue>;
-}
-export type AbilityValue =
-  | { kind: "integer"; value: number }
-  | { kind: "boolean"; value: boolean }
-  | { kind: "text"; value: string }
-  | { kind: "reference"; value: string }
-  | { kind: "mana-symbols"; symbols: string[] };
-export type AbilityCost =
-  | { kind: "mana"; symbols: string[] }
-  | ({ kind: "primitive" } & AbilityPrimitive);
 export interface CardAbility {
   id: string;
   description?: string;
   kind: "static" | "triggered" | "activated" | "spell";
-  origin: "printed" | "rules";
+  origin: "printed" | "granted";
   applicableZone?: ZoneKind;
-  keyword?: string;
   rules?: RulesAbility;
-  trigger?: { kind: "event" | "state"; condition: AbilityPrimitive };
-  costs?: AbilityCost[];
-  conditions?: AbilityPrimitive[];
-  effects?: AbilityPrimitive[];
 }
 export interface CardPrinting {
   id: string;

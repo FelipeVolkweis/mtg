@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "8226f31d-6f51-49c3-87f7-0c68f7f4f9ce",
-  "canonicalName": "Make Your Move",
-  "defaultPrintingId": "7368f861-3288-4645-90a7-ca35d6da3721",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Make Your Move",
-      "manaCost": "{2}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Destroy target artifact, enchantment, or creature with power 4 or greater."
-    }
-  ],
-  "oracleText": "Destroy target artifact, enchantment, or creature with power 4 or greater.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Make Your Move",
+        "manaCost": "{2}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Destroy target artifact, enchantment, or creature with power 4 or greater."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "7368f861-3288-4645-90a7-ca35d6da3721"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "a1602bd0-f346-43cf-86ec-1dd300a7f2ed",
-  "canonicalName": "Thundermane Dragon",
-  "defaultPrintingId": "63752806-2186-46c5-9faa-f0835ab3b5d1",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Thundermane Dragon",
-      "manaCost": "{3}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nYou may look at the top card of your library any time.\nYou may cast creature spells with power 4 or greater from the top of your library. If you cast a creature spell this way, it gains haste until end of turn.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nYou may look at the top card of your library any time.\nYou may cast creature spells with power 4 or greater from the top of your library. If you cast a creature spell this way, it gains haste until end of turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thundermane Dragon",
+        "manaCost": "{3}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nYou may look at the top card of your library any time.\nYou may cast creature spells with power 4 or greater from the top of your library. If you cast a creature spell this way, it gains haste until end of turn.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "63752806-2186-46c5-9faa-f0835ab3b5d1"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

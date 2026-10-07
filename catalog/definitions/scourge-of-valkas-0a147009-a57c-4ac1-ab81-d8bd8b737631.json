@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "0a147009-a57c-4ac1-ab81-d8bd8b737631",
-  "canonicalName": "Scourge of Valkas",
-  "defaultPrintingId": "1f8686d0-2a67-4db0-bf69-c706301fc2bc",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Scourge of Valkas",
-      "manaCost": "{2}{R}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever this creature or another Dragon you control enters, it deals X damage to any target, where X is the number of Dragons you control.\n{R}: This creature gets +1/+0 until end of turn.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhenever this creature or another Dragon you control enters, it deals X damage to any target, where X is the number of Dragons you control.\n{R}: This creature gets +1/+0 until end of turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Scourge of Valkas",
+        "manaCost": "{2}{R}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever this creature or another Dragon you control enters, it deals X damage to any target, where X is the number of Dragons you control.\n{R}: This creature gets +1/+0 until end of turn.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "1f8686d0-2a67-4db0-bf69-c706301fc2bc"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

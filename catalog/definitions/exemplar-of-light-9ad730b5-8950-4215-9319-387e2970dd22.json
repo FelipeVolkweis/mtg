@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "9ad730b5-8950-4215-9319-387e2970dd22",
-  "canonicalName": "Exemplar of Light",
-  "defaultPrintingId": "4331836b-fa3c-4505-9361-a0b82aef63f5",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Exemplar of Light",
-      "manaCost": "{2}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever you gain life, put a +1/+1 counter on this creature.\nWhenever you put one or more +1/+1 counters on this creature, draw a card. This ability triggers only once each turn.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you gain life, put a +1/+1 counter on this creature.\nWhenever you put one or more +1/+1 counters on this creature, draw a card. This ability triggers only once each turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Exemplar of Light",
+        "manaCost": "{2}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever you gain life, put a +1/+1 counter on this creature.\nWhenever you put one or more +1/+1 counters on this creature, draw a card. This ability triggers only once each turn.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "4331836b-fa3c-4505-9361-a0b82aef63f5"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

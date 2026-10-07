@@ -1,49 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "14878a5f-7983-4133-a1a7-9d539531e092",
-  "canonicalName": "Angel of the Ruins",
-  "defaultPrintingId": "3a3f00d5-5847-4fc8-8c76-81ea11ce4376",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Angel of the Ruins",
-      "manaCost": "{5}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Artifact Creature — Angel",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Plainscycling",
-        "Landcycling",
-        "Typecycling",
-        "Cycling"
-      ],
-      "rulesText": "Flying\nWhen this creature enters, exile up to two target artifacts and/or enchantments.\nPlainscycling {2} ({2}, Discard this card: Search your library for a Plains card, reveal it, put it into your hand, then shuffle.)",
-      "power": "5",
-      "toughness": "7"
-    }
-  ],
-  "oracleText": "Flying\nWhen this creature enters, exile up to two target artifacts and/or enchantments.\nPlainscycling {2} ({2}, Discard this card: Search your library for a Plains card, reveal it, put it into your hand, then shuffle.)",
-  "keywords": [
-    "Flying",
-    "Plainscycling",
-    "Landcycling",
-    "Typecycling",
-    "Cycling"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Angel of the Ruins",
+        "manaCost": "{5}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Plainscycling",
+          "Landcycling",
+          "Typecycling",
+          "Cycling"
+        ],
+        "rulesText": "Flying\nWhen this creature enters, exile up to two target artifacts and/or enchantments.\nPlainscycling {2} ({2}, Discard this card: Search your library for a Plains card, reveal it, put it into your hand, then shuffle.)",
+        "power": "5",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "3a3f00d5-5847-4fc8-8c76-81ea11ce4376"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

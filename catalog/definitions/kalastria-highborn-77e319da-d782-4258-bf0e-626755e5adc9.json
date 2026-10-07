@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "77e319da-d782-4258-bf0e-626755e5adc9",
-  "canonicalName": "Kalastria Highborn",
-  "defaultPrintingId": "a3a055ed-60b0-4d35-ad58-04f324b56d65",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Kalastria Highborn",
-      "manaCost": "{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Shaman",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Shaman"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kalastria Highborn",
+        "manaCost": "{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Shaman"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature or another Vampire you control dies, you may pay {B}. If you do, target player loses 2 life and you gain 2 life.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "a3a055ed-60b0-4d35-ad58-04f324b56d65"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

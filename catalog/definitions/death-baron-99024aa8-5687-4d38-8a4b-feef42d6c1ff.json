@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "99024aa8-5687-4d38-8a4b-feef42d6c1ff",
-  "canonicalName": "Death Baron",
-  "defaultPrintingId": "ddfc57da-6cfd-4b81-8fc0-51270edc0200",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Death Baron",
-      "manaCost": "{1}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie Wizard",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "Skeletons you control and other Zombies you control get +1/+1 and have deathtouch. (Any amount of damage they deal to a creature is enough to destroy it.)",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Skeletons you control and other Zombies you control get +1/+1 and have deathtouch. (Any amount of damage they deal to a creature is enough to destroy it.)",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Death Baron",
+        "manaCost": "{1}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "Skeletons you control and other Zombies you control get +1/+1 and have deathtouch. (Any amount of damage they deal to a creature is enough to destroy it.)",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "ddfc57da-6cfd-4b81-8fc0-51270edc0200"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

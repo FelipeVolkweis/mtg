@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "032b5fc4-5aca-41b6-9bf6-2c1ed0018968",
-  "canonicalName": "Aggressive Mammoth",
-  "defaultPrintingId": "7724b978-999b-4654-96f3-58e28aa7cb34",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Aggressive Mammoth",
-      "manaCost": "{3}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elephant",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elephant"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nOther creatures you control have trample.",
-      "power": "8",
-      "toughness": "8"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nOther creatures you control have trample.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Aggressive Mammoth",
+        "manaCost": "{3}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elephant"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nOther creatures you control have trample.",
+        "power": "8",
+        "toughness": "8"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "7724b978-999b-4654-96f3-58e28aa7cb34"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

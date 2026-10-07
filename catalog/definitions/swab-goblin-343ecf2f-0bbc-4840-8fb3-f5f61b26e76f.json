@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "343ecf2f-0bbc-4840-8fb3-f5f61b26e76f",
-  "canonicalName": "Swab Goblin",
-  "defaultPrintingId": "8db11970-74c2-463d-88bb-9f88aa079eaa",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Swab Goblin",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Pirate",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Pirate"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Swab Goblin",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Pirate"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "8db11970-74c2-463d-88bb-9f88aa079eaa"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

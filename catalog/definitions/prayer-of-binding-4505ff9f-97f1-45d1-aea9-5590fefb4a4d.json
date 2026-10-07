@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "4505ff9f-97f1-45d1-aea9-5590fefb4a4d",
-  "canonicalName": "Prayer of Binding",
-  "defaultPrintingId": "8d05289c-d8de-4085-ac01-5dd8fd954d35",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Prayer of Binding",
-      "manaCost": "{3}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash\nWhen this enchantment enters, exile up to one target nonland permanent an opponent controls until this enchantment leaves the battlefield. You gain 2 life."
-    }
-  ],
-  "oracleText": "Flash\nWhen this enchantment enters, exile up to one target nonland permanent an opponent controls until this enchantment leaves the battlefield. You gain 2 life.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Prayer of Binding",
+        "manaCost": "{3}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash\nWhen this enchantment enters, exile up to one target nonland permanent an opponent controls until this enchantment leaves the battlefield. You gain 2 life."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "8d05289c-d8de-4085-ac01-5dd8fd954d35"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

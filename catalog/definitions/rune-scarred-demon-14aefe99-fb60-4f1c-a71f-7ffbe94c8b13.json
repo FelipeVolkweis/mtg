@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "14aefe99-fb60-4f1c-a71f-7ffbe94c8b13",
-  "canonicalName": "Rune-Scarred Demon",
-  "defaultPrintingId": "1eae3165-554d-4759-8f18-794e2a7d8464",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Rune-Scarred Demon",
-      "manaCost": "{5}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Demon",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Demon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhen this creature enters, search your library for a card, put it into your hand, then shuffle.",
-      "power": "6",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Flying\nWhen this creature enters, search your library for a card, put it into your hand, then shuffle.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rune-Scarred Demon",
+        "manaCost": "{5}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Demon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhen this creature enters, search your library for a card, put it into your hand, then shuffle.",
+        "power": "6",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "1eae3165-554d-4759-8f18-794e2a7d8464"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

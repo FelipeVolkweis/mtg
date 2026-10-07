@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "396cc8ce-9efa-4fc7-90a6-b439b2b021db",
-  "canonicalName": "Battlesong Berserker",
-  "defaultPrintingId": "a1f8b199-5d62-485f-b1c3-b30aa550595b",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Battlesong Berserker",
-      "manaCost": "{3}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Human Berserker",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Berserker"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever you attack, target creature you control gets +1/+0 and gains menace until end of turn. (It can't be blocked except by two or more creatures.)",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Whenever you attack, target creature you control gets +1/+0 and gains menace until end of turn. (It can't be blocked except by two or more creatures.)",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Battlesong Berserker",
+        "manaCost": "{3}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Berserker"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever you attack, target creature you control gets +1/+0 and gains menace until end of turn. (It can't be blocked except by two or more creatures.)",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "a1f8b199-5d62-485f-b1c3-b30aa550595b"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

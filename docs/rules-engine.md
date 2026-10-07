@@ -19,7 +19,9 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 | --- | --- |
 | [MatchService](../src/server/match/match.service.ts) | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results. |
 | [RulesEngine](../src/server/match/rules-engine.ts) | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints. |
-| [Shared rules model](../src/shared/rules.ts) | Defines the strict Zod schemas and TypeScript types for authored abilities, costs, filters, targets, effects, triggers, pending procedures, and persisted rules state. |
+| [Card DSL v2](../src/shared/rules-v2.ts) | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords. |
+| [Rules Compiler](../src/server/rules/compiler.ts) and [down-compiler](../src/server/rules/down-compiler.ts) | Validate and desugar authored abilities into the Core AST, then lower it into the runtime shapes the engine executes today. |
+| [Shared rules model](../src/shared/rules.ts) | Defines the runtime ability shape the down-compiler emits, pending procedures, and persisted rules state. |
 | [Match view](../src/server/match/match-view.ts) | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see. |
 | [Commander support gate](../src/server/match/commander.ts) | Validates Commander Decklist rules and checks that each Card Definition has implemented, schema-valid, supported behavior. |
 
@@ -31,24 +33,47 @@ interrupted command for resumption after the choice.
 
 ## Authored rules and coverage
 
-Executable card behavior lives in `CardAbility.rules`. The `rulesAbilitySchema`
-in [shared rules](../src/shared/rules.ts) strictly validates the supported shape:
-costs, mana and other value expressions, Object Filters, targets, triggered
-events, continuous changes, and semantic effects. The catalog keeps this authored
-composition alongside imported card facts such as characteristics, keywords,
-and Oracle Text.
+Each Card Definition is one `catalogVersion: 2` file in `catalog/definitions/`
+with two sections ([card model plan §3](plans/card-model-refactor.md)):
+
+- `imported`: the form, Card Components, Color Identity and default Printing. A
+  set import writes only this section.
+- `authored`: the automation status and the card's abilities in the rules DSL
+  version 2 ([DSL plan §4](plans/dsl-redesign.md)). Reviewers own it; a diff
+  here is a rules change, and a set import never touches it.
+
+The file stores no derived values. The
+[catalog reader](../src/server/catalog/catalog-files.ts) loads each file in
+four steps:
+
+1. Parse the file against `cardDefinitionFileSchema`.
+2. Derive the canonical name, mana value, keywords, Oracle Text and type lines
+   from the components ([derive.ts](../src/server/catalog/derive.ts)).
+3. Compile the authored abilities with the Rules Compiler, which checks
+   references (targets, bindings, X, links, tokens, counters), expands macro
+   keywords and tags layers. An authoring error fails the load with the card
+   name and the path.
+4. Down-compile the Core AST into `CardAbility.rules`, the shapes the engine
+   executes. An implemented card that uses a construct the current runtime
+   can't run fails the load; an unimplemented one loads without runtime
+   abilities.
+
+The catalog gate (`tests/rules/compiler/catalog-gate.spec.ts`) compiles every
+definition and down-compiles every implemented one. Publishing writes each
+definition back as its version 2 file, so reading and republishing the catalog
+reproduces it byte for byte. The down-compiler is temporary: the effect
+handlers and the rule VM read the Core AST directly once they exist.
 
 Commander setup calls `automationEligible` for every card in the selected
 Decklist. It requires an implemented Card Definition, a supported card form,
-valid authored rules for each ability, and an authored implementation for each
-keyword. A keyword, primitive ability record, or Oracle Text alone does not make
-a behavior executable. Unsupported cards are reported during setup rather than
+valid runtime rules for each ability, and an authored implementation for each
+keyword. A keyword or Oracle Text alone does not make a behavior executable. Unsupported cards are reported during setup rather than
 being silently accepted with partial behavior.
 
 This is a curated rules implementation, not a complete Comprehensive Rules
-engine. New card support requires both a composition that passes schema and
-support checks and engine code that performs its costs, choices, events, and
-effects correctly.
+engine. New card support requires both an authored composition that compiles,
+down-compiles and passes the support checks, and engine code that performs its
+costs, choices, events, and effects correctly.
 
 ## Command and resolution flow
 

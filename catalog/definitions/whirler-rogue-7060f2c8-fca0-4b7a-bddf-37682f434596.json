@@ -1,104 +1,95 @@
 {
+  "catalogVersion": 2,
   "id": "7060f2c8-fca0-4b7a-bddf-37682f434596",
-  "canonicalName": "Whirler Rogue",
-  "defaultPrintingId": "51505039-b6f6-4dd6-9a09-5494e030deff",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Whirler Rogue",
-      "manaCost": "{2}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature \u2014 Human Rogue Artificer",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Rogue",
-        "Artificer"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Whirler Rogue",
+        "manaCost": "{2}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Rogue",
+          "Artificer"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.\nTap two untapped artifacts you control: Target creature can't be blocked this turn.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "51505039-b6f6-4dd6-9a09-5494e030deff"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "entry",
+        "description": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
         "effects": [
           {
             "kind": "create-token",
-            "token": "thopter",
+            "token": "thopter-1-1-flying",
             "count": 2
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
+        ]
       },
-      "description": "When this creature enters, create two 1/1 colorless Thopter artifact creature tokens with flying."
-    },
-    {
-      "id": "unblockable",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "unblockable",
+        "description": "Tap two untapped artifacts you control: Target creature can't be blocked this turn.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "tap",
             "count": 2,
             "filter": {
               "zone": "battlefield",
-              "controller": "you",
-              "types": [
+              "type": [
                 "Artifact"
               ],
-              "untapped": true
+              "controller": "you",
+              "status": "untapped"
+            }
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
             }
           }
         ],
         "effects": [
           {
-            "kind": "animate-source",
-            "recipient": "target",
-            "changes": [
-              {
-                "kind": "grant-keyword",
-                "keyword": "Unblockable"
-              }
-            ]
+            "kind": "apply-grant",
+            "grant": {
+              "kind": "block-restriction",
+              "objects": "target"
+            },
+            "duration": "end-of-turn"
           }
-        ],
-        "target": {
-          "zone": "battlefield",
-          "types": [
-            "Creature"
-          ]
-        }
-      },
-      "description": "Tap two untapped artifacts you control: Target creature can't be blocked this turn."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

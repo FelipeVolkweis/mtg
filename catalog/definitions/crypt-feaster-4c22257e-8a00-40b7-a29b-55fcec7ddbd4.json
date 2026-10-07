@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "4c22257e-8a00-40b7-a29b-55fcec7ddbd4",
-  "canonicalName": "Crypt Feaster",
-  "defaultPrintingId": "3b072811-998a-4a71-b59c-6afecc0dc4b6",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Crypt Feaster",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [
-        "Threshold",
-        "Menace"
-      ],
-      "rulesText": "Menace (This creature can't be blocked except by two or more creatures.)\nThreshold — Whenever this creature attacks, if there are seven or more cards in your graveyard, this creature gets +2/+0 until end of turn.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Menace (This creature can't be blocked except by two or more creatures.)\nThreshold — Whenever this creature attacks, if there are seven or more cards in your graveyard, this creature gets +2/+0 until end of turn.",
-  "keywords": [
-    "Threshold",
-    "Menace"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Crypt Feaster",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [
+          "Threshold",
+          "Menace"
+        ],
+        "rulesText": "Menace (This creature can't be blocked except by two or more creatures.)\nThreshold — Whenever this creature attacks, if there are seven or more cards in your graveyard, this creature gets +2/+0 until end of turn.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "3b072811-998a-4a71-b59c-6afecc0dc4b6"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

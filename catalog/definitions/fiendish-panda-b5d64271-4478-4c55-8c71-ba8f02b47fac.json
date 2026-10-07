@@ -1,39 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "b5d64271-4478-4c55-8c71-ba8f02b47fac",
-  "canonicalName": "Fiendish Panda",
-  "defaultPrintingId": "4e434d74-cad0-45f5-bc8d-f34aa5e1d879",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Fiendish Panda",
-      "manaCost": "{2}{W}{B}",
-      "colors": [
-        "B",
-        "W"
-      ],
-      "typeLine": "Creature — Bear Demon",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bear",
-        "Demon"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever you gain life, put a +1/+1 counter on this creature.\nWhen this creature dies, return another target non-Bear creature card with mana value less than or equal to this creature's power from your graveyard to the battlefield.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever you gain life, put a +1/+1 counter on this creature.\nWhen this creature dies, return another target non-Bear creature card with mana value less than or equal to this creature's power from your graveyard to the battlefield.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fiendish Panda",
+        "manaCost": "{2}{W}{B}",
+        "colors": [
+          "B",
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bear",
+          "Demon"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever you gain life, put a +1/+1 counter on this creature.\nWhen this creature dies, return another target non-Bear creature card with mana value less than or equal to this creature's power from your graveyard to the battlefield.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "W"
+    ],
+    "defaultPrintingId": "4e434d74-cad0-45f5-bc8d-f34aa5e1d879"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

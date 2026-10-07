@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "183891b0-b5ec-47f4-8d09-b9d3cfc4e7f1",
-  "canonicalName": "God-Eternal Bontu",
-  "defaultPrintingId": "0070d335-d42d-4ccc-b828-405b7dd00868",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "God-Eternal Bontu",
-      "manaCost": "{3}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Legendary Creature — Zombie God",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "God"
-      ],
-      "keywords": [
-        "Menace"
-      ],
-      "rulesText": "Menace\nWhen God-Eternal Bontu enters, sacrifice any number of other permanents, then draw that many cards.\nWhen God-Eternal Bontu dies or is put into exile from the battlefield, you may put her into her owner's library third from the top.",
-      "power": "5",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Menace\nWhen God-Eternal Bontu enters, sacrifice any number of other permanents, then draw that many cards.\nWhen God-Eternal Bontu dies or is put into exile from the battlefield, you may put her into her owner's library third from the top.",
-  "keywords": [
-    "Menace"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "God-Eternal Bontu",
+        "manaCost": "{3}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "God"
+        ],
+        "keywords": [
+          "Menace"
+        ],
+        "rulesText": "Menace\nWhen God-Eternal Bontu enters, sacrifice any number of other permanents, then draw that many cards.\nWhen God-Eternal Bontu dies or is put into exile from the battlefield, you may put her into her owner's library third from the top.",
+        "power": "5",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "0070d335-d42d-4ccc-b828-405b7dd00868"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

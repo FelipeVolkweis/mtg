@@ -1,103 +1,87 @@
 {
+  "catalogVersion": 2,
   "id": "eaffdf95-8e20-408d-99fa-3adc9e19523d",
-  "canonicalName": "Misleading Signpost",
-  "defaultPrintingId": "74774cba-89b9-43c3-9648-df5a5e28a71b",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Misleading Signpost",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash\nWhen this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)\n{T}: Add {U}."
-    }
-  ],
-  "oracleText": "Flash\nWhen this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)\n{T}: Add {U}.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "flash",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flash"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Misleading Signpost",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash\nWhen this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)\n{T}: Add {U}."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "74774cba-89b9-43c3-9648-df5a5e28a71b"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flash",
+        "description": "Flash",
+        "kind": "keyword",
+        "keyword": "flash"
       },
-      "description": "Flash"
-    },
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
-        ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "U"
-            ]
-          }
-        ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add {U}."
-    },
-    {
-      "id": "redirect-attack",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "redirect-attack"
-          }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "step": 5
+      {
+        "id": "mana",
+        "description": "{T}: Add {U}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
         },
-        "target": {
-          "zone": "battlefield",
-          "types": [
-            "Creature"
-          ],
-          "attacking": true
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "U"
+          ]
         }
       },
-      "description": "When this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)"
-    }
-  ]
+      {
+        "id": "redirect-attack",
+        "description": "When this artifact enters during the declare attackers step, you may reselect which player or permanent target attacking creature is attacking. (It can't attack its controller or their permanents.)",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source",
+          "during": "declare-attackers"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "status": "attacking"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "reselect-defender",
+            "attacker": "target"
+          }
+        ]
+      }
+    ]
+  }
 }

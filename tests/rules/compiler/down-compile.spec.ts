@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { readCatalog } from "../../../src/server/catalog/catalog-files";
-import { migrateDefinition } from "../../../src/server/catalog/migrate-rules-v2";
 import { compileCard } from "../../../src/server/rules/compiler";
 import { downCompile } from "../../../src/server/rules/down-compiler";
 import { readRegistries } from "../../../src/server/rules/registries";
@@ -9,13 +8,13 @@ import type { CardAbility } from "../../../src/shared/model";
 import { rulesAbilitySchema } from "../../../src/shared/rules";
 import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
 
-// Golden test (rules-test-plan.md §17, "DSL migration"): for every
-// implemented card, the migration's output compiled and down-compiled equals
-// what the engine runs today. Only the ability fields the engine reads are
-// compared: id, kind, description, the activation zone of activated
-// abilities (canActivateFromZone, the cycling check) and the rules. The
-// ability-level keyword and origin are never read; applicableZone on other
-// kinds is never read.
+// Golden test (rules-test-plan.md §17, "DSL migration"): every implemented
+// card, loaded from its version 2 file through compiler and down-compiler,
+// runs what the version 1 catalog ran. tests/fixtures/golden holds the
+// version 1 runtime abilities, captured when the catalog was migrated
+// (roadmap issue 6). Only the ability fields the engine reads are compared:
+// id, kind, description, the activation zone of activated abilities
+// (canActivateFromZone, the cycling check) and the rules.
 const engineView = (ability: CardAbility) => ({
   id: ability.id,
   kind: ability.kind,
@@ -26,49 +25,28 @@ const engineView = (ability: CardAbility) => ({
       : undefined,
   rules: rulesAbilitySchema.parse(ability.rules),
 });
+const golden: Record<string, unknown[]> = JSON.parse(
+  readFileSync("tests/fixtures/golden/v1-runtime-abilities.json", "utf8"),
+);
 
-test("every implemented card round-trips through migration, compiler and down-compiler", async () => {
+test("every implemented card loads to the version 1 runtime abilities", async () => {
   const catalog = await readCatalog("catalog");
-  const registries = await readRegistries("catalog");
   const implemented = Object.values(catalog.definitions).filter(
     (card) => card.automationStatus === "implemented",
   );
   expect(implemented.length).toBe(67);
-  const failures: string[] = [];
-  for (const card of implemented) {
-    const migrated = migrateDefinition(card);
-    if (!migrated.ok) {
-      failures.push(
-        `${card.canonicalName}: ${JSON.stringify(migrated.errors)}`,
-      );
-      continue;
-    }
-    const compiled = compileCard(
-      {
-        components: migrated.file.imported.components,
-        abilities: migrated.file.authored.abilities,
-      },
-      registries,
-    );
-    if (!compiled.ok) {
-      failures.push(
-        `${card.canonicalName}: ${JSON.stringify(compiled.errors)}`,
-      );
-      continue;
-    }
-    const down = downCompile(compiled.abilities);
-    if (!down.ok) {
-      failures.push(`${card.canonicalName}: ${JSON.stringify(down.errors)}`);
-      continue;
-    }
-    const expected = JSON.stringify(card.abilities.map(engineView));
-    const actual = JSON.stringify(down.abilities.map(engineView));
-    if (expected !== actual)
-      expect
-        .soft(down.abilities.map(engineView), card.canonicalName)
-        .toEqual(card.abilities.map(engineView));
-  }
-  expect(failures).toEqual([]);
+  for (const card of implemented)
+    expect
+      .soft(
+        JSON.parse(JSON.stringify(card.abilities.map(engineView))),
+        card.canonicalName,
+      )
+      .toEqual(golden[card.id] ?? []);
+  expect(
+    Object.keys(golden).filter(
+      (id) => catalog.definitions[id]?.automationStatus !== "implemented",
+    ),
+  ).toEqual([]);
 });
 
 test("constructs the current runtime can't run fail with a clear error", async () => {

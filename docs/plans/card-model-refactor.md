@@ -229,6 +229,8 @@ The script is shared with the DSL redesign (dsl-redesign.md §9):
 
 The importer (`catalog.service.ts`) and the catalog reader (`catalog-files.ts`) switch to version 2 in the same change.
 
+**As built (roadmap issue 6):** the in-memory `CardDefinition` keeps the derived fields and the down-compiled `abilities`, and adds `authoredAbilities` (the DSL v2 abilities as authored), so `publishCatalog` writes each definition back as its version 2 file (`definitionFile`). The importer builds the `imported` section from Scryfall and copies `authored` from the existing definition unchanged. `CardAbility.origin` is `"printed" | "granted"`; the engine's intrinsic basic land mana abilities are `"printed"` (CR 305.6).
+
 ---
 
 # 7. Tests

@@ -595,7 +595,8 @@ export class RulesEngine {
           abilities.push({
             id: `intrinsic-${subtype}`,
             kind: "activated",
-            origin: "rules",
+            // CR 305.6: a basic land type's mana ability is intrinsic.
+            origin: "printed",
             applicableZone: "battlefield",
             rules: {
               costs: [{ kind: "tap-source" }],

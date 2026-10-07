@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "467e22c3-6107-40ff-afc7-5960710c970b",
-  "canonicalName": "Adamant Will",
-  "defaultPrintingId": "1fd2c9ab-b3dd-4f68-b91f-0f075a045757",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Adamant Will",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target creature gets +2/+2 and gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)"
-    }
-  ],
-  "oracleText": "Target creature gets +2/+2 and gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Adamant Will",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target creature gets +2/+2 and gains indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "1fd2c9ab-b3dd-4f68-b91f-0f075a045757"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

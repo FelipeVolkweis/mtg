@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "6cf50e21-0f60-4e9a-b910-ebe1bad2a29e",
-  "canonicalName": "Blasphemous Edict",
-  "defaultPrintingId": "11040ecd-3153-4029-b42b-1441bc51ec34",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Blasphemous Edict",
-      "manaCost": "{3}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "You may pay {B} rather than pay this spell's mana cost if there are thirteen or more creatures on the battlefield.\nEach player sacrifices thirteen creatures of their choice."
-    }
-  ],
-  "oracleText": "You may pay {B} rather than pay this spell's mana cost if there are thirteen or more creatures on the battlefield.\nEach player sacrifices thirteen creatures of their choice.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Blasphemous Edict",
+        "manaCost": "{3}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "You may pay {B} rather than pay this spell's mana cost if there are thirteen or more creatures on the battlefield.\nEach player sacrifices thirteen creatures of their choice."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "11040ecd-3153-4029-b42b-1441bc51ec34"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

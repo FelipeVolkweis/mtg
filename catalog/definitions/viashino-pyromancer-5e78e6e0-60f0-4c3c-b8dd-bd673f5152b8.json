@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "5e78e6e0-60f0-4c3c-b8dd-bd673f5152b8",
-  "canonicalName": "Viashino Pyromancer",
-  "defaultPrintingId": "9f52ada2-cabc-46a3-99df-271833a86909",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Viashino Pyromancer",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Lizard Wizard",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Lizard",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, it deals 2 damage to target player or planeswalker.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "When this creature enters, it deals 2 damage to target player or planeswalker.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Viashino Pyromancer",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Lizard",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, it deals 2 damage to target player or planeswalker.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "9f52ada2-cabc-46a3-99df-271833a86909"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

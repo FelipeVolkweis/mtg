@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "f6de5bd7-7704-4a0c-a27a-9e565e49f5e9",
-  "canonicalName": "Dragonstorm Globe",
-  "defaultPrintingId": "7f991430-73e2-4da9-b878-10d684dfeafd",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Dragonstorm Globe",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Each Dragon you control enters with an additional +1/+1 counter on it.\n{T}: Add one mana of any color."
-    }
-  ],
-  "oracleText": "Each Dragon you control enters with an additional +1/+1 counter on it.\n{T}: Add one mana of any color.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dragonstorm Globe",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Each Dragon you control enters with an additional +1/+1 counter on it.\n{T}: Add one mana of any color."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "7f991430-73e2-4da9-b878-10d684dfeafd"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

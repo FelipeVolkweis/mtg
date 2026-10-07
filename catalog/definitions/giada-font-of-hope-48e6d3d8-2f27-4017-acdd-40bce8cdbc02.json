@@ -1,44 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "48e6d3d8-2f27-4017-acdd-40bce8cdbc02",
-  "canonicalName": "Giada, Font of Hope",
-  "defaultPrintingId": "4ebc7622-08a1-4f43-92dd-8675d395e8f6",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Giada, Font of Hope",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Angel",
-      "manaValue": 2,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Vigilance"
-      ],
-      "rulesText": "Flying, vigilance\nEach other Angel you control enters with an additional +1/+1 counter on it for each Angel you already control.\n{T}: Add {W}. Spend this mana only to cast an Angel spell.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying, vigilance\nEach other Angel you control enters with an additional +1/+1 counter on it for each Angel you already control.\n{T}: Add {W}. Spend this mana only to cast an Angel spell.",
-  "keywords": [
-    "Flying",
-    "Vigilance"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Giada, Font of Hope",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance"
+        ],
+        "rulesText": "Flying, vigilance\nEach other Angel you control enters with an additional +1/+1 counter on it for each Angel you already control.\n{T}: Add {W}. Spend this mana only to cast an Angel spell.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "4ebc7622-08a1-4f43-92dd-8675d395e8f6"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

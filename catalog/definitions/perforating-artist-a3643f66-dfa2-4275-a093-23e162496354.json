@@ -1,44 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "a3643f66-dfa2-4275-a093-23e162496354",
-  "canonicalName": "Perforating Artist",
-  "defaultPrintingId": "72980409-53f0-43c1-965e-06f22e7bb608",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Perforating Artist",
-      "manaCost": "{1}{B}{R}",
-      "colors": [
-        "B",
-        "R"
-      ],
-      "typeLine": "Creature — Devil",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Devil"
-      ],
-      "keywords": [
-        "Raid",
-        "Deathtouch"
-      ],
-      "rulesText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nRaid — At the beginning of your end step, if you attacked this turn, each opponent loses 3 life unless that player sacrifices a nonland permanent of their choice or discards a card.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nRaid — At the beginning of your end step, if you attacked this turn, each opponent loses 3 life unless that player sacrifices a nonland permanent of their choice or discards a card.",
-  "keywords": [
-    "Raid",
-    "Deathtouch"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Perforating Artist",
+        "manaCost": "{1}{B}{R}",
+        "colors": [
+          "B",
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Devil"
+        ],
+        "keywords": [
+          "Raid",
+          "Deathtouch"
+        ],
+        "rulesText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nRaid — At the beginning of your end step, if you attacked this turn, each opponent loses 3 life unless that player sacrifices a nonland permanent of their choice or discards a card.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "R"
+    ],
+    "defaultPrintingId": "72980409-53f0-43c1-965e-06f22e7bb608"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

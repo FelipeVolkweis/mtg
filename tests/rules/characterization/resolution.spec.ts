@@ -28,6 +28,7 @@ import { gameObject } from "../../../src/server/match/game-objects";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("Counterspell and Negate select spells rather than ability objects and resolve in Stack order", async () => {
   const { match, command, seed, room } = await rulesGame();
@@ -653,18 +654,17 @@ test("noncombat ability damage retains the permanent source after sacrifice", as
     game.catalog.definitions[
       game.match.instances[bomb.cardInstanceIds[0]].definitionId
     ];
-  card.abilities = [
+  await author(card, [
     {
       id: "damage",
       kind: "activated",
-      origin: "printed",
-      rules: {
-        costs: [{ kind: "sacrifice-source" }],
-        target: { zone: "battlefield", types: ["Creature"] },
-        effects: [{ kind: "damage", amount: 1 }],
-      },
+      costs: [{ kind: "sacrifice-source" }],
+      targets: [
+        { id: "target-0", filter: { zone: "battlefield", type: ["Creature"] } },
+      ],
+      effects: [{ kind: "damage", amount: 1, to: "target" }],
     },
-  ];
+  ]);
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   game.command(0, {

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "1adcf587-9035-4299-a2bd-62f805fdd897",
-  "canonicalName": "Highborn Vampire",
-  "defaultPrintingId": "53c56a23-eb4f-4be1-ada9-1ad5b80195d3",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Highborn Vampire",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Warrior",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Warrior"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "4",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Highborn Vampire",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Warrior"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "4",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "53c56a23-eb4f-4be1-ada9-1ad5b80195d3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

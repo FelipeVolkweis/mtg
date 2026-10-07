@@ -980,9 +980,18 @@ class Compiler {
             this.change(change, at(`changes[${i}]`), characteristicDefining),
           ),
         };
-      case "cost-modifier":
+      case "cost-modifier": {
         if (grant.reduce === undefined && grant.increase === undefined)
           this.fail(s.path, "A cost modifier needs reduce or increase.");
+        // X is chosen before the total cost is determined (CR 601.2b,
+        // 601.2f), so a modifier of this spell's own cost may read it.
+        const amount = (field: string) => ({
+          ...at(field),
+          x:
+            s.x ||
+            (grant.applies === "this" &&
+              this.source.components.some((c) => c.manaCost?.includes("{X}"))),
+        });
         return {
           ...grant,
           applies:
@@ -1002,15 +1011,16 @@ class Compiler {
                     ),
                   },
           ...(grant.reduce !== undefined
-            ? { reduce: this.value(grant.reduce, at("reduce")) }
+            ? { reduce: this.value(grant.reduce, amount("reduce")) }
             : {}),
           ...(grant.increase !== undefined
-            ? { increase: this.value(grant.increase, at("increase")) }
+            ? { increase: this.value(grant.increase, amount("increase")) }
             : {}),
           ...(grant.condition
             ? { condition: this.condition(grant.condition, at("condition")) }
             : {}),
         };
+      }
       case "cast-timing":
         return { ...grant, spells: this.predicate(grant.spells, at("spells")) };
       case "play-permission":

@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "235e3231-c5e5-4696-a867-705b2c4158fe",
-  "canonicalName": "Scrapshooter",
-  "defaultPrintingId": "54816109-6152-44d6-8d6f-8c73aaa58049",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Scrapshooter",
-      "manaCost": "{1}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Raccoon Archer",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Raccoon",
-        "Archer"
-      ],
-      "keywords": [
-        "Reach",
-        "Gift"
-      ],
-      "rulesText": "Gift a card (You may promise an opponent a gift as you cast this spell. If you do, when it enters, they draw a card.)\nReach\nWhen this creature enters, if the gift was promised, destroy target artifact or enchantment an opponent controls.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Gift a card (You may promise an opponent a gift as you cast this spell. If you do, when it enters, they draw a card.)\nReach\nWhen this creature enters, if the gift was promised, destroy target artifact or enchantment an opponent controls.",
-  "keywords": [
-    "Reach",
-    "Gift"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Scrapshooter",
+        "manaCost": "{1}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Raccoon",
+          "Archer"
+        ],
+        "keywords": [
+          "Reach",
+          "Gift"
+        ],
+        "rulesText": "Gift a card (You may promise an opponent a gift as you cast this spell. If you do, when it enters, they draw a card.)\nReach\nWhen this creature enters, if the gift was promised, destroy target artifact or enchantment an opponent controls.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "54816109-6152-44d6-8d6f-8c73aaa58049"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

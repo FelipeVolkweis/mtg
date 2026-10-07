@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "81c70ae7-3c18-4c9b-8505-e4db9e0e6518",
-  "canonicalName": "Wishclaw Talisman",
-  "defaultPrintingId": "69d0f5bd-ccea-49b2-bd79-ad5e4d850cf5",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Wishclaw Talisman",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This artifact enters with three wish counters on it.\n{1}, {T}, Remove a wish counter from this artifact: Search your library for a card, put it into your hand, then shuffle. An opponent gains control of this artifact. Activate only during your turn."
-    }
-  ],
-  "oracleText": "This artifact enters with three wish counters on it.\n{1}, {T}, Remove a wish counter from this artifact: Search your library for a card, put it into your hand, then shuffle. An opponent gains control of this artifact. Activate only during your turn.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Wishclaw Talisman",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This artifact enters with three wish counters on it.\n{1}, {T}, Remove a wish counter from this artifact: Search your library for a card, put it into your hand, then shuffle. An opponent gains control of this artifact. Activate only during your turn."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "69d0f5bd-ccea-49b2-bd79-ad5e4d850cf5"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

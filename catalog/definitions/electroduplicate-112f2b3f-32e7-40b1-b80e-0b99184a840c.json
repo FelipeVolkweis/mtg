@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "112f2b3f-32e7-40b1-b80e-0b99184a840c",
-  "canonicalName": "Electroduplicate",
-  "defaultPrintingId": "abb06b1c-5d4e-49b9-9c4a-e60ab656a257",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Electroduplicate",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Flashback"
-      ],
-      "rulesText": "Create a token that's a copy of target creature you control, except it has haste and \"At the beginning of the end step, sacrifice this token.\"\nFlashback {2}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
-    }
-  ],
-  "oracleText": "Create a token that's a copy of target creature you control, except it has haste and \"At the beginning of the end step, sacrifice this token.\"\nFlashback {2}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
-  "keywords": [
-    "Flashback"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Electroduplicate",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Flashback"
+        ],
+        "rulesText": "Create a token that's a copy of target creature you control, except it has haste and \"At the beginning of the end step, sacrifice this token.\"\nFlashback {2}{R}{R} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "abb06b1c-5d4e-49b9-9c4a-e60ab656a257"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

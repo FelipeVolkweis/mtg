@@ -33,6 +33,7 @@ import {
   triggerGame,
 } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("lands and simple spells use selected mana sources and retain casting identity after resolution", () => {
   const service = new MatchService();
@@ -216,26 +217,26 @@ test("creature tap symbols require control since the player's turn, while select
   const definition =
     catalog.definitions[match.instances[stone.cardInstanceIds[0]].definitionId];
   const customized = structuredClone(definition);
-  customized.abilities.push({
-    id: "selected-tap",
-    kind: "activated",
-    origin: "printed",
-    rules: {
+  await author(customized, [
+    ...customized.authoredAbilities,
+    {
+      id: "selected-tap",
+      kind: "activated",
       costs: [
         {
           kind: "tap",
           count: 1,
           filter: {
             zone: "battlefield",
-            types: ["Creature"],
+            type: ["Creature"],
             controller: "you",
-            untapped: true,
+            status: "untapped",
           },
         },
       ],
       effects: [{ kind: "draw", count: 1 }],
     },
-  });
+  ]);
   catalog.definitions[customized.id] = customized;
   expect(
     command(0, {
@@ -427,25 +428,26 @@ test("cost payment rejects double tapping and supports tapping then sacrificing 
       match.instances[source.cardInstanceIds[0]].definitionId
     ],
   );
-  definition.abilities.push({
-    id: "double-tap",
-    kind: "activated",
-    origin: "printed",
-    rules: {
+  await author(definition, [
+    ...definition.authoredAbilities,
+    {
+      id: "double-tap",
+      kind: "activated",
       costs: [{ kind: "tap-source" }, { kind: "tap-source" }],
       effects: [{ kind: "draw", count: 1 }],
     },
-  });
-  definition.abilities.push({
-    id: "tap-sacrifice",
-    kind: "activated",
-    origin: "printed",
-    rules: {
+    {
+      id: "tap-sacrifice",
+      kind: "activated",
       costs: [
         {
           kind: "tap",
           count: 1,
-          filter: { zone: "battlefield", controller: "you", untapped: true },
+          filter: {
+            zone: "battlefield",
+            controller: "you",
+            status: "untapped",
+          },
         },
         {
           kind: "sacrifice",
@@ -455,7 +457,7 @@ test("cost payment rejects double tapping and supports tapping then sacrificing 
       ],
       effects: [{ kind: "draw", count: 1 }],
     },
-  });
+  ]);
   catalog.definitions[definition.id] = definition;
   expect(
     command(0, {
@@ -632,20 +634,17 @@ test("Logbook's other-artifact discount stays locked when a mana source is sacri
   const lotus = seed("Mind Stone", "battlefield");
   seed("Sol Ring", "battlefield");
   seed("Mind Stone", "battlefield", 1);
-  catalog.definitions[
-    match.instances[lotus.cardInstanceIds[0]].definitionId
-  ].abilities = [
-    {
-      id: "mana",
-      kind: "activated",
-      origin: "rules",
-      rules: {
-        manaAbility: true,
-        costs: [{ kind: "sacrifice-source" }],
-        effects: [{ kind: "add-mana", quantity: 1, colors: ["U"] }],
+  await author(
+    catalog.definitions[match.instances[lotus.cardInstanceIds[0]].definitionId],
+    [
+      {
+        id: "mana",
+        kind: "mana",
+        activation: { costs: [{ kind: "sacrifice-source" }] },
+        produce: { quantity: 1, colors: ["U"] },
       },
-    },
-  ];
+    ],
+  );
   expect(
     command(0, {
       type: "activate-ability",
@@ -687,24 +686,20 @@ test("Island affinity and chosen X are evaluated before the payment cost is lock
   // A fixture composition exercises chosen X with a source-local generic modifier.
   const definition =
     catalog.definitions[match.instances[pull.cardInstanceIds[0]].definitionId];
-  definition.abilities.push({
-    id: "discount",
-    kind: "static",
-    origin: "rules",
-    rules: {
-      costs: [],
-      effects: [],
-      costModifiers: [
+  await author(definition, [
+    ...definition.authoredAbilities,
+    {
+      id: "discount",
+      kind: "static",
+      grants: [
         {
-          use: "cast",
-          scope: "source",
-          component: "generic",
-          amount: { sum: [1, { binding: "X" }] },
+          kind: "cost-modifier",
+          applies: "this",
+          reduce: { sum: [1, { variable: "X" }] },
         },
       ],
-      chosenVariables: ["X"],
     },
-  });
+  ]);
   command(0, { type: "cast-spell", objectId: pull.id });
   expect(
     command(0, {

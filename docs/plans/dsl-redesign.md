@@ -835,7 +835,7 @@ The compiler sits between the authored AST and the Core AST in the runtime plan 
 
 1. **Schema validation:** zod discriminated unions. Most current `superRefine` rules disappear because the types make them unrepresentable.
 2. **Reference checks:** target ids, binding names and types, `linked` names, token ids, counter kinds and keywords all resolve.
-3. **Context checks:** `{ event: … }` selectors only inside triggered or replacement abilities; `{ variable: "X" }` only when a cost contains `{X}`; `activeFrom` legal for the ability kind.
+3. **Context checks:** `{ event: … }` selectors only inside triggered or replacement abilities; `{ variable: "X" }` only when a cost contains `{X}`, or in a `cost-modifier` with `applies: "this"` on a card whose mana cost contains `{X}` (X is chosen before the total cost is determined, CR 601.2b and 601.2f; found in roadmap issue 6); `activeFrom` legal for the ability kind.
 4. **CR-derived checks:** mana-ability criteria (CR 605); spell abilities only resolve from the stack; characteristic-defining abilities only define the source's own characteristics.
 5. **Desugaring:** string shorthand, `enters` / `dies`, the legacy single `target`, implicit owner destinations, implicit "you control" on sacrifice costs, and macro keyword expansion.
 6. **Layer tagging:** every `ContinuousChange` is tagged with its CR 613 layer.
@@ -899,6 +899,8 @@ Acceptance: every card in the table is written out in version 2 in `tests/fixtur
 5. **Remove version 1** once no definition uses it.
 
 **As built:** `src/server/catalog/migrate-rules-v2.ts` maps what the engine runs today, not the Oracle text. `migrateDefinition` takes a version 1 file and returns a version 2 file plus notes, or the unmapped constructs with their paths. It checks the stored derived values first (CM §6) and returns version 2 input unchanged. `npx tsx --tsconfig tsconfig.server.json src/server/catalog/migrate-rules-v2.ts [catalog root]` is the dry run: it prints the diff report and writes no file. Macro keywords are recognized when an ability is exactly their expansion (ward, cycling, equip, crew, living weapon, affinity). The down-compiler is `src/server/rules/down-compiler.ts`. `tests/rules/compiler/down-compile.spec.ts` is the golden test; it compares the ability fields the engine reads (id, kind, description, an activated ability's zone, rules). The ability-level `keyword` and `origin` are never read.
+
+**As built (roadmap issue 6):** the script rewrote the 783 files once and was then deleted with the version 1 schema and loader; it remains in the history of issue 5's branch. The engine loads the catalog through compiler → down-compiler (`definitionFromFile` in `src/server/catalog/catalog-files.ts`). Before the rewrite, the version 1 runtime abilities of the implemented cards were captured in `tests/fixtures/golden/v1-runtime-abilities.json`; the golden test now compares the loaded catalog against that fixture. The `superRefine` of the runtime ability schema is gone (the compiler validates authored abilities); the runtime schema itself goes with the down-compiler in issue 8. Inline test definitions are authored in version 2 through `tests/support/authored.ts`.
 
 ---
 

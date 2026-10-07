@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "7f2ba562-8d5e-4915-967e-54916c3c5876",
-  "canonicalName": "Eager Trufflesnout",
-  "defaultPrintingId": "a6e8433d-eb2a-43d1-b59b-7d70ff97c8e7",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Eager Trufflesnout",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Boar",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Boar"
-      ],
-      "keywords": [
-        "Food",
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever this creature deals combat damage to a player, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")",
-      "power": "4",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever this creature deals combat damage to a player, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")",
-  "keywords": [
-    "Food",
-    "Trample"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Eager Trufflesnout",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Boar"
+        ],
+        "keywords": [
+          "Food",
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever this creature deals combat damage to a player, create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")",
+        "power": "4",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "a6e8433d-eb2a-43d1-b59b-7d70ff97c8e7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }
