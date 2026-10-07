@@ -116,7 +116,7 @@ These rules are normative for the authored AST and every future addition.
 
 # 4. Target authored AST (version 2)
 
-Types are written in TypeScript notation. The zod schema in `src/shared/rules.ts` is the source of truth once implemented.
+Types are written in TypeScript notation. The implemented schema is `src/shared/rules-v2.ts` (roadmap issue 4), and it is the source of truth: where this section and the schema differ, the schema wins. Decisions made while implementing it are recorded below in each subsection, marked **As built**.
 
 ## 4.1 Abilities
 
@@ -193,6 +193,16 @@ interface KeywordAbility extends AbilityBase {
 ```
 
 The mana-ability criteria from CR 605 (no targets, could produce mana, not a loyalty ability, no library interaction) are checked by the compiler, not trusted from an authored flag.
+
+**As built:** `origin` is optional (it defaults to printed). `ManaProduction` is:
+
+```ts
+interface ManaProduction {
+  quantity: number;
+  colors: ManaType[] | { commanderColors: PlayerRef };
+  restriction?: { use?: "cast" | "activate"; spellTypes?: string[] };
+}
+```
 
 ## 4.2 Selectors
 
@@ -303,6 +313,13 @@ type TurnFact = "attacks" | "casts" | "draws" | "gains-life" | "loses-life" | "l
 
 Bindings are typed. A binding produced by an object-moving instruction is an object set; by `draw`, `discard` or `pay`, a number. `{ count: { binding } }` turns an object binding into a number. The compiler checks types and scope.
 
+**As built:**
+- object results: `move`, `destroy`, `sacrifice`, `exile`, `counter`, `tap`, `untap`, `create-token`, `search`, `library-sequence`;
+- number results: `draw`, `discard`, `gain-life`, `lose-life`, `damage`, `add-counters`, `remove-counters`;
+- `may` binds a flag (did the player do it), read by `didPerform`; other instructions cannot bind.
+- Scope is sequential. A binding defined inside an `if`, `may`, `may-pay` or `choose-one` branch is visible only inside that branch.
+- `for-each-player` defines the player binding `player` inside its body, read as `{ binding: "player" }`.
+
 ## 4.5 Targets and modes
 
 ```ts
@@ -359,6 +376,8 @@ type Effect =
   | { kind: "attach"; object?: Selector; to: Selector }
   | { kind: "create-token"; token: string; count?: Value; controller?: PlayerRef; tapped?: true }
   | { kind: "apply-continuous"; objects: Selector; changes: ContinuousChange[]; duration: Duration }
+  | { kind: "apply-grant"; grant: StaticGrant; duration: Duration }   // a game-rule effect for a duration
+  | { kind: "scry"; player?: PlayerRef; count: Value }                 // keyword action; desugars to library-sequence
   | { kind: "reselect-defender"; attacker: Selector }
   | { kind: "create-delayed-trigger"; trigger: Trigger; effects: Effect[] }
   // control flow
@@ -380,6 +399,8 @@ type Duration = "end-of-turn" | "while-source-on-battlefield" | { until: EventPa
 
 Set semantics (runtime plan §24) apply to every effect whose `objects` selector can match more than one object.
 
+**As built:** `apply-grant` holds rule-modifying effects that last for a duration, such as "can't be blocked this turn" (Whirler Rogue, Kappa Cannoneer). They aren't characteristics, so they don't belong in `apply-continuous`.
+
 ## 4.7 Costs
 
 Costs keep their current kinds, with one change: object costs take a predicate and default to "you control, on the battlefield" where the rules require it (you can only sacrifice your own permanents).
@@ -391,8 +412,11 @@ type Cost =
   | { kind: "sacrifice-source" } | { kind: "discard-source" } | { kind: "exile-source" }
   | { kind: "life"; amount: Value }
   | { kind: "counter-source"; counter: string; count: number; operation: "put" | "remove" }
-  | { kind: "tap" | "sacrifice" | "discard" | "return" | "exile"; count: number; filter: Predicate };
+  | { kind: "tap" | "sacrifice" | "discard" | "return" | "exile"; count: number; filter: Predicate }
+  | { kind: "tap-total-power"; power: number; filter: Predicate };   // crew: "tap creatures with total power N"
 ```
+
+**As built:** implied filters are added when the predicate doesn't already constrain them. `tap`, `sacrifice`, `return` and `tap-total-power` default to the battlefield and you as controller; `discard` defaults to your hand; `exile` must name its Zone.
 
 `crew`, `improvise`, `kicker`, `escalate` and `flashback` are keywords (§4.10) that expand into costs or cost options.
 
@@ -463,6 +487,8 @@ type Replacement =
 
 Each `ContinuousChange` maps to a CR 613 layer. The compiler records the layer, so the characteristics engine doesn't infer it.
 
+**As built** (`layer` field): `gain-control` 2, `add-types` 4, `grant-keyword` 6, `define-stats` 7a, `set-base-stats` 7b, `add-stats` 7c, `copy-linked` 4 and 7b (it sets creature types and base power and toughness).
+
 ## 4.10 Keywords
 
 Keywords come in two classes.
@@ -487,9 +513,11 @@ Keywords come in two classes.
 
 `"Must attack"`, `"Unblockable"` and `"Cannot be blocked by Walls"` are not keywords. They become `attack-requirement` and `block-restriction` grants.
 
+**As built:** affinity, ward, cycling, equip, crew and living weapon expand into ordinary abilities. Enchant, improvise, kicker, escalate and flashback stay keyword abilities in the Core AST. They change how a card is cast or paid for, which the casting and cost runtimes read directly; abilities can't express that. Rule keywords are lowercase (`"first strike"`).
+
 ## 4.11 Tokens and counters
 
-- **Tokens** are definitions in `catalog/tokens/*.json`, with the same characteristics and ability model as cards, referenced by id (`"thopter-1-1-flying"`, `"food"`, `"treasure"`). The compiler checks the reference.
+- **Tokens** are definitions in `catalog/tokens/*.json`, with the same characteristics and ability model as cards, referenced by id (`"thopter-1-1-flying"`, `"food"`, `"treasure"`). The compiler checks the reference. **As built:** `src/server/rules/registries.ts` reads them; Thopter, Myr and Germ exist (`thopter-1-1-flying`, `myr-1-1`, `phyrexian-germ-0-0`).
 - **Counter kinds** come from a registry (`+1/+1`, `-1/-1`, `page`, `loyalty`, …). Counters with rules meaning (`+1/+1`, `-1/-1`) carry it in the registry, not in the effect schema.
 
 ---
@@ -807,6 +835,8 @@ The compiler sits between the authored AST and the Core AST in the runtime plan 
 5. **Desugaring:** string shorthand, `enters` / `dies`, the legacy single `target`, implicit owner destinations, implicit "you control" on sacrifice costs, and macro keyword expansion.
 6. **Layer tagging:** every `ContinuousChange` is tagged with its CR 613 layer.
 
+
+**As built:** `compileCard(source, registries)` in `src/server/rules/compiler.ts`. It returns Core abilities, or a list of errors with paths into the card. The Core AST uses the authored types with the invariants listed at the top of that file (no shorthand, normalized triggers and destinations, expanded keywords, layer tags). Tests: `tests/rules/compiler/`.
 ---
 
 # 8. Expressiveness test set

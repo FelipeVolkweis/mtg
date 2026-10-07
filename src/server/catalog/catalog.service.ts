@@ -15,6 +15,7 @@ import {
   nameEntries,
   nameKey as key,
 } from "./card-names.js";
+import { cardForms } from "../../shared/rules-v2.js";
 
 function characteristics(
   face: SourceCard | NonNullable<SourceCard["card_faces"]>[number],
@@ -66,16 +67,7 @@ function parseTypes(line: string) {
   };
 }
 
-const supportedLayouts = new Set([
-  "normal",
-  "saga",
-  "transform",
-  "modal_dfc",
-  "split",
-  "reversible_card",
-  "room",
-  "flip",
-]);
+const supportedLayouts = new Set<string>(cardForms);
 const singleFaceLayouts = new Set(["normal", "saga"]);
 function importedDefinition(
   card: SourceCard,

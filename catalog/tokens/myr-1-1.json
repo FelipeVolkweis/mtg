@@ -1,0 +1,20 @@
+{
+  "id": "myr-1-1",
+  "characteristics": {
+    "name": "Myr",
+    "colors": [],
+    "supertypes": [],
+    "types": [
+      "Artifact",
+      "Creature"
+    ],
+    "subtypes": [
+      "Myr"
+    ],
+    "keywords": [],
+    "rulesText": "",
+    "power": "1",
+    "toughness": "1"
+  },
+  "abilities": []
+}
