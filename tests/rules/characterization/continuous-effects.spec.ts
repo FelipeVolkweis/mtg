@@ -859,8 +859,7 @@ test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants
     )!.count,
   ).toBe(before);
   // Selected-object tap costs can use newly controlled artifacts.
-  game.match.rules!.controlledSinceTurn[artifacts[0].id] =
-    game.match.turn.number;
+  force.controlledSince(game.match, artifacts[0], game.match.turn.number);
   expect(
     game.command(0, {
       type: "activate-ability",

@@ -32,8 +32,7 @@ test("combat declarations enforce controllers, flying, timing and public partici
   const flyer = game.seed("Spire Golem", "battlefield");
   const blocker = game.seed("Silver Myr", "battlefield", 1);
   const newCreature = game.seed("Silver Myr", "battlefield");
-  game.match.rules!.controlledSinceTurn[newCreature.id] =
-    game.match.turn.number;
+  force.controlledSince(game.match, newCreature, game.match.turn.number);
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   for (let i = 0; i < 2; i++) {

@@ -392,8 +392,20 @@ test("restricted mana remains unspent for an ineligible spell and retains its re
     type: "cancel-procedure",
     procedureId: match.rules!.pending!.id,
   });
-  match.rules!.restrictedMana![match.players[0].id][0].restriction.spellTypes =
-    ["Artifact"];
+  const [restricted, ...rest] =
+    match.rules!.restrictedMana![match.players[0].id];
+  force.rules(match, {
+    restrictedMana: {
+      ...match.rules!.restrictedMana,
+      [match.players[0].id]: [
+        {
+          ...restricted,
+          restriction: { ...restricted.restriction, spellTypes: ["Artifact"] },
+        },
+        ...rest,
+      ],
+    },
+  });
   expect(command(0, { type: "cast-spell", objectId: artifact.id }).kind).toBe(
     "accepted",
   );
