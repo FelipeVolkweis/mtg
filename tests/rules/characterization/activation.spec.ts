@@ -12,6 +12,7 @@
 // | crew taps newly controlled creatures for effective power and animation expires at cleanup | Preserve |
 
 import { expect, test } from "@playwright/test";
+import { effectsOf } from "../../../src/server/rules/abilities";
 import { matchView } from "../../../src/server/match/match-view";
 import { moveObject } from "../../../src/server/match/game-objects";
 import "../../support/round-trip";
@@ -290,7 +291,7 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
       const card = Object.values(game.catalog.definitions).find(
         (c) => c.canonicalName === "Master Transmuter",
       )!;
-      const effect = card.abilities[0].rules!.effects[0];
+      const effect = effectsOf(card.abilities[0])[0];
       if (effect.kind === "may" && effect.effects[0].kind === "move")
         effect.effects[0].objects = {
           choose: {

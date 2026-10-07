@@ -21,6 +21,7 @@
 // | {name} composes artifact affinity, flying and its distinct resolved characteristics (parameterized) | Preserve |
 
 import { expect, test } from "@playwright/test";
+import type { ActivatedAbility } from "../../../src/shared/rules-v2";
 import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
@@ -177,9 +178,10 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   const retrievalCard = Object.values(game.catalog.definitions).find(
     (c) => c.canonicalName === "Counterspell",
   )!;
-  retrievalCard.abilities[0].rules = {
-    costs: [],
-    target: { zone: "exile", kind: "card" },
+  retrievalCard.abilities[0] = {
+    id: retrievalCard.abilities[0].id,
+    kind: "spell",
+    targets: [{ id: "target-0", filter: { zone: "exile", object: "card" } }],
     effects: [
       {
         kind: "move",
@@ -433,9 +435,13 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
   const nettle = game.seed("Nettlecyst", "battlefield");
   const transmuter = game.seed("Master Transmuter", "battlefield");
   const bomb = game.seed("Aether Spellbomb", "battlefield");
-  Object.values(game.catalog.definitions).find(
-    (c) => c.canonicalName === "Aether Spellbomb",
-  )!.abilities[0].rules!.target = { zone: "battlefield", types: ["Artifact"] };
+  (
+    Object.values(game.catalog.definitions).find(
+      (c) => c.canonicalName === "Aether Spellbomb",
+    )!.abilities[0] as ActivatedAbility
+  ).targets = [
+    { id: "target-0", filter: { zone: "battlefield", type: ["Artifact"] } },
+  ];
   force.attach(nettle, creature);
   force.mana(game.match, game.match.players[0].id, { U: 2 });
   const view = () =>

@@ -2,16 +2,16 @@ import {
   compileCard,
   type CompileError,
 } from "../../src/server/rules/compiler";
-import { downCompile } from "../../src/server/rules/down-compiler";
 import { readRegistries } from "../../src/server/rules/registries";
+import { checkSupport } from "../../src/server/rules/support";
 import type { CardDefinition } from "../../src/shared/model";
 import type { Ability } from "../../src/shared/rules-v2";
 
 // Inline test cards are authored in DSL version 2 and load the way catalog
-// files do: compiler, then down-compiler (dsl-redesign.md §9). Authoring
-// errors throw with their paths.
+// files do: the compiler, then the runtime support check (dsl-redesign.md
+// §9). Authoring errors throw with their paths.
 
-/** Replaces a Card Definition's authored abilities and its runtime abilities. */
+/** Replaces a Card Definition's authored abilities and the Core abilities the engine runs. */
 export async function author(
   definition: CardDefinition,
   abilities: Ability[],
@@ -23,9 +23,9 @@ export async function author(
   const fail = (errors: CompileError[]) =>
     new Error(errors.map((e) => `${e.path}: ${e.message}`).join("\n"));
   if (!compiled.ok) throw fail(compiled.errors);
-  const runtime = downCompile(compiled.abilities);
+  const runtime = checkSupport(compiled.abilities);
   if (!runtime.ok) throw fail(runtime.errors);
   definition.authoredAbilities = abilities;
-  definition.abilities = runtime.abilities;
+  definition.abilities = compiled.abilities;
   return definition;
 }

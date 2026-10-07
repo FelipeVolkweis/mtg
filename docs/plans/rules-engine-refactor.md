@@ -2660,6 +2660,8 @@ Permanent Spell
 
 and centralize target and intervening-if checks.
 
+**As built (roadmap issue 8):** `src/server/rules/vm/rule-vm.ts` holds the VM. `RulesState.resolving` is a `RuleExecution` (§32): frames with program counters, typed bindings (`number`, `objects`, `player`) and the waiting handler's state. A handler's nested instructions run in a new frame; the parent's program counter advances first, so nothing re-runs after a restore. `src/server/rules/stack/stack-resolution.ts` is the Stack Resolution Runtime: intervening-if, "some target still legal", then the permanent path (enter, Aura attach) or the VM, then cleanup. Snapshot version 4 turns a version 3 queue into one frame with the waiting instruction at its program counter. Tests: `tests/rules/vm/{execution,bindings,suspension,serialization}.spec.ts` (TP §18) and `tests/rules/procedures/stack-resolution.spec.ts` (TP §22).
+
 ---
 
 ## Milestone M3 — Automatic rules

@@ -17,7 +17,7 @@ import {
   type CardDefinitionFile,
 } from "../../shared/rules-v2.js";
 import { compileCard, type CompileError } from "../rules/compiler.js";
-import { downCompile } from "../rules/down-compiler.js";
+import { checkSupport } from "../rules/support.js";
 import { readRegistries, type Registries } from "../rules/registries.js";
 import { nameKey } from "./card-names.js";
 import { deriveFields, typeLine } from "./derive.js";
@@ -29,10 +29,10 @@ const loadError = (name: string, errors: CompileError[]) =>
 
 /**
  * Loads a version 2 file into the Card Definition the engine uses: derived
- * values (card-model-refactor.md §3.3), then compiler → down-compiler
- * (dsl-redesign.md §9 step 3). An authored error fails the load. An
- * implemented card the current runtime can't run fails too; an unimplemented
- * one loads without runtime abilities.
+ * values (card-model-refactor.md §3.3), then the compiler (dsl-redesign.md
+ * §9); the engine runs the Core AST it emits. An authored error fails the
+ * load. An implemented card the current runtime can't run fails too; an
+ * unimplemented one loads without runtime abilities.
  */
 export function definitionFromFile(
   file: CardDefinitionFile,
@@ -43,7 +43,7 @@ export function definitionFromFile(
   const derived = deriveFields(form, components);
   const compiled = compileCard({ components, abilities }, registries);
   if (!compiled.ok) throw loadError(derived.canonicalName, compiled.errors);
-  const runtime = downCompile(compiled.abilities);
+  const runtime = checkSupport(compiled.abilities);
   if (!runtime.ok && automationStatus === "implemented")
     throw loadError(derived.canonicalName, runtime.errors);
   return {
@@ -60,7 +60,7 @@ export function definitionFromFile(
     keywords: derived.keywords,
     manaValue: derived.manaValue,
     automationStatus,
-    abilities: runtime.ok ? runtime.abilities : [],
+    abilities: runtime.ok ? compiled.abilities : [],
     authoredAbilities: abilities,
   };
 }

@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type {
   Catalog,
-  CardAbility,
   GameObject,
   MatchAction,
   MatchPlayer,
@@ -10,16 +9,39 @@ import type {
   ZoneKind,
   ZoneState,
 } from "../../shared/model.js";
-import {
-  type ManaPool,
-  type ManaType,
-  type ObjectFilter,
-  type PendingProcedure,
-  type RulesAbility,
-  type SelectionOption,
-  rulesAbilitySchema,
+import type {
+  ManaPool,
+  ManaType,
+  PendingProcedure,
+  SelectionOption,
 } from "../../shared/rules.js";
-import type { Effect } from "../../shared/rules-v2.js";
+import type {
+  Ability,
+  Condition,
+  Effect,
+  ManaProduction,
+  Predicate,
+  Value,
+} from "../../shared/rules-v2.js";
+import {
+  activatable,
+  activationZone,
+  castPermissions,
+  choosesX,
+  costModifiers,
+  costsOf,
+  enchantFilter,
+  hasImprovise,
+  isDiesTrigger,
+  isManaAbility,
+  manaSymbols,
+  oncePerTurn,
+  production,
+  restrictsUntap,
+  sorceryTiming,
+  targetFilter,
+  unlimitedHandSize,
+} from "../rules/abilities.js";
 import type {
   EventResult,
   ProposedEvent,
@@ -28,15 +50,16 @@ import type {
 } from "../rules/context.js";
 import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
+import { scopeBindings } from "../rules/vm/rule-vm.js";
 import { gameObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
-import { CharacteristicsCalculator, matchesFilter } from "./characteristics.js";
+import { CharacteristicsCalculator } from "./characteristics.js";
 import { Triggers } from "./triggers.js";
 import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
-import { Resolution } from "./resolution.js";
+import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
 
 export const emptyMana = (): ManaPool => ({
   W: 0,
@@ -238,9 +261,9 @@ export class RulesEngine implements RulesMutator {
               action: { type: "play-land", objectId: object.id },
             });
         } else if (this.canCastTiming(object, playerId)) {
-          const target = this.definition(object)?.abilities.find(
-            (a) => a.kind === "spell",
-          )?.rules?.target;
+          const target = targetFilter(
+            this.definition(object)?.abilities.find((a) => a.kind === "spell"),
+          );
           if (!target || this.legalTargets(playerId, target).length)
             actions.push({
               label: `Cast ${object.characteristics.name}`,
@@ -249,26 +272,23 @@ export class RulesEngine implements RulesMutator {
         }
       }
       for (const ability of this.abilities(object)) {
-        const rules = ability.rules!;
-        if (pending && !rules.manaAbility) continue;
+        if (pending && !isManaAbility(ability)) continue;
         if (
-          rules.oncePerTurn &&
+          oncePerTurn(ability) &&
           this.rules.activationUsage?.[`${object.id}:${ability.id}`]
         )
           continue;
-        if (rules.timing === "sorcery" && !this.mainTiming(playerId)) continue;
+        if (sorceryTiming(ability) && !this.mainTiming(playerId)) continue;
         if (!this.canActivateFromZone(object, playerId, ability)) continue;
-        if (
-          rules.target &&
-          !this.legalTargets(playerId, rules.target, object.id).length
-        )
+        const target = targetFilter(ability);
+        if (target && !this.legalTargets(playerId, target, object.id).length)
           continue;
         if (
-          rules.costs.some((cost) => cost.kind === "tap-source") &&
+          costsOf(ability).some((cost) => cost.kind === "tap-source") &&
           !this.canPayTapSymbol(object, playerId)
         )
           continue;
-        const produce = rules.produce;
+        const produce = production(ability);
         if (produce) {
           const colors = this.manaColors(produce, playerId);
           for (const color of colors)
@@ -312,8 +332,8 @@ export class RulesEngine implements RulesMutator {
     const options: Record<string, SelectionOption> = {};
     if (
       pending.kind === "cast" &&
-      this.definition(this.object(pending.sourceId!))?.abilities.some(
-        (a) => a.rules?.improvise,
+      hasImprovise(
+        this.definition(this.object(pending.sourceId!))?.abilities ?? [],
       )
     )
       options.improvise = {
@@ -329,18 +349,13 @@ export class RulesEngine implements RulesMutator {
           )
           .map((o) => o.id),
       };
-    for (const [index, cost] of (pending.ability?.costs ?? []).entries())
-      if ("filter" in cost)
+    for (const [index, cost] of costsOf(pending.ability).entries())
+      if ("filter" in cost) {
+        const crew = cost.kind === "tap-total-power";
         options[String(index)] = {
-          count:
-            cost.kind === "crew"
-              ? this.battlefieldSources().length
-              : cost.count,
-          minCount: cost.kind === "crew" ? 1 : undefined,
-          label:
-            cost.kind === "crew"
-              ? `Crew: at least ${cost.power} total power`
-              : undefined,
+          count: crew ? this.battlefieldSources().length : cost.count,
+          minCount: crew ? 1 : undefined,
+          label: crew ? `Crew: at least ${cost.power} total power` : undefined,
           objectIds: Object.values(this.match.objects)
             .filter((object) =>
               this.matches(object, cost.filter, pending.playerId),
@@ -350,10 +365,12 @@ export class RulesEngine implements RulesMutator {
               const object = this.object(id);
               return (
                 object.controllerId === pending.playerId &&
-                (!["tap", "crew"].includes(cost.kind) || !object.status.tapped)
+                (!["tap", "tap-total-power"].includes(cost.kind) ||
+                  !object.status.tapped)
               );
             }),
         };
+      }
     return options;
   }
   object(id: string) {
@@ -388,23 +405,15 @@ export class RulesEngine implements RulesMutator {
       this.battlefieldSources().some(
         (source) =>
           source.controllerId === playerId &&
-          this.definition(source)?.abilities.some(
-            (ability) =>
-              ability.kind === "static" &&
-              ability.rules?.castingPermission &&
-              this.matches(
-                object,
-                ability.rules.castingPermission,
-                playerId,
-                source.id,
-              ),
+          castPermissions(this.definition(source)?.abilities ?? []).some(
+            (spells) => this.matches(object, spells, playerId, source.id),
           ),
       )
     );
   }
   targetEligible(
     object: GameObject,
-    filter: ObjectFilter,
+    filter: Predicate,
     playerId: string,
     sourceId?: string,
   ) {
@@ -452,42 +461,23 @@ export class RulesEngine implements RulesMutator {
       this.battlefieldSources(),
     );
   }
+  /** A Core predicate match; a resolving program's bindings are in scope. */
   matches(
     object: GameObject,
-    filter: ObjectFilter,
+    filter: Predicate,
     playerId: string,
     sourceId?: string,
   ) {
-    if (
-      filter.manaValue !== undefined &&
-      this.effective(object).manaValue !==
-        this.value(
-          filter.manaValue,
-          playerId,
-          sourceId,
-          this.rules.resolving?.bindings,
-        )
-    )
-      return false;
-    if (
-      filter.damagedBySource &&
-      !this.rules.damageEvents?.some(
-        (e) =>
-          e.sourceId === sourceId &&
-          e.combat &&
-          e.recipientKind === "player" &&
-          e.recipientId === object.controllerId &&
-          e.turn === this.match.turn.number,
-      )
-    )
-      return false;
-    return matchesFilter(
-      this.match,
-      { ...object, characteristics: this.effective(object) },
-      filter,
+    return new Evaluator(this.query, {
       playerId,
       sourceId,
-    );
+      bindings: this.resolvingNumbers(),
+    }).matches(object, filter);
+  }
+  /** The resolving program's number bindings (a filter's mana value reads X). */
+  private resolvingNumbers() {
+    const execution = this.rules.resolving;
+    return execution ? scopeBindings(execution).bindings : undefined;
   }
   effective(object: GameObject) {
     return new CharacteristicsCalculator(this.match, this.catalog).effective(
@@ -495,30 +485,18 @@ export class RulesEngine implements RulesMutator {
     );
   }
   value(
-    value: import("../../shared/rules.js").RulesValue,
+    value: Value,
     playerId: string,
     sourceId?: string,
     bindings?: Record<string, number>,
   ) {
-    return new CharacteristicsCalculator(this.match, this.catalog).value(
+    return new Evaluator(this.query, { playerId, sourceId, bindings }).value(
       value,
-      playerId,
-      sourceId,
-      bindings,
     );
   }
-  conditionSatisfied(
-    condition: NonNullable<RulesAbility["intervening"]>,
-    playerId: string,
-    sourceId: string,
-  ) {
-    return (
-      (!condition.requireObjects ||
-        Object.values(this.match.objects).some((o) =>
-          this.matches(o, condition.requireObjects!, playerId, sourceId),
-        )) &&
-      this.value(condition.value, playerId, sourceId) >=
-        this.value(condition.atLeast, playerId, sourceId)
+  conditionSatisfied(condition: Condition, playerId: string, sourceId: string) {
+    return new Evaluator(this.query, { playerId, sourceId }).condition(
+      condition,
     );
   }
   monarchTrigger(
@@ -534,7 +512,21 @@ export class RulesEngine implements RulesMutator {
       sourceId: "monarch",
       abilityId,
       sourceName: "Monarch",
-      ability: { costs: [], effects },
+      // The monarch's designation triggers (CR 724.2): at your end step, and
+      // when a creature deals combat damage to the monarch.
+      ability: {
+        id: abilityId,
+        kind: "triggered",
+        trigger: creature
+          ? {
+              event: "deals-damage",
+              source: "source",
+              to: "player",
+              combat: true,
+            }
+          : { event: "step", step: "end", player: "you" },
+        effects,
+      },
       event: {
         kind: "state",
         sourceId: creature?.id ?? "monarch",
@@ -554,20 +546,18 @@ export class RulesEngine implements RulesMutator {
     return this.battlefieldSources().some(
       (o) =>
         o.controllerId === playerId &&
-        this.definition(o)?.abilities.some(
-          (a) => a.rules?.maximumHandSize === "unlimited",
-        ),
+        unlimitedHandSize(this.definition(o)?.abilities ?? []),
     )
       ? Infinity
       : 7;
   }
   targetSource(pending: PendingProcedure) {
     const object = this.match.objects[pending.sourceId ?? ""];
-    return object?.resolution?.ability.trigger?.event === "dies"
-      ? object.resolution.event?.affectedId
+    return isDiesTrigger(object?.resolution?.ability)
+      ? object!.resolution!.event?.affectedId
       : (object?.sourceObjectId ?? pending.sourceId);
   }
-  legalTargets(playerId: string, filter: ObjectFilter, sourceId?: string) {
+  legalTargets(playerId: string, filter: Predicate, sourceId?: string) {
     return Object.values(this.match.objects)
       .filter((object) =>
         this.targetEligible(object, filter, playerId, sourceId),
@@ -576,7 +566,7 @@ export class RulesEngine implements RulesMutator {
   }
   abilities(object: GameObject) {
     const abilities = (this.definition(object)?.abilities ?? []).filter(
-      (ability) => ability.kind === "activated" && ability.rules,
+      activatable,
     );
     if (object.characteristics.types?.includes("Land")) {
       const colors: Record<string, ManaType> = {
@@ -590,16 +580,11 @@ export class RulesEngine implements RulesMutator {
         if (colors[subtype])
           abilities.push({
             id: `intrinsic-${subtype}`,
-            kind: "activated",
+            kind: "mana",
             // CR 305.6: a basic land type's mana ability is intrinsic.
             origin: "printed",
-            applicableZone: "battlefield",
-            rules: {
-              costs: [{ kind: "tap-source" }],
-              effects: [],
-              produce: { quantity: 1, colors: [colors[subtype]] },
-              manaAbility: true,
-            },
+            activation: { costs: [{ kind: "tap-source" }] },
+            produce: { quantity: 1, colors: [colors[subtype]] },
           });
     }
     return abilities;
@@ -626,15 +611,16 @@ export class RulesEngine implements RulesMutator {
       ) ?? [];
     if (spellAbilities.length > 1)
       throw new Error("This spell composition is not yet supported.");
-    const ability = rulesAbilitySchema.parse(
-      spellAbilities[0]?.rules ??
-        (() => {
-          const aura = this.definition(source)?.abilities.find(
-            (a) => a.rules?.aura,
-          )?.rules?.aura;
-          return { costs: [], effects: [], ...(aura ? { target: aura } : {}) };
-        })(),
-    );
+    // A permanent spell has no spell ability; an Aura spell targets what it
+    // can enchant (CR 303.4a).
+    const aura = enchantFilter(this.definition(source)?.abilities ?? []);
+    const ability: Ability = spellAbilities[0] ?? {
+      id: "cast",
+      kind: "spell",
+      ...(aura ? { targets: [{ id: "target-0", filter: aura }] } : {}),
+    };
+    const target = targetFilter(ability);
+    const chooseX = choosesX(ability);
     const symbols: string[] =
       source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
     if (!source.characteristics.manaCost && !symbols.length)
@@ -643,35 +629,23 @@ export class RulesEngine implements RulesMutator {
       id: randomUUID(),
       playerId,
       kind: "cast",
-      stage: ability.chosenVariables?.length
-        ? "variable"
-        : ability.target
-          ? "targets"
-          : "payment",
+      stage: chooseX ? "variable" : target ? "targets" : "payment",
       sourceId: id,
       ability: structuredClone(ability),
       targetIds: [],
       selections: {},
       totalCost: manaCost(symbols.filter((symbol) => symbol !== "{X}")),
     };
-    if (ability.target && !this.legalTargets(playerId, ability.target).length)
+    if (target && !this.legalTargets(playerId, target).length)
       throw new Error("No legal targets are available.");
-    if (symbols.includes("{X}") && !ability.chosenVariables?.includes("X"))
+    if (symbols.includes("{X}") && !chooseX)
       throw new Error("Variable mana costs require an authored chosen value.");
-    if (!ability.chosenVariables?.length && !ability.target)
-      this.lockCost(this.rules.pending);
-    if (!ability.target && !ability.chosenVariables?.length)
-      this.tryComplete(playerId);
+    if (!chooseX && !target) this.lockCost(this.rules.pending);
+    if (!target && !chooseX) this.tryComplete(playerId);
   }
-  canActivateFromZone(
-    source: GameObject,
-    playerId: string,
-    ability: CardAbility,
-  ) {
-    const zone = this.zone(
-      ability.applicableZone ?? "battlefield",
-      ability.applicableZone === "hand" ? playerId : undefined,
-    );
+  canActivateFromZone(source: GameObject, playerId: string, ability: Ability) {
+    const kind = activationZone(ability);
+    const zone = this.zone(kind, kind === "hand" ? playerId : undefined);
     return source.controllerId === playerId && source.zoneId === zone.id;
   }
   canPayTapSymbol(source: GameObject, playerId: string) {
@@ -693,56 +667,46 @@ export class RulesEngine implements RulesMutator {
     const authored = this.abilities(source).find(
       (ability) => ability.id === action.abilityId,
     );
-    if (!authored?.rules) throw new Error("Ability not found.");
-    const ability = rulesAbilitySchema.parse(authored.rules);
+    if (!authored) throw new Error("Ability not found.");
+    const ability = structuredClone(authored);
     if (!this.canActivateFromZone(source, playerId, authored))
       throw new Error("You cannot activate this source from that Zone.");
     if (
-      ability.oncePerTurn &&
+      oncePerTurn(ability) &&
       this.rules.activationUsage?.[`${source.id}:${authored.id}`]
     )
       throw new Error("Activate this ability only once each turn.");
-    if (ability.timing === "sorcery" && !this.mainTiming(playerId))
+    if (sorceryTiming(ability) && !this.mainTiming(playerId))
       throw new Error("Activate this ability only as a sorcery.");
-    if (
-      ability.target &&
-      !this.legalTargets(playerId, ability.target, source.id).length
-    )
+    const target = targetFilter(ability);
+    if (target && !this.legalTargets(playerId, target, source.id).length)
       throw new Error("No legal targets are available.");
-    if (duringPayment && !ability.manaAbility)
+    if (duringPayment && !isManaAbility(ability))
       throw new Error("Only mana abilities may be used in the payment window.");
+    const chooseX = choosesX(ability);
+    const costs = costsOf(ability);
     const procedure: PendingProcedure = {
       id: randomUUID(),
       playerId,
       kind: "activate",
-      stage: ability.chosenVariables?.length
-        ? "variable"
-        : ability.target
-          ? "targets"
-          : "payment",
+      stage: chooseX ? "variable" : target ? "targets" : "payment",
       sourceId: source.id,
       abilityId: authored.id,
       ability,
       targetIds: [],
       selections: {},
       color: action.color,
-      totalCost: manaCost(
-        ability.costs.flatMap((cost) =>
-          cost.kind === "mana" ? cost.symbols.filter((s) => s !== "{X}") : [],
-        ),
-      ),
+      totalCost: manaCost(manaSymbols(costs).filter((s) => s !== "{X}")),
     };
-    if (!ability.target && !ability.chosenVariables?.length)
-      this.lockCost(procedure);
-    if (ability.manaAbility) {
+    if (!target && !chooseX) this.lockCost(procedure);
+    const produce = production(ability);
+    if (produce) {
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
         throw new Error("The mana ability's complete costs cannot be paid.");
-      this.produceMana(playerId, ability, action.color);
-      const produce = ability.produce;
+      this.produceMana(playerId, produce, action.color);
       if (
-        ability.costs.some((c) => c.kind === "tap-source") &&
-        produce &&
+        costs.some((c) => c.kind === "tap-source") &&
         (action.color ??
           (Array.isArray(produce.colors) ? produce.colors[0] : undefined)) ===
           "C"
@@ -763,8 +727,7 @@ export class RulesEngine implements RulesMutator {
       if (!duringPayment) this.priority(playerId);
     } else {
       this.rules.pending = procedure;
-      if (!ability.target && !ability.chosenVariables?.length)
-        this.tryComplete(playerId);
+      if (!target && !chooseX) this.tryComplete(playerId);
     }
   }
   input(
@@ -800,7 +763,7 @@ export class RulesEngine implements RulesMutator {
       return;
     }
     if (pending.kind === "resolve") {
-      new Resolution(this).answer(action);
+      new StackResolutionRuntime(this).answer(action);
       return;
     }
     if (pending.stage === "variable") {
@@ -816,16 +779,15 @@ export class RulesEngine implements RulesMutator {
       pending.variables = { X: value };
       const symbols =
         pending.kind === "activate"
-          ? pending.ability!.costs.flatMap((c) =>
-              c.kind === "mana" ? c.symbols : [],
-            )
+          ? manaSymbols(costsOf(pending.ability))
           : (this.object(pending.sourceId!).characteristics.manaCost?.match(
               /\{[^{}]+\}/g,
             ) ?? []);
       pending.totalCost.generic +=
         symbols.filter((symbol) => symbol === "{X}").length * value;
-      if (!pending.ability?.target) this.lockCost(pending);
-      pending.stage = pending.ability?.target ? "targets" : "payment";
+      const target = targetFilter(pending.ability);
+      if (!target) this.lockCost(pending);
+      pending.stage = target ? "targets" : "payment";
       pending.id = randomUUID();
       return;
     }
@@ -858,7 +820,7 @@ export class RulesEngine implements RulesMutator {
         targets.length !== 1 ||
         !this.legalTargets(
           playerId,
-          pending.ability!.target!,
+          targetFilter(pending.ability)!,
           this.targetSource(pending),
         ).includes(targets[0])
       )
@@ -917,7 +879,7 @@ export class RulesEngine implements RulesMutator {
       };
       this.emit("cast", spell);
     } else {
-      if (pending.ability?.oncePerTurn) {
+      if (oncePerTurn(pending.ability)) {
         this.rules.activationUsage ??= {};
         this.rules.activationUsage[`${source}:${pending.abilityId}`] = 1;
       }
@@ -983,8 +945,10 @@ export class RulesEngine implements RulesMutator {
     let reduction = 0;
     for (const source of Object.values(this.match.objects)) {
       if (source.controllerId !== pending.playerId) continue;
-      for (const ability of this.definition(source)?.abilities ?? []) {
-        for (const modifier of ability.rules?.costModifiers ?? []) {
+      {
+        for (const modifier of costModifiers(
+          this.definition(source)?.abilities ?? [],
+        )) {
           if (modifier.use !== pending.kind) continue;
           if (
             modifier.scope === "source"
@@ -1026,8 +990,9 @@ export class RulesEngine implements RulesMutator {
     const player = this.match.players.find((p) => p.id === playerId)!;
     const ability = pending.ability!;
     const colors = this.rules.commanders[playerId].colorIdentity as ManaType[];
-    if (ability.produce) {
-      const allowed = this.manaColors(ability.produce, playerId);
+    const produce = production(ability);
+    if (produce) {
+      const allowed = this.manaColors(produce, playerId);
       if (
         !allowed.includes(
           pending.color ?? (allowed.length === 1 ? allowed[0] : undefined)!,
@@ -1035,7 +1000,7 @@ export class RulesEngine implements RulesMutator {
       )
         throw new Error("Choose a permitted mana color.");
     }
-    const costs = pending.kind === "cast" ? [] : ability.costs;
+    const costs = pending.kind === "cast" ? [] : costsOf(ability);
     const tapped = new Set<string>();
     const removed = new Set<string>();
     let life = 0;
@@ -1055,8 +1020,7 @@ export class RulesEngine implements RulesMutator {
         )
           throw new Error("Counter costs require a present permanent.");
       } else if (cost.kind === "life")
-        life +=
-          cost.amount === "commander-colors" ? colors.length : cost.amount;
+        life += this.value(cost.amount, playerId, source.id);
       else if (
         cost.kind === "sacrifice-source" ||
         cost.kind === "discard-source"
@@ -1068,7 +1032,7 @@ export class RulesEngine implements RulesMutator {
         if (removed.has(source.id) || source.zoneId !== zone.id)
           throw new Error("The source cannot pay this removal cost.");
         removed.add(source.id);
-      } else if (cost.kind === "crew") {
+      } else if (cost.kind === "tap-total-power") {
         const ids = pending.selections[String(index)] ?? [];
         if (!ids.length) return false;
         if (new Set(ids).size !== ids.length)
@@ -1186,13 +1150,13 @@ export class RulesEngine implements RulesMutator {
         });
       else if (
         cost.kind === "tap" ||
-        cost.kind === "crew" ||
+        cost.kind === "tap-total-power" ||
         cost.kind === "sacrifice" ||
         cost.kind === "discard" ||
         cost.kind === "return"
       )
         for (const id of pending.selections[String(index)] ?? []) {
-          if (cost.kind === "tap" || cost.kind === "crew")
+          if (cost.kind === "tap" || cost.kind === "tap-total-power")
             this.object(id).status.tapped = true;
           else
             this.propose({
@@ -1207,18 +1171,13 @@ export class RulesEngine implements RulesMutator {
     }
     return true;
   }
-  manaColors(
-    produce: NonNullable<RulesAbility["produce"]>,
-    playerId: string,
-  ): ManaType[] {
-    return produce.colors === "commander-colors"
-      ? (this.rules.commanders[playerId].colorIdentity as ManaType[])
-      : produce.colors;
+  manaColors(produce: ManaProduction, playerId: string): ManaType[] {
+    return Array.isArray(produce.colors)
+      ? produce.colors
+      : (this.rules.commanders[playerId].colorIdentity as ManaType[]);
   }
   /** A mana ability's production (CR 605): mana abilities don't use the Stack. */
-  produceMana(playerId: string, ability: RulesAbility, color?: ManaType) {
-    const produce = ability.produce;
-    if (!produce) return;
+  produceMana(playerId: string, produce: ManaProduction, color?: ManaType) {
     const type = color ?? this.manaColors(produce, playerId)[0];
     this.rules.mana[playerId][type] += produce.quantity;
     if (produce.restriction) {
@@ -1246,54 +1205,7 @@ export class RulesEngine implements RulesMutator {
       });
   }
   resolve() {
-    const stack = this.zone("stack"),
-      object = this.object(stack.objectIds.at(-1)!);
-    const resolution = object.resolution;
-    const valid =
-      (!resolution?.ability.intervening ||
-        this.conditionSatisfied(
-          resolution.ability.intervening,
-          object.controllerId,
-          object.sourceObjectId ?? object.id,
-        )) &&
-      (!resolution?.ability.target ||
-        resolution.targetIds.some(
-          (id) =>
-            this.match.objects[id] &&
-            this.targetEligible(
-              this.match.objects[id],
-              resolution.ability.target!,
-              object.controllerId,
-              resolution.ability.trigger?.event === "dies"
-                ? resolution.event?.affectedId
-                : (object.sourceObjectId ?? object.id),
-            ),
-        ));
-    if (valid && resolution) {
-      delete this.match.priority;
-      new Resolution(this).start(object);
-      return;
-    }
-    this.finishResolution(object, valid);
-    this.priority();
-  }
-  finishResolution(object: GameObject, valid: boolean) {
-    if (
-      object.kind === "card" &&
-      valid &&
-      !object.characteristics.types?.some(
-        (type) => type === "Instant" || type === "Sorcery",
-      )
-    ) {
-      const targets = object.resolution?.targetIds ?? [];
-      const fresh = this.propose({
-        kind: "zone-change",
-        objectId: object.id,
-        to: this.zone("battlefield"),
-      }).object!;
-      if (this.definition(fresh)?.abilities.some((a) => a.rules?.aura))
-        fresh.attachmentTo = targets[0];
-    } else this.toGraveyard(object);
+    new StackResolutionRuntime(this).resolve();
   }
   /** Draws one card at a time (CR 121.2); stops at an empty Library. */
   draw(playerId: string, count: number) {
@@ -1316,7 +1228,7 @@ export class RulesEngine implements RulesMutator {
         const restricted = this.battlefieldSources().some(
           (a) =>
             a.attachmentTo === object.id &&
-            this.definition(a)?.abilities.some((b) => b.rules?.monarchUntap),
+            restrictsUntap(this.definition(a)?.abilities ?? []),
         );
         if (!restricted || this.rules.monarchId === object.controllerId)
           object.status.tapped = false;

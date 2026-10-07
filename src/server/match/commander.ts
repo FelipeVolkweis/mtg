@@ -3,8 +3,18 @@ import type {
   Catalog,
   Participant,
 } from "../../shared/model.js";
-import { rulesAbilitySchema } from "../../shared/rules.js";
 import type { Effect } from "../../shared/rules-v2.js";
+import {
+  activationZone,
+  costModifiers,
+  costsOf,
+  effectsOf,
+  enchantFilter,
+  hasImprovise,
+  ownKeyword,
+  triggerPattern,
+} from "../rules/abilities.js";
+import { conjuncts } from "../rules/support.js";
 import { unsupportedEffect } from "../rules/vm/effects/registry.js";
 
 export function commanderEligible(card: CardDefinition): boolean {
@@ -42,46 +52,45 @@ export function automationEligible(card: CardDefinition): boolean {
     card.form === "normal" &&
     card.keywords.every((keyword) =>
       card.abilities.some((ability) => {
-        if (!ability.rules) return false;
         const name = keyword.toLowerCase();
-        const effects = flatten(ability.rules.effects);
+        const effects = flatten(effectsOf(ability));
+        const costs = costsOf(ability);
         if (name === "cycling")
           return (
-            ability.kind === "activated" &&
-            ability.applicableZone === "hand" &&
-            ability.rules.costs.some(
-              (cost) => cost.kind === "discard-source",
-            ) &&
-            ability.rules.costs.some((cost) => cost.kind === "mana") &&
+            activationZone(ability) === "hand" &&
+            costs.some((cost) => cost.kind === "discard-source") &&
+            costs.some((cost) => cost.kind === "mana") &&
             effects.some(
               (effect) => effect.kind === "draw" && effect.count === 1,
             )
           );
         if (name === "affinity")
-          return (
-            ability.kind === "static" &&
-            !!ability.rules.costModifiers?.some(
-              (modifier) =>
-                modifier.use === "cast" &&
-                modifier.scope === "source" &&
-                modifier.component === "generic" &&
-                typeof modifier.amount === "object" &&
-                "count" in modifier.amount &&
-                modifier.amount.count.zone === "battlefield" &&
-                modifier.amount.count.controller === "you" &&
-                (!!modifier.amount.count.types?.length ||
-                  !!modifier.amount.count.subtypes?.length),
+          return costModifiers([ability]).some((modifier) => {
+            const amount = modifier.amount;
+            if (
+              modifier.use !== "cast" ||
+              modifier.scope !== "source" ||
+              typeof amount !== "object" ||
+              !("count" in amount) ||
+              typeof amount.count !== "object" ||
+              !("all" in amount.count)
             )
-          );
-        if (name === "improvise")
-          return ability.kind === "static" && !!ability.rules.improvise;
+              return false;
+            const fields = conjuncts(amount.count.all);
+            return (
+              fields.some((f) => f.zone === "battlefield") &&
+              fields.some((f) => f.controller === "you") &&
+              fields.some((f) => !!f.type?.length || !!f.subtype?.length)
+            );
+          });
+        if (name === "improvise") return hasImprovise([ability]);
         if (name === "ward") {
-          const trigger = ability.rules.trigger;
+          const trigger = triggerPattern(ability);
           return (
             ability.kind === "triggered" &&
             trigger?.event === "target" &&
             trigger.player === "opponent" &&
-            trigger.filter?.self === "only" &&
+            conjuncts(trigger.filter ?? {}).some((f) => f.is === "source") &&
             effects.some(
               (effect) =>
                 effect.kind === "may-pay" &&
@@ -115,38 +124,20 @@ export function automationEligible(card: CardDefinition): boolean {
                 "binding" in e.to,
             )
           );
-        if (name === "enchant") return !!ability.rules.aura;
+        if (name === "enchant") return !!enchantFilter([ability]);
         if (name === "equip")
           return (
             ability.id === "equip" && effects.some((e) => e.kind === "attach")
           );
         if (name === "crew")
           return (
-            ability.rules.costs.some((cost) => cost.kind === "crew") &&
+            costs.some((cost) => cost.kind === "tap-total-power") &&
             effects.some((effect) => effect.kind === "apply-continuous")
           );
-        return ability.rules.keyword?.toLowerCase() === name;
+        return ownKeyword(ability)?.toLowerCase() === name;
       }),
     ) &&
-    card.abilities.every(
-      (ability) =>
-        ability.rules &&
-        rulesAbilitySchema.safeParse(ability.rules).success &&
-        ((ability.kind === "activated" && supported(ability.rules.effects)) ||
-          (ability.kind === "triggered" &&
-            !!ability.rules.trigger &&
-            !ability.rules.costs.length &&
-            supported(ability.rules.effects)) ||
-          (ability.kind === "spell" &&
-            !ability.rules.costs.length &&
-            !ability.rules.manaAbility &&
-            !ability.rules.produce &&
-            supported(ability.rules.effects)) ||
-          (ability.kind === "static" &&
-            !ability.rules.costs.length &&
-            !ability.rules.target &&
-            !ability.rules.effects.length)),
-    )
+    card.abilities.every((ability) => supported(effectsOf(ability)))
   );
 }
 

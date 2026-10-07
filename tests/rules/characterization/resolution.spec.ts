@@ -22,6 +22,8 @@
 // | Aetherize returns all attacking creatures to their owners without moving blockers | Preserve |
 
 import { expect, test } from "@playwright/test";
+import { effectsOf } from "../../../src/server/rules/abilities";
+import type { ActivatedAbility } from "../../../src/shared/rules-v2";
 import { randomUUID } from "node:crypto";
 import { matchView } from "../../../src/server/match/match-view";
 import { gameObject } from "../../../src/server/match/game-objects";
@@ -328,8 +330,9 @@ test("nested sequences bind results, take conditions, and rotate choice identifi
   const definition = Object.values(catalog.definitions).find(
     (card) => card.canonicalName === "Thirst for Knowledge",
   )!;
-  definition.abilities[0].rules = {
-    costs: [],
+  definition.abilities[0] = {
+    id: definition.abilities[0].id,
+    kind: "spell",
     effects: [
       {
         kind: "sequence",
@@ -462,7 +465,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
     const transmuterCard = Object.values(game.catalog.definitions).find(
       (c) => c.canonicalName === "Master Transmuter",
     )!;
-    const effect = transmuterCard.abilities[0].rules!.effects[0];
+    const effect = effectsOf(transmuterCard.abilities[0])[0];
     if (effect.kind === "may" && effect.effects[0].kind === "move")
       effect.effects[0].objects = {
         choose: { from: { zone: "hand", owner: "you" }, count: 1 },
@@ -608,7 +611,7 @@ test("private Library selection and top/bottom ordering validate quantities and 
   const card = Object.values(game.catalog.definitions).find(
     (c) => c.canonicalName === "Mazemind Tome",
   )!;
-  card.abilities.find((a) => a.id === "scry")!.rules!.effects = [
+  (card.abilities.find((a) => a.id === "scry") as ActivatedAbility).effects = [
     {
       kind: "library-sequence",
       player: "you",

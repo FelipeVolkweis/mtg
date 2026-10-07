@@ -22,7 +22,8 @@ import { initializeTestCatalog } from "../../support/empty-catalog";
 
 // The version 2 catalog (card-model-refactor.md §3, §6; dsl-redesign.md §9):
 // files hold `imported` and `authored` sections; the reader derives the
-// stored-no-more values and loads abilities through compiler → down-compiler.
+// stored-no-more values and loads abilities through the compiler; the engine
+// runs the Core AST it emits.
 
 const definitions = "catalog/definitions";
 const fileNamed = async (prefix: string) =>
@@ -67,16 +68,13 @@ test("the reader derives name, mana value, keywords, Oracle text and type lines"
     authoredAbilities: file.authored.abilities,
   });
   expect(card.components[0].typeLine).toBe("Artifact");
+  // The engine runs the compiled Core abilities.
   expect(card.abilities).toMatchObject([
     {
       id: "mana",
-      kind: "activated",
-      rules: {
-        manaAbility: true,
-        costs: [{ kind: "tap-source" }],
-        effects: [],
-        produce: { quantity: 2, colors: ["C"] },
-      },
+      kind: "mana",
+      activation: { costs: [{ kind: "tap-source" }] },
+      produce: { quantity: 2, colors: ["C"] },
     },
   ]);
 });

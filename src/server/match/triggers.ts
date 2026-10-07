@@ -1,20 +1,21 @@
 import { randomUUID } from "node:crypto";
 import type { GameObject, MatchAction } from "../../shared/model.js";
-import type {
-  RulesAbility,
-  SemanticEvent,
-  WaitingTrigger,
-} from "../../shared/rules.js";
-import { matchesFilter } from "./characteristics.js";
+import type { SemanticEvent, WaitingTrigger } from "../../shared/rules.js";
+import {
+  interveningIf,
+  isDiesTrigger,
+  production,
+  targetFilter,
+  triggerPattern,
+  type TriggerPattern,
+} from "../rules/abilities.js";
+import { Evaluator } from "../rules/vm/evaluate.js";
 import { gameObject } from "./game-objects.js";
 import type { RulesEngine } from "./rules-engine.js";
 
 export class Triggers {
   constructor(readonly engine: RulesEngine) {}
-  stateSatisfied(
-    source: GameObject,
-    trigger: NonNullable<RulesAbility["trigger"]>,
-  ) {
+  stateSatisfied(source: GameObject, trigger: TriggerPattern) {
     return (
       !!trigger.counter &&
       !!trigger.atLeast &&
@@ -27,7 +28,7 @@ export class Triggers {
   collectStates() {
     for (const source of this.engine.battlefieldSources()) {
       for (const ability of this.engine.definition(source)?.abilities ?? []) {
-        const trigger = ability.rules?.trigger;
+        const trigger = triggerPattern(ability);
         if (
           ability.kind !== "triggered" ||
           trigger?.event !== "state" ||
@@ -70,8 +71,9 @@ export class Triggers {
   ) {
     for (const source of sources) {
       for (const ability of this.engine.definition(source)?.abilities ?? []) {
-        const trigger = ability.rules?.trigger;
-        if (ability.kind !== "triggered" || !trigger) continue;
+        const trigger = triggerPattern(ability);
+        if (!trigger) continue;
+        const intervening = interveningIf(ability);
         const matchesEvent =
           trigger.event === "dies"
             ? event.kind === "zone-change" &&
@@ -88,9 +90,9 @@ export class Triggers {
             trigger.ordinal !== event.ordinal) ||
           (trigger.step !== undefined &&
             trigger.step !== this.engine.match.turn.stepIndex) ||
-          (ability.rules?.intervening &&
+          (intervening &&
             !this.engine.conditionSatisfied(
-              ability.rules.intervening,
+              intervening,
               source.controllerId,
               source.id,
             )) ||
@@ -101,20 +103,25 @@ export class Triggers {
           (trigger.event === "state" &&
             !this.stateSatisfied(source, trigger)) ||
           (trigger.filter &&
-            !matchesFilter(
-              this.engine.match,
-              { ...affected, characteristics: event.before ?? event.after },
-              trigger.filter,
-              source.controllerId,
-              source.id,
-            ))
+            // The affected object as the event saw it (CR 603.10).
+            !new Evaluator(
+              {
+                ...this.engine.query,
+                effective: (o) =>
+                  o.id === affected.id
+                    ? (event.before ?? event.after)
+                    : this.engine.effective(o),
+              },
+              { playerId: source.controllerId, sourceId: source.id },
+            ).matches(affected, trigger.filter))
         )
           continue;
         const groupKey = `${source.id}:${ability.id}:${event.damage?.recipientId}`;
         if (trigger.grouped && groups.has(groupKey)) continue;
         if (trigger.grouped) groups.add(groupKey);
-        if (ability.rules?.manaAbility) {
-          this.engine.produceMana(source.controllerId, ability.rules);
+        const produce = production(ability);
+        if (produce) {
+          this.engine.produceMana(source.controllerId, produce);
           continue;
         }
         this.engine.rules.waitingTriggers ??= [];
@@ -131,7 +138,7 @@ export class Triggers {
                 : this.engine.effective(source),
             ownerId: this.engine.owner(source),
           },
-          ability: structuredClone(ability.rules!),
+          ability: structuredClone(ability),
           event: structuredClone(event),
         });
       }
@@ -146,7 +153,7 @@ export class Triggers {
       !this.engine
         .legalTargets(
           pending.playerId,
-          pending.ability!.target!,
+          targetFilter(pending.ability)!,
           this.engine.targetSource(pending),
         )
         .includes(ids[0])
@@ -180,19 +187,20 @@ export class Triggers {
       event: structuredClone(trigger.event),
       targetIds: [],
     };
+    const target = targetFilter(trigger.ability);
     if (
-      trigger.ability.target &&
+      target &&
       !engine.legalTargets(
         trigger.playerId,
-        trigger.ability.target,
-        trigger.ability.trigger?.event === "dies"
+        target,
+        isDiesTrigger(trigger.ability)
           ? trigger.event.affectedId
           : trigger.sourceId,
       ).length
     )
       return;
     engine.propose({ kind: "create", object, zone: engine.zone("stack") });
-    if (trigger.ability.target) {
+    if (target) {
       engine.rules.pending = {
         id: randomUUID(),
         playerId: trigger.playerId,

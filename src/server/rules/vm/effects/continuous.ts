@@ -1,28 +1,23 @@
-import type { ContinuousChange as V1Change } from "../../../../shared/rules.js";
+import type { AppliedChange } from "../../../../shared/rules.js";
 import type {
   ContinuousChange,
   Duration,
   Selector,
 } from "../../../../shared/rules-v2.js";
 import {
+  appliedChange,
   grantKeyword,
-  lowersCleanly,
-  v1Change,
-  type Unsupported,
-} from "../../lowering.js";
+  runtimeKeyword,
+} from "../../abilities.js";
 import { done, type EffectContext, type EffectHandler } from "./types.js";
 
 // Effects that last a duration (CR 611): continuous changes to objects and
 // rule-modifying grants. The runtime applies them as temporary effects on one
 // permanent until end of turn; values are locked in as they apply (CR 611.2c).
 
-const fail: Unsupported = (what) => {
-  throw new Error(`${what} is not supported by the current runtime.`);
-};
-
 function apply(
   objects: Selector,
-  changes: (ctx: EffectContext) => V1Change[],
+  changes: (ctx: EffectContext) => AppliedChange[],
   ctx: EffectContext,
 ) {
   const { query } = ctx;
@@ -36,7 +31,7 @@ function apply(
       sourceId: object.id,
       abilityId: stack?.sourceAbilityId ?? "animation",
       playerId: ctx.playerId,
-      filter: { zone: "battlefield", self: "only" },
+      objects: { all: { zone: "battlefield", is: "source" } },
       changes: changes(ctx),
       applicability: "until-end-of-turn",
     });
@@ -49,34 +44,51 @@ const unsupportedDuration = (duration: Duration) =>
     ? undefined
     : `A ${JSON.stringify(duration)} duration`;
 
-const lower = (
-  changes: ContinuousChange[],
-  ctx: EffectContext | undefined,
-  unsupported: Unsupported,
-) =>
-  changes.map((change) =>
-    v1Change(change, (value) => (ctx ? ctx.eval.value(value) : 0), unsupported),
-  );
+function unsupportedChange(change: ContinuousChange) {
+  if (change.kind === "gain-control") return "Gaining control";
+  if (change.kind === "grant-keyword" && !runtimeKeyword(change.keyword))
+    return `The ${change.keyword} keyword`;
+  return undefined;
+}
+
+/** A change with its values locked in (CR 611.2c). */
+function locked(change: ContinuousChange, ctx: EffectContext): AppliedChange {
+  const applied = appliedChange(change);
+  if (
+    applied.kind === "set-base-stats" ||
+    applied.kind === "add-stats" ||
+    applied.kind === "define-stats"
+  )
+    return {
+      ...applied,
+      power: ctx.eval.value(applied.power),
+      toughness: ctx.eval.value(applied.toughness),
+    };
+  return applied;
+}
 
 export const applyContinuous: EffectHandler<"apply-continuous"> = {
   unsupported: (effect) =>
     unsupportedDuration(effect.duration) ??
-    lowersCleanly((unsupported) =>
-      lower(effect.changes, undefined, unsupported),
-    ),
+    effect.changes.map(unsupportedChange).find(Boolean),
   execute: (effect, ctx) =>
-    apply(effect.objects, (c) => lower(effect.changes, c, fail), ctx),
+    apply(
+      effect.objects,
+      (c) => effect.changes.map((change) => locked(change, c)),
+      ctx,
+    ),
 };
 
 export const applyGrant: EffectHandler<"apply-grant"> = {
   unsupported: (effect) =>
     unsupportedDuration(effect.duration) ??
-    lowersCleanly((unsupported) => {
-      if (!grantKeyword(effect.grant, unsupported))
-        unsupported(`Applying the ${effect.grant.kind} grant`);
-    }),
+    (grantKeyword(effect.grant)
+      ? undefined
+      : effect.grant.kind === "block-restriction"
+        ? "A block restriction other than by Walls"
+        : `Applying the ${effect.grant.kind} grant`),
   execute(effect, ctx) {
-    const keyword = grantKeyword(effect.grant, fail)!;
+    const keyword = grantKeyword(effect.grant)!;
     return apply(
       keyword.objects,
       () => [{ kind: "grant-keyword", keyword: keyword.keyword }],

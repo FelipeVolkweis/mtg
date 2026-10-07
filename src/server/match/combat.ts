@@ -1,3 +1,4 @@
+import { attackTax } from "../rules/abilities.js";
 import { randomUUID } from "node:crypto";
 import type { GameObject, MatchAction } from "../../shared/model.js";
 import type {
@@ -214,12 +215,13 @@ export class Combat {
           source.controllerId === playerId
         )
           continue;
-        for (const ability of e.definition(source)?.abilities ?? [])
-          if (ability.kind === "static" && ability.rules?.attackCost) {
-            const cost = manaCost(ability.rules.attackCost.symbols);
-            for (const type of Object.keys(total) as (keyof typeof total)[])
-              total[type] += cost[type];
-          }
+        for (const ability of e.definition(source)?.abilities ?? []) {
+          const tax = attackTax([ability]);
+          if (!tax) continue;
+          const cost = manaCost(tax);
+          for (const type of Object.keys(total) as (keyof typeof total)[])
+            total[type] += cost[type];
+        }
       }
     }
     return total;

@@ -21,6 +21,7 @@
 // | Ward generated during trigger targeting follows the complete original placement batch across … (parameterized) | Move | reads internal runtime fields (TP §8)
 
 import { expect, test } from "@playwright/test";
+import type { ActivatedAbility } from "../../../src/shared/rules-v2";
 import { matchView } from "../../../src/server/match/match-view";
 import type { MatchState } from "../../../src/shared/model";
 import "../../support/round-trip";
@@ -333,10 +334,9 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
   const definition = Object.values(game.catalog.definitions).find(
     (c) => c.canonicalName === "Aether Spellbomb",
   )!;
-  definition.abilities[0].rules!.target = {
-    zone: "battlefield",
-    types: ["Artifact"],
-  };
+  (definition.abilities[0] as ActivatedAbility).targets = [
+    { id: "target-0", filter: { zone: "battlefield", type: ["Artifact"] } },
+  ];
   const player = game.match.players[0];
   force.mana(game.match, player.id, { W: 0, U: 3, B: 0, R: 0, G: 0, C: 0 });
   const view = () =>

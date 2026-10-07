@@ -4,105 +4,94 @@ import type {
   GameObject,
   MatchState,
 } from "../../shared/model.js";
-import type {
-  ActiveContinuousEffect,
-  ObjectFilter,
-  RulesValue,
-} from "../../shared/rules.js";
+import type { ActiveContinuousEffect } from "../../shared/rules.js";
+import type { Value } from "../../shared/rules-v2.js";
+import { ownKeyword, staticContinuous } from "../rules/abilities.js";
+import type { RulesQuery } from "../rules/context.js";
+import { Evaluator } from "../rules/vm/evaluate.js";
 
-export function matchesFilter(
+/**
+ * A read-only rules context over a Match without an engine. `effective` is
+ * supplied: the characteristics calculator reads base characteristics while
+ * it computes effective ones, as the layer system requires.
+ */
+export function queryOver(
   match: MatchState,
-  object: GameObject,
-  filter: ObjectFilter,
-  playerId: string,
-  sourceId?: string,
-) {
-  const zone = match.zones.find((z) => z.id === object.zoneId)!;
-  const types = object.characteristics.types ?? [];
-  return (
-    zone.kind === filter.zone &&
-    (zone.visibility !== "private" || zone.ownerId === playerId) &&
-    (!filter.controller ||
-      (filter.controller === "you"
-        ? object.controllerId === playerId
-        : object.controllerId !== playerId)) &&
-    (!filter.owner ||
-      (filter.owner === "you"
-        ? object.ownerId === playerId
-        : object.ownerId !== playerId)) &&
-    (!filter.nontoken || object.kind !== "token") &&
-    (!filter.colored || !!object.characteristics.colors.length) &&
-    (!filter.colorless || !object.characteristics.colors.length) &&
-    (!filter.attached ||
-      match.objects[sourceId ?? ""]?.attachmentTo === object.id) &&
-    (!filter.self ||
-      (filter.self === "only"
-        ? object.id === sourceId
-        : object.id !== sourceId)) &&
-    (!filter.kind ||
-      (filter.kind === "spell"
-        ? object.kind === "card" && zone.kind === "stack"
-        : filter.kind === "permanent"
-          ? zone.kind === "battlefield"
-          : object.kind === "card")) &&
-    (!filter.types || filter.types.some((t) => types.includes(t))) &&
-    (!filter.allTypes || filter.allTypes.every((t) => types.includes(t))) &&
-    (!filter.subtypes ||
-      filter.subtypes.some((t) =>
-        object.characteristics.subtypes?.includes(t),
-      )) &&
-    (!filter.excludeTypes ||
-      filter.excludeTypes.every((t) => !types.includes(t))) &&
-    (!filter.untapped || !object.status.tapped) &&
-    (!filter.attacking ||
-      !!match.rules?.combat?.attackers.some((a) => a.objectId === object.id))
-  );
+  catalog: Catalog,
+  effective: (object: GameObject) => Characteristics,
+): RulesQuery {
+  const query: RulesQuery = {
+    match,
+    catalog,
+    object(id) {
+      const object = match.objects[id];
+      if (!object) throw new Error("This Game Object has already moved.");
+      return object;
+    },
+    zone(kind, playerId) {
+      const zone = match.zones.find(
+        (z) => z.kind === kind && (!playerId || z.ownerId === playerId),
+      );
+      if (!zone) throw new Error("Zone not found.");
+      return zone;
+    },
+    owner: (object) => object.ownerId,
+    effective,
+    definition: (object) =>
+      catalog.definitions[
+        match.instances[object.cardInstanceIds[0]]?.definitionId
+      ],
+    matches: (object, predicate, playerId, sourceId) =>
+      new Evaluator(query, { playerId, sourceId }).matches(object, predicate),
+  };
+  return query;
 }
+
+const base = (object: GameObject) => object.characteristics;
 
 export class CharacteristicsCalculator {
   constructor(
     readonly match: MatchState,
     readonly catalog: Catalog,
   ) {}
+  /** A Core value over base characteristics (inside the layer system). */
   value(
-    value: RulesValue,
+    value: Value,
     playerId: string,
     sourceId?: string,
     bindings: Record<string, number> = {},
   ): number {
-    if (typeof value === "number") return value;
-    if ("count" in value)
-      return Object.values(this.match.objects).filter((o) =>
-        matchesFilter(this.match, o, value.count, playerId, sourceId),
-      ).length;
-    if ("sum" in value)
-      return value.sum.reduce<number>(
-        (sum, part) => sum + this.value(part, playerId, sourceId, bindings),
-        0,
+    return new Evaluator(queryOver(this.match, this.catalog, base), {
+      playerId,
+      sourceId,
+      bindings,
+    }).value(value);
+  }
+  /**
+   * Does a continuous effect affect an object whose characteristics so far
+   * are `characteristics`?
+   */
+  applies(
+    effect: ActiveContinuousEffect,
+    object: GameObject,
+    characteristics: Characteristics,
+  ) {
+    const selector = effect.objects;
+    if (selector === "source")
+      return (
+        object.id === effect.sourceId &&
+        this.match.zones.find((z) => z.id === object.zoneId)?.kind ===
+          "battlefield"
       );
-    if ("handSize" in value)
-      return this.match.zones.find(
-        (z) => z.kind === "hand" && z.ownerId === playerId,
-      )!.objectIds.length;
-    if ("greatestManaValue" in value)
-      return Math.max(
-        0,
-        ...Object.values(this.match.objects)
-          .filter((o) =>
-            matchesFilter(
-              this.match,
-              o,
-              value.greatestManaValue,
-              playerId,
-              sourceId,
-            ),
-          )
-          .map((o) => o.characteristics.manaValue ?? 0),
-      );
-    const result = bindings[value.binding];
-    if (!Number.isSafeInteger(result) || result < 0)
-      throw new Error("Invalid quantity binding.");
-    return result;
+    const evaluator = new Evaluator(
+      queryOver(this.match, this.catalog, (o) =>
+        o.id === object.id ? characteristics : o.characteristics,
+      ),
+      { playerId: effect.playerId, sourceId: effect.sourceId },
+    );
+    return typeof selector === "object" && "all" in selector
+      ? evaluator.matches(object, selector.all)
+      : evaluator.objects(selector).includes(object.id);
   }
   active(): ActiveContinuousEffect[] {
     return [
@@ -115,8 +104,8 @@ export class CharacteristicsCalculator {
             this.match.instances[source.cardInstanceIds[0]]?.definitionId
           ];
         return (card?.abilities ?? []).flatMap((ability) => {
-          const effect = ability.rules?.continuous;
-          if (!effect || ability.kind !== "static") return [];
+          const effect = staticContinuous(ability);
+          if (!effect) return [];
           if (
             !effect.characteristicDefining &&
             this.match.zones.find((z) => z.id === source.zoneId)?.kind !==
@@ -125,8 +114,10 @@ export class CharacteristicsCalculator {
             return [];
           if (
             effect.condition &&
-            this.value(effect.condition.value, source.controllerId, source.id) <
-              effect.condition.atLeast
+            !new Evaluator(queryOver(this.match, this.catalog, base), {
+              playerId: source.controllerId,
+              sourceId: source.id,
+            }).condition(effect.condition)
           )
             return [];
           return [
@@ -134,7 +125,7 @@ export class CharacteristicsCalculator {
               sourceId: source.id,
               abilityId: ability.id,
               playerId: source.controllerId,
-              filter: effect.filter,
+              objects: effect.objects,
               changes: effect.changes,
               applicability: effect.characteristicDefining
                 ? ("characteristic-defining" as const)
@@ -148,15 +139,7 @@ export class CharacteristicsCalculator {
   typeCharacteristics(object: GameObject): Characteristics {
     const result = structuredClone(object.characteristics);
     for (const effect of this.active())
-      if (
-        matchesFilter(
-          this.match,
-          { ...object, characteristics: result },
-          effect.filter,
-          effect.playerId,
-          effect.sourceId,
-        )
-      )
+      if (this.applies(effect, object, result))
         for (const change of effect.changes)
           if (change.kind === "add-types") {
             result.types = [
@@ -177,22 +160,16 @@ export class CharacteristicsCalculator {
       this.catalog.definitions[
         this.match.instances[object.cardInstanceIds[0]]?.definitionId
       ];
-    for (const ability of definition?.abilities ?? [])
-      if (ability.rules?.keyword)
-        result.keywords = [
-          ...new Set([...(result.keywords ?? []), ability.rules.keyword]),
-        ];
+    for (const ability of definition?.abilities ?? []) {
+      const keyword = ownKeyword(ability);
+      if (keyword)
+        result.keywords = [...new Set([...(result.keywords ?? []), keyword])];
+    }
     const changes = this.active().flatMap((effect) => {
       const applies =
         effect.applicability === "characteristic-defining"
           ? effect.sourceId === object.id
-          : matchesFilter(
-              this.match,
-              { ...object, characteristics: result },
-              effect.filter,
-              effect.playerId,
-              effect.sourceId,
-            );
+          : this.applies(effect, object, result);
       return applies
         ? effect.changes.map((change) => ({ effect, change }))
         : [];
@@ -223,7 +200,7 @@ export class CharacteristicsCalculator {
       );
     }
     for (const { effect, change } of changes) {
-      if (change.kind !== "linked-characteristics") continue;
+      if (change.kind !== "copy-linked") continue;
       const source = this.match.objects[effect.sourceId];
       const linked = source.links
         .filter((link) => link.label === change.link)
@@ -254,7 +231,7 @@ export class CharacteristicsCalculator {
         result.subtypes.join(" ");
     }
     for (const { effect, change } of changes)
-      if (change.kind === "set-stats") {
+      if (change.kind === "set-base-stats") {
         result.power = String(
           this.value(change.power, effect.playerId, effect.sourceId),
         );

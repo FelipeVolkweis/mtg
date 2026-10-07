@@ -428,7 +428,7 @@ function Procedure({
                   option.label ??
                   (key === "discard"
                     ? "Discard"
-                    : `Pay ${pending.ability?.costs[Number(key)]?.kind} cost`)
+                    : `Pay ${pending.ability?.kind === "activated" ? pending.ability.costs[Number(key)]?.kind : undefined} cost`)
                 }
                 selected={selections[key] ?? []}
                 onChange={(ids) => setSelections({ ...selections, [key]: ids })}

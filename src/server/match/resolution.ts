@@ -1,78 +1,97 @@
 import { randomUUID } from "node:crypto";
 import type { GameObject, MatchAction } from "../../shared/model.js";
 import type { SelectionOption } from "../../shared/rules.js";
+import type { Effect } from "../../shared/rules-v2.js";
 import type { ProposedEvent } from "../rules/context.js";
 import { Evaluator, type Scope } from "../rules/vm/evaluate.js";
-import { answerEffect, executeEffect } from "../rules/vm/effects/registry.js";
 import type {
   EffectContext,
-  ExecutionResult,
   PromptOptions,
 } from "../rules/vm/effects/types.js";
+import {
+  newExecution,
+  put,
+  RuleVM,
+  runtimeValue,
+  scopeBindings,
+  type VMResult,
+} from "../rules/vm/rule-vm.js";
 import { Combat } from "./combat.js";
 import type { RulesEngine } from "./rules-engine.js";
 
-// Runs a resolving spell or ability's Core AST instructions through the
-// effect handler registry. The queue and bindings are Match data: each
-// instruction is removed before its handler runs, and a handler waiting for a
-// choice keeps itself in `waiting`, so reconnecting resumes there.
+// The Rule VM's view of the Match: the effect context handlers run against,
+// and the resolution prompt. The execution state is `rules.resolving`.
 
 export class Resolution {
   constructor(readonly engine: RulesEngine) {}
-  get progress() {
+  get execution() {
     return this.engine.rules.resolving!;
   }
 
-  /** Starts resolving the top object of the Stack. */
-  start(object: GameObject) {
-    const resolution = object.resolution!;
-    this.engine.rules.resolving = {
-      sourceId: object.id,
-      playerId: object.controllerId,
-      remaining: structuredClone(resolution.ability.effects),
-      bindings: Object.fromEntries(
+  /** Starts executing a resolving object's instructions; see `run`. */
+  start(object: GameObject, instructions: Effect[]): VMResult {
+    this.engine.rules.resolving = newExecution(
+      object.id,
+      object.controllerId,
+      instructions,
+      Object.fromEntries(
         object.variables.map((variable) => [
           variable.name,
           Number(variable.value),
         ]),
       ),
-    };
-    this.resume();
+    );
+    return this.vm().run();
+  }
+
+  /** Answers the waiting instruction and continues. */
+  answer(action: Extract<MatchAction, { type: "rules-input" }>): VMResult {
+    return this.vm().answer(action);
+  }
+
+  private vm() {
+    return new RuleVM(
+      this.execution,
+      () => this.context(),
+      () => delete this.engine.rules.pending,
+    );
   }
 
   scope(): Scope {
-    const progress = this.progress;
-    const stack = this.engine.object(progress.sourceId);
+    const execution = this.execution;
+    const stack = this.engine.object(execution.stackObjectId);
     return {
-      playerId: progress.playerId,
+      playerId: execution.controllerId,
       sourceId: stack.sourceObjectId ?? stack.id,
       targetIds: stack.resolution?.targetIds ?? [],
       event: stack.resolution?.event,
-      bindings: progress.bindings,
-      objects: (progress.objects ??= {}),
-      players: (progress.players ??= {}),
+      ...scopeBindings(execution),
     };
   }
 
   context(): EffectContext {
     const engine = this.engine;
-    const progress = this.progress;
+    const execution = this.execution;
     const scope = this.scope();
+    const view = scope as Required<
+      Pick<Scope, "bindings" | "objects" | "players">
+    >;
     return {
       query: engine.query,
       propose: (event: ProposedEvent) => engine.propose(event),
       rules: engine.rules,
-      playerId: progress.playerId,
-      stackId: progress.sourceId,
+      playerId: execution.controllerId,
+      stackId: execution.stackObjectId,
       sourceId: scope.sourceId!,
       eval: new Evaluator(engine.query, scope),
       scoped: (extra) => new Evaluator(engine.query, { ...scope, ...extra }),
       bind(name, value) {
-        if (Array.isArray(value)) progress.objects![name] = value;
-        else progress.bindings[name] = value;
+        const typed = runtimeValue(value);
+        execution.bindings[name] = typed;
+        put(view, name, typed);
       },
       inspect(ids) {
-        progress.inspectedIds = ids;
+        execution.inspectedIds = ids;
       },
       prompt: (options, context, extra) => this.prompt(options, context, extra),
       get options() {
@@ -90,10 +109,10 @@ export class Resolution {
   ) {
     this.engine.rules.pending = {
       id: randomUUID(),
-      playerId: extra.playerId ?? this.progress.playerId,
+      playerId: extra.playerId ?? this.execution.controllerId,
       kind: "resolve",
       stage: extra.payment ? "payment" : "selection",
-      sourceId: this.progress.sourceId,
+      sourceId: this.execution.stackObjectId,
       targetIds: [],
       selections: {},
       totalCost: extra.payment ?? {
@@ -108,52 +127,5 @@ export class Resolution {
       options,
       context,
     };
-  }
-
-  /** Applies a handler's result; true when the queue may continue. */
-  private after(result: ExecutionResult) {
-    const progress = this.progress;
-    if (result.kind === "continue")
-      progress.remaining.unshift(...result.effects);
-    return result.kind !== "suspend";
-  }
-
-  resume() {
-    const progress = this.progress;
-    while (progress.remaining.length) {
-      const effect = progress.remaining.shift()!;
-      const result = executeEffect(effect, this.context());
-      if (result.kind === "suspend") {
-        progress.waiting = { effect, state: result.state };
-        return;
-      }
-      this.after(result);
-    }
-    const source = this.engine.object(progress.sourceId);
-    delete this.engine.rules.resolving;
-    delete this.engine.rules.pending;
-    this.engine.finishResolution(source, true);
-    this.engine.priority();
-  }
-
-  answer(action: Extract<MatchAction, { type: "rules-input" }>) {
-    const progress = this.progress;
-    const waiting = progress.waiting;
-    if (!waiting) throw new Error("Nothing is waiting for an answer.");
-    const result = answerEffect(
-      waiting.effect,
-      waiting.state,
-      action,
-      this.context(),
-    );
-    if (result.kind === "suspend") {
-      progress.waiting = { effect: waiting.effect, state: result.state };
-      return;
-    }
-    delete progress.waiting;
-    delete progress.inspectedIds;
-    delete this.engine.rules.pending;
-    this.after(result);
-    this.resume();
   }
 }

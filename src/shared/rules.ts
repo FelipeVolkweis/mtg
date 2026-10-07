@@ -1,5 +1,10 @@
 import { z } from "zod";
-import type { Effect } from "./rules-v2.js";
+import type {
+  Ability,
+  ContinuousChange,
+  Effect,
+  Selector,
+} from "./rules-v2.js";
 
 export const manaTypes = ["W", "U", "B", "R", "G", "C"] as const;
 export type ManaType = (typeof manaTypes)[number];
@@ -15,90 +20,12 @@ export interface RestrictedMana {
   amount: number;
   restriction: z.infer<typeof manaRestrictionSchema>;
 }
-export const objectFilterSchema = z
-  .object({
-    zone: z.enum([
-      "battlefield",
-      "hand",
-      "stack",
-      "graveyard",
-      "exile",
-      "library",
-    ]),
-    kind: z.enum(["card", "spell", "permanent"]).optional(),
-    subtypes: z.array(z.string().min(1)).optional(),
-    allTypes: z.array(z.string().min(1)).optional(),
-    self: z.enum(["only", "exclude"]).optional(),
-    controller: z.enum(["you", "opponent"]).optional(),
-    owner: z.enum(["you", "opponent"]).optional(),
-    nontoken: z.boolean().optional(),
-    colored: z.boolean().optional(),
-    colorless: z.boolean().optional(),
-    attached: z.boolean().optional(),
-    types: z.array(z.string().min(1)).optional(),
-    excludeTypes: z.array(z.string().min(1)).optional(),
-    untapped: z.boolean().optional(),
-    attacking: z.boolean().optional(),
-    manaValue: z.lazy(() => valueSchema).optional(),
-    damagedBySource: z.boolean().optional(),
-  })
-  .strict();
-export type ObjectFilter = z.infer<typeof objectFilterSchema>;
-const quantitySchema = z.union([
-  z.number().int().nonnegative().max(1000),
-  z.literal("commander-colors"),
-]);
-export const rulesCostSchema = z.discriminatedUnion("kind", [
-  z
-    .object({
-      kind: z.literal("crew"),
-      power: z.number().int().positive(),
-      filter: objectFilterSchema,
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("mana"),
-      symbols: z.array(z.string().regex(/^\{(?:[WUBRGCX]|\d+)\}$/)).max(100),
-    })
-    .strict(),
-  z.object({ kind: z.literal("tap-source") }).strict(),
-  z.object({ kind: z.literal("sacrifice-source") }).strict(),
-  z.object({ kind: z.literal("discard-source") }).strict(),
-  z.object({ kind: z.literal("life"), amount: quantitySchema }).strict(),
-  z
-    .object({
-      kind: z.literal("counter-source"),
-      counter: z.string().min(1),
-      count: z.number().int().positive(),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.enum(["tap", "sacrifice", "discard", "return"]),
-      count: z.number().int().min(1).max(100),
-      filter: objectFilterSchema,
-    })
-    .strict(),
-]);
-export type RulesValue =
-  | number
-  | { binding: string }
-  | { count: ObjectFilter }
-  | { sum: RulesValue[] }
-  | { handSize: "you" }
-  | { greatestManaValue: ObjectFilter };
-export const valueSchema: z.ZodType<RulesValue> = z.lazy(() =>
-  z.union([
-    z.number().int().nonnegative().max(1000),
-    z.object({ binding: z.string().min(1) }).strict(),
-    z.object({ handSize: z.literal("you") }).strict(),
-    z.object({ greatestManaValue: objectFilterSchema }).strict(),
-    z.object({ count: objectFilterSchema }).strict(),
-    z.object({ sum: z.array(valueSchema).min(1).max(20) }).strict(),
-  ]),
-);
-export const supportedKeywordSchema = z.enum([
+/**
+ * The keyword names the characteristics engine records (and the client
+ * shows): rule keywords, and the attack and block grants it applies as
+ * keywords.
+ */
+export const runtimeKeywords = [
   "Flying",
   "Reach",
   "Flash",
@@ -110,175 +37,33 @@ export const supportedKeywordSchema = z.enum([
   "Must attack",
   "Cannot be blocked by Walls",
   "Defender",
-]);
-export const continuousChangeSchema = z.discriminatedUnion("kind", [
-  z
-    .object({
-      kind: z.literal("add-types"),
-      types: z.array(z.string()).optional(),
-      subtypes: z.array(z.string()).optional(),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("set-stats"),
-      power: valueSchema,
-      toughness: valueSchema,
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("grant-keyword"),
-      keyword: supportedKeywordSchema,
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("linked-characteristics"),
-      link: z.string().min(1),
-      retainSubtypes: z.array(z.string()),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("define-stats"),
-      power: valueSchema,
-      toughness: valueSchema,
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("add-stats"),
-      power: valueSchema,
-      toughness: valueSchema,
-    })
-    .strict(),
-]);
-export type ContinuousChange = z.infer<typeof continuousChangeSchema>;
+] as const;
+export type RuntimeKeyword = (typeof runtimeKeywords)[number];
+
+/**
+ * A continuous change as the characteristics engine applies it: a Core
+ * change (layer tags dropped), with a granted keyword by its runtime name.
+ */
+export type AppliedChange =
+  | Exclude<
+      ContinuousChange,
+      { kind: "grant-keyword" } | { kind: "gain-control" }
+    >
+  | { kind: "grant-keyword"; keyword: RuntimeKeyword };
+
+/** A continuous effect in force (CR 611): what it affects and changes. */
 export interface ActiveContinuousEffect {
   sourceId: string;
   abilityId: string;
+  /** The effect's controller: "you" in its selector and values. */
   playerId: string;
-  filter: ObjectFilter;
-  changes: ContinuousChange[];
+  /** The affected objects, relative to `sourceId`. */
+  objects: Selector;
+  changes: AppliedChange[];
   applicability:
     "source-on-battlefield" | "characteristic-defining" | "until-end-of-turn";
 }
-export const conditionSchema = z
-  .object({
-    value: valueSchema,
-    atLeast: valueSchema,
-    requireObjects: objectFilterSchema.optional(),
-  })
-  .strict();
 
-/** What a mana ability adds (DSL v2 `produce`, lowered). */
-export const manaProductionSchema = z
-  .object({
-    quantity: z.number().int().min(1).max(1000),
-    colors: z.union([
-      z.array(z.enum(manaTypes)).min(1).max(6),
-      z.literal("commander-colors"),
-    ]),
-    restriction: manaRestrictionSchema.optional(),
-  })
-  .strict();
-export type ManaProduction = z.infer<typeof manaProductionSchema>;
-
-/**
- * The runtime ability the engine executes, as the down-compiler emits it
- * (dsl-redesign.md §9 step 3). The Rules Compiler validates authored
- * abilities; this schema only checks the shape and fills defaults. `effects`
- * are Core AST effects, run by the effect handlers (rules-engine-refactor.md
- * §34); the compiler has validated them, so they are not parsed again here.
- */
-export const rulesAbilitySchema = z
-  .object({
-    improvise: z.boolean().optional(),
-    aura: objectFilterSchema.optional(),
-    monarchUntap: z.boolean().optional(),
-    attackCost: z
-      .object({
-        symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)).min(1),
-      })
-      .strict()
-      .optional(),
-    keyword: supportedKeywordSchema.optional(),
-    maximumHandSize: z.literal("unlimited").optional(),
-    oncePerTurn: z.boolean().optional(),
-    intervening: conditionSchema.optional(),
-    castingPermission: objectFilterSchema.optional(),
-    timing: z.literal("sorcery").optional(),
-    chosenVariables: z.array(z.literal("X")).max(1).optional(),
-    costs: z.array(rulesCostSchema).max(100).default([]),
-    effects: z
-      .array(z.custom<Effect>((value) => typeof value === "object"))
-      .max(100)
-      .default([]),
-    produce: manaProductionSchema.optional(),
-    entersTapped: z.boolean().optional(),
-    cantBeCountered: z.boolean().optional(),
-    costModifiers: z
-      .array(
-        z
-          .object({
-            use: z.enum(["cast", "activate"]),
-            scope: z.enum(["source", "controller"]),
-            component: z.literal("generic"),
-            filter: objectFilterSchema.optional(),
-            amount: valueSchema,
-          })
-          .strict(),
-      )
-      .max(20)
-      .optional(),
-    continuous: z
-      .object({
-        filter: objectFilterSchema,
-        changes: z.array(continuousChangeSchema).min(1).max(20),
-        characteristicDefining: z.boolean().optional(),
-        condition: z
-          .object({
-            value: valueSchema,
-            atLeast: z.number().int().nonnegative(),
-          })
-          .strict()
-          .optional(),
-      })
-      .strict()
-      .optional(),
-    target: objectFilterSchema.optional(),
-    trigger: z
-      .object({
-        event: z.enum([
-          "enter",
-          "cast",
-          "dies",
-          "state",
-          "damage",
-          "attack",
-          "draw",
-          "upkeep",
-          "target",
-          "mana",
-        ]),
-        filter: objectFilterSchema.optional(),
-        player: z.enum(["you", "opponent"]).optional(),
-        ordinal: z.number().int().positive().optional(),
-        grouped: z.boolean().optional(),
-        step: z.number().int().nonnegative().optional(),
-        combat: z.boolean().optional(),
-        recipientKind: z.enum(["player", "object"]).optional(),
-        counter: z.string().min(1).optional(),
-        atLeast: z.number().int().positive().optional(),
-      })
-      .strict()
-      .optional(),
-    manaAbility: z.boolean().optional(),
-  })
-  .strict();
-export type RulesAbility = z.infer<typeof rulesAbilitySchema>;
-export type RulesCost = z.infer<typeof rulesCostSchema>;
 export interface PendingProcedure {
   id: string;
   playerId: string;
@@ -300,7 +85,8 @@ export interface PendingProcedure {
   context?: string;
   options?: Record<string, SelectionOption>;
   sourceId?: string;
-  ability?: RulesAbility;
+  /** The Core ability being cast or activated. */
+  ability?: Ability;
   abilityId?: string;
   targetIds: string[];
   selections: Record<string, string[]>;
@@ -321,25 +107,35 @@ export interface SelectionOption {
 export type JsonValue =
   string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
+/** A typed binding value (rules-engine-refactor.md §32). */
+export type RuntimeValue =
+  | { kind: "number"; value: number }
+  | { kind: "objects"; ids: string[] }
+  | { kind: "player"; id: string };
+
+/** One program the Rule VM runs: its instructions and program counter. */
+export interface ExecutionFrame {
+  instructions: Effect[];
+  /** The next instruction, or the waiting one while suspended. */
+  pc: number;
+  /** Bindings visible only inside this frame. */
+  locals?: Record<string, RuntimeValue>;
+}
+
 /**
- * A resolving spell or ability. The queue holds Core AST effects; each
- * completed instruction is removed before a choice is exposed, so a restored
- * Match resumes at the waiting instruction (rules-engine-refactor.md §34).
+ * A resolving spell or ability's Rule VM state (rules-engine-refactor.md §32).
+ * A suspended instruction keeps its frame's program counter, so a restored
+ * Match answers it without running anything again.
  */
-export interface ResolutionProgress {
-  sourceId: string;
-  playerId: string;
-  remaining: Effect[];
-  /** Number and flag bindings, and the chosen X. */
-  bindings: Record<string, number>;
-  /** Object-set bindings: Game Object ids. */
-  objects?: Record<string, string[]>;
-  /** Player bindings (`for-each-player` binds `player`). */
-  players?: Record<string, string>;
+export interface RuleExecution {
+  stackObjectId: string;
+  controllerId: string;
+  frames: ExecutionFrame[];
+  bindings: Record<string, RuntimeValue>;
+  /** The waiting instruction's handler state, while suspended. */
+  waiting?: { state: JsonValue };
   /** Library cards the waiting chooser looks at privately (shown in their view). */
   inspectedIds?: string[];
-  /** The instruction waiting for a player's answer, with its handler's state. */
-  waiting?: { effect: Effect; state: JsonValue };
 }
 export interface CombatAttacker {
   objectId: string;
@@ -399,7 +195,7 @@ export interface RulesState {
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
   pending?: PendingProcedure;
-  resolving?: ResolutionProgress;
+  resolving?: RuleExecution;
   mana: Record<string, ManaPool>;
   restrictedMana?: Record<string, RestrictedMana[]>;
   failedDrawPlayerIds?: string[];
@@ -464,6 +260,6 @@ export interface WaitingTrigger {
   sourceId: string;
   abilityId: string;
   sourceName: string;
-  ability: RulesAbility;
+  ability: Ability;
   event: SemanticEvent;
 }
