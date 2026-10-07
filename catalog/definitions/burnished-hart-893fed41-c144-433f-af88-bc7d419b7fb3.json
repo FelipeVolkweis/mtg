@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "893fed41-c144-433f-af88-bc7d419b7fb3",
-  "canonicalName": "Burnished Hart",
-  "defaultPrintingId": "65ebbff0-fbe6-4310-a33f-e00bb2534979",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Burnished Hart",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Elk",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Elk"
-      ],
-      "keywords": [],
-      "rulesText": "{3}, Sacrifice this creature: Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "{3}, Sacrifice this creature: Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Burnished Hart",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Elk"
+        ],
+        "keywords": [],
+        "rulesText": "{3}, Sacrifice this creature: Search your library for up to two basic land cards, put them onto the battlefield tapped, then shuffle.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "65ebbff0-fbe6-4310-a33f-e00bb2534979"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

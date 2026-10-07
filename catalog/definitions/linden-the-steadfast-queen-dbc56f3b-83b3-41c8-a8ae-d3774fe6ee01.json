@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "dbc56f3b-83b3-41c8-a8ae-d3774fe6ee01",
-  "canonicalName": "Linden, the Steadfast Queen",
-  "defaultPrintingId": "e0bb07cd-9b74-4ba7-8089-27a565d74197",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Linden, the Steadfast Queen",
-      "manaCost": "{W}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Human Noble",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Noble"
-      ],
-      "keywords": [
-        "Vigilance"
-      ],
-      "rulesText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhenever a white creature you control attacks, you gain 1 life.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhenever a white creature you control attacks, you gain 1 life.",
-  "keywords": [
-    "Vigilance"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Linden, the Steadfast Queen",
+        "manaCost": "{W}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Noble"
+        ],
+        "keywords": [
+          "Vigilance"
+        ],
+        "rulesText": "Vigilance (Attacking doesn't cause this creature to tap.)\nWhenever a white creature you control attacks, you gain 1 life.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "e0bb07cd-9b74-4ba7-8089-27a565d74197"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "6ee71432-a44d-495e-86ea-d495d891c331",
-  "canonicalName": "Verdant Sun's Avatar",
-  "defaultPrintingId": "474aa068-bf84-46c6-a94c-9af1d69ad03a",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Verdant Sun's Avatar",
-      "manaCost": "{5}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur Avatar",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur",
-        "Avatar"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature or another creature you control enters, you gain life equal to that creature's toughness.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Whenever this creature or another creature you control enters, you gain life equal to that creature's toughness.",
-  "keywords": [],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Verdant Sun's Avatar",
+        "manaCost": "{5}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur",
+          "Avatar"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature or another creature you control enters, you gain life equal to that creature's toughness.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "474aa068-bf84-46c6-a94c-9af1d69ad03a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

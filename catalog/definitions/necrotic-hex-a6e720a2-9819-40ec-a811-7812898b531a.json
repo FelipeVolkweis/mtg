@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "a6e720a2-9819-40ec-a811-7812898b531a",
-  "canonicalName": "Necrotic Hex",
-  "defaultPrintingId": "815334d8-8f4b-47dd-b24a-07ac297e14c8",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Necrotic Hex",
-      "manaCost": "{6}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Each player sacrifices six creatures of their choice. You create six tapped 2/2 black Zombie creature tokens."
-    }
-  ],
-  "oracleText": "Each player sacrifices six creatures of their choice. You create six tapped 2/2 black Zombie creature tokens.",
-  "keywords": [],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Necrotic Hex",
+        "manaCost": "{6}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Each player sacrifices six creatures of their choice. You create six tapped 2/2 black Zombie creature tokens."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "815334d8-8f4b-47dd-b24a-07ac297e14c8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

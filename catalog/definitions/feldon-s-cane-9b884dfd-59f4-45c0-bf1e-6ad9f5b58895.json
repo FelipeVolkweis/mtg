@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "9b884dfd-59f4-45c0-bf1e-6ad9f5b58895",
-  "canonicalName": "Feldon's Cane",
-  "defaultPrintingId": "026f55c3-8e65-4520-b26d-6208344f73b2",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Feldon's Cane",
-      "manaCost": "{1}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}, Exile this artifact: Shuffle your graveyard into your library."
-    }
-  ],
-  "oracleText": "{T}, Exile this artifact: Shuffle your graveyard into your library.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Feldon's Cane",
+        "manaCost": "{1}",
+        "colors": [],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}, Exile this artifact: Shuffle your graveyard into your library."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "026f55c3-8e65-4520-b26d-6208344f73b2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

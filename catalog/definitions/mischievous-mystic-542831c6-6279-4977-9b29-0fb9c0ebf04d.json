@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "542831c6-6279-4977-9b29-0fb9c0ebf04d",
-  "canonicalName": "Mischievous Mystic",
-  "defaultPrintingId": "20d89cec-528b-4b2a-87db-e11ce0000622",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Mischievous Mystic",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Wizard",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever you draw your second card each turn, create a 1/1 blue Faerie creature token with flying.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you draw your second card each turn, create a 1/1 blue Faerie creature token with flying.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mischievous Mystic",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever you draw your second card each turn, create a 1/1 blue Faerie creature token with flying.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "20d89cec-528b-4b2a-87db-e11ce0000622"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

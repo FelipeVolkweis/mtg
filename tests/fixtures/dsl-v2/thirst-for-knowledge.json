@@ -1,0 +1,74 @@
+{
+  "catalogVersion": 2,
+  "id": "939e6f71-185e-41f2-9d54-72cce06f1dce",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thirst for Knowledge",
+        "manaCost": "{2}{U}",
+        "colors": ["U"],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw three cards. Then discard two cards unless you discard an artifact card."
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "f784f025-2798-4112-9768-39c8e3572b25"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "draw-discard",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 3
+          },
+          {
+            "kind": "choose-one",
+            "options": [
+              {
+                "id": "artifact",
+                "label": "Discard an artifact card",
+                "available": {
+                  "exists": {
+                    "all": {
+                      "zone": "hand",
+                      "owner": "you",
+                      "type": "Artifact"
+                    }
+                  }
+                },
+                "effects": [
+                  {
+                    "kind": "discard",
+                    "count": 1,
+                    "filter": {
+                      "type": "Artifact"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "cards",
+                "label": "Discard two cards",
+                "effects": [
+                  {
+                    "kind": "discard",
+                    "count": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

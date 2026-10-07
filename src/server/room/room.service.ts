@@ -18,6 +18,7 @@ import { MatchService } from "../match/match.service.js";
 import { commanderEligible } from "../match/commander.js";
 import type { Catalog } from "../../shared/model.js";
 import { matchView } from "../match/match-view.js";
+import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";
 
 export class TabletopError extends Error {}
 export const credentialHash = (credential: string) =>
@@ -48,6 +49,7 @@ export class RoomService implements OnModuleInit {
     const credential = randomBytes(32).toString("hex");
     const participant = this.participant(name, credential);
     const room: RoomState = {
+      snapshotVersion: currentSnapshotVersion,
       id: randomUUID(),
       invite: randomBytes(24).toString("hex"),
       revision: 0,
@@ -132,7 +134,7 @@ export class RoomService implements OnModuleInit {
     const room = result.rows[0]?.document;
     if (!room || Date.now() - room.lastActivity >= this.expiryMs)
       throw new TabletopError("This Room is closed or expired.");
-    return room;
+    return upgradeRoom(room);
   }
   touch(room: RoomState) {
     room.lastActivity = Date.now();

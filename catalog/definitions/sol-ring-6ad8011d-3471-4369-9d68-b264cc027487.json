@@ -1,53 +1,47 @@
 {
+  "catalogVersion": 2,
   "id": "6ad8011d-3471-4369-9d68-b264cc027487",
-  "canonicalName": "Sol Ring",
-  "defaultPrintingId": "4f152dd9-2b35-45b2-90fe-8c71d0634226",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Sol Ring",
-      "manaCost": "{1}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}{C}."
-    }
-  ],
-  "oracleText": "{T}: Add {C}{C}.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Sol Ring",
+        "manaCost": "{1}",
+        "colors": [],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "C"
-            ],
-            "quantity": 2
-          }
-        ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add {C}{C}."
-    }
-  ]
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}{C}."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "4f152dd9-2b35-45b2-90fe-8c71d0634226"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}{C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 2,
+          "colors": [
+            "C"
+          ]
+        }
+      }
+    ]
+  }
 }

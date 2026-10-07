@@ -11,7 +11,6 @@ import type {
   ZoneState,
 } from "../../shared/model.js";
 import {
-  manaTypes,
   type ManaPool,
   type ManaType,
   type ObjectFilter,
@@ -20,11 +19,19 @@ import {
   type SelectionOption,
   rulesAbilitySchema,
 } from "../../shared/rules.js";
-import { gameObject, moveObject } from "./game-objects.js";
+import type { Effect } from "../../shared/rules-v2.js";
+import type {
+  EventResult,
+  ProposedEvent,
+  RulesMutator,
+  RulesQuery,
+} from "../rules/context.js";
+import { EventRuntime } from "../rules/events/event-runtime.js";
+import { Evaluator } from "../rules/vm/evaluate.js";
+import { gameObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
 import { CharacteristicsCalculator, matchesFilter } from "./characteristics.js";
-import { tokenCharacteristics } from "./tokens.js";
 import { Triggers } from "./triggers.js";
 import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
@@ -40,7 +47,7 @@ export const emptyMana = (): ManaPool => ({
   C: 0,
 });
 
-export class RulesEngine {
+export class RulesEngine implements RulesMutator {
   readonly rules;
   constructor(
     readonly match: MatchState,
@@ -48,6 +55,26 @@ export class RulesEngine {
   ) {
     if (!match.rules) throw new Error("Rules Match state is missing.");
     this.rules = match.rules;
+  }
+  /** The read-only rules context (rules-engine-refactor.md §6). */
+  get query(): RulesQuery {
+    return {
+      match: this.match,
+      catalog: this.catalog,
+      object: (id) => this.object(id),
+      zone: (kind, playerId) => this.zone(kind, playerId),
+      owner: (object) => this.owner(object),
+      effective: (object) => this.effective(object),
+      definition: (object) => this.definition(object),
+      matches: (object, predicate, playerId, sourceId) =>
+        new Evaluator(this.query, { playerId, sourceId }).matches(
+          object,
+          predicate,
+        ),
+    };
+  }
+  propose(event: ProposedEvent): EventResult {
+    return new EventRuntime(this).propose(event);
   }
   zone(kind: ZoneKind, playerId?: string) {
     const zone = this.match.zones.find(
@@ -103,15 +130,7 @@ export class RulesEngine {
         this.cast(player.id, action.objectId);
       else if (action.type === "activate-ability")
         this.activate(player.id, action);
-      else if (action.type === "position") {
-        const object = this.object(action.objectId);
-        if (
-          object.zoneId !== this.zone("battlefield").id ||
-          object.controllerId !== player.id
-        )
-          throw new Error("Choose your Battlefield object.");
-        this.match.layout.positions[object.id] = action.position;
-      } else throw new Error("Use a legal rules action.");
+      else throw new Error("Use a legal rules action.");
     }
     this.match.revision++;
     return undefined;
@@ -124,7 +143,13 @@ export class RulesEngine {
     if (action.type === "mulligan" && action.playerId === player.id) {
       if (player.mulliganCount >= 7)
         throw new Error("No further mulligans are available.");
-      for (const id of [...hand.objectIds]) moveObject(this.match, id, library);
+      for (const id of [...hand.objectIds])
+        this.propose({
+          kind: "zone-change",
+          objectId: id,
+          to: library,
+          cause: "setup",
+        });
       new Library(library).shuffle(player.id);
       this.draw(player.id, 7);
       player.mulliganCount++;
@@ -137,7 +162,13 @@ export class RulesEngine {
         throw new Error(
           `Choose ${player.mulliganCount} cards from your Hand to put on the bottom.`,
         );
-      for (const id of action.bottomIds) moveObject(this.match, id, library);
+      for (const id of action.bottomIds)
+        this.propose({
+          kind: "zone-change",
+          objectId: id,
+          to: library,
+          cause: "setup",
+        });
       this.rules.setup.keptPlayerIds.push(player.id);
       if (this.rules.setup.keptPlayerIds.length === this.match.players.length)
         this.beginTurn();
@@ -237,19 +268,14 @@ export class RulesEngine {
           !this.canPayTapSymbol(object, playerId)
         )
           continue;
-        const effect = rules.effects.find(
-          (effect) => effect.kind === "add-mana",
-        );
-        if (effect?.kind === "add-mana") {
-          const colors =
-            effect.colors === "commander-colors"
-              ? (this.rules.commanders[playerId].colorIdentity as ManaType[])
-              : effect.colors;
+        const produce = rules.produce;
+        if (produce) {
+          const colors = this.manaColors(produce, playerId);
           for (const color of colors)
             actions.push({
               label: ability.description
                 ? `${ability.description}${colors.length > 1 ? ` Choose {${color}}.` : ""}`
-                : `${object.characteristics.name}: add ${effect.quantity} ${color}`,
+                : `${object.characteristics.name}: add ${produce.quantity} ${color}`,
               action: {
                 type: "activate-ability",
                 objectId: object.id,
@@ -399,22 +425,17 @@ export class RulesEngine {
       );
     if ((this.rules.landsPlayed[playerId] ?? 0) >= 1)
       throw new Error("You have already played a land this turn.");
-    this.enter(object);
+    this.propose({
+      kind: "zone-change",
+      objectId: object.id,
+      to: this.zone("battlefield"),
+    });
     this.rules.landsPlayed[playerId] = 1;
     this.priority(playerId);
   }
-  enter(object: GameObject) {
-    const tapped = this.definition(object)?.abilities.some((ability) =>
-      ability.rules?.effects.some((effect) => effect.kind === "enter-tapped"),
-    );
-    const fresh = moveObject(this.match, object.id, this.zone("battlefield"));
-    fresh.status.tapped = !!tapped;
-    this.emit("enter", fresh);
-    return fresh;
-  }
   battlefieldSources() {
     return Object.values(this.match.objects).filter(
-      (o) => o.zoneId === this.zone("battlefield").id && !o.status.phasedOut,
+      (o) => o.zoneId === this.zone("battlefield").id,
     );
   }
   emit(kind: "enter" | "cast", object: GameObject) {
@@ -424,49 +445,12 @@ export class RulesEngine {
         sourceId: object.id,
         affectedId: object.id,
         controllerId: object.controllerId,
-        ownerId:
-          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-          object.controllerId,
+        ownerId: object.ownerId,
         after: this.effective(object),
       },
       object,
       this.battlefieldSources(),
     );
-  }
-  move(
-    id: string,
-    destination: ZoneState,
-    snapshotSources?: GameObject[],
-    snapshotCharacteristics?: import("../../shared/model.js").Characteristics,
-  ) {
-    const object = this.object(id),
-      from = this.match.zones.find((z) => z.id === object.zoneId)!;
-    const sources = snapshotSources ?? this.battlefieldSources();
-    const before = snapshotCharacteristics ?? this.effective(object);
-    destination = new CommanderRules(this).replacement(object, destination);
-    const fresh = moveObject(this.match, id, destination);
-    new CommanderRules(this).moved(fresh, destination);
-    this.rules.revealedHandIds = this.rules.revealedHandIds?.filter(
-      (revealed) => revealed !== id,
-    );
-    new Triggers(this).collect(
-      {
-        kind: "zone-change",
-        sourceId: id,
-        affectedId: fresh.id,
-        controllerId: object.controllerId,
-        ownerId:
-          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-          object.controllerId,
-        from: from.kind,
-        to: destination.kind,
-        before,
-        after: this.effective(fresh),
-      },
-      object,
-      sources,
-    );
-    return fresh;
   }
   matches(
     object: GameObject,
@@ -539,7 +523,7 @@ export class RulesEngine {
   }
   monarchTrigger(
     playerId: string,
-    effects: import("../../shared/rules.js").RulesEffect[],
+    effects: Effect[],
     abilityId: string,
     creature?: GameObject,
   ) {
@@ -607,13 +591,13 @@ export class RulesEngine {
           abilities.push({
             id: `intrinsic-${subtype}`,
             kind: "activated",
-            origin: "rules",
+            // CR 305.6: a basic land type's mana ability is intrinsic.
+            origin: "printed",
             applicableZone: "battlefield",
             rules: {
               costs: [{ kind: "tap-source" }],
-              effects: [
-                { kind: "add-mana", quantity: 1, colors: [colors[subtype]] },
-              ],
+              effects: [],
+              produce: { quantity: 1, colors: [colors[subtype]] },
               manaAbility: true,
             },
           });
@@ -754,15 +738,14 @@ export class RulesEngine {
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
         throw new Error("The mana ability's complete costs cannot be paid.");
-      this.effects(playerId, ability, [], action.color);
+      this.produceMana(playerId, ability, action.color);
+      const produce = ability.produce;
       if (
         ability.costs.some((c) => c.kind === "tap-source") &&
-        ability.effects.some(
-          (e) =>
-            e.kind === "add-mana" &&
-            (action.color ??
-              (Array.isArray(e.colors) ? e.colors[0] : undefined)) === "C",
-        )
+        produce &&
+        (action.color ??
+          (Array.isArray(produce.colors) ? produce.colors[0] : undefined)) ===
+          "C"
       )
         new Triggers(this).collect(
           {
@@ -857,7 +840,12 @@ export class RulesEngine {
         ids.some((id) => !hand.objectIds.includes(id))
       )
         throw new Error("Choose the required cards to discard for cleanup.");
-      for (const id of ids) this.move(id, this.zone("graveyard", playerId));
+      for (const id of ids)
+        this.propose({
+          kind: "zone-change",
+          objectId: id,
+          to: this.zone("graveyard", playerId),
+        });
       delete this.rules.pending;
       this.cleanup();
       return;
@@ -904,10 +892,12 @@ export class RulesEngine {
         this.rules.commanderCasts[instance] =
           (this.rules.commanderCasts[instance] ?? 0) + 1;
       }
-      const spell = moveObject(this.match, source, this.zone("stack"));
-      this.rules.revealedHandIds = this.rules.revealedHandIds?.filter(
-        (id) => id !== source,
-      );
+      const spell = this.propose({
+        kind: "zone-change",
+        objectId: source,
+        to: this.zone("stack"),
+        cause: "cast",
+      }).object!;
       spell.resolution = {
         ability: pending.ability!,
         targetIds: pending.targetIds,
@@ -931,12 +921,18 @@ export class RulesEngine {
         this.rules.activationUsage ??= {};
         this.rules.activationUsage[`${source}:${pending.abilityId}`] = 1;
       }
-      const object = gameObject("ability", this.zone("stack").id, playerId, {
-        name: `${this.lastSourceName}: ${pending.abilityId}`,
-        colors: [],
-        typeLine: "Ability",
-        rulesText: "",
-      });
+      const object = gameObject(
+        "ability",
+        this.zone("stack").id,
+        playerId,
+        playerId,
+        {
+          name: `${this.lastSourceName}: ${pending.abilityId}`,
+          colors: [],
+          typeLine: "Ability",
+          rulesText: "",
+        },
+      );
       object.variables = Object.entries(pending.variables ?? {}).map(
         ([name, value]) => ({ name, value: String(value) }),
       );
@@ -948,8 +944,7 @@ export class RulesEngine {
         targetIds: pending.targetIds,
         color: pending.color,
       };
-      this.match.objects[object.id] = object;
-      this.zone("stack").objectIds.push(object.id);
+      this.propose({ kind: "create", object, zone: this.zone("stack") });
     }
     const stacked = this.object(this.zone("stack").objectIds.at(-1)!);
     this.targeted(stacked);
@@ -987,8 +982,7 @@ export class RulesEngine {
         ] ?? 0);
     let reduction = 0;
     for (const source of Object.values(this.match.objects)) {
-      if (source.status.phasedOut || source.controllerId !== pending.playerId)
-        continue;
+      if (source.controllerId !== pending.playerId) continue;
       for (const ability of this.definition(source)?.abilities ?? []) {
         for (const modifier of ability.rules?.costModifiers ?? []) {
           if (modifier.use !== pending.kind) continue;
@@ -1032,17 +1026,14 @@ export class RulesEngine {
     const player = this.match.players.find((p) => p.id === playerId)!;
     const ability = pending.ability!;
     const colors = this.rules.commanders[playerId].colorIdentity as ManaType[];
-    for (const effect of ability.effects) {
-      if (effect.kind === "add-mana") {
-        const allowed =
-          effect.colors === "commander-colors" ? colors : effect.colors;
-        if (
-          !allowed.includes(
-            pending.color ?? (allowed.length === 1 ? allowed[0] : undefined)!,
-          )
+    if (ability.produce) {
+      const allowed = this.manaColors(ability.produce, playerId);
+      if (
+        !allowed.includes(
+          pending.color ?? (allowed.length === 1 ? allowed[0] : undefined)!,
         )
-          throw new Error("Choose a permitted mana color.");
-      }
+      )
+        throw new Error("Choose a permitted mana color.");
     }
     const costs = pending.kind === "cast" ? [] : ability.costs;
     const tapped = new Set<string>();
@@ -1170,7 +1161,7 @@ export class RulesEngine {
       this.rules.restrictedMana[playerId] = lots.filter(
         (lot) => lot.amount > 0,
       );
-    player.life = (BigInt(player.life) - BigInt(life)).toString();
+    if (life) this.propose({ kind: "life-change", playerId, amount: -life });
     for (const [index, cost] of costs.entries()) {
       if (cost.kind === "tap-source") source.status.tapped = true;
       else if (cost.kind === "counter-source") {
@@ -1188,7 +1179,11 @@ export class RulesEngine {
         cost.kind === "sacrifice-source" ||
         cost.kind === "discard-source"
       )
-        this.move(source.id, this.zone("graveyard", this.owner(source)));
+        this.propose({
+          kind: "zone-change",
+          objectId: source.id,
+          to: this.zone("graveyard", this.owner(source)),
+        });
       else if (
         cost.kind === "tap" ||
         cost.kind === "crew" ||
@@ -1200,178 +1195,55 @@ export class RulesEngine {
           if (cost.kind === "tap" || cost.kind === "crew")
             this.object(id).status.tapped = true;
           else
-            this.move(
-              id,
-              this.zone(
+            this.propose({
+              kind: "zone-change",
+              objectId: id,
+              to: this.zone(
                 cost.kind === "return" ? "hand" : "graveyard",
                 this.owner(this.object(id)),
               ),
-            );
+            });
         }
     }
     return true;
   }
-  effects(
+  manaColors(
+    produce: NonNullable<RulesAbility["produce"]>,
     playerId: string,
-    ability: RulesAbility,
-    targets: string[],
-    color?: ManaType,
-  ) {
-    for (const effect of ability.effects) {
-      if (effect.kind === "animate-source") {
-        const stack = this.match.objects[this.rules.resolving?.sourceId ?? ""];
-        const id =
-          effect.recipient === "target" ? targets[0] : stack?.sourceObjectId;
-        const source = this.match.objects[id ?? ""];
-        if (source?.zoneId === this.zone("battlefield").id) {
-          this.rules.temporaryEffects ??= [];
-          this.rules.temporaryEffects.push({
-            sourceId: source.id,
-            abilityId: stack?.sourceAbilityId ?? "animation",
-            playerId,
-            filter: { zone: "battlefield", self: "only" },
-            changes: effect.changes.map((change) =>
-              change.kind === "add-stats" ||
-              change.kind === "set-stats" ||
-              change.kind === "define-stats"
-                ? {
-                    ...change,
-                    power: this.value(
-                      change.power,
-                      playerId,
-                      source.id,
-                      this.rules.resolving?.bindings,
-                    ),
-                    toughness: this.value(
-                      change.toughness,
-                      playerId,
-                      source.id,
-                      this.rules.resolving?.bindings,
-                    ),
-                  }
-                : change,
-            ),
-            applicability: "until-end-of-turn",
-          });
-        }
-      } else if (effect.kind === "damage") {
-        const stackSource = this.rules.resolving?.sourceId;
-        if (stackSource)
-          this.damage(
-            (effect.recipient === "defender"
-              ? (() => {
-                  const attacker = this.rules.combat?.attackers.find(
-                    (a) =>
-                      a.objectId === this.object(stackSource).sourceObjectId,
-                  );
-                  const defenderId =
-                    attacker?.defenderId ??
-                    this.object(stackSource).resolution?.event?.defenderId;
-                  if (!defenderId) return [];
-                  const recipient = this.match.objects[defenderId];
-                  return this.match.players.some(
-                    (p) => p.id === defenderId && p.outcome === "playing",
-                  ) ||
-                    (recipient?.zoneId === this.zone("battlefield").id &&
-                      this.effective(recipient).types?.includes("Planeswalker"))
-                    ? [defenderId]
-                    : [];
-                })()
-              : targets
-            ).map((recipientId) => ({
-              sourceId: stackSource,
-              recipientId,
-              amount: this.value(
-                effect.amount,
-                playerId,
-                stackSource,
-                this.rules.resolving?.bindings,
-              ),
-            })),
-          );
-      } else if (effect.kind === "draw") {
-        if (typeof effect.count !== "number")
-          throw new Error("Draw requires a resolution binding.");
-        this.draw(playerId, effect.count);
-      } else if (effect.kind === "add-mana") {
-        const colors =
-          effect.colors === "commander-colors"
-            ? (this.rules.commanders[playerId].colorIdentity as ManaType[])
-            : effect.colors;
-        const type = color ?? colors[0];
-        this.rules.mana[playerId][type] += effect.quantity;
-        if (effect.restriction) {
-          this.rules.restrictedMana ??= {};
-          this.rules.restrictedMana[playerId] ??= [];
-          this.rules.restrictedMana[playerId].push({
-            type,
-            amount: effect.quantity,
-            restriction: structuredClone(effect.restriction),
-          });
-        }
-      } else if (effect.kind === "add-counters") {
-        for (const object of Object.values(this.match.objects).filter((o) =>
-          this.matches(
-            o,
-            effect.filter,
-            playerId,
-            this.match.objects[this.rules.resolving?.sourceId ?? ""]
-              ?.sourceObjectId,
-          ),
-        )) {
-          const counter = object.counters.find(
-            (c) => c.kind === effect.counter,
-          );
-          if (counter)
-            counter.quantity = (
-              BigInt(counter.quantity) + BigInt(effect.count)
-            ).toString();
-          else
-            object.counters.push({
-              kind: effect.counter,
-              quantity: String(effect.count),
-            });
-        }
-      } else if (effect.kind === "create-token") {
-        if (this.rules.resolving) this.rules.resolving.createdIds = [];
-        for (let i = 0; i < effect.count; i++) {
-          const token = gameObject(
-            "token",
-            this.zone("battlefield").id,
-            playerId,
-            tokenCharacteristics[effect.token],
-          );
-          token.ownerId = playerId;
-          this.rules.resolving?.createdIds?.push(token.id);
-          this.match.objects[token.id] = token;
-          this.zone("battlefield").objectIds.push(token.id);
-          this.rules.controlledSinceTurn[token.id] = this.match.turn.number;
-          this.emit("enter", token);
-        }
-      } else if (effect.kind === "counter-target") {
-        const target = this.match.objects[targets[0]];
-        if (target && !target.cannotBeCountered) this.toGraveyard(target);
-      }
+  ): ManaType[] {
+    return produce.colors === "commander-colors"
+      ? (this.rules.commanders[playerId].colorIdentity as ManaType[])
+      : produce.colors;
+  }
+  /** A mana ability's production (CR 605): mana abilities don't use the Stack. */
+  produceMana(playerId: string, ability: RulesAbility, color?: ManaType) {
+    const produce = ability.produce;
+    if (!produce) return;
+    const type = color ?? this.manaColors(produce, playerId)[0];
+    this.rules.mana[playerId][type] += produce.quantity;
+    if (produce.restriction) {
+      this.rules.restrictedMana ??= {};
+      this.rules.restrictedMana[playerId] ??= [];
+      this.rules.restrictedMana[playerId].push({
+        type,
+        amount: produce.quantity,
+        restriction: structuredClone(produce.restriction),
+      });
     }
   }
   owner(object: GameObject) {
-    return (
-      this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-      object.ownerId ??
-      object.controllerId
-    );
+    return object.ownerId;
   }
+  /** An ability ceases to exist; a card goes to its owner's Graveyard. */
   toGraveyard(object: GameObject) {
-    const ownerId =
-      this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-      object.controllerId;
-    if (object.kind === "ability") {
-      this.zone("stack").objectIds.splice(
-        this.zone("stack").objectIds.indexOf(object.id),
-        1,
-      );
-      delete this.match.objects[object.id];
-    } else this.move(object.id, this.zone("graveyard", ownerId));
+    if (object.kind === "ability")
+      this.propose({ kind: "cease", objectId: object.id });
+    else
+      this.propose({
+        kind: "zone-change",
+        objectId: object.id,
+        to: this.zone("graveyard", object.ownerId),
+      });
   }
   resolve() {
     const stack = this.zone("stack"),
@@ -1399,18 +1271,7 @@ export class RulesEngine {
         ));
     if (valid && resolution) {
       delete this.match.priority;
-      this.rules.resolving = {
-        sourceId: object.id,
-        playerId: object.controllerId,
-        remaining: structuredClone(resolution.ability.effects),
-        bindings: Object.fromEntries(
-          object.variables.map((variable) => [
-            variable.name,
-            Number(variable.value),
-          ]),
-        ),
-      };
-      new Resolution(this).resume();
+      new Resolution(this).start(object);
       return;
     }
     this.finishResolution(object, valid);
@@ -1425,145 +1286,19 @@ export class RulesEngine {
       )
     ) {
       const targets = object.resolution?.targetIds ?? [];
-      const fresh = this.enter(object);
+      const fresh = this.propose({
+        kind: "zone-change",
+        objectId: object.id,
+        to: this.zone("battlefield"),
+      }).object!;
       if (this.definition(fresh)?.abilities.some((a) => a.rules?.aura))
         fresh.attachmentTo = targets[0];
     } else this.toGraveyard(object);
   }
-  damage(
-    assignments: import("../../shared/rules.js").DamageAssignment[],
-    combat = false,
-  ) {
-    // Capture all sources before the checkpoint so lethal damage is simultaneous.
-    const sources = structuredClone(this.battlefieldSources());
-    const groups = new Set<string>();
-    for (const assignment of assignments) {
-      if (!Number.isSafeInteger(assignment.amount) || assignment.amount < 0)
-        throw new Error("Invalid damage amount.");
-      if (!assignment.amount) continue;
-      const stackSource = this.match.objects[assignment.sourceId];
-      if (!stackSource) continue;
-      const sourceId =
-        stackSource.kind === "ability"
-          ? (stackSource.sourceObjectId ?? stackSource.id)
-          : stackSource.id;
-      const live = this.match.objects[sourceId];
-      const characteristics = live
-        ? this.effective(live)
-        : (stackSource.resolution?.sourceSnapshot?.characteristics ??
-          stackSource.resolution?.event?.after ??
-          stackSource.characteristics);
-      const source = live ?? {
-        ...stackSource,
-        id: sourceId,
-        zoneId: this.zone("battlefield").id,
-        characteristics,
-      };
-      const recorded = { ...assignment, sourceId };
-      const player = this.match.players.find(
-        (p) => p.id === assignment.recipientId,
-      );
-      const recipient = this.match.objects[assignment.recipientId];
-      if (player && combat) {
-        const instance = new CommanderRules(this).instance(source);
-        if (instance) {
-          this.rules.commanderDamage ??= {};
-          this.rules.commanderDamage[player.id] ??= {};
-          this.rules.commanderDamage[player.id][instance] =
-            (this.rules.commanderDamage[player.id][instance] ?? 0) +
-            assignment.amount;
-        }
-        if (this.rules.monarchId === player.id)
-          this.monarchTrigger(
-            player.id,
-            [{ kind: "become-monarch", player: "event-controller" }],
-            "monarch-transfer",
-            source,
-          );
-      }
-      if (player)
-        player.life = String(BigInt(player.life) - BigInt(assignment.amount));
-      else if (recipient?.zoneId === this.zone("battlefield").id) {
-        const types = this.effective(recipient).types ?? [];
-        if (types.includes("Creature")) {
-          this.rules.markedDamage ??= {};
-          this.rules.markedDamage[recipient.id] =
-            (this.rules.markedDamage[recipient.id] ?? 0) + assignment.amount;
-        } else if (types.includes("Planeswalker") || types.includes("Battle")) {
-          const counter = recipient.counters.find(
-            (c) =>
-              c.kind ===
-              (types.includes("Planeswalker") ? "loyalty" : "defense"),
-          );
-          if (counter)
-            counter.quantity = String(
-              BigInt(counter.quantity) > BigInt(assignment.amount)
-                ? BigInt(counter.quantity) - BigInt(assignment.amount)
-                : 0n,
-            );
-        } else continue;
-      } else continue;
-      this.rules.damageEvents ??= [];
-      this.rules.damageEvents.push({
-        ...recorded,
-        sourceCharacteristics: structuredClone(characteristics),
-        combat,
-        controllerId: source.controllerId,
-        recipientKind: player ? "player" : "object",
-        turn: this.match.turn.number,
-      });
-      new Triggers(this).collect(
-        {
-          kind: "damage",
-          sourceId: source.id,
-          affectedId: source.id,
-          controllerId: source.controllerId,
-          ownerId: live
-            ? this.owner(source)
-            : (stackSource.resolution?.sourceSnapshot?.ownerId ??
-              source.controllerId),
-          after: characteristics,
-          damage: {
-            ...recorded,
-            combat,
-            recipientKind: player ? "player" : "object",
-          },
-        },
-        source,
-        sources,
-        groups,
-      );
-    }
-  }
+  /** Draws one card at a time (CR 121.2); stops at an empty Library. */
   draw(playerId: string, count: number) {
-    const library = this.zone("library", playerId),
-      hand = this.zone("hand", playerId);
-    for (let i = 0; i < count; i++) {
-      if (!library.objectIds.length) {
-        this.rules.failedDrawPlayerIds ??= [];
-        if (!this.rules.failedDrawPlayerIds.includes(playerId))
-          this.rules.failedDrawPlayerIds.push(playerId);
-        break;
-      }
-      const card = moveObject(this.match, library.objectIds[0], hand);
-      this.rules.drawsThisTurn ??= {};
-      const ordinal = (this.rules.drawsThisTurn[playerId] =
-        (this.rules.drawsThisTurn[playerId] ?? 0) + 1);
-      new Triggers(this).collect(
-        {
-          kind: "draw",
-          playerId,
-          ordinal,
-          sourceId: card.id,
-          affectedId: card.id,
-          controllerId: playerId,
-          ownerId: playerId,
-          after: card.characteristics,
-        },
-        card,
-        this.battlefieldSources(),
-      );
-    }
+    for (let i = 0; i < count; i++)
+      if (!this.propose({ kind: "draw", playerId }).object) break;
   }
   beginTurn() {
     this.rules.drawsThisTurn = {};
@@ -1730,27 +1465,20 @@ export class RulesEngine {
         dying.map((object) => [object.id, this.effective(object)]),
       );
       for (const object of dying) {
-        this.move(
-          object.id,
-          this.zone(
-            "graveyard",
-            this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-              object.ownerId ??
-              object.controllerId,
-          ),
-          sources,
-          before.get(object.id),
-        );
+        this.propose({
+          kind: "zone-change",
+          objectId: object.id,
+          to: this.zone("graveyard", object.ownerId),
+          simultaneous: { sources, before: before.get(object.id) },
+        });
         changed = true;
         performed = true;
       }
       for (const token of Object.values(this.match.objects).filter(
         (o) => o.kind === "token" && o.zoneId !== this.zone("battlefield").id,
-      )) {
-        const zone = this.match.zones.find((z) => z.id === token.zoneId)!;
-        zone.objectIds.splice(zone.objectIds.indexOf(token.id), 1);
-        delete this.match.objects[token.id];
-      }
+      ))
+        // CR 704.5d: a token outside the Battlefield ceases to exist.
+        this.propose({ kind: "cease", objectId: token.id });
     } while (changed);
     new Combat(this).prune();
     this.rules.continuousEffects = new CharacteristicsCalculator(

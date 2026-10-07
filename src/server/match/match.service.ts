@@ -11,13 +11,11 @@ import type {
   ZoneKind,
 } from "../../shared/model.js";
 import { phaseSteps } from "../../shared/model.js";
-import { initialPosition } from "../../shared/table-layout.js";
 import { Library, zoneFor } from "./zones.js";
 import { validateCommanderDeck } from "./commander.js";
-import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
 
 export { gameObject } from "./game-objects.js";
-import { gameObject, moveObject } from "./game-objects.js";
+import { gameObject } from "./game-objects.js";
 import { CommanderRules, CommanderReplacement } from "./commander-rules.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
@@ -58,13 +56,8 @@ export class MatchService implements GameplayExecutor {
       instances: {},
       objects: {},
       zones: [],
-      layout: { kind: "spatial", positions: {} },
       turn: { activePlayerId: "", number: 1, stepIndex: 0, order: [] },
       outcome: "ongoing",
-      openingHandActions: [],
-      copiableValues: {},
-      stickerSheets: [],
-      diceRolls: [],
     };
     const addZone = (kind: ZoneKind, name: string, ownerId?: string) => {
       const zone = {
@@ -119,6 +112,7 @@ export class MatchService implements GameplayExecutor {
           const object = gameObject(
             "card",
             library.id,
+            player.id,
             player.id,
             definition.components[0],
           );
@@ -223,16 +217,15 @@ export class MatchService implements GameplayExecutor {
       const object = Object.values(match.objects).find((o) =>
         o.cardInstanceIds.includes(instance.id),
       )!;
-      moveObject(
-        match,
-        object.id,
-        match.zones.find((z) => z.kind === "command")!,
-      );
-      const library = match.zones.find(
-        (z) => z.kind === "library" && z.ownerId === player.id,
-      )!;
-      new Library(library).shuffle(player.id);
-      new RulesEngine(match, catalog).draw(player.id, 7);
+      const engine = new RulesEngine(match, catalog);
+      engine.propose({
+        kind: "zone-change",
+        objectId: object.id,
+        to: engine.zone("command"),
+        cause: "setup",
+      });
+      new Library(engine.zone("library", player.id)).shuffle(player.id);
+      engine.draw(player.id, 7);
     });
     match.revision = 0;
     return match;

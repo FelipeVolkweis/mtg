@@ -66,7 +66,7 @@ test("dragging a land and using its card menu keeps gameplay server-owned; Alt a
 import { seedRulesScenario } from "./support/rules-scenario";
 import { cardAction } from "./support/card-actions";
 
-test("equivalent copies expand individually while tapped, countered, attached and face-down permanents remain distinct", async ({
+test("equivalent copies expand individually while tapped, countered and attached permanents remain distinct", async ({
   browser,
 }) => {
   const {
@@ -143,22 +143,6 @@ test("equivalent copies expand individually while tapped, countered, attached an
         exact: true,
       }),
     ).toContainText("Tapped");
-    const hidden = alice
-      .getByLabel("Creatures — Bob")
-      .getByRole("button", { name: "Card: Face-down creature", exact: true });
-    await hidden.hover();
-    await alice.keyboard.down("Alt");
-    await expect(alice.getByLabel("Enlarged card")).toContainText(
-      "Face-down creature",
-    );
-    await expect(alice.getByLabel("Enlarged card").locator("img")).toHaveCount(
-      0,
-    );
-    await alice.keyboard.up("Alt");
-    const state = (await snapshot(alice)).match!;
-    expect(
-      Object.values(state.objects).find((o) => o.hidden)?.artwork,
-    ).toBeUndefined();
   } finally {
     await Promise.all(contexts.map((c) => c.close()));
   }

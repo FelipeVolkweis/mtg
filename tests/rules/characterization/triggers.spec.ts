@@ -26,6 +26,7 @@ import type { MatchState } from "../../../src/shared/model";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("Wellspring entry triggers draw privately after the permanent resolves", async () => {
   const { match, command, seed, room, catalog } = await rulesGame();
@@ -176,42 +177,37 @@ test("simultaneous triggers use active-player then nonactive-player order and st
     second = seed("Vedalken Archmage", "battlefield", 1);
   const card =
     catalog.definitions[match.instances[first.cardInstanceIds[0]].definitionId];
-  card.abilities = [
+  await author(card, [
     {
       id: "death",
       kind: "triggered",
-      origin: "rules",
-      rules: {
-        costs: [],
-        effects: [{ kind: "draw", count: 1 }],
-        trigger: {
-          event: "dies",
-          filter: { zone: "battlefield", self: "only" },
-        },
+      trigger: {
+        event: "zone-change",
+        object: "source",
+        from: "battlefield",
+        to: "graveyard",
       },
+      effects: [{ kind: "draw", count: 1 }],
     },
-  ];
+  ]);
   const spell = seed("Thoughtcast", "hand");
-  catalog.definitions[
-    match.instances[spell.cardInstanceIds[0]].definitionId
-  ].abilities = [
-    {
-      id: "shrink",
-      kind: "spell",
-      origin: "rules",
-      rules: {
-        costs: [],
+  await author(
+    catalog.definitions[match.instances[spell.cardInstanceIds[0]].definitionId],
+    [
+      {
+        id: "shrink",
+        kind: "spell",
         effects: [
           {
             kind: "add-counters",
+            objects: { all: { zone: "battlefield", type: ["Creature"] } },
             counter: "-1/-1",
             count: 2,
-            filter: { zone: "battlefield", types: ["Creature"] },
           },
         ],
       },
-    },
-  ];
+    ],
+  );
   force.mana(match, match.players[0].id, { U: 1 });
   force.mana(match, match.players[0].id, { C: 4 });
   command(0, { type: "cast-spell", objectId: spell.id });
@@ -246,16 +242,15 @@ test("triggers caused by mana payment wait until casting completes or is cancell
       catalog.definitions[
         match.instances[well.cardInstanceIds[0]].definitionId
       ];
-    definition.abilities.push({
-      id: "sacrifice-mana",
-      kind: "activated",
-      origin: "rules",
-      rules: {
-        costs: [{ kind: "sacrifice-source" }],
-        effects: [{ kind: "add-mana", quantity: 4, colors: ["C"] }],
-        manaAbility: true,
+    await author(definition, [
+      ...definition.authoredAbilities,
+      {
+        id: "sacrifice-mana",
+        kind: "mana",
+        activation: { costs: [{ kind: "sacrifice-source" }] },
+        produce: { quantity: 4, colors: ["C"] },
       },
-    });
+    ]);
     const view = () => matchView(match, room.participants[0].id, catalog);
     command(0, { type: "cast-spell", objectId: spell.id });
     const pendingId = view().rules!.pending!.id;
@@ -370,7 +365,7 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
   }
   expect(view().players[0].life).toBe("40");
   const returned = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Mazemind Tome",
+    (o) => o.characteristics.name === "Mazemind Tome",
   )!;
   expect(returned.counters).toEqual([]);
   expect(returned.zoneId).toBe(
@@ -546,20 +541,16 @@ test("Psychosis survives temporarily empty Hand inside a resolving draw sequence
     game.catalog.definitions[
       game.match.instances[spell.cardInstanceIds[0]].definitionId
     ];
-  card.abilities = [
+  await author(card, [
     {
       id: "empty-then-draw",
       kind: "spell",
-      origin: "printed",
-      rules: {
-        costs: [],
-        effects: [
-          { kind: "discard", count: 7 },
-          { kind: "draw", count: 1 },
-        ],
-      },
+      effects: [
+        { kind: "discard", count: 7 },
+        { kind: "draw", count: 1 },
+      ],
     },
-  ];
+  ]);
   const hand = game.match.zones.find(
     (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
   )!;

@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "f76bcbfe-483f-4e63-8425-76feca1abf3e",
-  "canonicalName": "Pyromancer's Goggles",
-  "defaultPrintingId": "f340d8a4-196a-4433-807c-b7124e96e44f",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Pyromancer's Goggles",
-      "manaCost": "{5}",
-      "colors": [],
-      "typeLine": "Legendary Artifact",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {R}. When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy."
-    }
-  ],
-  "oracleText": "{T}: Add {R}. When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Pyromancer's Goggles",
+        "manaCost": "{5}",
+        "colors": [],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {R}. When that mana is spent to cast a red instant or sorcery spell, copy that spell and you may choose new targets for the copy."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "f340d8a4-196a-4433-807c-b7124e96e44f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

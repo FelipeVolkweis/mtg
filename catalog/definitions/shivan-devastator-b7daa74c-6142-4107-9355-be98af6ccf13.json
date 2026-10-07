@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "b7daa74c-6142-4107-9355-be98af6ccf13",
-  "canonicalName": "Shivan Devastator",
-  "defaultPrintingId": "ad5b6445-98a5-4126-bc58-6ac8c2de1950",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Shivan Devastator",
-      "manaCost": "{X}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon Hydra",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon",
-        "Hydra"
-      ],
-      "keywords": [
-        "Flying",
-        "Haste"
-      ],
-      "rulesText": "Flying, haste\nThis creature enters with X +1/+1 counters on it.",
-      "power": "0",
-      "toughness": "0"
-    }
-  ],
-  "oracleText": "Flying, haste\nThis creature enters with X +1/+1 counters on it.",
-  "keywords": [
-    "Flying",
-    "Haste"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Shivan Devastator",
+        "manaCost": "{X}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon",
+          "Hydra"
+        ],
+        "keywords": [
+          "Flying",
+          "Haste"
+        ],
+        "rulesText": "Flying, haste\nThis creature enters with X +1/+1 counters on it.",
+        "power": "0",
+        "toughness": "0"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "ad5b6445-98a5-4126-bc58-6ac8c2de1950"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

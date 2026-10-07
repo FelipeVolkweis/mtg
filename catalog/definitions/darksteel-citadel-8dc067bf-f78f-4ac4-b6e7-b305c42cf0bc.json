@@ -1,69 +1,56 @@
 {
+  "catalogVersion": 2,
   "id": "8dc067bf-f78f-4ac4-b6e7-b305c42cf0bc",
-  "canonicalName": "Darksteel Citadel",
-  "defaultPrintingId": "b379ba64-adf5-4a64-9f28-ace36f1b887b",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Darksteel Citadel",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Artifact Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Indestructible"
-      ],
-      "rulesText": "Indestructible\n{T}: Add {C}."
-    }
-  ],
-  "oracleText": "Indestructible\n{T}: Add {C}.",
-  "keywords": [
-    "Indestructible"
-  ],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "indestructible",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Indestructible"
-      },
-      "keyword": "Indestructible",
-      "description": "Indestructible"
-    },
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Darksteel Citadel",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "C"
-            ]
-          }
+        "subtypes": [],
+        "keywords": [
+          "Indestructible"
         ],
-        "manaAbility": true
+        "rulesText": "Indestructible\n{T}: Add {C}."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "b379ba64-adf5-4a64-9f28-ace36f1b887b"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "indestructible",
+        "description": "Indestructible",
+        "kind": "keyword",
+        "keyword": "indestructible"
       },
-      "description": "{T}: Add {C}."
-    }
-  ]
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
+      }
+    ]
+  }
 }

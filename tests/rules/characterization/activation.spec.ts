@@ -166,7 +166,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
   ).toBe("accepted");
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
   const returned = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Ichor Wellspring",
+    (o) => o.characteristics.name === "Ichor Wellspring",
   )!;
   expect(returned.id).not.toBe(spring.id);
   expect(view(1).objects[returned.id]).toBeUndefined();
@@ -183,7 +183,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
     }).kind,
   ).toBe("accepted");
   const fresh = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Ichor Wellspring",
+    (o) => o.characteristics.name === "Ichor Wellspring",
   )!;
   expect(fresh.id).not.toBe(returned.id);
   expect(fresh.cardInstanceIds).toEqual(spring.cardInstanceIds);
@@ -244,7 +244,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
   game.command(1, { type: "pass-priority" });
   expect(view().objects[stolen.id]).toBeUndefined();
   const returned = Object.values(view(1).objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Silver Myr",
+    (o) => o.characteristics.name === "Silver Myr",
   )!;
   expect(returned.controllerId).toBe(game.match.players[1].id);
   expect(view().objects[returned.id]).toBeUndefined();
@@ -271,7 +271,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
   game.command(1, { type: "pass-priority" });
   expect(
     Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === "Mind Stone",
+      (o) => o.characteristics.name === "Mind Stone",
     )!.zoneId,
   ).toBe(
     view().zones.find(
@@ -291,11 +291,12 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
         (c) => c.canonicalName === "Master Transmuter",
       )!;
       const effect = card.abilities[0].rules!.effects[0];
-      if (effect.kind === "move")
-        effect.filter = {
-          zone: "hand",
-          types: ["Artifact"],
-          subtypes: ["Book"],
+      if (effect.kind === "may" && effect.effects[0].kind === "move")
+        effect.effects[0].objects = {
+          choose: {
+            from: { zone: "hand", type: ["Artifact"], subtype: ["Book"] },
+            count: 1,
+          },
         };
     }
     force.mana(game.match, game.match.players[0].id, { U: 1 });

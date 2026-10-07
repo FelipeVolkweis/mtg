@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "422ef4ec-863a-450e-9577-a0707bc16532",
-  "canonicalName": "Brazen Scourge",
-  "defaultPrintingId": "eb84b86c-3276-4fc1-a09d-47de388cb729",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Brazen Scourge",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Gremlin",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Gremlin"
-      ],
-      "keywords": [
-        "Haste"
-      ],
-      "rulesText": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
-  "keywords": [
-    "Haste"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Brazen Scourge",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Gremlin"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "rulesText": "Haste (This creature can attack and {T} as soon as it comes under your control.)",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "eb84b86c-3276-4fc1-a09d-47de388cb729"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

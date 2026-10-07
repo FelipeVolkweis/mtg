@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "fd5ee26c-cc54-4dc0-b611-5cda14354a5e",
-  "canonicalName": "Taurean Mauler",
-  "defaultPrintingId": "fc5776ff-d602-450c-aa92-c880867c6aa9",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Taurean Mauler",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Shapeshifter",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Shapeshifter"
-      ],
-      "keywords": [
-        "Changeling"
-      ],
-      "rulesText": "Changeling (This card is every creature type.)\nWhenever an opponent casts a spell, you may put a +1/+1 counter on this creature.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Changeling (This card is every creature type.)\nWhenever an opponent casts a spell, you may put a +1/+1 counter on this creature.",
-  "keywords": [
-    "Changeling"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Taurean Mauler",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shapeshifter"
+        ],
+        "keywords": [
+          "Changeling"
+        ],
+        "rulesText": "Changeling (This card is every creature type.)\nWhenever an opponent casts a spell, you may put a +1/+1 counter on this creature.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "fc5776ff-d602-450c-aa92-c880867c6aa9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

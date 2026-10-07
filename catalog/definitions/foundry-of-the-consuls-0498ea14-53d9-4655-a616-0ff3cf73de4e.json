@@ -1,58 +1,51 @@
 {
+  "catalogVersion": 2,
   "id": "0498ea14-53d9-4655-a616-0ff3cf73de4e",
-  "canonicalName": "Foundry of the Consuls",
-  "defaultPrintingId": "0087b1ea-beba-49e6-924c-b792c473a8ce",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Foundry of the Consuls",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Foundry of the Consuls",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "C"
-            ]
-          }
-        ],
-        "manaAbility": true
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "0087b1ea-beba-49e6-924c-b792c473a8ce"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
       },
-      "description": "{T}: Add {C}."
-    },
-    {
-      "id": "tokens",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
+      {
+        "id": "tokens",
+        "description": "{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -70,12 +63,11 @@
         "effects": [
           {
             "kind": "create-token",
-            "token": "thopter",
+            "token": "thopter-1-1-flying",
             "count": 2
           }
         ]
-      },
-      "description": "{5}, {T}, Sacrifice this land: Create two 1/1 colorless Thopter artifact creature tokens with flying."
-    }
-  ]
+      }
+    ]
+  }
 }

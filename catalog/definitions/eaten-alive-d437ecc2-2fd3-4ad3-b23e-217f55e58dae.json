@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "d437ecc2-2fd3-4ad3-b23e-217f55e58dae",
-  "canonicalName": "Eaten Alive",
-  "defaultPrintingId": "1c4f7b20-b2a8-498c-8c36-dc296863b0b9",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Eaten Alive",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "As an additional cost to cast this spell, sacrifice a creature or pay {3}{B}.\nExile target creature or planeswalker."
-    }
-  ],
-  "oracleText": "As an additional cost to cast this spell, sacrifice a creature or pay {3}{B}.\nExile target creature or planeswalker.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Eaten Alive",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "As an additional cost to cast this spell, sacrifice a creature or pay {3}{B}.\nExile target creature or planeswalker."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "1c4f7b20-b2a8-498c-8c36-dc296863b0b9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "7d00fb28-ea6c-49a9-b4af-ffb38860a9a7",
-  "canonicalName": "Cancel",
-  "defaultPrintingId": "475bff39-220a-4490-9c2e-d311e306a6db",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Cancel",
-      "manaCost": "{1}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Counter target spell."
-    }
-  ],
-  "oracleText": "Counter target spell.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Cancel",
+        "manaCost": "{1}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Counter target spell."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "475bff39-220a-4490-9c2e-d311e306a6db"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

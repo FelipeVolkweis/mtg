@@ -29,6 +29,7 @@ export function emptyRoom(): RoomState {
     entries: [],
   });
   return {
+    snapshotVersion: 3,
     id: randomUUID(),
     invite: "",
     revision: 0,
@@ -83,6 +84,7 @@ export function commanderFixture() {
       manaValue: 1,
       automationStatus: "implemented",
       abilities: [],
+      authoredAbilities: [],
     };
     catalog.printings[printingId] = {
       id: printingId,

@@ -1,0 +1,76 @@
+{
+  "catalogVersion": 2,
+  "id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fall from Favor",
+        "manaCost": "{2}{U}",
+        "colors": ["U"],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": ["Enchantment"],
+        "subtypes": ["Aura"],
+        "keywords": ["Enchant"],
+        "rulesText": "Enchant creature\nWhen this Aura enters, tap enchanted creature and you become the monarch.\nEnchanted creature doesn't untap during its controller's untap step unless that player is the monarch."
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "cd200502-84ad-40af-829d-ccb15859c226"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enchant",
+        "kind": "keyword",
+        "keyword": {
+          "name": "enchant",
+          "filter": {
+            "type": "Creature"
+          }
+        }
+      },
+      {
+        "id": "enters",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "tap",
+            "objects": {
+              "attachedTo": "source"
+            }
+          },
+          {
+            "kind": "become-monarch",
+            "player": "you"
+          }
+        ]
+      },
+      {
+        "id": "untap-lock",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "untap-restriction",
+            "objects": {
+              "attachedTo": "source"
+            },
+            "unless": {
+              "monarch": {
+                "controllerOf": {
+                  "attachedTo": "source"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

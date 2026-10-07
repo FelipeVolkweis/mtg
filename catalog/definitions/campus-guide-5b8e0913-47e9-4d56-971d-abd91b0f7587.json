@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "5b8e0913-47e9-4d56-971d-abd91b0f7587",
-  "canonicalName": "Campus Guide",
-  "defaultPrintingId": "43c59814-3167-4b05-bb85-6c736f3956a4",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Campus Guide",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Golem",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Golem"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, you may search your library for a basic land card, reveal it, then shuffle and put that card on top.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "When this creature enters, you may search your library for a basic land card, reveal it, then shuffle and put that card on top.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Campus Guide",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, you may search your library for a basic land card, reveal it, then shuffle and put that card on top.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "43c59814-3167-4b05-bb85-6c736f3956a4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

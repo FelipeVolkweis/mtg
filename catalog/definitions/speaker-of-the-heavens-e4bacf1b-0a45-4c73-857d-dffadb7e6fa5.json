@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "e4bacf1b-0a45-4c73-857d-dffadb7e6fa5",
-  "canonicalName": "Speaker of the Heavens",
-  "defaultPrintingId": "2c4d0c8c-5bf7-494f-859b-334ff54b16eb",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Speaker of the Heavens",
-      "manaCost": "{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Human Cleric",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Cleric"
-      ],
-      "keywords": [
-        "Lifelink",
-        "Vigilance"
-      ],
-      "rulesText": "Vigilance, lifelink (Attacking doesn't cause this creature to tap. Damage dealt by this creature also causes you to gain that much life.)\n{T}: Create a 4/4 white Angel creature token with flying. Activate only if you have at least 7 life more than your starting life total and only as a sorcery.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Vigilance, lifelink (Attacking doesn't cause this creature to tap. Damage dealt by this creature also causes you to gain that much life.)\n{T}: Create a 4/4 white Angel creature token with flying. Activate only if you have at least 7 life more than your starting life total and only as a sorcery.",
-  "keywords": [
-    "Lifelink",
-    "Vigilance"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Speaker of the Heavens",
+        "manaCost": "{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Cleric"
+        ],
+        "keywords": [
+          "Lifelink",
+          "Vigilance"
+        ],
+        "rulesText": "Vigilance, lifelink (Attacking doesn't cause this creature to tap. Damage dealt by this creature also causes you to gain that much life.)\n{T}: Create a 4/4 white Angel creature token with flying. Activate only if you have at least 7 life more than your starting life total and only as a sorcery.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "2c4d0c8c-5bf7-494f-859b-334ff54b16eb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

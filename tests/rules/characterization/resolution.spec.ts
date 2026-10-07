@@ -28,6 +28,7 @@ import { gameObject } from "../../../src/server/match/game-objects";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("Counterspell and Negate select spells rather than ability objects and resolve in Stack order", async () => {
   const { match, command, seed, room } = await rulesGame();
@@ -81,13 +82,26 @@ test("Counterspell and Negate select spells rather than ability objects and reso
 
 test("counterspells revalidate targets, reject creature targets for Negate, and respect uncounterable spells", async () => {
   for (const uncounterable of [false, true]) {
-    const { match, command, seed } = await rulesGame();
+    const { match, command, seed, catalog } = await rulesGame();
+    if (uncounterable) {
+      // "This spell can't be countered." as a DSL v2 static grant.
+      const myr = Object.values(catalog.definitions).find(
+        (card) => card.canonicalName === "Silver Myr",
+      )!;
+      await author(myr, [
+        ...myr.authoredAbilities,
+        {
+          id: "uncounterable",
+          kind: "static",
+          grants: [{ kind: "cant-be-countered", spells: "this" }],
+        },
+      ]);
+    }
     const creature = seed("Silver Myr", "hand", 1),
       negate = seed("Negate", "hand"),
       counter = seed("Counterspell", "hand");
     force.mana(match, match.players[0].id, { U: 4 });
     force.move(match, creature, "stack");
-    force.uncounterable(creature, uncounterable);
     expect(command(0, { type: "cast-spell", objectId: negate.id }).kind).toBe(
       "rejected",
     );
@@ -137,12 +151,18 @@ test("Counterspell cannot select an Ability Game Object on the Stack", async () 
   const { match, command, seed, catalog, room } = await rulesGame();
   const counter = seed("Counterspell", "hand");
   const stack = match.zones.find((zone) => zone.kind === "stack")!;
-  const ability = gameObject("ability", stack.id, match.players[1].id, {
-    name: "Draw ability",
-    typeLine: "Ability",
-    colors: [],
-    rulesText: "",
-  });
+  const ability = gameObject(
+    "ability",
+    stack.id,
+    match.players[1].id,
+    match.players[1].id,
+    {
+      name: "Draw ability",
+      typeLine: "Ability",
+      colors: [],
+      rulesText: "",
+    },
+  );
   force.addObject(match, ability);
   force.mana(match, match.players[0].id, { U: 2 });
   expect(command(0, { type: "cast-spell", objectId: counter.id }).kind).toBe(
@@ -318,12 +338,12 @@ test("nested sequences bind results, take conditions, and rotate choice identifi
           { kind: "discard", count: 1, bind: "discarded" },
           {
             kind: "if",
-            condition: { binding: "discarded", atLeast: 1 },
+            condition: { compare: [{ binding: "discarded" }, ">=", 1] },
             then: [
               { kind: "draw", count: { binding: "drawn" } },
               { kind: "discard", count: 1 },
             ],
-            otherwise: [{ kind: "draw", count: 3 }],
+            else: [{ kind: "draw", count: 3 }],
           },
         ],
       },
@@ -403,7 +423,6 @@ test("Disk destroys its union simultaneously, including itself, while captured d
   expect(
     Object.values(view().objects).filter(
       (o) =>
-        !o.hidden &&
         o.zoneId === view().zones.find((z) => z.kind === "battlefield")!.id,
     ),
   ).toHaveLength(1);
@@ -417,10 +436,10 @@ test("Disk destroys its union simultaneously, including itself, while captured d
   const target = view().rules!.pending!;
   expect(target.kind).toBe("trigger-target");
   const graveSpring = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Ichor Wellspring",
+    (o) => o.characteristics.name === "Ichor Wellspring",
   )!;
   const graveRetriever = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Myr Retriever",
+    (o) => o.characteristics.name === "Myr Retriever",
   )!;
   expect(target.legalTargetIds).toContain(graveSpring.id);
   expect(target.legalTargetIds).not.toContain(graveRetriever.id);
@@ -444,7 +463,10 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
       (c) => c.canonicalName === "Master Transmuter",
     )!;
     const effect = transmuterCard.abilities[0].rules!.effects[0];
-    if (effect.kind === "move") effect.filter = { zone: "hand", owner: "you" };
+    if (effect.kind === "may" && effect.effects[0].kind === "move")
+      effect.effects[0].objects = {
+        choose: { from: { zone: "hand", owner: "you" }, count: 1 },
+      };
     force.mana(game.match, game.match.players[0].id, { U: 1 });
     const view = () =>
       matchView(game.match, game.room.participants[0].id, game.catalog);
@@ -468,7 +490,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
       }).kind,
     ).toBe("accepted");
     const entered = Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === name,
+      (o) => o.characteristics.name === name,
     )!;
     expect(entered.status.tapped).toBe(true);
     expect(entered.casting).toBeNull();
@@ -552,7 +574,7 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   game.command(1, { type: "pass-priority" });
   expect(view().objects[own.id]).toBeDefined();
   const dead = Object.values(view().objects).find(
-    (o) => !o.hidden && o.cardInstanceIds?.[0] === enemy.cardInstanceIds[0],
+    (o) => o.cardInstanceIds?.[0] === enemy.cardInstanceIds[0],
   )!;
   expect(dead.zoneId).toBe(
     view().zones.find(
@@ -570,7 +592,7 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   expect(view().zones.find((z) => z.kind === "exile")!.count).toBe(1);
   expect(
     Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === "Soul-Guide Lantern",
+      (o) => o.characteristics.name === "Soul-Guide Lantern",
     )!.zoneId,
   ).toBe(
     view().zones.find(
@@ -587,7 +609,14 @@ test("private Library selection and top/bottom ordering validate quantities and 
     (c) => c.canonicalName === "Mazemind Tome",
   )!;
   card.abilities.find((a) => a.id === "scry")!.rules!.effects = [
-    { kind: "inspect", count: 3 },
+    {
+      kind: "library-sequence",
+      player: "you",
+      count: 3,
+      operation: "look",
+      select: { max: 3, to: { zone: "library", position: "bottom" } },
+      rest: { to: { zone: "library", position: "top" }, order: "any" },
+    },
   ];
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
@@ -648,18 +677,17 @@ test("noncombat ability damage retains the permanent source after sacrifice", as
     game.catalog.definitions[
       game.match.instances[bomb.cardInstanceIds[0]].definitionId
     ];
-  card.abilities = [
+  await author(card, [
     {
       id: "damage",
       kind: "activated",
-      origin: "printed",
-      rules: {
-        costs: [{ kind: "sacrifice-source" }],
-        target: { zone: "battlefield", types: ["Creature"] },
-        effects: [{ kind: "damage", amount: 1 }],
-      },
+      costs: [{ kind: "sacrifice-source" }],
+      targets: [
+        { id: "target-0", filter: { zone: "battlefield", type: ["Creature"] } },
+      ],
+      effects: [{ kind: "damage", amount: 1, to: "target" }],
     },
-  ];
+  ]);
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   game.command(0, {

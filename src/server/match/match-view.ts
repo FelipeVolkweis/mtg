@@ -8,7 +8,6 @@ import { CharacteristicsCalculator } from "./characteristics.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
 import { zoneFor } from "./zones.js";
-import { canInspectIdentity, canTurnFaceUp } from "./object-visibility.js";
 
 export function matchView(
   match: MatchState,
@@ -29,42 +28,15 @@ export function matchView(
     if (visible)
       for (const objectId of zone.objectIds) {
         const object = match.objects[objectId];
-        const hidden = !canInspectIdentity(object, playerId);
-        if (hidden) {
-          objects[objectId] = {
-            id: object.id,
-            zoneId: object.zoneId,
-            controllerId: object.controllerId,
-            characteristics: object.faceDown!.characteristics,
-            hidden: true,
-            melded: !!object.meldParts,
-            canTurnFaceUp: canTurnFaceUp(match, object, playerId),
-            status: object.status,
-            counters: object.counters,
-          };
-        } else {
-          const { meldParts, ...visibleObject } = object;
-          const cardInstanceIds = meldParts
-            ? meldParts
-                .filter((part) => canInspectIdentity(part, playerId))
-                .flatMap((part) => part.cardInstanceIds)
-            : object.cardInstanceIds;
-          objects[objectId] = {
-            ...visibleObject,
-            characteristics:
-              match.rules && catalog
-                ? new CharacteristicsCalculator(match, catalog).effective(
-                    object,
-                  )
-                : object.characteristics,
-            cardInstanceIds,
-            hidden: false,
-            melded: !!meldParts,
-            canTurnFaceUp: canTurnFaceUp(match, object, playerId),
-          };
-          for (const instanceId of cardInstanceIds)
-            instances[instanceId] = match.instances[instanceId];
-        }
+        objects[objectId] = {
+          ...object,
+          characteristics:
+            match.rules && catalog
+              ? new CharacteristicsCalculator(match, catalog).effective(object)
+              : object.characteristics,
+        };
+        for (const instanceId of object.cardInstanceIds)
+          instances[instanceId] = match.instances[instanceId];
       }
     return {
       id: zone.id,
@@ -84,12 +56,7 @@ export function matchView(
     for (const id of match.rules.resolving.inspectedIds) {
       const object = match.objects[id];
       if (!object) continue;
-      objects[id] = {
-        ...structuredClone(object),
-        hidden: false,
-        melded: false,
-        canTurnFaceUp: false,
-      };
+      objects[id] = structuredClone(object);
       for (const instanceId of object.cardInstanceIds)
         instances[instanceId] = match.instances[instanceId];
     }
@@ -101,18 +68,11 @@ export function matchView(
       match.zones.find((z) => z.id === object.zoneId)?.kind !== "hand"
     )
       continue;
-    objects[id] = {
-      ...structuredClone(object),
-      hidden: false,
-      melded: false,
-      canTurnFaceUp: false,
-    };
+    objects[id] = structuredClone(object);
     for (const instanceId of object.cardInstanceIds)
       instances[instanceId] = match.instances[instanceId];
   }
-  const copiableValues: MatchView["copiableValues"] = {};
   for (const object of Object.values(objects)) {
-    if (object.hidden) continue;
     if (object.resolution) {
       const { event, ...resolution } = object.resolution;
       object.resolution = resolution;
@@ -123,18 +83,12 @@ export function matchView(
     }));
     if (object.attachmentTo && !objects[object.attachmentTo])
       object.attachmentTo = null;
-    if (
-      object.sourceObjectId &&
-      (!objects[object.sourceObjectId] || objects[object.sourceObjectId].hidden)
-    ) {
+    if (object.sourceObjectId && !objects[object.sourceObjectId]) {
       delete object.sourceObjectId;
       delete object.sourceAbilityId;
     }
-    if (object.copiableValuesId)
-      copiableValues[object.copiableValuesId] =
-        match.copiableValues[object.copiableValuesId];
   }
-  // Build the projection explicitly: no private-zone identifiers or underlying face-down data cross the transport.
+  // Build the projection explicitly: no private-zone identifiers cross the transport.
   return {
     id: match.id,
     mode: match.mode,
@@ -165,11 +119,7 @@ export function matchView(
               continuousEffects: engine
                 ? new CharacteristicsCalculator(match, catalog!)
                     .active()
-                    .filter(
-                      (effect) =>
-                        objects[effect.sourceId] &&
-                        !objects[effect.sourceId].hidden,
-                    )
+                    .filter((effect) => !!objects[effect.sourceId])
                 : [],
               waiting: pending
                 ? { playerId: pending.playerId, kind: pending.kind }
@@ -203,19 +153,7 @@ export function matchView(
     instances,
     objects,
     zones,
-    layout: {
-      kind: "spatial",
-      positions: Object.fromEntries(
-        Object.entries(match.layout.positions).filter(([id]) => !!objects[id]),
-      ),
-    },
     turn: match.turn,
     outcome: match.outcome,
-    openingHandActions: match.openingHandActions.filter(
-      (action) => action.playerId === playerId,
-    ),
-    copiableValues,
-    stickerSheets: match.stickerSheets,
-    diceRolls: match.diceRolls,
   };
 }

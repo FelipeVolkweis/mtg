@@ -1,0 +1,67 @@
+{
+  "catalogVersion": 2,
+  "id": "ac2086fe-98ee-4280-9c7c-c5c2d6548a8b",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Burst Lightning",
+        "manaCost": "{R}",
+        "colors": ["R"],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": ["Kicker"],
+        "rulesText": "Kicker {4} (You may pay an additional {4} as you cast this spell.)\nBurst Lightning deals 2 damage to any target. If this spell was kicked, it deals 4 damage instead."
+      }
+    ],
+    "colorIdentity": ["R"],
+    "defaultPrintingId": "aec5d380-d354-4750-931a-6c91853e2edc"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "kicker",
+        "kind": "keyword",
+        "keyword": {
+          "name": "kicker",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": ["{4}"]
+            }
+          ]
+        }
+      },
+      {
+        "id": "damage",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "any",
+            "filter": {
+              "anyTarget": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": {
+              "if": {
+                "paid": "kicker"
+              },
+              "then": 4,
+              "else": 2
+            },
+            "to": {
+              "target": "any"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

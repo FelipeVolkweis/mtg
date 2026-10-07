@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { RulesAbility, RulesState } from "./rules.js";
+import type { Ability, CardForm } from "./rules-v2.js";
 
 export const id = z.uuid();
 const text = z.string().max(8000);
@@ -30,44 +31,35 @@ export const characteristicSchema = z
   })
   .strict();
 export type Characteristics = z.infer<typeof characteristicSchema>;
+/**
+ * A Card Definition as the engine uses it. The file stores only the imported
+ * facts and the authored abilities (card-model-refactor.md §3); the reader
+ * derives the name, mana value, keywords, Oracle text and type lines, and
+ * down-compiles the authored abilities into `abilities`.
+ */
 export interface CardDefinition {
   id: string;
   canonicalName: string;
   defaultPrintingId: string;
-  form: string;
+  form: CardForm;
   colorIdentity: string[];
   components: Characteristics[];
   oracleText: string;
   keywords: string[];
   manaValue: number;
   automationStatus: "unimplemented" | "implemented";
+  /** The runtime shapes the engine executes (down-compiled). */
   abilities: CardAbility[];
+  /** The DSL version 2 abilities, as authored in the file. */
+  authoredAbilities: Ability[];
 }
-export interface AbilityPrimitive {
-  primitive: string;
-  parameters?: Record<string, AbilityValue>;
-}
-export type AbilityValue =
-  | { kind: "integer"; value: number }
-  | { kind: "boolean"; value: boolean }
-  | { kind: "text"; value: string }
-  | { kind: "reference"; value: string }
-  | { kind: "mana-symbols"; symbols: string[] };
-export type AbilityCost =
-  | { kind: "mana"; symbols: string[] }
-  | ({ kind: "primitive" } & AbilityPrimitive);
 export interface CardAbility {
   id: string;
   description?: string;
   kind: "static" | "triggered" | "activated" | "spell";
-  origin: "printed" | "rules";
+  origin: "printed" | "granted";
   applicableZone?: ZoneKind;
-  keyword?: string;
   rules?: RulesAbility;
-  trigger?: { kind: "event" | "state"; condition: AbilityPrimitive };
-  costs?: AbilityCost[];
-  conditions?: AbilityPrimitive[];
-  effects?: AbilityPrimitive[];
 }
 export interface CardPrinting {
   id: string;
@@ -124,28 +116,8 @@ export const phaseSteps = [
 export const statusSchema = z
   .object({
     tapped: z.boolean(),
-    flipped: z.boolean(),
-    phasedOut: z.boolean(),
   })
   .strict();
-export const designationSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("solved"), value: z.boolean() }).strict(),
-  z.object({ kind: z.literal("prepared"), value: z.boolean() }).strict(),
-  z.object({ kind: z.literal("class-level"), value: integer }).strict(),
-  z
-    .object({
-      kind: z.literal("room-unlocked"),
-      value: z.array(z.number().int().nonnegative()).max(20),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("manual"),
-      name: z.string().min(1).max(100),
-      value: text,
-    })
-    .strict(),
-]);
 export const castingSchema = z
   .object({
     sourceZoneId: id,
@@ -160,52 +132,15 @@ export const castingSchema = z
       .default([]),
   })
   .strict();
-export const faceDownSchema = z
-  .object({
-    mode: z.string().min(1).max(200),
-    characteristics: characteristicSchema,
-    inspectableBy: z.array(id).max(4),
-    turnUpProcedure: text,
-  })
-  .strict();
-export const objectPatchSchema = z
-  .object({
-    controllerId: id.optional(),
-    protectorId: id.nullable().optional(),
-    currentFace: z.number().int().nonnegative().optional(),
-    characteristics: characteristicSchema.optional(),
-    status: statusSchema.optional(),
-    designations: z.array(designationSchema).max(100).optional(),
-    faceDown: faceDownSchema.nullable().optional(),
-    choices: z
-      .array(
-        z.object({ name: z.string().min(1).max(100), value: text }).strict(),
-      )
-      .max(100)
-      .optional(),
-    variables: z
-      .array(
-        z.object({ name: z.string().min(1).max(100), value: integer }).strict(),
-      )
-      .max(100)
-      .optional(),
-    attachmentTo: id.nullable().optional(),
-    links: z
-      .array(
-        z
-          .object({
-            label: z.string().max(200),
-            objectIds: z.array(id).max(100),
-            abilityId: z.string().max(200).optional(),
-          })
-          .strict(),
-      )
-      .max(100)
-      .optional(),
-    casting: castingSchema.nullable().optional(),
-  })
-  .strict();
-export type ObjectPatch = z.infer<typeof objectPatchSchema>;
+export interface ChosenVariable {
+  name: string;
+  value: string;
+}
+export interface ObjectLink {
+  label: string;
+  objectIds: string[];
+  abilityId?: string;
+}
 export interface Counter {
   kind: string;
   quantity: string;
@@ -228,8 +163,6 @@ export const zoneKinds = [
   "stack",
   "exile",
   "command",
-  "supplementary",
-  "special",
 ] as const;
 export type ZoneKind = (typeof zoneKinds)[number];
 export interface ZoneState {
@@ -247,18 +180,7 @@ export interface CardInstance {
   ownerId: string;
   commander?: boolean;
 }
-export const objectKinds = [
-  "card",
-  "token",
-  "ability",
-  "emblem",
-  "dungeon",
-  "plane",
-  "phenomenon",
-  "conspiracy",
-  "attraction",
-  "contraption",
-] as const;
+export const objectKinds = ["card", "token", "ability"] as const;
 export interface GameObject {
   id: string;
   kind: (typeof objectKinds)[number];
@@ -270,20 +192,13 @@ export interface GameObject {
   artwork: string[];
   currentFace: number;
   status: z.infer<typeof statusSchema>;
-  designations: z.infer<typeof designationSchema>[];
   counters: Counter[];
-  faceDown: z.infer<typeof faceDownSchema> | null;
-  protectorId: string | null;
-  choices: NonNullable<ObjectPatch["choices"]>;
-  variables: NonNullable<ObjectPatch["variables"]>;
+  variables: ChosenVariable[];
   attachmentTo: string | null;
-  links: NonNullable<ObjectPatch["links"]>;
+  links: ObjectLink[];
   casting: z.infer<typeof castingSchema> | null;
   sourceObjectId?: string;
   sourceAbilityId?: string;
-  copiableValuesId?: string;
-  stickerPlacements: { stickerId: string; order: number }[];
-  meldParts?: GameObject[];
   resolution?: {
     sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
     ability: RulesAbility;
@@ -291,8 +206,7 @@ export interface GameObject {
     targetIds: string[];
     color?: import("./rules.js").ManaType;
   };
-  cannotBeCountered?: boolean;
-  ownerId?: string;
+  ownerId: string;
 }
 export interface MatchState {
   id: string;
@@ -303,10 +217,6 @@ export interface MatchState {
   instances: Record<string, CardInstance>;
   objects: Record<string, GameObject>;
   zones: ZoneState[];
-  layout: {
-    kind: "spatial";
-    positions: Record<string, { x: number; y: number }>;
-  };
   turn: {
     activePlayerId: string;
     number: number;
@@ -314,21 +224,6 @@ export interface MatchState {
     order: string[];
   };
   outcome: "ongoing" | "complete" | "draw";
-  openingHandActions: {
-    playerId: string;
-    objectId?: string;
-    description: string;
-    taken: boolean;
-    result: string;
-  }[];
-  copiableValues: Record<string, Characteristics>;
-  diceRolls: {
-    participantId: string;
-    name: string;
-    sides: number;
-    value: number;
-  }[];
-  stickerSheets: { playerId: string; sheetIds: string[] }[];
   priority?: { playerId: string; passedPlayerIds: string[] };
 }
 export interface RematchProposal {
@@ -339,6 +234,8 @@ export interface RematchProposal {
   startingParticipantId?: string;
 }
 export interface RoomState {
+  /** Stored document shape; see src/server/room/room-upgrade.ts. */
+  snapshotVersion: number;
   id: string;
   invite: string;
   revision: number;
@@ -358,16 +255,14 @@ export interface ZoneView extends Omit<ZoneState, "objectIds"> {
   count: number;
   objectIds?: string[];
 }
-export interface ObjectView extends Partial<Omit<GameObject, "meldParts">> {
+export interface ObjectView extends Partial<GameObject> {
   id: string;
   zoneId: string;
   controllerId: string;
+  ownerId: string;
   characteristics: Characteristics;
   status: GameObject["status"];
   counters: Counter[];
-  hidden: boolean;
-  melded: boolean;
-  canTurnFaceUp: boolean;
 }
 export interface MatchView extends Omit<
   MatchState,
@@ -415,12 +310,6 @@ export interface RoomView {
     eligible: boolean;
   }[];
 }
-const position = z
-  .object({
-    x: z.number().finite().min(0).max(10000),
-    y: z.number().finite().min(0).max(10000),
-  })
-  .strict();
 export const matchActionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("pass-priority") }).strict(),
   z.object({ type: z.literal("play-land"), objectId: id }).strict(),
@@ -462,7 +351,6 @@ export const matchActionSchema = z.discriminatedUnion("type", [
   z
     .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
     .strict(),
-  z.object({ type: z.literal("position"), objectId: id, position }).strict(),
   z.object({ type: z.literal("mulligan"), playerId: id }).strict(),
 ]);
 export type MatchAction = z.infer<typeof matchActionSchema>;

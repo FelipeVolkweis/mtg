@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "eaaed253-9b11-47e2-8624-0340ab2207f6",
-  "canonicalName": "Resolute Reinforcements",
-  "defaultPrintingId": "940f3989-77cc-49a9-92e0-095a75d80f0f",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Resolute Reinforcements",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Human Soldier",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Soldier"
-      ],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, create a 1/1 white Soldier creature token.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, create a 1/1 white Soldier creature token.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Resolute Reinforcements",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Soldier"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, create a 1/1 white Soldier creature token.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "940f3989-77cc-49a9-92e0-095a75d80f0f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

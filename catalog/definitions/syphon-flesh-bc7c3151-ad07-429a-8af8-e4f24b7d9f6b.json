@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "bc7c3151-ad07-429a-8af8-e4f24b7d9f6b",
-  "canonicalName": "Syphon Flesh",
-  "defaultPrintingId": "e92628a2-9a26-4a44-bb2c-98418cb950b0",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Syphon Flesh",
-      "manaCost": "{4}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Each other player sacrifices a creature of their choice. You create a 2/2 black Zombie creature token for each creature sacrificed this way."
-    }
-  ],
-  "oracleText": "Each other player sacrifices a creature of their choice. You create a 2/2 black Zombie creature token for each creature sacrificed this way.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Syphon Flesh",
+        "manaCost": "{4}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Each other player sacrifices a creature of their choice. You create a 2/2 black Zombie creature token for each creature sacrificed this way."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "e92628a2-9a26-4a44-bb2c-98418cb950b0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

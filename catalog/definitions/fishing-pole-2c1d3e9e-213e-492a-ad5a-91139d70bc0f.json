@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "2c1d3e9e-213e-492a-ad5a-91139d70bc0f",
-  "canonicalName": "Fishing Pole",
-  "defaultPrintingId": "c95ab836-3277-4223-9aaa-ef2c77256b65",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Fishing Pole",
-      "manaCost": "{1}",
-      "colors": [],
-      "typeLine": "Artifact — Equipment",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Equip"
-      ],
-      "rulesText": "Equipped creature has \"{1}, {T}, Tap Fishing Pole: Put a bait counter on Fishing Pole.\"\nWhenever equipped creature becomes untapped, remove a bait counter from this Equipment. If you do, create a 1/1 blue Fish creature token.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
-    }
-  ],
-  "oracleText": "Equipped creature has \"{1}, {T}, Tap Fishing Pole: Put a bait counter on Fishing Pole.\"\nWhenever equipped creature becomes untapped, remove a bait counter from this Equipment. If you do, create a 1/1 blue Fish creature token.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
-  "keywords": [
-    "Equip"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fishing Pole",
+        "manaCost": "{1}",
+        "colors": [],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "rulesText": "Equipped creature has \"{1}, {T}, Tap Fishing Pole: Put a bait counter on Fishing Pole.\"\nWhenever equipped creature becomes untapped, remove a bait counter from this Equipment. If you do, create a 1/1 blue Fish creature token.\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "c95ab836-3277-4223-9aaa-ef2c77256b65"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

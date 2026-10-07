@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "d0dd425b-fdba-41b4-b9e6-f5161610bd7e",
-  "canonicalName": "Ezuri's Predation",
-  "defaultPrintingId": "d43ef6eb-99ed-45a6-aee1-e87d3780d094",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Ezuri's Predation",
-      "manaCost": "{5}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 8,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Fight"
-      ],
-      "rulesText": "For each creature your opponents control, create a 4/4 green Phyrexian Beast creature token. Each of those tokens fights a different one of those creatures."
-    }
-  ],
-  "oracleText": "For each creature your opponents control, create a 4/4 green Phyrexian Beast creature token. Each of those tokens fights a different one of those creatures.",
-  "keywords": [
-    "Fight"
-  ],
-  "manaValue": 8,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ezuri's Predation",
+        "manaCost": "{5}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 8,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Fight"
+        ],
+        "rulesText": "For each creature your opponents control, create a 4/4 green Phyrexian Beast creature token. Each of those tokens fights a different one of those creatures."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "d43ef6eb-99ed-45a6-aee1-e87d3780d094"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

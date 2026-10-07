@@ -1,30 +1,30 @@
 {
+  "catalogVersion": 2,
   "id": "5ece7d03-9ee7-4953-a06e-9d8e41874903",
-  "canonicalName": "Scavenger Grounds",
-  "defaultPrintingId": "3ebd02f0-d5f6-413b-bd20-7b070b10618a",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Scavenger Grounds",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land — Desert",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Desert"
-      ],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice a Desert: Exile all graveyards."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{2}, {T}, Sacrifice a Desert: Exile all graveyards.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Scavenger Grounds",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Desert"
+        ],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice a Desert: Exile all graveyards."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "3ebd02f0-d5f6-413b-bd20-7b070b10618a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

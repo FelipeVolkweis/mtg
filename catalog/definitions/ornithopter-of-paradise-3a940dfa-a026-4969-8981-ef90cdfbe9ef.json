@@ -1,78 +1,64 @@
 {
+  "catalogVersion": 2,
   "id": "3a940dfa-a026-4969-8981-ef90cdfbe9ef",
-  "canonicalName": "Ornithopter of Paradise",
-  "defaultPrintingId": "9e5c677e-397d-4a0c-994e-2f35eadb8a33",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Ornithopter of Paradise",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Thopter",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Thopter"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\n{T}: Add one mana of any color.",
-      "power": "0",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying\n{T}: Add one mana of any color.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ornithopter of Paradise",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "W",
-              "U",
-              "B",
-              "R",
-              "G"
-            ],
-            "quantity": 1
-          }
+        "subtypes": [
+          "Thopter"
         ],
-        "manaAbility": true
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\n{T}: Add one mana of any color.",
+        "power": "0",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "9e5c677e-397d-4a0c-994e-2f35eadb8a33"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "W",
+            "U",
+            "B",
+            "R",
+            "G"
+          ]
+        }
       },
-      "description": "{T}: Add one mana of any color."
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
-      },
-      "description": "Flying"
-    }
-  ]
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      }
+    ]
+  }
 }

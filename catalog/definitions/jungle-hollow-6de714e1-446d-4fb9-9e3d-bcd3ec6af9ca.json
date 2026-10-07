@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "6de714e1-446d-4fb9-9e3d-bcd3ec6af9ca",
-  "canonicalName": "Jungle Hollow",
-  "defaultPrintingId": "dc758e14-d370-45e4-bbc5-938fb4d21127",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Jungle Hollow",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {G}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {G}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Jungle Hollow",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {B} or {G}."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "G"
+    ],
+    "defaultPrintingId": "dc758e14-d370-45e4-bbc5-938fb4d21127"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

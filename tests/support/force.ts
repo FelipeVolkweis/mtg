@@ -166,6 +166,7 @@ export const force = {
       "card",
       zone.id,
       playerId,
+      playerId,
       definition.components[0],
     );
     object.cardInstanceIds = [instanceId];
@@ -188,11 +189,6 @@ export const force = {
   /** Gives a player Priority with no passes recorded. */
   priority(match: MatchState, playerId: string) {
     match.priority = { playerId, passedPlayerIds: [] };
-  },
-
-  /** Makes a spell uncounterable (until DSL v2 provides the static grant). */
-  uncounterable(object: GameObject, value = true) {
-    object.cannotBeCountered = value;
   },
 
   /** Sets rules-state fields directly, for one-off scenario setup. */

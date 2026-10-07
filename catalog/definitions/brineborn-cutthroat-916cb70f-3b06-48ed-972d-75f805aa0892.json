@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "916cb70f-3b06-48ed-972d-75f805aa0892",
-  "canonicalName": "Brineborn Cutthroat",
-  "defaultPrintingId": "acf7aafb-931f-49e5-8691-eab8cb34b05e",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Brineborn Cutthroat",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Merfolk Pirate",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Merfolk",
-        "Pirate"
-      ],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhenever you cast a spell during an opponent's turn, put a +1/+1 counter on this creature.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhenever you cast a spell during an opponent's turn, put a +1/+1 counter on this creature.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Brineborn Cutthroat",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Merfolk",
+          "Pirate"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhenever you cast a spell during an opponent's turn, put a +1/+1 counter on this creature.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "acf7aafb-931f-49e5-8691-eab8cb34b05e"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,73 +1,61 @@
 {
+  "catalogVersion": 2,
   "id": "5b5ef43b-13fd-4461-8d2d-18be65e9a790",
-  "canonicalName": "Ichor Wellspring",
-  "defaultPrintingId": "c904cd73-b3bf-4fbd-a0a0-1b2aaaf880b0",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Ichor Wellspring",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
-    }
-  ],
-  "oracleText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ichor Wellspring",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "c904cd73-b3bf-4fbd-a0a0-1b2aaaf880b0"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "entry",
+        "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
         "effects": [
           {
             "kind": "draw",
             "count": 1
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
+        ]
       },
-      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
-    },
-    {
-      "id": "graveyard",
-      "kind": "triggered",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
+      {
+        "id": "graveyard",
+        "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "zone-change",
+          "object": "source",
+          "from": "battlefield",
+          "to": "graveyard"
+        },
         "effects": [
           {
             "kind": "draw",
             "count": 1
           }
-        ],
-        "trigger": {
-          "event": "dies",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
-      },
-      "description": "When this artifact enters or is put into a graveyard from the battlefield, draw a card."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

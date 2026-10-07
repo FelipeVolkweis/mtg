@@ -1,34 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "56719f6a-1a6c-4c0a-8d21-18f7d7350b68",
-  "canonicalName": "Swamp",
-  "defaultPrintingId": "319bc1f0-ee42-44e5-b08b-735613ded2ba",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Swamp",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Basic Land — Swamp",
-      "manaValue": 0,
-      "supertypes": [
-        "Basic"
-      ],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Swamp"
-      ],
-      "keywords": [],
-      "rulesText": "({T}: Add {B}.)"
-    }
-  ],
-  "oracleText": "({T}: Add {B}.)",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Swamp",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Swamp"
+        ],
+        "keywords": [],
+        "rulesText": "({T}: Add {B}.)"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "319bc1f0-ee42-44e5-b08b-735613ded2ba"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

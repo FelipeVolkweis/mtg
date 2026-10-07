@@ -1,35 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "33b9b3bd-33ca-46f3-b8bb-a978bc3d1085",
-  "canonicalName": "Temple of Deceit",
-  "defaultPrintingId": "e18748ce-e52e-4cd1-89d4-cd2578a0d574",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Temple of Deceit",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Scry"
-      ],
-      "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {B}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {B}.",
-  "keywords": [
-    "Scry"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Temple of Deceit",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Scry"
+        ],
+        "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {B}."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "U"
+    ],
+    "defaultPrintingId": "e18748ce-e52e-4cd1-89d4-cd2578a0d574"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

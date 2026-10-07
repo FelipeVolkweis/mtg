@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "3f008b57-6471-4785-9571-3b90193da7e2",
-  "canonicalName": "Ashroot Animist",
-  "defaultPrintingId": "dece147f-d71a-4c95-9fe5-f5c862ef14ac",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Ashroot Animist",
-      "manaCost": "{2}{R}{G}",
-      "colors": [
-        "G",
-        "R"
-      ],
-      "typeLine": "Creature — Lizard Druid",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Lizard",
-        "Druid"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample\nWhenever this creature attacks, another target creature you control gains trample and gets +X/+X until end of turn, where X is this creature's power.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Trample\nWhenever this creature attacks, another target creature you control gains trample and gets +X/+X until end of turn, where X is this creature's power.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ashroot Animist",
+        "manaCost": "{2}{R}{G}",
+        "colors": [
+          "G",
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Lizard",
+          "Druid"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample\nWhenever this creature attacks, another target creature you control gains trample and gets +X/+X until end of turn, where X is this creature's power.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "R"
+    ],
+    "defaultPrintingId": "dece147f-d71a-4c95-9fe5-f5c862ef14ac"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

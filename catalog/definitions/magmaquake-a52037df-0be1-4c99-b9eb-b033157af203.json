@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "a52037df-0be1-4c99-b9eb-b033157af203",
-  "canonicalName": "Magmaquake",
-  "defaultPrintingId": "4fff9f3f-9290-481b-96b3-cfd9abd2bbdd",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Magmaquake",
-      "manaCost": "{X}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Magmaquake deals X damage to each creature without flying and each planeswalker."
-    }
-  ],
-  "oracleText": "Magmaquake deals X damage to each creature without flying and each planeswalker.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Magmaquake",
+        "manaCost": "{X}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Magmaquake deals X damage to each creature without flying and each planeswalker."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "4fff9f3f-9290-481b-96b3-cfd9abd2bbdd"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

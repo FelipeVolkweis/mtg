@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "88aa032d-dc11-4cae-81f3-ce66353963e0",
-  "canonicalName": "Affectionate Indrik",
-  "defaultPrintingId": "2da8347d-06a4-46e0-a55e-cc2da4660263",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Affectionate Indrik",
-      "manaCost": "{5}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Beast",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Beast"
-      ],
-      "keywords": [
-        "Fight"
-      ],
-      "rulesText": "When this creature enters, you may have it fight target creature you don't control. (Each deals damage equal to its power to the other.)",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "When this creature enters, you may have it fight target creature you don't control. (Each deals damage equal to its power to the other.)",
-  "keywords": [
-    "Fight"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Affectionate Indrik",
+        "manaCost": "{5}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "keywords": [
+          "Fight"
+        ],
+        "rulesText": "When this creature enters, you may have it fight target creature you don't control. (Each deals damage equal to its power to the other.)",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "2da8347d-06a4-46e0-a55e-cc2da4660263"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

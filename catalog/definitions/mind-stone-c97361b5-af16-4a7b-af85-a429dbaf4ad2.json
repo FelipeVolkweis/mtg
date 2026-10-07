@@ -1,60 +1,51 @@
 {
+  "catalogVersion": 2,
   "id": "c97361b5-af16-4a7b-af85-a429dbaf4ad2",
-  "canonicalName": "Mind Stone",
-  "defaultPrintingId": "62901ae9-98dd-466b-8358-f5abd765b3c0",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Mind Stone",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mind Stone",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "C"
-            ],
-            "quantity": 1
-          }
-        ],
-        "manaAbility": true
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{1}, {T}, Sacrifice this artifact: Draw a card."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "62901ae9-98dd-466b-8358-f5abd765b3c0"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
       },
-      "description": "{T}: Add {C}."
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{1}, {T}, Sacrifice this artifact: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -75,8 +66,7 @@
             "count": 1
           }
         ]
-      },
-      "description": "{1}, {T}, Sacrifice this artifact: Draw a card."
-    }
-  ]
+      }
+    ]
+  }
 }

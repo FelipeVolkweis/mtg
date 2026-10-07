@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "903d114b-1899-4e67-bee3-af0673850388",
-  "canonicalName": "Faebloom Trick",
-  "defaultPrintingId": "0c3bee8f-f5be-4404-a696-c902637799c3",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Faebloom Trick",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Create two 1/1 blue Faerie creature tokens with flying. When you do, tap target creature an opponent controls."
-    }
-  ],
-  "oracleText": "Create two 1/1 blue Faerie creature tokens with flying. When you do, tap target creature an opponent controls.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Faebloom Trick",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Create two 1/1 blue Faerie creature tokens with flying. When you do, tap target creature an opponent controls."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "0c3bee8f-f5be-4404-a696-c902637799c3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

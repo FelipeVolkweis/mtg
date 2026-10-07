@@ -1,67 +1,60 @@
 {
+  "catalogVersion": 2,
   "id": "e110ee80-37af-4989-a5fb-95d51dc7f102",
-  "canonicalName": "Shimmer Myr",
-  "defaultPrintingId": "8eb0c2fc-c7e0-41f2-b532-e4cac30d2ac7",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Shimmer Myr",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Myr",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Myr"
-      ],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash\nYou may cast artifact spells as though they had flash.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flash\nYou may cast artifact spells as though they had flash.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "flash",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flash"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Shimmer Myr",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Myr"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash\nYou may cast artifact spells as though they had flash.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "8eb0c2fc-c7e0-41f2-b532-e4cac30d2ac7"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flash",
+        "description": "Flash",
+        "kind": "keyword",
+        "keyword": "flash"
       },
-      "keyword": "Flash",
-      "description": "Flash"
-    },
-    {
-      "id": "artifact-flash",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "castingPermission": {
-          "zone": "hand",
-          "controller": "you",
-          "types": [
-            "Artifact"
-          ]
-        }
-      },
-      "description": "You may cast artifact spells as though they had flash."
-    }
-  ]
+      {
+        "id": "artifact-flash",
+        "description": "You may cast artifact spells as though they had flash.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cast-timing",
+            "spells": {
+              "zone": "hand",
+              "type": [
+                "Artifact"
+              ],
+              "controller": "you"
+            },
+            "as": "flash"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "891d2690-7144-4f87-b6ef-96f2469780a9",
-  "canonicalName": "Righteous Valkyrie",
-  "defaultPrintingId": "c43a1592-2d28-4244-a579-4deab02e92b5",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Righteous Valkyrie",
-      "manaCost": "{2}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel Cleric",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel",
-        "Cleric"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever another Angel or Cleric you control enters, you gain life equal to that creature's toughness.\nAs long as you have at least 7 life more than your starting life total, creatures you control get +2/+2.",
-      "power": "2",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhenever another Angel or Cleric you control enters, you gain life equal to that creature's toughness.\nAs long as you have at least 7 life more than your starting life total, creatures you control get +2/+2.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Righteous Valkyrie",
+        "manaCost": "{2}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel",
+          "Cleric"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever another Angel or Cleric you control enters, you gain life equal to that creature's toughness.\nAs long as you have at least 7 life more than your starting life total, creatures you control get +2/+2.",
+        "power": "2",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "c43a1592-2d28-4244-a579-4deab02e92b5"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "ef75be00-1a88-47a1-a1ae-fe2c9881a798",
-  "canonicalName": "Desecration Demon",
-  "defaultPrintingId": "52bf6460-0df6-4dd3-8af8-df728683bcaa",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Desecration Demon",
-      "manaCost": "{2}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Demon",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Demon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nAt the beginning of each combat, any opponent may sacrifice a creature of their choice. If a player does, tap this creature and put a +1/+1 counter on it.",
-      "power": "6",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Flying\nAt the beginning of each combat, any opponent may sacrifice a creature of their choice. If a player does, tap this creature and put a +1/+1 counter on it.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Desecration Demon",
+        "manaCost": "{2}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Demon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nAt the beginning of each combat, any opponent may sacrifice a creature of their choice. If a player does, tap this creature and put a +1/+1 counter on it.",
+        "power": "6",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "52bf6460-0df6-4dd3-8af8-df728683bcaa"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

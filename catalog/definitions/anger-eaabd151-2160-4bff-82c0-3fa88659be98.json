@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "eaabd151-2160-4bff-82c0-3fa88659be98",
-  "canonicalName": "Anger",
-  "defaultPrintingId": "ed8d665e-9df6-4ae9-a567-977c687fa8e2",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Anger",
-      "manaCost": "{3}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Incarnation",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Incarnation"
-      ],
-      "keywords": [
-        "Haste"
-      ],
-      "rulesText": "Haste\nAs long as this card is in your graveyard and you control a Mountain, creatures you control have haste.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Haste\nAs long as this card is in your graveyard and you control a Mountain, creatures you control have haste.",
-  "keywords": [
-    "Haste"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Anger",
+        "manaCost": "{3}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Incarnation"
+        ],
+        "keywords": [
+          "Haste"
+        ],
+        "rulesText": "Haste\nAs long as this card is in your graveyard and you control a Mountain, creatures you control have haste.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "ed8d665e-9df6-4ae9-a567-977c687fa8e2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

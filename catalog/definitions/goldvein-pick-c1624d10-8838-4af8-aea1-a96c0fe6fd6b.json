@@ -1,36 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "c1624d10-8838-4af8-aea1-a96c0fe6fd6b",
-  "canonicalName": "Goldvein Pick",
-  "defaultPrintingId": "a241317d-2277-467e-a8f9-aa71c944e244",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Goldvein Pick",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact — Equipment",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Treasure",
-        "Equip"
-      ],
-      "rulesText": "Equipped creature gets +1/+1.\nWhenever equipped creature deals combat damage to a player, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)"
-    }
-  ],
-  "oracleText": "Equipped creature gets +1/+1.\nWhenever equipped creature deals combat damage to a player, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
-  "keywords": [
-    "Treasure",
-    "Equip"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Goldvein Pick",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Treasure",
+          "Equip"
+        ],
+        "rulesText": "Equipped creature gets +1/+1.\nWhenever equipped creature deals combat damage to a player, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")\nEquip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "a241317d-2277-467e-a8f9-aa71c944e244"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

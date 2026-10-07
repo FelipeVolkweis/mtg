@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "4b1bf05e-753e-4350-a913-894cf3cecc0c",
-  "canonicalName": "Fleshbag Marauder",
-  "defaultPrintingId": "04848d8c-2294-4ca6-850c-1eadaa3ca93f",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Fleshbag Marauder",
-      "manaCost": "{2}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie Warrior",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Warrior"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, each player sacrifices a creature of their choice.",
-      "power": "3",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "When this creature enters, each player sacrifices a creature of their choice.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fleshbag Marauder",
+        "manaCost": "{2}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Warrior"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, each player sacrifices a creature of their choice.",
+        "power": "3",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "04848d8c-2294-4ca6-850c-1eadaa3ca93f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

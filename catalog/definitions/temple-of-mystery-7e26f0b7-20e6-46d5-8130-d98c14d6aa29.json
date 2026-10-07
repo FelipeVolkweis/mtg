@@ -1,35 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "7e26f0b7-20e6-46d5-8130-d98c14d6aa29",
-  "canonicalName": "Temple of Mystery",
-  "defaultPrintingId": "bd581f1d-d8ba-47f9-b10b-b7b6d46239ce",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Temple of Mystery",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Scry"
-      ],
-      "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {U}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {U}.",
-  "keywords": [
-    "Scry"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Temple of Mystery",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Scry"
+        ],
+        "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {G} or {U}."
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "U"
+    ],
+    "defaultPrintingId": "bd581f1d-d8ba-47f9-b10b-b7b6d46239ce"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,0 +1,52 @@
+{
+  "catalogVersion": 2,
+  "id": "75d667ec-86f4-4850-a3b6-e7a9fc7053b0",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Army of the Damned",
+        "manaCost": "{5}{B}{B}{B}",
+        "colors": ["B"],
+        "manaValue": 8,
+        "supertypes": [],
+        "types": ["Sorcery"],
+        "subtypes": [],
+        "keywords": ["Flashback"],
+        "rulesText": "Create thirteen tapped 2/2 black Zombie creature tokens.\nFlashback {7}{B}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+      }
+    ],
+    "colorIdentity": ["B"],
+    "defaultPrintingId": "33c01126-1918-4c67-8ee8-14ffc1325b97"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "zombies",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "zombie-2-2-black",
+            "count": 13,
+            "tapped": true
+          }
+        ]
+      },
+      {
+        "id": "flashback",
+        "kind": "keyword",
+        "keyword": {
+          "name": "flashback",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": ["{7}", "{B}", "{B}", "{B}"]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

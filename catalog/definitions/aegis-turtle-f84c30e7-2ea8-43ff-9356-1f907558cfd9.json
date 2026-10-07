@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "f84c30e7-2ea8-43ff-9356-1f907558cfd9",
-  "canonicalName": "Aegis Turtle",
-  "defaultPrintingId": "c7f2014a-fbc9-447c-a440-e06d01066bb9",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Aegis Turtle",
-      "manaCost": "{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Turtle",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Turtle"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "0",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Aegis Turtle",
+        "manaCost": "{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Turtle"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "0",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "c7f2014a-fbc9-447c-a440-e06d01066bb9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

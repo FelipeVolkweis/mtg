@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "d9356199-4ce3-44fa-9463-90fc134088f9",
-  "canonicalName": "Tamiyo's Logbook",
-  "defaultPrintingId": "e5cef092-de95-4cc6-9426-908ca0b44c95",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Tamiyo's Logbook",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact \u2014 Book",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Book"
-      ],
-      "keywords": [],
-      "rulesText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control."
-    }
-  ],
-  "oracleText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Tamiyo's Logbook",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Book"
+        ],
+        "keywords": [],
+        "rulesText": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "e5cef092-de95-4cc6-9426-908ca0b44c95"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "draw",
+        "description": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -53,26 +51,40 @@
             "kind": "draw",
             "count": 1
           }
-        ],
-        "costModifiers": [
+        ]
+      },
+      {
+        "id": "draw-cost",
+        "kind": "static",
+        "grants": [
           {
-            "use": "activate",
-            "scope": "source",
-            "component": "generic",
-            "amount": {
+            "kind": "cost-modifier",
+            "applies": {
+              "abilitiesOf": "source"
+            },
+            "reduce": {
               "count": {
-                "zone": "battlefield",
-                "controller": "you",
-                "types": [
-                  "Artifact"
-                ],
-                "self": "exclude"
+                "all": {
+                  "and": [
+                    {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    },
+                    {
+                      "not": {
+                        "is": "source"
+                      }
+                    }
+                  ]
+                }
               }
             }
           }
         ]
-      },
-      "description": "{5}{U}, {T}: Draw a card. This ability costs {1} less to activate for each other artifact you control."
-    }
-  ]
+      }
+    ]
+  }
 }

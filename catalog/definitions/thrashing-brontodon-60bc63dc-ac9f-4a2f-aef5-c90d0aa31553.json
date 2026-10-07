@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "60bc63dc-ac9f-4a2f-aef5-c90d0aa31553",
-  "canonicalName": "Thrashing Brontodon",
-  "defaultPrintingId": "d268088d-a929-44eb-804c-02d625a7b019",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Thrashing Brontodon",
-      "manaCost": "{1}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur"
-      ],
-      "keywords": [],
-      "rulesText": "{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thrashing Brontodon",
+        "manaCost": "{1}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "keywords": [],
+        "rulesText": "{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "d268088d-a929-44eb-804c-02d625a7b019"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

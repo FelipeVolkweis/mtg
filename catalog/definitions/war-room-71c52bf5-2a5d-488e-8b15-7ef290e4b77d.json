@@ -1,60 +1,51 @@
 {
+  "catalogVersion": 2,
   "id": "71c52bf5-2a5d-488e-8b15-7ef290e4b77d",
-  "canonicalName": "War Room",
-  "defaultPrintingId": "b2593c45-585f-4eaf-bb08-e91a4fc2d425",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "War Room",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "War Room",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "C"
-            ],
-            "quantity": 1
-          }
-        ],
-        "manaAbility": true
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "b2593c45-585f-4eaf-bb08-e91a4fc2d425"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
       },
-      "description": "{T}: Add {C}."
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -67,7 +58,9 @@
           },
           {
             "kind": "life",
-            "amount": "commander-colors"
+            "amount": {
+              "commanderColors": "you"
+            }
           }
         ],
         "effects": [
@@ -76,8 +69,7 @@
             "count": 1
           }
         ]
-      },
-      "description": "{3}, {T}, Pay life equal to the number of colors in your commanders' color identity: Draw a card."
-    }
-  ]
+      }
+    ]
+  }
 }

@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "3525e263-e29a-49bf-a29f-fb3ce43bbd33",
-  "canonicalName": "Heraldic Banner",
-  "defaultPrintingId": "eb25d007-aeff-4282-9623-621302b99bfe",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Heraldic Banner",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "As this artifact enters, choose a color.\nCreatures you control of the chosen color get +1/+0.\n{T}: Add one mana of the chosen color."
-    }
-  ],
-  "oracleText": "As this artifact enters, choose a color.\nCreatures you control of the chosen color get +1/+0.\n{T}: Add one mana of the chosen color.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Heraldic Banner",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "As this artifact enters, choose a color.\nCreatures you control of the chosen color get +1/+0.\n{T}: Add one mana of the chosen color."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "eb25d007-aeff-4282-9623-621302b99bfe"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

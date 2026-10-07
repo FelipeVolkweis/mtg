@@ -1,39 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "0dd894cb-1968-471c-af08-ea7ec5ce8428",
-  "canonicalName": "Ghoulcaller Gisa",
-  "defaultPrintingId": "909e62fa-4585-495e-812b-5df56af24610",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Ghoulcaller Gisa",
-      "manaCost": "{3}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Legendary Creature — Human Wizard",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "{B}, {T}, Sacrifice another creature: Create X 2/2 black Zombie creature tokens, where X is the sacrificed creature's power.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "{B}, {T}, Sacrifice another creature: Create X 2/2 black Zombie creature tokens, where X is the sacrificed creature's power.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ghoulcaller Gisa",
+        "manaCost": "{3}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "{B}, {T}, Sacrifice another creature: Create X 2/2 black Zombie creature tokens, where X is the sacrificed creature's power.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "909e62fa-4585-495e-812b-5df56af24610"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

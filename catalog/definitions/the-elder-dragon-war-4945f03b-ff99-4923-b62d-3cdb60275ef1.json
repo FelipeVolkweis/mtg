@@ -1,38 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "4945f03b-ff99-4923-b62d-3cdb60275ef1",
-  "canonicalName": "The Elder Dragon War",
-  "defaultPrintingId": "670bfb28-1ac7-468d-ba38-728e3f688085",
-  "form": "saga",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "The Elder Dragon War",
-      "manaCost": "{2}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Enchantment — Saga",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Saga"
-      ],
-      "keywords": [
-        "Read Ahead"
-      ],
-      "rulesText": "Read ahead (Choose a chapter and start with that many lore counters. Add one after your draw step. Skipped chapters don't trigger. Sacrifice after III.)\nI — This Saga deals 2 damage to each creature and each opponent.\nII — Discard any number of cards, then draw that many cards.\nIII — Create a 4/4 red Dragon creature token with flying."
-    }
-  ],
-  "oracleText": "Read ahead (Choose a chapter and start with that many lore counters. Add one after your draw step. Skipped chapters don't trigger. Sacrifice after III.)\nI — This Saga deals 2 damage to each creature and each opponent.\nII — Discard any number of cards, then draw that many cards.\nIII — Create a 4/4 red Dragon creature token with flying.",
-  "keywords": [
-    "Read Ahead"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "saga",
+    "components": [
+      {
+        "name": "The Elder Dragon War",
+        "manaCost": "{2}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Saga"
+        ],
+        "keywords": [
+          "Read Ahead"
+        ],
+        "rulesText": "Read ahead (Choose a chapter and start with that many lore counters. Add one after your draw step. Skipped chapters don't trigger. Sacrifice after III.)\nI — This Saga deals 2 damage to each creature and each opponent.\nII — Discard any number of cards, then draw that many cards.\nIII — Create a 4/4 red Dragon creature token with flying."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "670bfb28-1ac7-468d-ba38-728e3f688085"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

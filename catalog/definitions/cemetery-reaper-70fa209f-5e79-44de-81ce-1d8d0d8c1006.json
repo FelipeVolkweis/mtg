@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "70fa209f-5e79-44de-81ce-1d8d0d8c1006",
-  "canonicalName": "Cemetery Reaper",
-  "defaultPrintingId": "c179dd0e-4904-457f-b11e-7d267d0bb9eb",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Cemetery Reaper",
-      "manaCost": "{1}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [],
-      "rulesText": "Other Zombie creatures you control get +1/+1.\n{2}{B}, {T}: Exile target creature card from a graveyard. Create a 2/2 black Zombie creature token.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Other Zombie creatures you control get +1/+1.\n{2}{B}, {T}: Exile target creature card from a graveyard. Create a 2/2 black Zombie creature token.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Cemetery Reaper",
+        "manaCost": "{1}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [],
+        "rulesText": "Other Zombie creatures you control get +1/+1.\n{2}{B}, {T}: Exile target creature card from a graveyard. Create a 2/2 black Zombie creature token.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "c179dd0e-4904-457f-b11e-7d267d0bb9eb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

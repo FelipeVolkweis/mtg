@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "2ec1860b-89cc-4529-8b8c-fb47f79f2b4b",
-  "canonicalName": "Sower of Chaos",
-  "defaultPrintingId": "7ff50606-491c-4946-8d03-719b01cfad77",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Sower of Chaos",
-      "manaCost": "{3}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Devil",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Devil"
-      ],
-      "keywords": [],
-      "rulesText": "{2}{R}: Target creature can't block this turn.",
-      "power": "4",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "{2}{R}: Target creature can't block this turn.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Sower of Chaos",
+        "manaCost": "{3}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Devil"
+        ],
+        "keywords": [],
+        "rulesText": "{2}{R}: Target creature can't block this turn.",
+        "power": "4",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "7ff50606-491c-4946-8d03-719b01cfad77"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

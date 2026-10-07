@@ -25,6 +25,7 @@ import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("continuous artifact bonuses, characteristic-defining counts and Overseer counters compose in player views", async () => {
   const { match, command, seed, room, catalog } = await rulesGame();
@@ -115,10 +116,7 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   const germ = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden &&
-      o.kind === "token" &&
-      o.characteristics.name === "Phyrexian Germ",
+    (o) => o.kind === "token" && o.characteristics.name === "Phyrexian Germ",
   )!;
   expect(germ).toBeDefined();
   expect(germ.characteristics).toMatchObject({
@@ -128,7 +126,7 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
     toughness: "2",
   });
   const nettle = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Nettlecyst",
+    (o) => o.characteristics.name === "Nettlecyst",
   )!;
   expect(nettle.attachmentTo).toBe(germ.id);
   const creature = game.seed("Silver Myr", "battlefield");
@@ -182,7 +180,13 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   retrievalCard.abilities[0].rules = {
     costs: [],
     target: { zone: "exile", kind: "card" },
-    effects: [{ kind: "move", subject: "target", destination: "graveyard" }],
+    effects: [
+      {
+        kind: "move",
+        objects: { target: "target-0" },
+        to: { zone: "graveyard" },
+      },
+    ],
   };
   force.mana(game.match, game.match.players[0].id, { U: 8 });
   const view = () =>
@@ -209,7 +213,7 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
     selections: { select: [creature.id] },
   });
   let permanent = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   // Master counts its owner's artifacts even in Exile; its former Battlefield 2/2 is not frozen.
   expect(permanent.characteristics).toMatchObject({
@@ -288,7 +292,7 @@ for (const decline of [true, false]) {
       ).toBe("accepted");
     expect(view().rules!.pending).toBeUndefined();
     const permanent = Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === "Duplicant",
+      (o) => o.characteristics.name === "Duplicant",
     )!;
     expect(permanent.characteristics).toMatchObject({
       power: "2",
@@ -381,7 +385,7 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
     selections: { select: [victim.id] },
   });
   const old = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   expect(old.characteristics).toMatchObject({ power: "1", toughness: "1" });
   game.command(0, {
@@ -396,13 +400,12 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   });
   resolve();
   const returned = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   game.command(0, { type: "cast-spell", objectId: returned.id });
   resolve();
   const fresh = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden && o.characteristics.name === "Duplicant" && o.kind === "card",
+    (o) => o.characteristics.name === "Duplicant" && o.kind === "card",
   )!;
   expect(fresh.id).not.toBe(old.id);
   expect(fresh.links).toEqual([]);
@@ -458,14 +461,13 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
     selections: {
       select: [
         Object.values(view().objects).find(
-          (o) => !o.hidden && o.characteristics.name === "Nettlecyst",
+          (o) => o.characteristics.name === "Nettlecyst",
         )!.id,
       ],
     },
   });
   const fresh = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden && o.kind === "card" && o.characteristics.name === "Nettlecyst",
+    (o) => o.kind === "card" && o.characteristics.name === "Nettlecyst",
   )!;
   game.command(0, {
     type: "activate-ability",
@@ -494,25 +496,25 @@ test("source grants enforce opponent hexproof and artifact flash through current
   const ring = seed("Sol Ring", "hand");
   const protectedMyr = seed("Silver Myr", "battlefield", 1);
   const padeem = seed("Padeem, Consul of Innovation", "battlefield", 1);
-  Object.values(catalog.definitions)
-    .find((c) => c.canonicalName === "Padeem, Consul of Innovation")!
-    .abilities.push({
+  const padeemCard = Object.values(catalog.definitions).find(
+    (c) => c.canonicalName === "Padeem, Consul of Innovation",
+  )!;
+  await author(padeemCard, [
+    ...padeemCard.authoredAbilities,
+    {
       id: "protection",
       kind: "static",
-      origin: "printed",
-      rules: {
-        costs: [],
-        effects: [],
-        continuous: {
-          filter: {
-            zone: "battlefield",
-            controller: "you",
-            types: ["Artifact"],
+      grants: [
+        {
+          kind: "continuous",
+          objects: {
+            all: { zone: "battlefield", controller: "you", type: ["Artifact"] },
           },
-          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+          changes: [{ kind: "grant-keyword", keyword: "hexproof" }],
         },
-      },
-    });
+      ],
+    },
+  ]);
   const bomb = seed("Aether Spellbomb", "battlefield");
   force.step(match, "begin-combat");
   force.mana(match, match.players[0].id, { U: 2 });
@@ -708,26 +710,22 @@ test("hexproof gained in response invalidates an opponent target while preservin
     game.catalog.definitions[
       game.match.instances[padeem.cardInstanceIds[0]].definitionId
     ];
-  card.abilities = [
+  await author(card, [
+    { id: "flash", kind: "keyword", keyword: "flash" },
     {
       id: "scenario-grant",
       kind: "static",
-      origin: "printed",
-      rules: {
-        keyword: "Flash",
-        costs: [],
-        effects: [],
-        continuous: {
-          filter: {
-            zone: "battlefield",
-            controller: "you",
-            types: ["Artifact"],
+      grants: [
+        {
+          kind: "continuous",
+          objects: {
+            all: { zone: "battlefield", controller: "you", type: ["Artifact"] },
           },
-          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+          changes: [{ kind: "grant-keyword", keyword: "hexproof" }],
         },
-      },
+      ],
     },
-  ];
+  ]);
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   force.mana(game.match, game.match.players[0].id, { U: 1 });
