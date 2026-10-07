@@ -109,7 +109,9 @@ export function eventMatches(
 }
 
 /** What the event's object must be: the trigger's subject (CR 603.2). */
-export function eventSubject(trigger: Trigger | ManaTrigger): Predicate | undefined {
+export function eventSubject(
+  trigger: Trigger | ManaTrigger,
+): Predicate | undefined {
   switch (trigger.event) {
     case "zone-change":
     case "enters":
@@ -281,9 +283,10 @@ export class StateTriggerObserver {
     const engine = this.engine;
     const rules = engine.rules;
     return (
-      [...(rules.waitingTriggers ?? []), ...(rules.triggerPlacement ?? [])].some(
-        (t) => t.sourceId === source.id && t.abilityId === ability.id,
-      ) ||
+      [
+        ...(rules.waitingTriggers ?? []),
+        ...(rules.triggerPlacement ?? []),
+      ].some((t) => t.sourceId === source.id && t.abilityId === ability.id) ||
       engine.zone("stack").objectIds.some((id) => {
         const object = engine.object(id);
         return (

@@ -8,7 +8,14 @@ import {
   upgradeRoom,
 } from "../../src/server/room/room-upgrade";
 import { liftResolution } from "../../src/server/room/lift-v1-effects";
-import type { Catalog, MatchAction, RoomState } from "../../src/shared/model";
+import type {
+  Catalog,
+  MatchAction,
+  MatchState,
+  RoomState,
+} from "../../src/shared/model";
+import { force } from "../support/force";
+import { triggerGame } from "../support/rules-game";
 
 // Version 1 Room documents captured from the runtime model before ADR-0018
 // (see tests/fixtures/rooms-v1/README.md).
@@ -333,7 +340,7 @@ test("a version 3 resolution becomes a Rule VM execution waiting at pc 0", () =>
       },
     },
   } as unknown as RoomState);
-  expect(room.snapshotVersion).toBe(4);
+  expect(room.snapshotVersion).toBe(currentSnapshotVersion);
   expect(room.match!.rules!.resolving).toEqual({
     stackObjectId: "s",
     controllerId: "p",
@@ -507,4 +514,126 @@ test("stored version 3 abilities and continuous effects become Core", () => {
       ],
     },
   ]);
+});
+
+// Snapshot version 5: a suspended Priority Checkpoint keeps its progress in
+// `rules.checkpoint`.
+const version4 = (rules: Record<string, unknown>) =>
+  upgradeRoom({
+    snapshotVersion: 4,
+    match: { rules },
+  } as unknown as RoomState).match!.rules!;
+
+test("version 4 checkpoint markers become a suspended checkpoint", () => {
+  expect(
+    version4({ priorityAfterTriggers: "p", pending: { kind: "trigger-order" } })
+      .checkpoint,
+  ).toEqual({ playerId: "p" });
+  expect(version4({ cleanupNeedsPriority: true }).checkpoint).toEqual({
+    cleanup: { performed: true },
+  });
+  expect(version4({ cleanupNeedsPriority: false }).checkpoint).toEqual({
+    cleanup: { performed: false },
+  });
+  expect(version4({ pending: { kind: "trigger-target" } }).checkpoint).toEqual(
+    {},
+  );
+  expect(version4({ pending: { kind: "cast" } })).not.toHaveProperty(
+    "checkpoint",
+  );
+  const upgraded = version4({ priorityAfterTriggers: "p" });
+  expect(upgraded).not.toHaveProperty("priorityAfterTriggers");
+  expect(upgraded).not.toHaveProperty("cleanupNeedsPriority");
+});
+
+test("a version 4 Graveyard commander return becomes a state-based choice; a replacement prompt doesn't", () => {
+  expect(
+    version4({ pending: { kind: "commander-return", sourceId: "c" } }).pending,
+  ).toMatchObject({ stateBasedRule: "commander-return" });
+  const replay = version4({
+    pending: { kind: "commander-return" },
+    commanderReplay: { key: "k", answers: {} },
+  });
+  expect(replay.pending).not.toHaveProperty("stateBasedRule");
+  expect(replay).not.toHaveProperty("checkpoint");
+});
+
+/** The current Match rewritten to its version 4 document. */
+function asVersion4(match: MatchState): RoomState {
+  const stored = JSON.parse(JSON.stringify(match)) as MatchState;
+  const rules = stored.rules! as unknown as Record<string, unknown>;
+  const checkpoint = stored.rules!.checkpoint;
+  delete rules.checkpoint;
+  if (checkpoint?.cleanup)
+    rules.cleanupNeedsPriority = checkpoint.cleanup.performed;
+  else rules.priorityAfterTriggers = checkpoint?.playerId ?? "";
+  delete (stored.rules!.pending as unknown as Record<string, unknown>)
+    .stateBasedRule;
+  return { snapshotVersion: 4, match: stored } as unknown as RoomState;
+}
+
+test("a version 4 room waiting for a trigger order resumes its checkpoint and grants Priority", async () => {
+  const g = await triggerGame();
+  g.seed("Sai, Master Thopterist", "battlefield");
+  g.seed("Vedalken Archmage", "battlefield");
+  const spell = g.seed("Sol Ring", "hand");
+  force.mana(g.match, g.match.players[0].id, { C: 1 });
+  g.command(0, { type: "cast-spell", objectId: spell.id });
+  const room = upgradeRoom(asVersion4(g.match));
+  const match = room.match!;
+  expect(match.rules!.checkpoint).toEqual({ playerId: g.match.players[0].id });
+  const order = match.rules!.pending!.options!.order.objectIds;
+  expect(
+    g.service.execute(
+      match,
+      g.room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: match.rules!.pending!.id,
+        selections: { order },
+      },
+      g.catalog,
+    ).kind,
+  ).toBe("accepted");
+  expect(match.priority).toEqual({
+    playerId: g.match.players[0].id,
+    passedPlayerIds: [],
+  });
+  expect(match.rules).not.toHaveProperty("checkpoint");
+  const stack = match.zones.find((z) => z.kind === "stack")!.objectIds;
+  expect(stack).toHaveLength(3);
+});
+
+test("a version 4 room offering a Graveyard commander return answers it as a state-based choice", async () => {
+  const g = await triggerGame();
+  const p = g.match.players[0].id;
+  const commander = Object.values(g.match.objects).find((o) =>
+    o.cardInstanceIds.includes(g.match.rules!.commanders[p].instanceId),
+  )!;
+  force.move(g.match, commander, "graveyard", p);
+  force.rules(g.match, { commanderReturns: [commander.id] });
+  // Passing gives the next player Priority: the checkpoint offers the return.
+  expect(g.command(0, { type: "pass-priority" }).kind).toBe("pending");
+  expect(g.match.rules!.pending!.kind).toBe("commander-return");
+  const room = upgradeRoom(asVersion4(g.match));
+  const match = room.match!;
+  expect(match.rules!.pending!.stateBasedRule).toBe("commander-return");
+  expect(
+    g.service.execute(
+      match,
+      g.room.participants[0],
+      {
+        type: "rules-input",
+        procedureId: match.rules!.pending!.id,
+        confirm: true,
+      },
+      g.catalog,
+    ).kind,
+  ).toBe("accepted");
+  expect(match.objects[commander.id]).toBeUndefined();
+  expect(
+    match.zones.find((z) => z.kind === "command")!.objectIds.length,
+  ).toBeGreaterThan(0);
+  expect(match.priority).toBeDefined();
+  expect(match.rules).not.toHaveProperty("checkpoint");
 });

@@ -31,8 +31,10 @@ export const failedDrawLoss = loss(
 );
 
 /** CR 704.6c: 21 combat damage from one commander loses the game. */
-export const commanderDamageLoss = loss("commander-damage-loss", (query, player) =>
-  Object.values(query.match.rules!.commanderDamage?.[player.id] ?? {}).some(
-    (amount) => amount >= 21,
-  ),
+export const commanderDamageLoss = loss(
+  "commander-damage-loss",
+  (query, player) =>
+    Object.values(query.match.rules!.commanderDamage?.[player.id] ?? {}).some(
+      (amount) => amount >= 21,
+    ),
 );

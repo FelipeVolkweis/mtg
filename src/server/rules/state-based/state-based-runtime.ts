@@ -39,7 +39,10 @@ export class StateBasedRuntime {
     this.settle();
     if (this.gameOver()) return { kind: "stable", performed };
     if (choice) {
-      engine.rules.pending = { ...choice.procedure, stateBasedRule: choice.rule };
+      engine.rules.pending = {
+        ...choice.procedure,
+        stateBasedRule: choice.rule,
+      };
       delete engine.match.priority;
       return { kind: "suspended", performed };
     }

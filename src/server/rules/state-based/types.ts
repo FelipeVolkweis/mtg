@@ -36,7 +36,11 @@ export interface StateBasedRule {
    * Answers this rule's choice procedure; returns whether a state-based
    * action was performed.
    */
-  answer?(ctx: RulesMutator, pending: PendingProcedure, input: RulesInput): boolean;
+  answer?(
+    ctx: RulesMutator,
+    pending: PendingProcedure,
+    input: RulesInput,
+  ): boolean;
   /** Bookkeeping once a check finds nothing left to do. */
   stable?(ctx: RulesMutator): void;
 }

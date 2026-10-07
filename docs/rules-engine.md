@@ -15,20 +15,23 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 
 ## Boundaries
 
-| Area                                                                                                             | Responsibility                                                                                                                                                                                                                        |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [MatchService](../src/server/match/match.service.ts)                                                             | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results.                                   |
-| [RulesEngine](../src/server/match/rules-engine.ts)                                                               | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints.                                                                                         |
-| [Card DSL v2](../src/shared/rules-v2.ts)                                                                         | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords.                         |
-| [Rules Compiler](../src/server/rules/compiler.ts) and [support check](../src/server/rules/support.ts)            | The compiler validates and desugars authored abilities into the Core AST the engine runs. The support check names any Core construct the current runtime can't run.                                                                   |
-| [Ability readers](../src/server/rules/abilities.ts)                                                              | Answer what the engine asks of a Core ability: its target clause, costs, mana production, trigger pattern, intervening-if, keywords, static grants and continuous effects.                                                            |
-| [Rules context](../src/server/rules/context.ts) and [event runtime](../src/server/rules/events/event-runtime.ts) | `RulesQuery` (read-only view) and `RulesMutator.propose`: every zone change, draw, damage event, life change and object creation is proposed, applied and reported to trigger observation.                                            |
-| [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts)                                        | The resolution envelope for the top Stack object: intervening-if, target revalidation, then the permanent-spell path or the Rule VM, then Stack cleanup.                                                                              |
-| [Rule VM](../src/server/rules/vm/rule-vm.ts)                                                                     | Runs a resolving instruction program: frames with program counters and typed bindings, persisted in `rules.resolving`, suspending for choices and resuming without replay.                                                            |
-| [Effect handlers](../src/server/rules/vm/effects/registry.ts)                                                    | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions (run in a new VM frame), or suspends for a choice; it also reports at load time what it can't run. |
-| [Shared rules model](../src/shared/rules.ts)                                                                     | Defines pending procedures, the Rule VM's execution state, continuous effects in force, and persisted rules state.                                                                                                                    |
-| [Match view](../src/server/match/match-view.ts)                                                                  | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see.                                                                                       |
-| [Commander support gate](../src/server/match/commander.ts)                                                       | Validates Commander Decklist rules and checks that each Card Definition has implemented, supported behavior.                                                                                                                          |
+| Area                                                                                                                                  | Responsibility                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [MatchService](../src/server/match/match.service.ts)                                                                                  | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results.                                   |
+| [RulesEngine](../src/server/match/rules-engine.ts)                                                                                    | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints.                                                                                         |
+| [Card DSL v2](../src/shared/rules-v2.ts)                                                                                              | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords.                         |
+| [Rules Compiler](../src/server/rules/compiler.ts) and [support check](../src/server/rules/support.ts)                                 | The compiler validates and desugars authored abilities into the Core AST the engine runs. The support check names any Core construct the current runtime can't run.                                                                   |
+| [Ability readers](../src/server/rules/abilities.ts)                                                                                   | Answer what the engine asks of a Core ability: its target clause, costs, mana production, trigger subject, intervening-if, keywords, static grants and continuous effects.                                                            |
+| [Rules context](../src/server/rules/context.ts) and [event runtime](../src/server/rules/events/event-runtime.ts)                      | `RulesQuery` (read-only view) and `RulesMutator.propose`: every zone change, draw, damage event, life change and object creation is proposed, applied and reported to trigger observation.                                            |
+| [Priority Checkpoint](../src/server/rules/priority/priority-checkpoint.ts)                                                            | Every Priority grant runs it: state-based actions until none applies, then waiting triggers onto the Stack, repeated until stable, then Priority. A choice suspends it with its progress in `rules.checkpoint`.                       |
+| [State-Based Rules](../src/server/rules/state-based/registry.ts)                                                                      | One rule object per state-based action, evaluated against the same state; the runtime performs all their changes as one simultaneous event, and a rule may require a choice.                                                          |
+| [Trigger Runtime](../src/server/rules/triggers/trigger-runtime.ts) and [placement](../src/server/rules/triggers/trigger-placement.ts) | Event and state observers match each source's Core trigger and record waiting triggers; placement puts a batch on the Stack in two parts, each in APNAP order, with ordering and target choices.                                      |
+| [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts)                                                             | The resolution envelope for the top Stack object: intervening-if, target revalidation, then the permanent-spell path or the Rule VM, then Stack cleanup.                                                                              |
+| [Rule VM](../src/server/rules/vm/rule-vm.ts)                                                                                          | Runs a resolving instruction program: frames with program counters and typed bindings, persisted in `rules.resolving`, suspending for choices and resuming without replay.                                                            |
+| [Effect handlers](../src/server/rules/vm/effects/registry.ts)                                                                         | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions (run in a new VM frame), or suspends for a choice; it also reports at load time what it can't run. |
+| [Shared rules model](../src/shared/rules.ts)                                                                                          | Defines pending procedures, the Rule VM's execution state, continuous effects in force, and persisted rules state.                                                                                                                    |
+| [Match view](../src/server/match/match-view.ts)                                                                                       | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see.                                                                                       |
+| [Commander support gate](../src/server/match/commander.ts)                                                                            | Validates Commander Decklist rules and checks that each Card Definition has implemented, supported behavior.                                                                                                                          |
 
 Room code owns transport, participant authorization, revision checks, and
 database persistence. `MatchService.execute` receives a participant and action
@@ -118,10 +121,13 @@ costs, choices, events, and effects correctly.
    its state persists in `resolving.waiting`, so the answer resumes it and
    nothing before it runs again. The Match does not receive Priority in the
    middle of that resolution.
-6. Zone changes, attacks, draws, damage, and other modeled events are collected
-   by the [trigger system](../src/server/match/triggers.ts). At checkpoints the
-   engine applies state-based changes, gathers waiting triggers, asks for
-   trigger ordering or targets when required, and then restores Priority. The
+6. Zone changes, attacks, draws, damage, and other modeled events are
+   reported to the [Trigger Runtime](../src/server/rules/triggers/trigger-runtime.ts),
+   which records waiting triggers. Whenever a player would receive Priority,
+   the [Priority Checkpoint](../src/server/rules/priority/priority-checkpoint.ts)
+   performs state-based actions, puts waiting triggers on the Stack (asking
+   for trigger order or targets when required), repeats until the game is
+   stable, and only then grants Priority. The
    [combat system](../src/server/match/combat.ts) handles declarations, attack
    costs, blockers, and damage assignments as persisted procedures.
 
@@ -146,14 +152,15 @@ The core engine delegates focused rules work to these modules:
   engine's mana-pool spending policy.
 - [combat.ts](../src/server/match/combat.ts) persists combat declarations,
   payments, and damage assignments.
-- [triggers.ts](../src/server/match/triggers.ts) collects semantic events,
-  creates triggered Ability Game Objects, and handles trigger ordering and
-  target choices.
+- [state-based/](../src/server/rules/state-based/) holds the State-Based
+  Rules and the runtime that performs them; [triggers/](../src/server/rules/triggers/)
+  observes events and state, and puts triggered abilities on the Stack.
 - [resolution.ts](../src/server/match/resolution.ts) runs persisted Core AST
   instruction queues through the
   [effect handlers](../src/server/rules/vm/effects/).
-- [commander-rules.ts](../src/server/match/commander-rules.ts) handles Commander
-  replacement choices and return procedures; [tokens.ts](../src/server/match/tokens.ts)
+- [commander-rules.ts](../src/server/match/commander-rules.ts) handles the
+  Commander's Hand and Library replacement (a Graveyard or exile return is a
+  state-based choice); [tokens.ts](../src/server/match/tokens.ts)
   supplies supported token characteristics.
 - [match-players.ts](../src/server/match/match-players.ts) maps Room Participants
   to Match Players, including the human-controlled Practice Opponent seat.
