@@ -798,7 +798,7 @@ The current `cancel-procedure` action is a **UI abort**, not a rules concept.
 - Turn-based procedures (declare attackers or blockers, combat damage, cleanup discard), resolution choices, trigger ordering and targeting, replacement choices and state-based choices cannot be aborted. This matches the current exclusion list in `RulesEngine.apply()`.
 - `attack-payment` abort returns to declaring attackers, as today.
 
-Tests that use `cancel-procedure` (5 in `tests/rules.spec.ts`) are classified against this rule in the test plan.
+Tests that use `cancel-procedure` are classified Change in the characterization file headers (`tests/rules/characterization/`) and rechecked against this rule in roadmap issue 10.
 
 ---
 

@@ -435,6 +435,7 @@ type StaticGrant =
   | { kind: "attack-requirement"; objects: Selector }                 // "attacks each combat if able"
   | { kind: "block-restriction"; objects: Selector; by?: Predicate }  // "can't be blocked (by Walls)"
   | { kind: "cant-block"; objects: Selector }
+  | { kind: "cant-be-countered"; spells: "this" | Predicate }       // "can't be countered"
   | { kind: "untap-restriction"; objects: Selector; unless?: Condition };
 
 type ContinuousChange =
@@ -852,7 +853,7 @@ Acceptance: every card in the table is written out in version 2 in `tests/fixtur
    - Mechanical for the common cases (§6).
    - Hand-written for the one-offs in §2.1.
    - Emits a diff report per card and fails on any construct it can't map.
-   - Also covers inline rule definitions in tests: about 32 in `tests/rules.spec.ts` and 4 in `tests/catalog.spec.ts`. These are rewritten to version 2 in the same change as the catalog, or routed through the version 1 loader until then.
+   - Also covers inline rule definitions in tests: about 32 in the characterization suite (`tests/rules/characterization/`) and 4 in `tests/catalog.spec.ts`. These are rewritten to version 2 in the same change as the catalog, or routed through the version 1 loader until then.
 3. **Down-compile for the current runtime.** Until the VM and handlers from runtime milestone M2 exist, the compiler lowers the version 2 Core AST into the current runtime shapes. Constructs the current runtime can't run (modes, multiple targets, replacements) make the card fail to load as implemented, which keeps the engine untouched in M1.
 4. **Verify.**
    - The characterization suite passes on migrated definitions.

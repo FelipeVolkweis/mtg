@@ -89,7 +89,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
   - [ ] `RoomState.snapshotVersion` exists and `upgradeRoom` runs on load, tested with captured version 1 room documents (mid-casting, mid-resolution, tokens, stack abilities);
   - [ ] `GameObject.ownerId` is required and set at creation; `grep -n "ownerId ??" src` is empty;
   - [ ] every field CM §8 marks removed is gone from types and code, the `position` action is removed, and `upgradeRoom` strips them;
-  - [ ] `cannotBeCountered` is a `force` helper in its one test;
   - [ ] gates and `npm test` are green.
 
 ### 4. DSL v2 schema, registries and compiler
@@ -140,6 +139,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] zone changes, draws, damage and life changes go through `propose`, with last-known-information snapshots on zone-change events; no direct zone mutation remains outside it (grep recorded in the pull request);
   - [ ] every effect kind dispatches through the registry from the Core AST, with isolated tests per kind (zone changes, object effects, interactive effects);
+  - [ ] `GameObject.cannotBeCountered` is replaced by a DSL v2 "can't be countered" grant, and its test uses a card definition instead of `force.uncounterable` (CM §4.1);
   - [ ] the effect-kind branches are gone from `resolution.ts`, and the down-compiler no longer lowers effects.
 
 ### 8. Rule VM and Stack Resolution Runtime
