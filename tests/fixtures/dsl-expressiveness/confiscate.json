@@ -1,0 +1,55 @@
+{
+  "catalogVersion": 2,
+  "id": "d599a38c-7719-443e-bb59-55bd43a8fee6",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Confiscate",
+        "manaCost": "{4}{U}{U}",
+        "colors": ["U"],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": ["Enchantment"],
+        "subtypes": ["Aura"],
+        "keywords": ["Enchant"],
+        "rulesText": "Enchant permanent\nYou control enchanted permanent."
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "a98a1553-e5f3-4c9c-833d-579e82e1708f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "enchant",
+        "kind": "keyword",
+        "keyword": {
+          "name": "enchant",
+          "filter": {
+            "object": "permanent"
+          }
+        }
+      },
+      {
+        "id": "control",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "attachedTo": "source"
+            },
+            "changes": [
+              {
+                "kind": "gain-control",
+                "player": "you"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

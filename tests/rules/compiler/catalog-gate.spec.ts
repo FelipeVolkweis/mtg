@@ -12,9 +12,13 @@ const dir = "tests/fixtures/dsl-v2";
 test("the token registry loads from the catalog", async () => {
   const { tokens } = await readRegistries("catalog");
   expect(Object.keys(tokens).sort()).toEqual([
+    "beast-3-3-green",
+    "food",
     "myr-1-1",
     "phyrexian-germ-0-0",
     "thopter-1-1-flying",
+    "treasure",
+    "zombie-2-2-black",
   ]);
 });
 

@@ -36,7 +36,7 @@ Behavior stays the same through issue 9. A test whose expectation changes is cla
 | rules | issue 1 | the rules suite on the fast runner, with no web server or Postgres |
 | round-trip | issue 1 | the rules suite with state saved and restored after every command |
 | catalog | issue 4 (fixtures), issue 6 (whole catalog) | every definition compiles; every `implemented` definition compiles to an executable form |
-| expressiveness | issue 5 | the DSL §8 test cards compile |
+| expressiveness | issue 5 | the DSL §8 test cards compile (`tests/rules/compiler/expressiveness.spec.ts`, part of the rules suite) |
 
 `npm test` is the full Playwright suite (browser, recovery, persistence). It needs Postgres: `docker compose up -d db`.
 
@@ -112,7 +112,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] the 26 DSL §8 cards are written in v2 and compile; AST gaps found are fixed in DSL §4 and the schema; the expressiveness gate is added;
   - [ ] derived name, mana value, keywords, Oracle text and type line equal the stored values for all 783 definitions, plus one fixture per layout in `supportedLayouts`;
-  - [ ] the migration dry run over all definitions and the inline test definitions reports zero unmapped constructs, is idempotent, and its diff report is attached to the pull request;
+  - [ ] the migration dry run over all definitions reports zero unmapped constructs, is idempotent, and its diff report is attached to the pull request. Inline test definitions are rewritten by hand in issue 6 (decided during issue 5);
   - [ ] for every implemented card, the script's output compiled and down-compiled equals the current runtime shapes (golden test); unsupported constructs fail with a clear error.
 - **Human review:** the 26 card definitions match their Oracle text.
 
@@ -121,7 +121,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Issue:** #69
 - **Depends:** 2, 3, 5
 - **Read:** CM §3, §3.4, §6; DSL §2.2, §9
-- **Scope:** `catalog/definitions/`, `catalog-files.ts`, `catalog.service.ts`, the catalog loading path, inline test definitions, `src/shared/rules.ts`, `docs/rules-engine.md`
+- **Scope:** `catalog/definitions/`, `catalog-files.ts`, `catalog.service.ts`, the catalog loading path, inline test definitions (rewritten to version 2 by hand; the migration script doesn't cover them), `src/shared/rules.ts`, `docs/rules-engine.md`
 - **Done when:**
   - [ ] definitions are `catalogVersion: 2` files with `imported` and `authored` sections;
   - [ ] the reader and importer use v2; the engine loads through compiler → down-compiler; re-importing leaves `authored` unchanged;

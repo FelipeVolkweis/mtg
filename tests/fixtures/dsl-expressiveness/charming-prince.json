@@ -1,0 +1,113 @@
+{
+  "catalogVersion": 2,
+  "id": "c48d844c-3976-4fa5-8e0d-3f0e535e7619",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Charming Prince",
+        "manaCost": "{1}{W}",
+        "colors": ["W"],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": ["Creature"],
+        "subtypes": ["Human", "Noble"],
+        "keywords": ["Scry"],
+        "rulesText": "When this creature enters, choose one —\n• Scry 2.\n• You gain 3 life.\n• Exile another target creature you own. Return it to the battlefield under your control at the beginning of the next end step.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": ["W"],
+    "defaultPrintingId": "aa7b47e1-7e32-4f2f-aecf-bac7ca197081"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "enters",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "modes": {
+          "choose": 1,
+          "options": [
+            {
+              "id": "scry",
+              "label": "Scry 2.",
+              "effects": [
+                {
+                  "kind": "scry",
+                  "count": 2
+                }
+              ]
+            },
+            {
+              "id": "life",
+              "label": "You gain 3 life.",
+              "effects": [
+                {
+                  "kind": "gain-life",
+                  "amount": 3
+                }
+              ]
+            },
+            {
+              "id": "flicker",
+              "label": "Exile another target creature you own. Return it to the battlefield under your control at the beginning of the next end step.",
+              "targets": [
+                {
+                  "id": "creature",
+                  "filter": {
+                    "and": [
+                      {
+                        "zone": "battlefield",
+                        "type": "Creature",
+                        "owner": "you"
+                      },
+                      {
+                        "not": {
+                          "is": "source"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "effects": [
+                {
+                  "kind": "exile",
+                  "objects": {
+                    "target": "creature"
+                  },
+                  "bind": "exiled"
+                },
+                {
+                  "kind": "create-delayed-trigger",
+                  "trigger": {
+                    "event": "step",
+                    "step": "end"
+                  },
+                  "effects": [
+                    {
+                      "kind": "move",
+                      "objects": {
+                        "binding": "exiled"
+                      },
+                      "to": {
+                        "zone": "battlefield",
+                        "controller": "you"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
