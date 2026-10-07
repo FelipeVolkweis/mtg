@@ -1,38 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "8ba36878-0816-44c7-b543-8ebfc28c2ecd",
-  "canonicalName": "Angelic Destiny",
-  "defaultPrintingId": "a8c5b900-650b-4655-b8f8-a7d454b20207",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Angelic Destiny",
-      "manaCost": "{2}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant"
-      ],
-      "rulesText": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand."
-    }
-  ],
-  "oracleText": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand.",
-  "keywords": [
-    "Enchant"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Angelic Destiny",
+        "manaCost": "{2}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "rulesText": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "a8c5b900-650b-4655-b8f8-a7d454b20207"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

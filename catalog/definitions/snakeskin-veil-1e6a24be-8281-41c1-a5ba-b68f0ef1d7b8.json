@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "1e6a24be-8281-41c1-a5ba-b68f0ef1d7b8",
-  "canonicalName": "Snakeskin Veil",
-  "defaultPrintingId": "6cc4c21d-9bdc-4490-9203-17f51db0ddd1",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Snakeskin Veil",
-      "manaCost": "{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Put a +1/+1 counter on target creature you control. It gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)"
-    }
-  ],
-  "oracleText": "Put a +1/+1 counter on target creature you control. It gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Snakeskin Veil",
+        "manaCost": "{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Put a +1/+1 counter on target creature you control. It gains hexproof until end of turn. (It can't be the target of spells or abilities your opponents control.)"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "6cc4c21d-9bdc-4490-9203-17f51db0ddd1"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

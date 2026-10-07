@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "57b37df5-fee4-4720-931f-f0cb0a8b338c",
-  "canonicalName": "Orzhov Guildgate",
-  "defaultPrintingId": "a917be03-0c17-4454-b044-c4375e5c8085",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Orzhov Guildgate",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land — Gate",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Gate"
-      ],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\n{T}: Add {W} or {B}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {W} or {B}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Orzhov Guildgate",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Gate"
+        ],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\n{T}: Add {W} or {B}."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "W"
+    ],
+    "defaultPrintingId": "a917be03-0c17-4454-b044-c4375e5c8085"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

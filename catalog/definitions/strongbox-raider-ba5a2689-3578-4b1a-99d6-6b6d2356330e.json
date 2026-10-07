@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "ba5a2689-3578-4b1a-99d6-6b6d2356330e",
-  "canonicalName": "Strongbox Raider",
-  "defaultPrintingId": "b2223eb8-59f9-489b-a3f3-b6496218cb79",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Strongbox Raider",
-      "manaCost": "{2}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Orc Pirate",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Orc",
-        "Pirate"
-      ],
-      "keywords": [
-        "Raid"
-      ],
-      "rulesText": "Raid — When this creature enters, if you attacked this turn, exile the top two cards of your library. Choose one of them. Until the end of your next turn, you may play that card.",
-      "power": "5",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Raid — When this creature enters, if you attacked this turn, exile the top two cards of your library. Choose one of them. Until the end of your next turn, you may play that card.",
-  "keywords": [
-    "Raid"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Strongbox Raider",
+        "manaCost": "{2}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Orc",
+          "Pirate"
+        ],
+        "keywords": [
+          "Raid"
+        ],
+        "rulesText": "Raid — When this creature enters, if you attacked this turn, exile the top two cards of your library. Choose one of them. Until the end of your next turn, you may play that card.",
+        "power": "5",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "b2223eb8-59f9-489b-a3f3-b6496218cb79"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

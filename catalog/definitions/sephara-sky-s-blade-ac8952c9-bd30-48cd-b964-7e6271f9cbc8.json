@@ -1,44 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "ac8952c9-bd30-48cd-b964-7e6271f9cbc8",
-  "canonicalName": "Sephara, Sky's Blade",
-  "defaultPrintingId": "dd9723a6-51e1-41c3-9fbd-3e18c3ffead3",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Sephara, Sky's Blade",
-      "manaCost": "{4}{W}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Angel",
-      "manaValue": 7,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Lifelink"
-      ],
-      "rulesText": "You may pay {W} and tap four untapped creatures you control with flying rather than pay this spell's mana cost.\nFlying, lifelink\nOther creatures you control with flying have indestructible. (Damage and effects that say \"destroy\" don't destroy them.)",
-      "power": "7",
-      "toughness": "7"
-    }
-  ],
-  "oracleText": "You may pay {W} and tap four untapped creatures you control with flying rather than pay this spell's mana cost.\nFlying, lifelink\nOther creatures you control with flying have indestructible. (Damage and effects that say \"destroy\" don't destroy them.)",
-  "keywords": [
-    "Flying",
-    "Lifelink"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Sephara, Sky's Blade",
+        "manaCost": "{4}{W}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 7,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Lifelink"
+        ],
+        "rulesText": "You may pay {W} and tap four untapped creatures you control with flying rather than pay this spell's mana cost.\nFlying, lifelink\nOther creatures you control with flying have indestructible. (Damage and effects that say \"destroy\" don't destroy them.)",
+        "power": "7",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "dd9723a6-51e1-41c3-9fbd-3e18c3ffead3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

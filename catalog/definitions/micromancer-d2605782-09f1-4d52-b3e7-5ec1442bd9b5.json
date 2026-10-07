@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "d2605782-09f1-4d52-b3e7-5ec1442bd9b5",
-  "canonicalName": "Micromancer",
-  "defaultPrintingId": "e6af54ea-b57a-4e50-8e46-1747cca14430",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Micromancer",
-      "manaCost": "{3}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Wizard",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, you may search your library for an instant or sorcery card with mana value 1, reveal it, put it into your hand, then shuffle.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "When this creature enters, you may search your library for an instant or sorcery card with mana value 1, reveal it, put it into your hand, then shuffle.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Micromancer",
+        "manaCost": "{3}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, you may search your library for an instant or sorcery card with mana value 1, reveal it, put it into your hand, then shuffle.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "e6af54ea-b57a-4e50-8e46-1747cca14430"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

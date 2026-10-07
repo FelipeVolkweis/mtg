@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "c6207f6a-a624-4754-88f5-dbe700c841ff",
-  "canonicalName": "Sign in Blood",
-  "defaultPrintingId": "0111bf5d-7132-4cf2-b27d-efba3ad9477a",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Sign in Blood",
-      "manaCost": "{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target player draws two cards and loses 2 life."
-    }
-  ],
-  "oracleText": "Target player draws two cards and loses 2 life.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Sign in Blood",
+        "manaCost": "{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target player draws two cards and loses 2 life."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "0111bf5d-7132-4cf2-b27d-efba3ad9477a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "321b5cc6-8df6-4292-97a0-a6a3a22f3b55",
-  "canonicalName": "Twinflame Tyrant",
-  "defaultPrintingId": "1eb34f51-0bd2-43c3-af95-2ce8dabcc7bb",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Twinflame Tyrant",
-      "manaCost": "{3}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying",
-        "Double"
-      ],
-      "rulesText": "Flying\nIf a source you control would deal damage to an opponent or a permanent an opponent controls, it deals double that damage instead.",
-      "power": "3",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nIf a source you control would deal damage to an opponent or a permanent an opponent controls, it deals double that damage instead.",
-  "keywords": [
-    "Flying",
-    "Double"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Twinflame Tyrant",
+        "manaCost": "{3}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying",
+          "Double"
+        ],
+        "rulesText": "Flying\nIf a source you control would deal damage to an opponent or a permanent an opponent controls, it deals double that damage instead.",
+        "power": "3",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "1eb34f51-0bd2-43c3-af95-2ce8dabcc7bb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,38 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "d599a38c-7719-443e-bb59-55bd43a8fee6",
-  "canonicalName": "Confiscate",
-  "defaultPrintingId": "a98a1553-e5f3-4c9c-833d-579e82e1708f",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Confiscate",
-      "manaCost": "{4}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant"
-      ],
-      "rulesText": "Enchant permanent\nYou control enchanted permanent."
-    }
-  ],
-  "oracleText": "Enchant permanent\nYou control enchanted permanent.",
-  "keywords": [
-    "Enchant"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Confiscate",
+        "manaCost": "{4}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "rulesText": "Enchant permanent\nYou control enchanted permanent."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "a98a1553-e5f3-4c9c-833d-579e82e1708f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

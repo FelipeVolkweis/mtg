@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "c61374e5-a7f6-455e-a40b-a481751b536b",
-  "canonicalName": "Bushwhack",
-  "defaultPrintingId": "03ebdb36-55e0-49dd-a514-785fbeb4ae19",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Bushwhack",
-      "manaCost": "{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Fight"
-      ],
-      "rulesText": "Choose one —\n• Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\n• Target creature you control fights target creature you don't control. (Each deals damage equal to its power to the other.)"
-    }
-  ],
-  "oracleText": "Choose one —\n• Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\n• Target creature you control fights target creature you don't control. (Each deals damage equal to its power to the other.)",
-  "keywords": [
-    "Fight"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bushwhack",
+        "manaCost": "{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Fight"
+        ],
+        "rulesText": "Choose one —\n• Search your library for a basic land card, reveal it, put it into your hand, then shuffle.\n• Target creature you control fights target creature you don't control. (Each deals damage equal to its power to the other.)"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "03ebdb36-55e0-49dd-a514-785fbeb4ae19"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

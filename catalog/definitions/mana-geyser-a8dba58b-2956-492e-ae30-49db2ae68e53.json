@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "a8dba58b-2956-492e-ae30-49db2ae68e53",
-  "canonicalName": "Mana Geyser",
-  "defaultPrintingId": "40ce8b51-49a0-49b0-a07b-6530e252ad35",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Mana Geyser",
-      "manaCost": "{3}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Add {R} for each tapped land your opponents control."
-    }
-  ],
-  "oracleText": "Add {R} for each tapped land your opponents control.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mana Geyser",
+        "manaCost": "{3}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Add {R} for each tapped land your opponents control."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "40ce8b51-49a0-49b0-a07b-6530e252ad35"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

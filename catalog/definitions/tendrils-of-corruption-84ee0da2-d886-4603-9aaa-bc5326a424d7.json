@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "84ee0da2-d886-4603-9aaa-bc5326a424d7",
-  "canonicalName": "Tendrils of Corruption",
-  "defaultPrintingId": "cf71a124-6112-4094-9541-dc0d384cc4de",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Tendrils of Corruption",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Tendrils of Corruption deals X damage to target creature and you gain X life, where X is the number of Swamps you control."
-    }
-  ],
-  "oracleText": "Tendrils of Corruption deals X damage to target creature and you gain X life, where X is the number of Swamps you control.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Tendrils of Corruption",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Tendrils of Corruption deals X damage to target creature and you gain X life, where X is the number of Swamps you control."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "cf71a124-6112-4094-9541-dc0d384cc4de"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

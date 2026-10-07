@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "09cc8709-fe10-472a-b05c-e89f3523018d",
-  "canonicalName": "Austere Command",
-  "defaultPrintingId": "a47d6756-400c-4d45-8708-8a8e95c926c8",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Austere Command",
-      "manaCost": "{4}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater."
-    }
-  ],
-  "oracleText": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater.",
-  "keywords": [],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Austere Command",
+        "manaCost": "{4}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose two —\n• Destroy all artifacts.\n• Destroy all enchantments.\n• Destroy all creatures with mana value 3 or less.\n• Destroy all creatures with mana value 4 or greater."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "a47d6756-400c-4d45-8708-8a8e95c926c8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

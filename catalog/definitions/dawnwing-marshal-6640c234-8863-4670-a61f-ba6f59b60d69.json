@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "6640c234-8863-4670-a61f-ba6f59b60d69",
-  "canonicalName": "Dawnwing Marshal",
-  "defaultPrintingId": "807db84f-addb-4ef0-b9ba-32b3e1bced3d",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Dawnwing Marshal",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Cat Soldier",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Cat",
-        "Soldier"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\n{4}{W}: Creatures you control get +1/+1 until end of turn.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying\n{4}{W}: Creatures you control get +1/+1 until end of turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dawnwing Marshal",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Soldier"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\n{4}{W}: Creatures you control get +1/+1 until end of turn.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "807db84f-addb-4ef0-b9ba-32b3e1bced3d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

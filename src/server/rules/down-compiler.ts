@@ -1,19 +1,15 @@
 import type { CardAbility } from "../../shared/model.js";
 import {
   rulesAbilitySchema,
-  supportedKeywordSchema,
   type ContinuousChange as V1Change,
-  type MovementEffect,
   type ObjectFilter,
   type RulesAbility,
   type RulesCost,
-  type RulesEffect,
   type RulesValue,
 } from "../../shared/rules.js";
 import {
   turnSteps,
   type Condition,
-  type ContinuousChange,
   type Cost,
   type Effect,
   type PlayerRef,
@@ -26,25 +22,27 @@ import {
   type Value,
 } from "../../shared/rules-v2.js";
 import type { CompileError, CoreAbility } from "./compiler.js";
+import { grantKeyword, v1Change, v1Keyword } from "./lowering.js";
+import { unsupportedEffect } from "./vm/effects/registry.js";
 
-// Down-compiler: Core AST → the version 1 runtime shapes the engine executes
-// today (dsl-redesign.md §9 step 3). It exists until the effect handlers and
-// the VM read the Core AST (roadmap issues 7 and 8). Anything the current
-// runtime can't run fails with an error naming the construct; nothing is
-// approximated.
+// Down-compiler: Core AST → the runtime ability shapes the engine executes
+// today (dsl-redesign.md §9 step 3). Effects stay Core AST: the effect
+// handlers run them (roadmap issue 7), and an effect the handlers can't run
+// fails here. Targets, triggers, costs and static abilities are still lowered
+// to version 1 shapes until the VM reads the Core AST (roadmap issue 8).
+// Anything the current runtime can't run fails with an error naming the
+// construct; nothing is approximated.
 
 export type DownCompileResult =
   | { ok: true; abilities: CardAbility[] }
   | { ok: false; errors: CompileError[] };
 
 type V1Keyword = RulesAbility["keyword"];
-type V1Token = Extract<RulesEffect, { kind: "create-token" }>["token"];
 
-const v1Tokens: Record<string, V1Token> = {
-  "thopter-1-1-flying": "thopter",
-  "myr-1-1": "myr",
-  "phyrexian-germ-0-0": "germ",
-};
+/** Does an instruction read the chosen X? */
+const readsX = (effects: Effect[]) =>
+  JSON.stringify(effects).includes('{"variable":"X"}');
+
 const sourceFilter: ObjectFilter = { zone: "battlefield", self: "only" };
 const same = (a: unknown, b: unknown) =>
   JSON.stringify(a) === JSON.stringify(b);
@@ -60,9 +58,7 @@ class Unsupported extends Error {
 
 class DownCompiler {
   private path = "";
-  private targets: TargetClause[] = [];
   private usesX = false;
-  private payments = 0;
 
   unsupported(what: string): never {
     throw new Unsupported(
@@ -85,9 +81,7 @@ class DownCompiler {
   }
 
   ability(ability: CoreAbility): CardAbility {
-    this.targets = [];
     this.usesX = false;
-    this.payments = 0;
     const base = {
       id: ability.id,
       ...(ability.description ? { description: ability.description } : {}),
@@ -121,8 +115,7 @@ class DownCompiler {
         if (produce.colors && !Array.isArray(produce.colors))
           if (produce.colors.commanderColors !== "you")
             this.unsupported("Commander colors of another player");
-        const effect: RulesEffect = {
-          kind: "add-mana",
+        const lowered: RulesAbility["produce"] = {
           quantity: produce.quantity,
           colors: Array.isArray(produce.colors)
             ? produce.colors
@@ -134,7 +127,7 @@ class DownCompiler {
             costs: this.at("activation.costs", () =>
               this.costs((ability.activation as { costs: Cost[] }).costs),
             ),
-            effects: [effect],
+            produce: lowered,
             manaAbility: true,
           });
         const trigger = ability.activation.trigger;
@@ -147,7 +140,7 @@ class DownCompiler {
               this.filter(trigger.object),
             ),
           },
-          effects: [effect],
+          produce: lowered,
           manaAbility: true,
         });
       }
@@ -157,7 +150,7 @@ class DownCompiler {
           ability.event.event === "would-enter" &&
           same(ability.event.object, { is: "source" })
         )
-          return card("static", { effects: [{ kind: "enter-tapped" }] });
+          return card("static", { entersTapped: true });
         return this.unsupported(
           `A ${ability.replace.kind} replacement of ${ability.event.event}`,
         );
@@ -209,10 +202,7 @@ class DownCompiler {
   }
 
   private keyword(keyword: string): V1Keyword {
-    const name = keyword[0].toUpperCase() + keyword.slice(1);
-    const parsed = supportedKeywordSchema.safeParse(name);
-    if (!parsed.success) this.unsupported(`The ${keyword} keyword`);
-    return parsed.data;
+    return v1Keyword(keyword, (what) => this.unsupported(what));
   }
 
   // -------------------------------------------------------------- statics
@@ -239,7 +229,15 @@ class DownCompiler {
         switch (grant.kind) {
           case "continuous":
             sameObjects(grant.objects);
-            changes.push(...grant.changes.map((c) => this.change(c)));
+            changes.push(
+              ...grant.changes.map((c) =>
+                v1Change(
+                  c,
+                  (v) => this.value(v),
+                  (what) => this.unsupported(what),
+                ),
+              ),
+            );
             return;
           case "cost-modifier": {
             if (grant.increase !== undefined || grant.condition)
@@ -303,6 +301,11 @@ class DownCompiler {
               );
             rules.monarchUntap = true;
             return;
+          case "cant-be-countered":
+            if (grant.spells !== "this")
+              this.unsupported("Can't be countered for other spells");
+            rules.cantBeCountered = true;
+            return;
           default:
             this.unsupported(`The ${grant.kind} grant`);
         }
@@ -338,17 +341,8 @@ class DownCompiler {
     return rules;
   }
 
-  /** Version 1 runs "Must attack" and the two block restrictions as keywords. */
-  private grantKeyword(
-    grant: StaticGrant,
-  ): { objects: Selector; keyword: NonNullable<V1Keyword> } | undefined {
-    if (grant.kind === "attack-requirement")
-      return { objects: grant.objects, keyword: "Must attack" };
-    if (grant.kind !== "block-restriction") return undefined;
-    if (!grant.by) return { objects: grant.objects, keyword: "Unblockable" };
-    if (same(grant.by, { subtype: "Wall" }))
-      return { objects: grant.objects, keyword: "Cannot be blocked by Walls" };
-    return this.unsupported("A block restriction other than by Walls");
+  private grantKeyword(grant: StaticGrant) {
+    return grantKeyword(grant, (what) => this.unsupported(what));
   }
 
   private staticCondition(condition: Condition) {
@@ -362,37 +356,6 @@ class DownCompiler {
         atLeast: condition.compare[2],
       };
     return this.unsupported("A static condition other than value ≥ number");
-  }
-
-  private change(change: ContinuousChange): V1Change {
-    const { layer: _layer, ...rest } = change;
-    switch (rest.kind) {
-      case "add-types":
-        return rest;
-      case "set-base-stats":
-        return {
-          kind: "set-stats",
-          power: this.value(rest.power),
-          toughness: this.value(rest.toughness),
-        };
-      case "add-stats":
-      case "define-stats":
-        return {
-          kind: rest.kind,
-          power: this.value(rest.power),
-          toughness: this.value(rest.toughness),
-        };
-      case "grant-keyword":
-        return { kind: "grant-keyword", keyword: this.keyword(rest.keyword)! };
-      case "copy-linked":
-        return {
-          kind: "linked-characteristics",
-          link: rest.link,
-          retainSubtypes: rest.retainSubtypes,
-        };
-      case "gain-control":
-        return this.unsupported("Gaining control");
-    }
   }
 
   // ----------------------------------------------------- triggers, bodies
@@ -533,7 +496,16 @@ class DownCompiler {
     const [target] = ability.targets ?? [];
     if (target?.count !== undefined && target.count !== 1)
       this.unsupported("A target clause with a count");
-    this.targets = ability.targets ?? [];
+    const effects = ability.effects ?? [];
+    this.at("effects", () =>
+      effects.forEach((effect, i) =>
+        this.at(`[${i}]`, () => {
+          const what = unsupportedEffect(effect);
+          if (what) this.unsupported(what);
+        }),
+      ),
+    );
+    if (readsX(effects)) this.usesX = true;
     return {
       ...(target
         ? {
@@ -542,439 +514,8 @@ class DownCompiler {
             ),
           }
         : {}),
-      effects: this.at("effects", () => this.effects(ability.effects ?? [])),
+      effects,
     };
-  }
-
-  // -------------------------------------------------------------- effects
-
-  private effects(effects: Effect[]): RulesEffect[] {
-    const out: RulesEffect[] = [];
-    effects.forEach((effect, i) =>
-      this.at(`[${i}]`, () => {
-        if (
-          effect.kind === "attach" &&
-          effect.object === "source" &&
-          typeof effect.to === "object" &&
-          "binding" in effect.to
-        ) {
-          const previous = effects[i - 1];
-          if (
-            previous?.kind !== "create-token" ||
-            previous.bind !== effect.to.binding
-          )
-            this.unsupported(
-              "Attaching to a binding other than the token just created",
-            );
-          out.push({ kind: "attach", to: "created" });
-          return;
-        }
-        out.push(...this.effect(effect));
-      }),
-    );
-    return out;
-  }
-
-  private effect(e: Effect): RulesEffect[] {
-    const bind = (b?: string) => (b ? { bind: b } : {});
-    switch (e.kind) {
-      case "move": {
-        const to = e.to as Exclude<typeof e.to, string>;
-        if (
-          Object.keys(to).length !== 1 ||
-          !["hand", "battlefield", "graveyard", "exile"].includes(to.zone)
-        )
-          this.unsupported(`Moving to ${JSON.stringify(to)}`);
-        return [
-          {
-            kind: "move",
-            ...this.subject_(e.objects),
-            destination: to.zone as "hand",
-            ...bind(e.bind),
-          },
-        ];
-      }
-      case "destroy":
-      case "sacrifice":
-        return [{ kind: e.kind, ...this.subject_(e.objects), ...bind(e.bind) }];
-      case "exile":
-        if (e.until) this.unsupported("Exile until an event");
-        return [
-          {
-            kind: "exile",
-            ...this.subject_(e.objects),
-            ...(e.linkAs ? { link: e.linkAs } : {}),
-            ...bind(e.bind),
-          },
-        ];
-      case "may": {
-        const [inner] = e.effects;
-        if (
-          e.player ||
-          e.bind ||
-          e.effects.length !== 1 ||
-          !["move", "destroy", "exile", "sacrifice"].includes(inner.kind)
-        )
-          return this.unsupported(
-            "A may other than an optional move, destroy, exile or sacrifice",
-          );
-        const [effect] = this.effect(inner) as MovementEffect[];
-        return [{ ...effect, optional: true }];
-      }
-      case "for-each-player": {
-        const [inner] = e.effects;
-        if (
-          e.players !== "each-player" ||
-          e.effects.length !== 1 ||
-          inner.kind !== "sacrifice" ||
-          typeof inner.objects !== "object" ||
-          !("all" in inner.objects)
-        )
-          return this.unsupported(
-            "A for-each-player other than each player sacrificing a set",
-          );
-        const all = inner.objects.all;
-        const strip = (p: PredicateFields) => {
-          if (!same(p.controller, { binding: "player" }))
-            this.unsupported(
-              "A for-each-player set not controlled by that player",
-            );
-          const { controller: _controller, ...rest } = p;
-          return rest;
-        };
-        const owned: Predicate =
-          "and" in all
-            ? {
-                and: [
-                  strip(all.and[0] as PredicateFields),
-                  ...all.and.slice(1),
-                ],
-              }
-            : strip(all as PredicateFields);
-        return [
-          {
-            kind: "sacrifice",
-            subject: "set",
-            eachPlayer: true,
-            filter: this.filter(owned),
-          },
-        ];
-      }
-      case "counter":
-        if (same(e.objects, { event: "source" }))
-          return [{ kind: "counter-event" }];
-        if (this.subject_(e.objects).subject === "target")
-          return [{ kind: "counter-target" }];
-        return this.unsupported(
-          "Countering something other than the target or the event source",
-        );
-      case "library-sequence":
-        return [this.inspect(e)];
-      case "draw":
-        if (e.player && e.player !== "you" && e.player !== "each-player")
-          this.unsupported(`Drawing for ${JSON.stringify(e.player)}`);
-        return [
-          {
-            kind: "draw",
-            count: this.value(e.count),
-            ...(e.player
-              ? {
-                  player:
-                    e.player === "each-player"
-                      ? ("each" as const)
-                      : ("you" as const),
-                }
-              : {}),
-            ...bind(e.bind),
-          },
-        ];
-      case "discard": {
-        if (e.player) this.unsupported("Discard by another player");
-        const filter = e.filter as PredicateFields | undefined;
-        if (
-          filter &&
-          (Object.keys(filter).length !== 1 || !Array.isArray(filter.type))
-        )
-          this.unsupported("A discard filter other than card types");
-        return [
-          {
-            kind: "discard",
-            count: this.value(e.count),
-            ...(filter ? { types: filter.type as string[] } : {}),
-            ...bind(e.bind),
-          },
-        ];
-      }
-      case "gain-life":
-        if (e.player || typeof e.amount !== "number" || e.amount < 1)
-          this.unsupported("Life gain other than a fixed amount for you");
-        return [{ kind: "gain-life", amount: e.amount as number }];
-      case "lose-life": {
-        const player =
-          e.player === "you" || e.player === "opponents"
-            ? e.player
-            : same(e.player, { event: "player" })
-              ? ("event-player" as const)
-              : this.unsupported(`Life loss for ${JSON.stringify(e.player)}`);
-        return [{ kind: "lose-life", amount: this.value(e.amount), player }];
-      }
-      case "become-monarch":
-        if (e.player === "you") return [{ kind: "become-monarch" }];
-        if (same(e.player, { controllerOf: { event: "object" } }))
-          return [{ kind: "become-monarch", player: "event-controller" }];
-        return this.unsupported("Another player becoming the monarch");
-      case "damage":
-        if (e.source) this.unsupported("Damage from another source");
-        if (same(e.to, { attackedBy: "source" }))
-          return [
-            {
-              kind: "damage",
-              amount: this.value(e.amount),
-              recipient: "defender",
-            },
-          ];
-        if (this.subject_(e.to as Selector).subject !== "target")
-          this.unsupported(
-            "Damage to something other than the target or the defender",
-          );
-        return [{ kind: "damage", amount: this.value(e.amount) }];
-      case "tap": {
-        if (same(e.objects, { attachedTo: "source" }) && !e.bind)
-          return [{ kind: "tap-attached" }];
-        const objects = e.objects;
-        if (
-          typeof objects === "object" &&
-          "choose" in objects &&
-          same(objects.choose.count, { min: 0 }) &&
-          !objects.choose.chooser &&
-          e.bind
-        )
-          return [
-            {
-              kind: "tap-choice",
-              filter: this.filter(objects.choose.from),
-              bind: e.bind,
-            },
-          ];
-        return this.unsupported(
-          "Tapping other than any number of chosen objects or the enchanted object",
-        );
-      }
-      case "add-counters":
-        if (
-          typeof e.count !== "number" ||
-          (e.counter !== "+1/+1" && e.counter !== "-1/-1")
-        )
-          this.unsupported(
-            "Counters other than a fixed number of +1/+1 or -1/-1",
-          );
-        return [
-          {
-            kind: "add-counters",
-            filter: this.objectsFilter(e.objects),
-            counter: e.counter as "+1/+1",
-            count: e.count as number,
-          },
-        ];
-      case "attach":
-        if (e.object || this.subject_(e.to).subject !== "target")
-          this.unsupported("Attaching other than the source to the target");
-        return [{ kind: "attach", to: "target" }];
-      case "create-token": {
-        const token = v1Tokens[e.token];
-        if (!token) this.unsupported(`The ${e.token} token`);
-        if (e.controller || e.tapped)
-          this.unsupported("A token with a controller or tapped");
-        const count = e.count ?? 1;
-        if (typeof count !== "number")
-          this.unsupported("A variable token count");
-        return [{ kind: "create-token", token, count: count as number }];
-      }
-      case "apply-continuous":
-        if (e.duration !== "end-of-turn")
-          this.unsupported(`A ${JSON.stringify(e.duration)} duration`);
-        return [
-          {
-            kind: "animate-source",
-            ...this.recipient(e.objects),
-            changes: e.changes.map((c) => this.change(c)),
-          },
-        ];
-      case "apply-grant": {
-        if (e.duration !== "end-of-turn")
-          this.unsupported(`A ${JSON.stringify(e.duration)} duration`);
-        const keyword = this.grantKeyword(e.grant);
-        if (!keyword)
-          return this.unsupported(`Applying the ${e.grant.kind} grant`);
-        return [
-          {
-            kind: "animate-source",
-            ...this.recipient(keyword.objects),
-            changes: [{ kind: "grant-keyword", keyword: keyword.keyword }],
-          },
-        ];
-      }
-      case "reselect-defender":
-        if (this.subject_(e.attacker).subject !== "target")
-          this.unsupported(
-            "Reselecting the defender of something other than the target",
-          );
-        return [{ kind: "redirect-attack" }];
-      case "may-pay": {
-        if (e.costs.some((c) => c.kind !== "mana"))
-          this.unsupported("An optional payment other than mana");
-        const binding = this.payments++ ? `paid-${this.payments}` : "paid";
-        const player = e.player
-          ? same(e.player, { event: "player" })
-            ? { player: "event-player" as const }
-            : this.unsupported(`A payment by ${JSON.stringify(e.player)}`)
-          : {};
-        return [
-          {
-            kind: "pay-mana",
-            symbols: e.costs.flatMap(
-              (c) => (c as { symbols: string[] }).symbols,
-            ),
-            bind: binding,
-            ...player,
-          },
-          {
-            kind: "if",
-            condition: { binding, atLeast: 1 },
-            then: this.at("then", () => this.effects(e.then ?? [])),
-            otherwise: this.at("else", () => this.effects(e.else ?? [])),
-          },
-        ];
-      }
-      case "if": {
-        const c = e.condition;
-        if (
-          !("compare" in c) ||
-          c.compare[1] !== ">=" ||
-          typeof c.compare[2] !== "number"
-        )
-          return this.unsupported("A condition other than binding ≥ number");
-        const left = c.compare[0];
-        const binding =
-          typeof left === "object" && "binding" in left
-            ? left.binding
-            : typeof left === "object" &&
-                "count" in left &&
-                typeof left.count === "object" &&
-                "binding" in left.count
-              ? left.count.binding
-              : this.unsupported(
-                  "A condition on something other than a binding",
-                );
-        return [
-          {
-            kind: "if",
-            condition: { binding, atLeast: c.compare[2] },
-            then: this.at("then", () => this.effects(e.then)),
-            otherwise: this.at("else", () => this.effects(e.else ?? [])),
-          },
-        ];
-      }
-      case "sequence":
-        return [
-          {
-            kind: "sequence",
-            effects: this.at("effects", () => this.effects(e.effects)),
-          },
-        ];
-      case "choose-one":
-        if (e.chooser) this.unsupported("A choice by another player");
-        return [
-          {
-            kind: "alternative",
-            options: e.options.map((option, i) =>
-              this.at(`options[${i}]`, () => {
-                const [effect] =
-                  option.effects.length === 1
-                    ? this.effect(option.effects[0])
-                    : [];
-                if (effect?.kind !== "discard")
-                  this.unsupported("A choice option other than one discard");
-                return {
-                  id: option.id,
-                  label: option.label,
-                  ...(option.available ? { requireComplete: true } : {}),
-                  effect: effect as Extract<RulesEffect, { kind: "discard" }>,
-                };
-              }),
-            ),
-          },
-        ];
-      default:
-        return this.unsupported(`The ${e.kind} effect`);
-    }
-  }
-
-  private inspect(
-    e: Extract<Effect, { kind: "library-sequence" }>,
-  ): RulesEffect {
-    if (
-      e.player !== "you" ||
-      e.operation !== "look" ||
-      typeof e.count !== "number" ||
-      !e.select
-    )
-      return this.unsupported("This library sequence");
-    const { select, rest } = e;
-    if (
-      !select.filter &&
-      select.max === e.count &&
-      same(select.to, { zone: "library", position: "bottom" }) &&
-      same(rest, { to: { zone: "library", position: "top" }, order: "any" })
-    )
-      return { kind: "inspect", count: e.count };
-    if (
-      select.filter &&
-      select.max === 1 &&
-      same(select.to, { zone: "hand" }) &&
-      same(rest.to, { zone: "library", position: "bottom" }) &&
-      rest.order !== "any"
-    )
-      return {
-        kind: "inspect",
-        count: e.count,
-        select: this.filter(select.filter),
-        ...(rest.order === "random" ? { randomBottom: true } : {}),
-        ...(select.reveal ? { revealSelected: true } : {}),
-      };
-    return this.unsupported("This library sequence");
-  }
-
-  /** Effect objects as a version 1 subject. */
-  private subject_(
-    selector: Selector,
-  ): Pick<MovementEffect, "subject" | "filter"> {
-    if (selector === "source") return { subject: "source" };
-    if (
-      typeof selector === "object" &&
-      "target" in selector &&
-      this.targets.some((t) => t.id === selector.target)
-    )
-      return { subject: "target" };
-    if (typeof selector === "object" && "all" in selector)
-      return { subject: "set", filter: this.filter(selector.all) };
-    if (
-      typeof selector === "object" &&
-      "choose" in selector &&
-      selector.choose.count === 1 &&
-      !selector.choose.chooser
-    )
-      return { subject: "choice", filter: this.filter(selector.choose.from) };
-    return this.unsupported(`The selector ${JSON.stringify(selector)}`);
-  }
-
-  private recipient(selector: Selector): { recipient?: "target" } {
-    const subject = this.subject_(selector).subject;
-    if (subject === "source") return {};
-    if (subject === "target") return { recipient: "target" };
-    return this.unsupported(
-      "Animating something other than the source or the target",
-    );
   }
 
   // -------------------------------------------------- costs, values, filters

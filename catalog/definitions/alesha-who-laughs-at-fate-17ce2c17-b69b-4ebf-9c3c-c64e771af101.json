@@ -1,47 +1,44 @@
 {
+  "catalogVersion": 2,
   "id": "17ce2c17-b69b-4ebf-9c3c-c64e771af101",
-  "canonicalName": "Alesha, Who Laughs at Fate",
-  "defaultPrintingId": "a93e3406-4e29-4bc0-ae52-cbd2ac1f99a4",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Alesha, Who Laughs at Fate",
-      "manaCost": "{1}{B}{R}",
-      "colors": [
-        "B",
-        "R"
-      ],
-      "typeLine": "Legendary Creature — Human Warrior",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Warrior"
-      ],
-      "keywords": [
-        "First strike",
-        "Raid"
-      ],
-      "rulesText": "First strike\nWhenever Alesha attacks, put a +1/+1 counter on it.\nRaid — At the beginning of your end step, if you attacked this turn, return target creature card with mana value less than or equal to Alesha's power from your graveyard to the battlefield.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "First strike\nWhenever Alesha attacks, put a +1/+1 counter on it.\nRaid — At the beginning of your end step, if you attacked this turn, return target creature card with mana value less than or equal to Alesha's power from your graveyard to the battlefield.",
-  "keywords": [
-    "First strike",
-    "Raid"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Alesha, Who Laughs at Fate",
+        "manaCost": "{1}{B}{R}",
+        "colors": [
+          "B",
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Warrior"
+        ],
+        "keywords": [
+          "First strike",
+          "Raid"
+        ],
+        "rulesText": "First strike\nWhenever Alesha attacks, put a +1/+1 counter on it.\nRaid — At the beginning of your end step, if you attacked this turn, return target creature card with mana value less than or equal to Alesha's power from your graveyard to the battlefield.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "R"
+    ],
+    "defaultPrintingId": "a93e3406-4e29-4bc0-ae52-cbd2ac1f99a4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

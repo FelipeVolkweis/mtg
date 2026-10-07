@@ -1,30 +1,30 @@
 {
+  "catalogVersion": 2,
   "id": "f02a4cbf-f0bb-4bc7-99c2-6afa1b41ebb8",
-  "canonicalName": "Hazoret's Monument",
-  "defaultPrintingId": "72fdb06f-f18d-47ee-b431-c23c0d042459",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Hazoret's Monument",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Legendary Artifact",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Red creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, you may discard a card. If you do, draw a card."
-    }
-  ],
-  "oracleText": "Red creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, you may discard a card. If you do, draw a card.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hazoret's Monument",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Red creature spells you cast cost {1} less to cast.\nWhenever you cast a creature spell, you may discard a card. If you do, draw a card."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "72fdb06f-f18d-47ee-b431-c23c0d042459"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

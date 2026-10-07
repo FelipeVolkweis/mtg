@@ -1,35 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "89f43e27-790b-4ca1-8ba7-0882b31e0783",
-  "canonicalName": "Temple of Enlightenment",
-  "defaultPrintingId": "01f23c1a-a0fe-4520-88ed-045aa4044567",
-  "form": "normal",
-  "colorIdentity": [
-    "U",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Temple of Enlightenment",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Scry"
-      ],
-      "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {W} or {U}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {W} or {U}.",
-  "keywords": [
-    "Scry"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Temple of Enlightenment",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Scry"
+        ],
+        "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {W} or {U}."
+      }
+    ],
+    "colorIdentity": [
+      "U",
+      "W"
+    ],
+    "defaultPrintingId": "01f23c1a-a0fe-4520-88ed-045aa4044567"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

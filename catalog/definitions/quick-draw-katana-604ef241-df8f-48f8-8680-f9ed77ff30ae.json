@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "604ef241-df8f-48f8-8680-f9ed77ff30ae",
-  "canonicalName": "Quick-Draw Katana",
-  "defaultPrintingId": "69beec98-c89c-4673-953c-8b3ef3d81560",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Quick-Draw Katana",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact — Equipment",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Equip"
-      ],
-      "rulesText": "During your turn, equipped creature gets +2/+0 and has first strike. (It deals combat damage before creatures without first strike.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
-    }
-  ],
-  "oracleText": "During your turn, equipped creature gets +2/+0 and has first strike. (It deals combat damage before creatures without first strike.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
-  "keywords": [
-    "Equip"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Quick-Draw Katana",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "rulesText": "During your turn, equipped creature gets +2/+0 and has first strike. (It deals combat damage before creatures without first strike.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "69beec98-c89c-4673-953c-8b3ef3d81560"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,53 +1,58 @@
 {
+  "catalogVersion": 2,
   "id": "14693689-d087-43b6-9c3f-63ab0648fc20",
-  "canonicalName": "All Is Dust",
-  "defaultPrintingId": "8764ca43-bbbb-43b5-895b-c7049cc76580",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "All Is Dust",
-      "manaCost": "{7}",
-      "colors": [],
-      "typeLine": "Kindred Sorcery \u2014 Eldrazi",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Kindred",
-        "Sorcery"
-      ],
-      "subtypes": [
-        "Eldrazi"
-      ],
-      "keywords": [],
-      "rulesText": "Each player sacrifices all permanents they control that are one or more colors."
-    }
-  ],
-  "oracleText": "Each player sacrifices all permanents they control that are one or more colors.",
-  "keywords": [],
-  "manaValue": 7,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "sacrifice",
-      "kind": "spell",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "All Is Dust",
+        "manaCost": "{7}",
+        "colors": [],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Kindred",
+          "Sorcery"
+        ],
+        "subtypes": [
+          "Eldrazi"
+        ],
+        "keywords": [],
+        "rulesText": "Each player sacrifices all permanents they control that are one or more colors."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "8764ca43-bbbb-43b5-895b-c7049cc76580"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "sacrifice",
+        "description": "Each player sacrifices all permanents they control that are one or more colors.",
+        "kind": "spell",
         "effects": [
           {
-            "kind": "sacrifice",
-            "subject": "set",
-            "eachPlayer": true,
-            "filter": {
-              "zone": "battlefield",
-              "colored": true
-            }
+            "kind": "for-each-player",
+            "players": "each-player",
+            "order": "APNAP",
+            "effects": [
+              {
+                "kind": "sacrifice",
+                "objects": {
+                  "all": {
+                    "zone": "battlefield",
+                    "color": "any",
+                    "controller": {
+                      "binding": "player"
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
-      },
-      "description": "Each player sacrifices all permanents they control that are one or more colors."
-    }
-  ]
+      }
+    ]
+  }
 }

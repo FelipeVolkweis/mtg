@@ -1,45 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "7da19fc5-cb85-4ec7-beea-95210378bbfe",
-  "canonicalName": "Balmor, Battlemage Captain",
-  "defaultPrintingId": "0b45ab13-9bb6-48af-8b37-d97b25801ac8",
-  "form": "normal",
-  "colorIdentity": [
-    "R",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Balmor, Battlemage Captain",
-      "manaCost": "{U}{R}",
-      "colors": [
-        "R",
-        "U"
-      ],
-      "typeLine": "Legendary Creature — Bird Wizard",
-      "manaValue": 2,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird",
-        "Wizard"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever you cast an instant or sorcery spell, creatures you control get +1/+0 and gain trample until end of turn.",
-      "power": "1",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you cast an instant or sorcery spell, creatures you control get +1/+0 and gain trample until end of turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Balmor, Battlemage Captain",
+        "manaCost": "{U}{R}",
+        "colors": [
+          "R",
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird",
+          "Wizard"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever you cast an instant or sorcery spell, creatures you control get +1/+0 and gain trample until end of turn.",
+        "power": "1",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R",
+      "U"
+    ],
+    "defaultPrintingId": "0b45ab13-9bb6-48af-8b37-d97b25801ac8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

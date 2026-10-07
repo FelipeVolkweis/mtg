@@ -11,76 +11,80 @@ import {
 } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { z } from "zod";
+import type { Catalog, CardDefinition } from "../../shared/model.js";
 import {
-  characteristicSchema,
-  zoneKinds,
-  type Catalog,
-} from "../../shared/model.js";
-import { rulesAbilitySchema } from "../../shared/rules.js";
+  cardDefinitionFileSchema,
+  type CardDefinitionFile,
+} from "../../shared/rules-v2.js";
+import { compileCard, type CompileError } from "../rules/compiler.js";
+import { downCompile } from "../rules/down-compiler.js";
+import { readRegistries, type Registries } from "../rules/registries.js";
 import { nameKey } from "./card-names.js";
+import { deriveFields, typeLine } from "./derive.js";
 
 const uuid = z.uuid();
-const abilityValue = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("integer"), value: z.number().int() }).strict(),
-  z.object({ kind: z.literal("boolean"), value: z.boolean() }).strict(),
-  z.object({ kind: z.literal("text"), value: z.string() }).strict(),
-  z.object({ kind: z.literal("reference"), value: z.string().min(1) }).strict(),
-  z
-    .object({
-      kind: z.literal("mana-symbols"),
-      symbols: z.array(z.string().regex(/^\{[^{}]+\}$/)).min(1),
-    })
-    .strict(),
-]);
-const primitive = z
-  .object({
-    primitive: z.string().min(1),
-    parameters: z.record(z.string(), abilityValue).optional(),
-  })
-  .strict();
-const cost = z.discriminatedUnion("kind", [
-  z
-    .object({
-      kind: z.literal("mana"),
-      symbols: z.array(z.string().regex(/^\{[^{}]+\}$/)).min(1),
-    })
-    .strict(),
-  primitive.extend({ kind: z.literal("primitive") }),
-]);
-const ability = z
-  .object({
-    id: z.string().min(1),
-    description: z.string().trim().min(1).optional(),
-    kind: z.enum(["static", "triggered", "activated", "spell"]),
-    origin: z.enum(["printed", "rules"]),
-    applicableZone: z.enum(zoneKinds).optional(),
-    keyword: z.string().optional(),
-    rules: rulesAbilitySchema.optional(),
-    trigger: z
-      .object({ kind: z.enum(["event", "state"]), condition: primitive })
-      .strict()
-      .optional(),
-    costs: z.array(cost).optional(),
-    conditions: z.array(primitive).optional(),
-    effects: z.array(primitive).optional(),
-  })
-  .strict();
-/** A version 1 definition file, as the engine loads it today. */
-export const definitionV1Schema = z
-  .object({
-    id: uuid,
-    canonicalName: z.string().min(1),
-    defaultPrintingId: uuid,
-    form: z.string().min(1),
-    colorIdentity: z.array(z.enum(["W", "U", "B", "R", "G"])),
-    components: z.array(characteristicSchema).min(1),
-    oracleText: z.string(),
-    keywords: z.array(z.string()),
-    manaValue: z.number().nonnegative(),
-    automationStatus: z.enum(["unimplemented", "implemented"]),
-    abilities: z.array(ability),
-  })
-  .strict();
+
+const loadError = (name: string, errors: CompileError[]) =>
+  new Error(errors.map((e) => `${name}: ${e.path}: ${e.message}`).join("\n"));
+
+/**
+ * Loads a version 2 file into the Card Definition the engine uses: derived
+ * values (card-model-refactor.md §3.3), then compiler → down-compiler
+ * (dsl-redesign.md §9 step 3). An authored error fails the load. An
+ * implemented card the current runtime can't run fails too; an unimplemented
+ * one loads without runtime abilities.
+ */
+export function definitionFromFile(
+  file: CardDefinitionFile,
+  registries: Registries,
+): CardDefinition {
+  const { form, components, colorIdentity, defaultPrintingId } = file.imported;
+  const { automationStatus, abilities } = file.authored;
+  const derived = deriveFields(form, components);
+  const compiled = compileCard({ components, abilities }, registries);
+  if (!compiled.ok) throw loadError(derived.canonicalName, compiled.errors);
+  const runtime = downCompile(compiled.abilities);
+  if (!runtime.ok && automationStatus === "implemented")
+    throw loadError(derived.canonicalName, runtime.errors);
+  return {
+    id: file.id,
+    canonicalName: derived.canonicalName,
+    defaultPrintingId,
+    form,
+    colorIdentity,
+    components: components.map((component) => ({
+      ...component,
+      typeLine: typeLine(component),
+    })),
+    oracleText: derived.oracleText,
+    keywords: derived.keywords,
+    manaValue: derived.manaValue,
+    automationStatus,
+    abilities: runtime.ok ? runtime.abilities : [],
+    authoredAbilities: abilities,
+  };
+}
+
+/** The version 2 file of a Card Definition: imported facts and authored abilities only. */
+export function definitionFile(card: CardDefinition): CardDefinitionFile {
+  return cardDefinitionFileSchema.parse({
+    catalogVersion: 2,
+    id: card.id,
+    imported: {
+      form: card.form,
+      components: card.components.map(
+        ({ typeLine: _typeLine, ...component }) => component,
+      ),
+      colorIdentity: card.colorIdentity,
+      defaultPrintingId: card.defaultPrintingId,
+    },
+    authored: {
+      automationStatus: card.automationStatus,
+      abilities: card.authoredAbilities,
+    },
+  });
+}
+
 const printing = z
   .object({
     id: uuid,
@@ -146,19 +150,17 @@ function definitionFilename(card: { id: string; canonicalName: string }) {
   return `${slug}-${card.id}.json`;
 }
 
-async function records<T>(
+async function records<T, R extends { id: string } = T & { id: string }>(
   root: string,
   directory: string,
   schema: z.ZodType<T>,
-  filename: (record: T & { id: string }) => string = (record) =>
-    `${record.id}.json`,
-): Promise<Record<string, T>> {
-  const result: Record<string, T> = {};
+  filename: (record: R) => string = (record) => `${record.id}.json`,
+  load: (parsed: T) => R = (parsed) => parsed as unknown as R,
+): Promise<Record<string, R>> {
+  const result: Record<string, R> = {};
   for (const file of await readdir(join(root, directory))) {
     if (!file.endsWith(".json")) continue;
-    const record = schema.parse(
-      await json(join(root, directory, file)),
-    ) as T & { id: string };
+    const record = load(schema.parse(await json(join(root, directory, file))));
     if (file !== filename(record) || result[record.id])
       throw new Error(`Invalid ${directory} filename or duplicate: ${file}`);
     result[record.id] = record;
@@ -170,8 +172,15 @@ let loaded: { root: string; inode: number; catalog: Catalog } | undefined;
 export async function readCatalog(root = catalogRoot()): Promise<Catalog> {
   const inode = await catalogInode(root);
   if (loaded?.root === root && loaded.inode === inode) return loaded.catalog;
+  const registries = await readRegistries(root);
   const [definitions, printings, directory, importedSets] = await Promise.all([
-    records(root, "definitions", definitionV1Schema, definitionFilename),
+    records(
+      root,
+      "definitions",
+      cardDefinitionFileSchema,
+      definitionFilename,
+      (file) => definitionFromFile(file, registries),
+    ),
     records(root, "printings", printing),
     json(join(root, "names.json")).then((value) => names.parse(value)),
     json(join(root, "sets.json")).then((value) => sets.parse(value)),
@@ -225,7 +234,11 @@ export async function publishCatalog(catalog: Catalog, root = catalogRoot()) {
     );
     await Promise.all([
       ...Object.values(catalog.definitions).map((card) =>
-        put(stage, `definitions/${definitionFilename(card)}`, card),
+        put(
+          stage,
+          `definitions/${definitionFilename(card)}`,
+          definitionFile(card),
+        ),
       ),
       ...Object.values(catalog.printings).map((card) =>
         put(stage, `printings/${card.id}.json`, card),

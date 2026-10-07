@@ -1,46 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "1ebf2142-f171-40cd-8143-15f50084b707",
-  "canonicalName": "Koma, World-Eater",
-  "defaultPrintingId": "c3b92caa-3401-4b11-9515-152f3e057c05",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Koma, World-Eater",
-      "manaCost": "{3}{G}{G}{U}{U}",
-      "colors": [
-        "G",
-        "U"
-      ],
-      "typeLine": "Legendary Creature — Serpent",
-      "manaValue": 7,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Serpent"
-      ],
-      "keywords": [
-        "Trample",
-        "Ward"
-      ],
-      "rulesText": "This spell can't be countered.\nTrample, ward {4}\nWhenever Koma deals combat damage to a player, create four 3/3 blue Serpent creature tokens named Koma's Coil.",
-      "power": "8",
-      "toughness": "12"
-    }
-  ],
-  "oracleText": "This spell can't be countered.\nTrample, ward {4}\nWhenever Koma deals combat damage to a player, create four 3/3 blue Serpent creature tokens named Koma's Coil.",
-  "keywords": [
-    "Trample",
-    "Ward"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Koma, World-Eater",
+        "manaCost": "{3}{G}{G}{U}{U}",
+        "colors": [
+          "G",
+          "U"
+        ],
+        "manaValue": 7,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Serpent"
+        ],
+        "keywords": [
+          "Trample",
+          "Ward"
+        ],
+        "rulesText": "This spell can't be countered.\nTrample, ward {4}\nWhenever Koma deals combat damage to a player, create four 3/3 blue Serpent creature tokens named Koma's Coil.",
+        "power": "8",
+        "toughness": "12"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "U"
+    ],
+    "defaultPrintingId": "c3b92caa-3401-4b11-9515-152f3e057c05"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

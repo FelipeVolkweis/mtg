@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "6c922206-6e68-4dcd-9559-88da1074f2c4",
-  "canonicalName": "Rugged Highlands",
-  "defaultPrintingId": "fd6eaf8e-8881-4d7b-bafc-75e4ca5cbef6",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Rugged Highlands",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {G}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {G}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rugged Highlands",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {G}."
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "R"
+    ],
+    "defaultPrintingId": "fd6eaf8e-8881-4d7b-bafc-75e4ca5cbef6"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

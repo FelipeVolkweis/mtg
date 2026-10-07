@@ -1,79 +1,56 @@
 {
+  "catalogVersion": 2,
   "id": "bfdc6bbc-7402-40ae-91be-658afca2f145",
-  "canonicalName": "Spire Golem",
-  "defaultPrintingId": "50ef252f-02c3-4b79-8e1b-d42db37e9fc4",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Spire Golem",
-      "manaCost": "{6}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Golem",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Golem"
-      ],
-      "keywords": [
-        "Flying",
-        "Affinity"
-      ],
-      "rulesText": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)\nFlying",
-      "power": "2",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)\nFlying",
-  "keywords": [
-    "Flying",
-    "Affinity"
-  ],
-  "manaValue": 6,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "affinity",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "costModifiers": [
-          {
-            "use": "cast",
-            "scope": "source",
-            "component": "generic",
-            "amount": {
-              "count": {
-                "zone": "battlefield",
-                "controller": "you",
-                "subtypes": [
-                  "Island"
-                ]
-              }
-            }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Spire Golem",
+        "manaCost": "{6}",
+        "colors": [],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "keywords": [
+          "Flying",
+          "Affinity"
+        ],
+        "rulesText": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)\nFlying",
+        "power": "2",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "50ef252f-02c3-4b79-8e1b-d42db37e9fc4"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "affinity",
+        "description": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "affinity",
+          "for": {
+            "subtype": [
+              "Island"
+            ]
           }
-        ]
+        }
       },
-      "keyword": "Affinity",
-      "description": "Affinity for Islands (This spell costs {1} less to cast for each Island you control.)"
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
-      },
-      "description": "Flying"
-    }
-  ]
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      }
+    ]
+  }
 }

@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "86ec0b56-497f-481c-a03a-c4e64e8e7404",
-  "canonicalName": "Searslicer Goblin",
-  "defaultPrintingId": "94ad0b97-a318-4e76-ac79-b3e83417c333",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Searslicer Goblin",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Warrior",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Warrior"
-      ],
-      "keywords": [
-        "Raid"
-      ],
-      "rulesText": "Raid — At the beginning of your end step, if you attacked this turn, create a 1/1 red Goblin creature token.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Raid — At the beginning of your end step, if you attacked this turn, create a 1/1 red Goblin creature token.",
-  "keywords": [
-    "Raid"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Searslicer Goblin",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Warrior"
+        ],
+        "keywords": [
+          "Raid"
+        ],
+        "rulesText": "Raid — At the beginning of your end step, if you attacked this turn, create a 1/1 red Goblin creature token.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "94ad0b97-a318-4e76-ac79-b3e83417c333"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

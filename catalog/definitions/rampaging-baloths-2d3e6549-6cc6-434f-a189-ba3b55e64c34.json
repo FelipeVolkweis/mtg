@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "2d3e6549-6cc6-434f-a189-ba3b55e64c34",
-  "canonicalName": "Rampaging Baloths",
-  "defaultPrintingId": "c25ee47b-d099-4788-9c2b-73d151bf56fb",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Rampaging Baloths",
-      "manaCost": "{4}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Beast",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Beast"
-      ],
-      "keywords": [
-        "Trample",
-        "Landfall"
-      ],
-      "rulesText": "Trample\nLandfall — Whenever a land you control enters, create a 4/4 green Beast creature token.",
-      "power": "6",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Trample\nLandfall — Whenever a land you control enters, create a 4/4 green Beast creature token.",
-  "keywords": [
-    "Trample",
-    "Landfall"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rampaging Baloths",
+        "manaCost": "{4}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "keywords": [
+          "Trample",
+          "Landfall"
+        ],
+        "rulesText": "Trample\nLandfall — Whenever a land you control enters, create a 4/4 green Beast creature token.",
+        "power": "6",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "c25ee47b-d099-4788-9c2b-73d151bf56fb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

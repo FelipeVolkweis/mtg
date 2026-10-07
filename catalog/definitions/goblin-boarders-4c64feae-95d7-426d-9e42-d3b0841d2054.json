@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "4c64feae-95d7-426d-9e42-d3b0841d2054",
-  "canonicalName": "Goblin Boarders",
-  "defaultPrintingId": "4409a063-bf2a-4a49-803e-3ce6bd474353",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Goblin Boarders",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Pirate",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Pirate"
-      ],
-      "keywords": [
-        "Raid"
-      ],
-      "rulesText": "Raid — This creature enters with a +1/+1 counter on it if you attacked this turn.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Raid — This creature enters with a +1/+1 counter on it if you attacked this turn.",
-  "keywords": [
-    "Raid"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Goblin Boarders",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Pirate"
+        ],
+        "keywords": [
+          "Raid"
+        ],
+        "rulesText": "Raid — This creature enters with a +1/+1 counter on it if you attacked this turn.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "4409a063-bf2a-4a49-803e-3ce6bd474353"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

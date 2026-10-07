@@ -1,45 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "e6a35729-edee-4a8c-9aa1-041114d66c69",
-  "canonicalName": "Ayli, Eternal Pilgrim",
-  "defaultPrintingId": "06969031-2c13-4b5a-bb4e-86eed025e614",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Ayli, Eternal Pilgrim",
-      "manaCost": "{W}{B}",
-      "colors": [
-        "B",
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Kor Cleric",
-      "manaValue": 2,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Kor",
-        "Cleric"
-      ],
-      "keywords": [
-        "Deathtouch"
-      ],
-      "rulesText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\n{1}, Sacrifice another creature: You gain life equal to the sacrificed creature's toughness.\n{1}{W}{B}, Sacrifice another creature: Exile target nonland permanent. Activate only if you have at least 10 life more than your starting life total.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\n{1}, Sacrifice another creature: You gain life equal to the sacrificed creature's toughness.\n{1}{W}{B}, Sacrifice another creature: Exile target nonland permanent. Activate only if you have at least 10 life more than your starting life total.",
-  "keywords": [
-    "Deathtouch"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ayli, Eternal Pilgrim",
+        "manaCost": "{W}{B}",
+        "colors": [
+          "B",
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kor",
+          "Cleric"
+        ],
+        "keywords": [
+          "Deathtouch"
+        ],
+        "rulesText": "Deathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\n{1}, Sacrifice another creature: You gain life equal to the sacrificed creature's toughness.\n{1}{W}{B}, Sacrifice another creature: Exile target nonland permanent. Activate only if you have at least 10 life more than your starting life total.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "W"
+    ],
+    "defaultPrintingId": "06969031-2c13-4b5a-bb4e-86eed025e614"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

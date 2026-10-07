@@ -6,11 +6,11 @@
 // | Commander setup designates commanders before private opening draws and enforces construction and support | Preserve |
 // | opening choices and explicit Priority passes perform the first turn draw and prohibit out-of-turn actions | Preserve |
 // | Sai and Padeem are supported commanders, and Graaz cannot lead blue cards | Preserve |
-// | Commander setup accepts validated ordered cards and rejects unknown result bindings | Preserve |
+// | Commander setup accepts validated ordered cards and rejects unknown result bindings | Change | the Rules Compiler rejects the unknown binding when the card loads, before Commander setup (dsl-redesign.md §2.2; roadmap issue 6)
 // | {name} passes Commander setup with complete validated automation (parameterized) | Preserve |
 // | newly completed protection, flying, Vehicle and requirement definitions pass normal Commander setup | Preserve |
 // | the complete mono-U pool resolves to 100 cards and 67 supported definitions in mirror and practice setup | Preserve |
-// | Commander setup rejects an empty authored {keyword} envelope (parameterized) | Preserve |
+// | Commander setup rejects a card without its authored {keyword} ability (parameterized) | Preserve | was "an empty authored {keyword} envelope"; version 2 has no empty envelope, so the keyword's ability is removed instead (roadmap issue 6)
 // | implemented catalog abilities retain exact rules descriptions and expose readable activation choices | Preserve |
 
 import { expect, test } from "@playwright/test";
@@ -21,6 +21,7 @@ import { readCatalog } from "../../../src/server/catalog/catalog-files";
 import "../../support/round-trip";
 import { commanderFixture, emptyRoom } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("Commander setup designates commanders before private opening draws and enforces construction and support", () => {
   const service = new MatchService();
@@ -154,11 +155,16 @@ test("Commander setup accepts validated ordered cards and rejects unknown result
   const pull = Object.values(catalog.definitions).find(
     (card) => card.canonicalName === "Pull from Tomorrow",
   )!;
-  pull.abilities[0].rules!.effects = [
-    { kind: "draw", count: { binding: "missing" } },
-  ];
-  expect(() => new MatchService().createCommander(room, catalog)).toThrow(
-    "Unsupported cards: Pull from Tomorrow",
+  await expect(
+    author(structuredClone(pull), [
+      {
+        id: "spell",
+        kind: "spell",
+        effects: [{ kind: "draw", count: { binding: "missing" } }],
+      },
+    ]),
+  ).rejects.toThrow(
+    'abilities[0].effects[0].count: Unknown binding "missing".',
   );
 });
 
@@ -287,7 +293,7 @@ for (const [keyword, cardName] of [
   ["Cycling", "Lonely Sandbar"],
   ["Affinity", "Thoughtcast"],
 ])
-  test(`Commander setup rejects an empty authored ${keyword} envelope`, async () => {
+  test(`Commander setup rejects a card without its authored ${keyword} ability`, async () => {
     const release = await readCatalog("catalog");
     const { room, catalog } = commanderFixture();
     const kappa = structuredClone(
@@ -295,17 +301,14 @@ for (const [keyword, cardName] of [
         (d) => d.canonicalName === cardName,
       )!,
     );
-    kappa.abilities = kappa.abilities.map((a) =>
-      a.keyword?.toLowerCase() === keyword.toLowerCase()
-        ? {
-            id: a.id,
-            kind: "static",
-            origin: "printed",
-            keyword,
-            rules: { costs: [], effects: [] },
-          }
-        : a,
+    const authored = kappa.authoredAbilities.filter(
+      (a) =>
+        a.kind !== "keyword" ||
+        typeof a.keyword === "string" ||
+        a.keyword.name !== keyword.toLowerCase(),
     );
+    expect(authored).toHaveLength(kappa.authoredAbilities.length - 1);
+    await author(kappa, authored);
     catalog.definitions[kappa.id] = kappa;
     catalog.printings[kappa.defaultPrintingId] =
       release.printings[kappa.defaultPrintingId];

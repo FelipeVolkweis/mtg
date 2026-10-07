@@ -1,45 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "0156c94b-e64c-49de-a46c-a203c5e05e98",
-  "canonicalName": "Kykar, Zephyr Awakener",
-  "defaultPrintingId": "6c980998-7124-4ec6-a0b6-e8d9a2364925",
-  "form": "normal",
-  "colorIdentity": [
-    "U",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Kykar, Zephyr Awakener",
-      "manaCost": "{2}{W}{U}",
-      "colors": [
-        "U",
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Bird Wizard",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird",
-        "Wizard"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever you cast a noncreature spell, choose one —\n• Exile another target creature you control. Return that card to the battlefield under its owner's control at the beginning of the next end step.\n• Create a 1/1 white Spirit creature token with flying.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you cast a noncreature spell, choose one —\n• Exile another target creature you control. Return that card to the battlefield under its owner's control at the beginning of the next end step.\n• Create a 1/1 white Spirit creature token with flying.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kykar, Zephyr Awakener",
+        "manaCost": "{2}{W}{U}",
+        "colors": [
+          "U",
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird",
+          "Wizard"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever you cast a noncreature spell, choose one —\n• Exile another target creature you control. Return that card to the battlefield under its owner's control at the beginning of the next end step.\n• Create a 1/1 white Spirit creature token with flying.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U",
+      "W"
+    ],
+    "defaultPrintingId": "6c980998-7124-4ec6-a0b6-e8d9a2364925"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,40 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "b3e1674f-dba1-4570-9990-e5dc643e237d",
-  "canonicalName": "Twinblade Blessing",
-  "defaultPrintingId": "ecf01cbe-9fcb-4f35-bc6b-2280620b06ff",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Twinblade Blessing",
-      "manaCost": "{1}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant",
-        "Flash"
-      ],
-      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature has double strike. (It deals both first-strike and regular combat damage.)"
-    }
-  ],
-  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature has double strike. (It deals both first-strike and regular combat damage.)",
-  "keywords": [
-    "Enchant",
-    "Flash"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Twinblade Blessing",
+        "manaCost": "{1}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature has double strike. (It deals both first-strike and regular combat damage.)"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "ecf01cbe-9fcb-4f35-bc6b-2280620b06ff"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

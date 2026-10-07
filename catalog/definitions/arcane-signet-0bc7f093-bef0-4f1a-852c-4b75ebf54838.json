@@ -1,51 +1,47 @@
 {
+  "catalogVersion": 2,
   "id": "0bc7f093-bef0-4f1a-852c-4b75ebf54838",
-  "canonicalName": "Arcane Signet",
-  "defaultPrintingId": "ee7710cf-e73d-479f-bc8d-0e78a0e324d9",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Arcane Signet",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add one mana of any color in your commander's color identity."
-    }
-  ],
-  "oracleText": "{T}: Add one mana of any color in your commander's color identity.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Arcane Signet",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": "commander-colors",
-            "quantity": 1
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add one mana of any color in your commander's color identity."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "ee7710cf-e73d-479f-bc8d-0e78a0e324d9"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color in your commander's color identity.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": {
+            "commanderColors": "you"
           }
-        ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add one mana of any color in your commander's color identity."
-    }
-  ]
+        }
+      }
+    ]
+  }
 }

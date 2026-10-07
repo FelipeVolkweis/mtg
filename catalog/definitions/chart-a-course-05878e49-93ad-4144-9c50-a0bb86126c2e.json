@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "05878e49-93ad-4144-9c50-a0bb86126c2e",
-  "canonicalName": "Chart a Course",
-  "defaultPrintingId": "7599d459-fe71-48f4-8c65-0f519bb63a68",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Chart a Course",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Draw two cards. Then discard a card unless you attacked this turn."
-    }
-  ],
-  "oracleText": "Draw two cards. Then discard a card unless you attacked this turn.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Chart a Course",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw two cards. Then discard a card unless you attacked this turn."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "7599d459-fe71-48f4-8c65-0f519bb63a68"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

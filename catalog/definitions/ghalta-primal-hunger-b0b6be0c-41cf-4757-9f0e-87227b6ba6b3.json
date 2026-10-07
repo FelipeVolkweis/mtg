@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "b0b6be0c-41cf-4757-9f0e-87227b6ba6b3",
-  "canonicalName": "Ghalta, Primal Hunger",
-  "defaultPrintingId": "5d9951d1-3228-4d69-8e63-6e6f0a893a86",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Ghalta, Primal Hunger",
-      "manaCost": "{10}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Legendary Creature — Elder Dinosaur",
-      "manaValue": 12,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elder",
-        "Dinosaur"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "This spell costs {X} less to cast, where X is the total power of creatures you control.\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
-      "power": "12",
-      "toughness": "12"
-    }
-  ],
-  "oracleText": "This spell costs {X} less to cast, where X is the total power of creatures you control.\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 12,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ghalta, Primal Hunger",
+        "manaCost": "{10}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 12,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elder",
+          "Dinosaur"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "This spell costs {X} less to cast, where X is the total power of creatures you control.\nTrample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+        "power": "12",
+        "toughness": "12"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "5d9951d1-3228-4d69-8e63-6e6f0a893a86"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

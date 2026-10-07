@@ -11,6 +11,7 @@ import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("turn transitions expire mana, untap only the active player's permanents and require private cleanup choices", async () => {
   const { match, command, seed, room } = await rulesGame();
@@ -59,16 +60,20 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
     game.catalog.definitions[
       game.match.instances[creature.cardInstanceIds[0]].definitionId
     ];
-  card.abilities.push({
-    id: "death-draw",
-    kind: "triggered",
-    origin: "printed",
-    rules: {
-      costs: [],
+  await author(card, [
+    ...card.authoredAbilities,
+    {
+      id: "death-draw",
+      kind: "triggered",
+      trigger: {
+        event: "zone-change",
+        object: "source",
+        from: "battlefield",
+        to: "graveyard",
+      },
       effects: [{ kind: "draw", count: 1 }],
-      trigger: { event: "dies", filter: { zone: "battlefield", self: "only" } },
     },
-  });
+  ]);
   force.rules(game.match, {
     temporaryEffects: [
       {
