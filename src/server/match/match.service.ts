@@ -19,11 +19,8 @@ import { gameObject } from "./game-objects.js";
 import { CommanderRules, CommanderReplacement } from "./commander-rules.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
-import {
-  budget,
-  RulesLoopError,
-  withActionBudget,
-} from "../rules/loop-budget.js";
+import { budget, RulesLoopError } from "../rules/loop-budget.js";
+import { MandatoryLoop } from "../rules/mandatory-loop.js";
 
 export type ExecutionResult =
   | { kind: "accepted"; notice?: string }
@@ -237,17 +234,6 @@ export class MatchService implements GameplayExecutor {
     action: MatchAction,
     catalog: Catalog,
   ): ExecutionResult {
-    return withActionBudget(() =>
-      this.executeBudgeted(match, participant, action, catalog),
-    );
-  }
-
-  private executeBudgeted(
-    match: MatchState,
-    participant: Participant,
-    action: MatchAction,
-    catalog: Catalog,
-  ): ExecutionResult {
     const next = structuredClone(match);
     const replay = next.rules.commanderReplay;
     let actor: Pick<Participant, "id"> = participant;
@@ -313,7 +299,7 @@ export class MatchService implements GameplayExecutor {
         match.revision++;
         return { kind: "pending", playerId: error.playerId };
       }
-      if (error instanceof RulesLoopError) {
+      if (error instanceof MandatoryLoop) {
         // CR 104.4b: a mandatory loop that never ends draws the game.
         console.warn(`Match ${match.id} drawn: ${error.message}`);
         match.outcome = "draw";
@@ -325,6 +311,10 @@ export class MatchService implements GameplayExecutor {
           kind: "accepted",
           notice: "This action starts an endless loop. The game is a draw.",
         };
+      }
+      if (error instanceof RulesLoopError) {
+        console.error(`Match ${match.id}: ${error.message}`);
+        return { kind: "rejected", message: "The rules engine could not finish this action." };
       }
       return {
         kind: "rejected",

@@ -3,6 +3,7 @@ import { CharacteristicsCalculator } from "../../match/characteristics.js";
 import { Combat } from "../../match/combat.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { budget } from "../loop-budget.js";
+import { LoopDetector } from "../mandatory-loop.js";
 import { stateBasedRule, stateBasedRules } from "./registry.js";
 import type { RulesInput, StateBasedChange } from "./types.js";
 
@@ -24,8 +25,10 @@ export class StateBasedRuntime {
     const engine = this.engine;
     let performed = false;
     let choice: { rule: string; procedure: PendingProcedure } | undefined;
+    const loop = new LoopDetector("State-based action check");
     for (let pass = 1; ; pass++) {
       budget("State-based action check", pass, 1000);
+      loop.visit(engine.match);
       const found: StateBasedChange[] = [];
       choice = undefined;
       for (const rule of stateBasedRules()) {
