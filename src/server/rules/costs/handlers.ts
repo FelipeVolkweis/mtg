@@ -9,6 +9,7 @@ import type {
   CostHandler,
   CostMutation,
 } from "./types.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // Cost Handlers (rules-engine-refactor.md §36): one per Core cost kind. Each
 // validates its own component and returns data; the Cost Runtime checks the
@@ -35,7 +36,7 @@ function requireSourceIn(
     zone === "hand"
       ? ctx.engine.zone("hand", ctx.playerId)
       : ctx.engine.zone("battlefield");
-  if (ctx.source.zoneId !== expected.id) throw new Error(message);
+  if (ctx.source.zoneId !== expected.id) throw new RuleViolation(message);
 }
 
 /** The player's distinct chosen objects for a component, if complete. */
@@ -44,7 +45,7 @@ function chosen(ctx: CostContext, key: string, count?: number) {
   if (count === undefined ? !ids.length : ids.length !== count)
     return undefined;
   if (new Set(ids).size !== ids.length)
-    throw new Error("Choose distinct objects for each cost.");
+    throw new RuleViolation("Choose distinct objects for each cost.");
   return ids.map((id) => ctx.engine.object(id));
 }
 
@@ -97,7 +98,7 @@ const selected: CostHandler<Selected> = {
         !ctx.engine.matches(object, cost.filter, ctx.playerId) ||
         (cost.kind === "tap" && object.status.tapped)
       )
-        throw new Error("Choose legal, distinct objects for the cost.");
+        throw new RuleViolation("Choose legal, distinct objects for the cost.");
     }
     return planned(
       ...objects.map((object): CostMutation =>
@@ -121,14 +122,14 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
   "tap-source": {
     plan(_cost, _key, ctx) {
       if (!ctx.engine.canPayTapSymbol(ctx.source, ctx.playerId))
-        throw new Error("The source cannot pay its tap-symbol cost.");
+        throw new RuleViolation("The source cannot pay its tap-symbol cost.");
       return planned({ kind: "tap", objectId: ctx.source.id });
     },
   },
   "untap-source": {
     plan(_cost, _key, ctx) {
       if (!onBattlefield(ctx, ctx.source) || !ctx.source.status.tapped)
-        throw new Error("The source cannot pay its untap-symbol cost.");
+        throw new RuleViolation("The source cannot pay its untap-symbol cost.");
       return planned({ kind: "untap", objectId: ctx.source.id });
     },
   },
@@ -176,7 +177,7 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
           (c) => c.kind === cost.counter,
         );
         if (!counter || BigInt(counter.quantity) < BigInt(cost.count))
-          throw new Error(`Remove ${cost.count} ${cost.counter} counters.`);
+          throw new RuleViolation(`Remove ${cost.count} ${cost.counter} counters.`);
       }
       return planned({
         kind: "counters",
@@ -202,11 +203,11 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
           creature.status.tapped ||
           !ctx.engine.matches(creature, cost.filter, ctx.playerId)
         )
-          throw new Error("Choose untapped creatures you control to crew.");
+          throw new RuleViolation("Choose untapped creatures you control to crew.");
         power += Number(ctx.engine.effective(creature).power) || 0;
       }
       if (power < cost.power)
-        throw new Error("Insufficient total power to crew.");
+        throw new RuleViolation("Insufficient total power to crew.");
       return planned(
         ...creatures.map((creature): CostMutation => ({
           kind: "tap",

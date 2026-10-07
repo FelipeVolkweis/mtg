@@ -17,6 +17,7 @@ import {
 import { conjuncts } from "../rules/support.js";
 import { unsupportedEffect } from "../rules/vm/effects/registry.js";
 import { commanderEligible, deckIssues } from "../deck/format-rules.js";
+import { RuleViolation } from "../rules/rule-violation.js";
 
 export { commanderEligible };
 
@@ -143,17 +144,17 @@ export function validateCommanderDeck(
   catalog: Catalog,
 ) {
   const deck = participant.deck;
-  if (!deck) throw new Error("Select a Decklist first.");
+  if (!deck) throw new RuleViolation("Select a Decklist first.");
   if (deck.format !== "commander")
-    throw new Error("Select a Commander Decklist for a Commander Match.");
+    throw new RuleViolation("Select a Commander Decklist for a Commander Match.");
   const [issue] = deckIssues(deck, catalog);
-  if (issue) throw new Error(issue);
+  if (issue) throw new RuleViolation(issue);
   const unsupported = deck.entries
     .map((entry) => catalog.definitions[entry.definitionId])
     .filter((card) => !automationEligible(card))
     .map((card) => card.canonicalName);
   if (unsupported.length)
-    throw new Error(
+    throw new RuleViolation(
       `Unsupported cards: ${[...new Set(unsupported)].join(", ")}.`,
     );
   return catalog.definitions[deck.commanderId!];

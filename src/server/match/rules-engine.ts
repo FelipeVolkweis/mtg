@@ -70,6 +70,7 @@ import {
   EventTriggerObserver,
   waitTrigger,
 } from "../rules/triggers/trigger-runtime.js";
+import { RuleViolation } from "../rules/rule-violation.js";
 
 export const emptyMana = (): ManaPool => ({
   W: 0,
@@ -116,17 +117,17 @@ export class RulesEngine implements RulesMutator {
     if (!zone) throw new Error("Zone not found.");
     return zone;
   }
-  apply(participant: Pick<Participant, "id">, action: MatchAction): undefined {
+  apply(participant: Pick<Participant, "id">, action: MatchAction): void {
     const player = actingPlayer(this.match, participant.id);
-    if (!player) throw new Error("Only a Match Player may act.");
+    if (!player) throw new RuleViolation("Only a Match Player may act.");
     if (this.match.outcome !== "ongoing")
-      throw new Error("This Match is complete.");
+      throw new RuleViolation("This Match is complete.");
     if (this.rules.setup.keptPlayerIds.length < this.match.players.length) {
       this.opening(player, action);
     } else if (this.rules.pending) {
       const pending = this.rules.pending;
       if (pending.playerId !== player.id)
-        throw new Error("Another player must complete the pending choice.");
+        throw new RuleViolation("Another player must complete the pending choice.");
       const handler = procedureHandler(pending);
       const current =
         "procedureId" in action && action.procedureId === pending.id;
@@ -141,7 +142,7 @@ export class RulesEngine implements RulesMutator {
       else if (action.type === "reverse-proposal" && current && handler.reverse)
         handler.reverse(this);
       else
-        throw new Error(
+        throw new RuleViolation(
           "Complete the current procedure using its latest identifier.",
         );
     } else {
@@ -153,19 +154,18 @@ export class RulesEngine implements RulesMutator {
         new StackProposalProcedure(this).cast(player.id, action.objectId);
       else if (action.type === "activate-ability")
         this.activate(player.id, action);
-      else throw new Error("Use a legal rules action.");
+      else throw new RuleViolation("Use a legal rules action.");
     }
     this.match.revision++;
-    return undefined;
   }
   opening(player: MatchPlayer, action: MatchAction) {
     if (this.rules.setup.keptPlayerIds.includes(player.id))
-      throw new Error("Your opening Hand is already kept.");
+      throw new RuleViolation("Your opening Hand is already kept.");
     const hand = this.zone("hand", player.id),
       library = this.zone("library", player.id);
     if (action.type === "mulligan" && action.playerId === player.id) {
       if (player.mulliganCount >= 7)
-        throw new Error("No further mulligans are available.");
+        throw new RuleViolation("No further mulligans are available.");
       for (const id of [...hand.objectIds])
         this.propose({
           kind: "zone-change",
@@ -182,7 +182,7 @@ export class RulesEngine implements RulesMutator {
         new Set(action.bottomIds).size !== action.bottomIds.length ||
         action.bottomIds.some((id) => !hand.objectIds.includes(id))
       )
-        throw new Error(
+        throw new RuleViolation(
           `Choose ${player.mulliganCount} cards from your Hand to put on the bottom.`,
         );
       for (const id of action.bottomIds)
@@ -195,11 +195,11 @@ export class RulesEngine implements RulesMutator {
       this.rules.setup.keptPlayerIds.push(player.id);
       if (this.rules.setup.keptPlayerIds.length === this.match.players.length)
         this.beginTurn();
-    } else throw new Error("Keep or mulligan your opening Hand before play.");
+    } else throw new RuleViolation("Keep or mulligan your opening Hand before play.");
   }
   requirePriority(playerId: string) {
     if (this.match.priority?.playerId !== playerId)
-      throw new Error("You do not have Priority.");
+      throw new RuleViolation("You do not have Priority.");
   }
   /**
    * A player would receive Priority: every grant goes through the Priority
@@ -337,7 +337,7 @@ export class RulesEngine implements RulesMutator {
   }
   object(id: string) {
     const object = this.match.objects[id];
-    if (!object) throw new Error("This Game Object has already moved.");
+    if (!object) throw new RuleViolation("This Game Object has already moved.");
     return object;
   }
   definition(object: GameObject) {
@@ -391,11 +391,11 @@ export class RulesEngine implements RulesMutator {
       !object.characteristics.types?.includes("Land") ||
       !this.mainTiming(playerId)
     )
-      throw new Error(
+      throw new RuleViolation(
         "Play a land from your Hand during your main phase with an empty Stack.",
       );
     if ((this.rules.landsPlayed[playerId] ?? 0) >= 1)
-      throw new Error("You have already played a land this turn.");
+      throw new RuleViolation("You have already played a land this turn.");
     this.propose({
       kind: "zone-change",
       objectId: object.id,
@@ -581,22 +581,22 @@ export class RulesEngine implements RulesMutator {
     const authored = this.abilities(source).find(
       (ability) => ability.id === action.abilityId,
     );
-    if (!authored) throw new Error("Ability not found.");
+    if (!authored) throw new RuleViolation("Ability not found.");
     const ability = structuredClone(authored);
     if (!this.canActivateFromZone(source, playerId, authored))
-      throw new Error("You cannot activate this source from that Zone.");
+      throw new RuleViolation("You cannot activate this source from that Zone.");
     if (
       oncePerTurn(ability) &&
       this.rules.activationUsage?.[`${source.id}:${authored.id}`]
     )
-      throw new Error("Activate this ability only once each turn.");
+      throw new RuleViolation("Activate this ability only once each turn.");
     if (sorceryTiming(ability) && !this.mainTiming(playerId))
-      throw new Error("Activate this ability only as a sorcery.");
+      throw new RuleViolation("Activate this ability only as a sorcery.");
     const target = targetFilter(ability);
     if (target && !this.legalTargets(playerId, target, source.id).length)
-      throw new Error("No legal targets are available.");
+      throw new RuleViolation("No legal targets are available.");
     if (duringPayment && !isManaAbility(ability))
-      throw new Error("Only mana abilities may be used in the payment window.");
+      throw new RuleViolation("Only mana abilities may be used in the payment window.");
     const produce = production(ability);
     if (!produce) {
       new StackProposalProcedure(this).activate(
@@ -626,7 +626,7 @@ export class RulesEngine implements RulesMutator {
       this.lockCost(procedure);
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
-        throw new Error("The mana ability's complete costs cannot be paid.");
+        throw new RuleViolation("The mana ability's complete costs cannot be paid.");
       this.produceMana(playerId, produce, action.color);
       if (
         costs.some((c) => c.kind === "tap-source") &&
@@ -685,7 +685,7 @@ export class RulesEngine implements RulesMutator {
           pending.color ?? (allowed.length === 1 ? allowed[0] : undefined)!,
         )
       )
-        throw new Error("Choose a permitted mana color.");
+        throw new RuleViolation("Choose a permitted mana color.");
     }
     const proposal = this.costProposal(pending);
     const spent = pay(this, {

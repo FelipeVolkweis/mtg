@@ -9,6 +9,7 @@ import {
   type EffectHandler,
   type EffectOf,
 } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 // Discard (CR 701.8) and a choice among discards (Thirst for Knowledge). The
 // player picks an option and its cards in one answer, from their current
@@ -89,7 +90,7 @@ function answer(
   const entries = Object.entries(input.selections ?? {});
   const nonempty = entries.filter(([, ids]) => ids.length);
   if (nonempty.length !== 1 || entries.some(([key]) => !choices[key]))
-    throw new Error("Choose exactly one legal discard option.");
+    throw new RuleViolation("Choose exactly one legal discard option.");
   const [key, ids] = nonempty[0];
   const effect = choices[key];
   const legal = option(effect, key, ctx);
@@ -98,7 +99,7 @@ function answer(
     new Set(ids).size !== ids.length ||
     ids.some((id) => !legal.objectIds.includes(id))
   )
-    throw new Error("Choose the required number of eligible, distinct cards.");
+    throw new RuleViolation("Choose the required number of eligible, distinct cards.");
   for (const id of ids)
     ctx.propose({
       kind: "zone-change",

@@ -17,6 +17,7 @@ import { CommanderRules } from "../../match/commander-rules.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { costHandler } from "./handlers.js";
 import type { CostContext, CostMutation, CostPlan, CostUse } from "./types.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // The Cost Runtime (rules-engine-refactor.md §36–38): determine the total
 // cost, lock it, plan every component, then commit the whole payment or
@@ -267,11 +268,11 @@ function checkCompatible(components: CostMutation[][]) {
   for (const mutation of components.flat()) {
     if (mutation.kind === "tap" || mutation.kind === "untap") {
       if (tapped.has(mutation.objectId) || moved.has(mutation.objectId))
-        throw new Error("A cost can't use the same object twice.");
+        throw new RuleViolation("A cost can't use the same object twice.");
       tapped.add(mutation.objectId);
     } else if (mutation.kind === "move") {
       if (moved.has(mutation.objectId))
-        throw new Error("A cost can't use the same object twice.");
+        throw new RuleViolation("A cost can't use the same object twice.");
       moved.add(mutation.objectId);
     }
   }
@@ -304,7 +305,7 @@ export function planPayment(
       improvise.length > payment.totalCost.generic ||
       improvise.some((id) => !option.objectIds.includes(id))
     )
-      throw new Error("Choose untapped artifacts you control for improvise.");
+      throw new RuleViolation("Choose untapped artifacts you control for improvise.");
     components.push(
       improvise.map((objectId): CostMutation => ({ kind: "tap", objectId })),
     );
@@ -322,7 +323,7 @@ export function planPayment(
     .reduce((sum, m) => sum + (m.kind === "pay-life" ? m.amount : 0), 0);
   const player = engine.match.players.find((p) => p.id === payment.playerId)!;
   if (BigInt(player.life) < BigInt(life))
-    throw new Error("You cannot pay that much life.");
+    throw new RuleViolation("You cannot pay that much life.");
   const eligible = manaEligibility(payment.use, payment.source);
   const spent = planMana(
     engine.rules,

@@ -18,6 +18,10 @@ import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
 import { budget, RulesLoopError } from "../rules/loop-budget.js";
 import { MandatoryLoop } from "../rules/mandatory-loop.js";
+import {
+  internalErrorMessage,
+  RuleViolation,
+} from "../rules/rule-violation.js";
 
 export type ExecutionResult =
   | { kind: "accepted"; notice?: string }
@@ -44,7 +48,7 @@ export class MatchService implements GameplayExecutor {
       (participant) => participant.ready && participant.deck,
     );
     if (participants.length < 1 || participants.length > 4)
-      throw new Error(
+      throw new RuleViolation(
         "One to four participants must select Decklists and mark ready.",
       );
     const match: MatchState = {
@@ -98,12 +102,12 @@ export class MatchService implements GameplayExecutor {
       addZone("graveyard", `${player.name}'s Graveyard`, player.id);
       const decklist = participant.deck;
       if (!decklist)
-        throw new Error("A selected Decklist is no longer available.");
+        throw new RuleViolation("A selected Decklist is no longer available.");
       for (const entry of decklist.entries) {
         const definition = catalog.definitions[entry.definitionId];
         const printing = catalog.printings[entry.printingId];
         if (!definition || !printing)
-          throw new Error(
+          throw new RuleViolation(
             "A selected printing is no longer in the local Card Catalog.",
           );
         for (let i = 0; i < entry.quantity; i++) {
@@ -148,7 +152,7 @@ export class MatchService implements GameplayExecutor {
   ) {
     const participants = room.participants.filter((p) => p.ready && p.deck);
     if (![1, 2].includes(participants.length))
-      throw new Error("Commander requires one or two ready Room Participants.");
+      throw new RuleViolation("Commander requires one or two ready Room Participants.");
     const commanders = participants.map((p) =>
       validateCommanderDeck(p, catalog),
     );
@@ -156,7 +160,7 @@ export class MatchService implements GameplayExecutor {
       startingParticipantId &&
       !participants.some((p) => p.id === startingParticipantId)
     )
-      throw new Error("Choose a starting Room Participant who is ready.");
+      throw new RuleViolation("Choose a starting Room Participant who is ready.");
     return { participants, commanders };
   }
 
@@ -249,14 +253,14 @@ export class MatchService implements GameplayExecutor {
           action.variables ||
           action.targetIds
         )
-          throw new Error("Complete your current commander return choice.");
+          throw new RuleViolation("Complete your current commander return choice.");
         replay.answers[replay.key] = action.confirm;
         next.rules.pending = replay.previousPending;
         actor = { id: replay.participantId };
         next.priority = replay.previousPriority;
         command = replay.action;
       }
-      const notice = new RulesEngine(next, catalog).apply(actor, command);
+      new RulesEngine(next, catalog).apply(actor, command);
       delete next.rules.commanderReplay;
       const engine = new RulesEngine(next, catalog);
       for (
@@ -275,7 +279,7 @@ export class MatchService implements GameplayExecutor {
       Object.assign(match, next);
       return next.rules.pending
         ? { kind: "pending", playerId: next.rules.pending.playerId }
-        : { kind: "accepted", notice };
+        : { kind: "accepted" };
     } catch (error) {
       if (error instanceof CommanderReplacement) {
         match.rules.commanderReplay = {
@@ -309,13 +313,20 @@ export class MatchService implements GameplayExecutor {
           notice: "This action starts an endless loop. The game is a draw.",
         };
       }
-      if (error instanceof RulesLoopError) {
-        console.error(`Match ${match.id}: ${error.message}`);
-        return { kind: "rejected", message: "The rules engine could not finish this action." };
-      }
+      if (error instanceof RuleViolation)
+        return { kind: "rejected", message: error.message };
+      // Anything else is a bug, not an illegal move: log it for the operator
+      // and show the player a message that doesn't leak internals.
+      console.error(
+        `Match ${match.id} failed on action ${JSON.stringify(command)}:`,
+        error,
+      );
       return {
         kind: "rejected",
-        message: error instanceof Error ? error.message : "Action rejected.",
+        message:
+          error instanceof RulesLoopError
+            ? "The rules engine could not finish this action."
+            : internalErrorMessage,
       };
     }
   }

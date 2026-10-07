@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import type { IncomingMessage } from "node:http";
 import { RoomService } from "./room.service.js";
+import { playerMessage } from "./player-errors.js";
 import { UserService } from "../user/user.service.js";
 
 @Controller("api")
@@ -33,9 +34,10 @@ export class RoomController {
     try {
       return await this.rooms.join(invite, user);
     } catch (error) {
-      throw new BadRequestException(
-        error instanceof Error ? error.message : "Unable to join Room",
-      );
+      // Any other error is a bug: Nest logs it and answers 500.
+      const message = playerMessage(error);
+      if (message === undefined) throw error;
+      throw new BadRequestException(message);
     }
   }
 }

@@ -8,6 +8,7 @@ import type {
 import { ownKeyword, staticContinuous } from "../rules/abilities.js";
 import type { RulesQuery } from "../rules/context.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
+import { RuleViolation } from "../rules/rule-violation.js";
 
 /**
  * A read-only rules context over a Match without an engine. `effective` is
@@ -24,7 +25,7 @@ export function queryOver(
     catalog,
     object(id) {
       const object = match.objects[id];
-      if (!object) throw new Error("This Game Object has already moved.");
+      if (!object) throw new RuleViolation("This Game Object has already moved.");
       return object;
     },
     zone(kind, playerId) {

@@ -16,8 +16,8 @@ import { DeckError, DeckService } from "../deck/deck.service.js";
 import { deckIssues } from "../deck/format-rules.js";
 import { matchView } from "../match/match-view.js";
 import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";
+import { TabletopError } from "./player-errors.js";
 
-export class TabletopError extends Error {}
 const nameKey = (name: string) => name.normalize("NFKC").trim().toLowerCase();
 
 @Injectable()

@@ -7,6 +7,7 @@ import type { ManaTrigger, Trigger } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { PutTriggeredAbilityOnStackProcedure } from "./put-triggered-ability.js";
 import { triggerOf } from "./trigger-runtime.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // Trigger placement (rules-engine-refactor.md §44), part of the Priority
 // Checkpoint. The waiting triggers become the current batch; triggers that
@@ -102,7 +103,7 @@ export class TriggerPlacement {
       new Set(ids).size !== ids.length ||
       ids.some((id) => !group.some((t) => t.id === id))
     )
-      throw new Error("Order each waiting trigger exactly once.");
+      throw new RuleViolation("Order each waiting trigger exactly once.");
     rules.triggerPlacement = [
       ...ids.map((id) => group.find((t) => t.id === id)!),
       ...batch.filter((t) => !group.includes(t)),

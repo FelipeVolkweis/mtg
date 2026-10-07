@@ -6,6 +6,7 @@ import type {
 import { gameObject } from "../../match/game-objects.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { isDiesTrigger, targetFilter } from "../abilities.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // PutTriggeredAbilityOnStackProcedure (rules-engine-refactor.md §45): a
 // waiting trigger becomes an Ability Game Object on the Stack, and its
@@ -86,7 +87,7 @@ export class PutTriggeredAbilityOnStackProcedure {
         )
         .includes(ids[0])
     )
-      throw new Error("Choose one legal trigger target.");
+      throw new RuleViolation("Choose one legal trigger target.");
     object.resolution!.targetIds = ids;
     engine.targeted(object);
     delete engine.rules.pending;

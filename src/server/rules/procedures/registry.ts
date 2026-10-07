@@ -11,6 +11,7 @@ import { costOptions } from "../costs/cost-runtime.js";
 import { PriorityCheckpoint } from "../priority/priority-checkpoint.js";
 import { StackProposalProcedure } from "../proposals/stack-proposal.js";
 import { StackResolutionRuntime } from "../stack/stack-resolution.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // The Procedure Registry (rules-engine-refactor.md §12): every pending
 // procedure kind has one handler, so RulesEngine.apply() and input()
@@ -183,7 +184,7 @@ const cleanupDiscard: ProcedureHandler = {
   input(engine, action) {
     const playerId = engine.rules.pending!.playerId;
     if (action.variables || action.targetIds)
-      throw new Error("Choose the required cards to discard for cleanup.");
+      throw new RuleViolation("Choose the required cards to discard for cleanup.");
     const hand = engine.zone("hand", playerId);
     const ids = action.selections?.discard ?? [];
     if (
@@ -191,7 +192,7 @@ const cleanupDiscard: ProcedureHandler = {
       new Set(ids).size !== ids.length ||
       ids.some((id) => !hand.objectIds.includes(id))
     )
-      throw new Error("Choose the required cards to discard for cleanup.");
+      throw new RuleViolation("Choose the required cards to discard for cleanup.");
     for (const id of ids)
       engine.propose({
         kind: "zone-change",
@@ -220,7 +221,7 @@ const cleanupDiscard: ProcedureHandler = {
  */
 const commanderReplacement: ProcedureHandler = {
   input() {
-    throw new Error("Complete your current commander return choice.");
+    throw new RuleViolation("Complete your current commander return choice.");
   },
   manaWindow: never,
   options: stored,

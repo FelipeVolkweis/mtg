@@ -39,8 +39,15 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 Room code owns transport, participant authorization, revision checks, and
 database persistence. `MatchService.execute` receives a participant and action
 after those checks. A normal rejected action discards the mutated clone. A
-Commander replacement choice is a special pending procedure that preserves the
-interrupted command for resumption after the choice.
+rule check that refuses an action throws a
+[`RuleViolation`](../src/server/rules/rule-violation.ts), whose message is
+written for the player and shown to them; any other error is a bug, logged with
+the Match id and the action, and the player sees a generic message. Only a
+`RuleViolation` or a Room's `TabletopError` carries text to a client
+([player-errors.ts](../src/server/room/player-errors.ts)). A Commander
+replacement choice is a special pending procedure that preserves the
+interrupted command for resumption after the choice: the action is rolled back
+and replayed with the answer (see `CommanderReplacement`).
 
 ## Authored rules and coverage
 

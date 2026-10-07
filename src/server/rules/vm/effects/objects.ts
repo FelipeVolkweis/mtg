@@ -4,6 +4,7 @@ import { tokenCharacteristics } from "../../../match/tokens.js";
 import { selection } from "./selection.js";
 import { choiceOf } from "./zone-change.js";
 import { done, type EffectContext, type EffectHandler } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 // Object instructions: damage (CR 120), tap (CR 701.21), counters (CR 122),
 // attach (CR 701.3) and tokens (CR 111).
@@ -92,7 +93,7 @@ export const tap: EffectHandler<"tap"> = {
     const { ids } = selection(ctx, input);
     const choice = choiceOf(effect.objects)!;
     if (ids.some((id) => !ctx.eval.matches(ctx.query.object(id), choice.from)))
-      throw new Error("Choose untapped eligible objects.");
+      throw new RuleViolation("Choose untapped eligible objects.");
     for (const id of ids) ctx.query.object(id).status.tapped = true;
     if (effect.bind) ctx.bind(effect.bind, ids);
     return done;
