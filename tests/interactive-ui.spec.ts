@@ -172,11 +172,14 @@ test("drag casting selects a Stack target by click and preserves payment through
       (object) => object.characteristics.name === "Counterspell",
     )!;
     await act(alice, { type: "cast-spell", objectId: counter.id });
-    const procedure = (await snapshot(alice)).match!.rules!.pending!;
+    const procedure = (await snapshot(alice)).match!.rules!.prompt!;
     await expect(
       alice.getByRole("dialog", { name: "Card actions" }),
     ).toHaveCount(0);
-    await act(alice, { type: "cancel-procedure", procedureId: procedure.id });
+    await act(alice, {
+      type: "cancel-procedure",
+      procedureId: procedure.procedureId,
+    });
     await expect(
       alice.getByRole("dialog", { name: "Card actions" }),
     ).toHaveCount(0);
@@ -191,9 +194,11 @@ test("drag casting selects a Stack target by click and preserves payment through
     await alice
       .getByRole("button", { name: "Confirm target", exact: true })
       .click();
-    const pending = (await snapshot(alice)).match!.rules!.pending!;
+    const pending = (await snapshot(alice)).match!.rules!.prompt!;
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.pending!.id).toBe(pending.id);
+    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+      pending.procedureId,
+    );
     await alice
       .getByRole("button", { name: "Complete payment", exact: true })
       .click();

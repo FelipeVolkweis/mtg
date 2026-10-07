@@ -31,12 +31,12 @@ test("an answer resumes after the waiting instruction, inside a nested frame", a
   const game = await effectGame();
   game.resolve(discardTwice);
   const first = game.prompt();
-  game.answer({ discard: [first.selectionOptions.discard.objectIds[0]] });
+  game.answer({ discard: [first.options.discard.objectIds[0]] });
   const execution = game.match.rules!.resolving!;
   expect(execution.frames.map((f) => f.pc)).toEqual([3, 0]);
   const second = game.prompt();
-  expect(second.id).not.toBe(first.id);
-  game.answer({ discard: [second.selectionOptions.discard.objectIds[0]] });
+  expect(second.procedureId).not.toBe(first.procedureId);
+  game.answer({ discard: [second.options.discard.objectIds[0]] });
   expect(game.match.rules!.resolving).toBeUndefined();
   expect(game.life(0)).toBe("42");
   expect(game.ids("graveyard", 0)).toHaveLength(2);
@@ -46,12 +46,12 @@ test("a stale procedure id is refused and changes nothing", async () => {
   const game = await effectGame();
   game.resolve(discardTwice);
   const first = game.prompt();
-  game.answer({ discard: [first.selectionOptions.discard.objectIds[0]] });
+  game.answer({ discard: [first.options.discard.objectIds[0]] });
   const before = structuredClone(game.match.rules!.resolving);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: first.id,
+      procedureId: first.procedureId,
       selections: { discard: [] },
     }).kind,
   ).toBe("rejected");

@@ -4,7 +4,7 @@ import { none, type StateBasedRule } from "../types.js";
 
 /** The first queued commander still in a Graveyard or exile. */
 function returnable(query: RulesQuery) {
-  for (const id of query.match.rules!.commanderReturns ?? []) {
+  for (const id of query.match.rules.commanderReturns ?? []) {
     const object = query.match.objects[id];
     const kind = query.match.zones.find((z) => z.id === object?.zoneId)?.kind;
     if (object && kind && ["graveyard", "exile"].includes(kind)) return object;
@@ -60,6 +60,6 @@ export const commanderReturn: StateBasedRule = {
   },
   stable(ctx) {
     // Nothing returnable is left; the rest moved on.
-    delete ctx.query.match.rules!.commanderReturns;
+    delete ctx.query.match.rules.commanderReturns;
   },
 };

@@ -25,7 +25,7 @@ A Match using the Commander format, with a designated Commander and Decklists co
 A Match where the game enforces modeled rules and authored behavior for a supported pool of cards.
 
 **Manual Match**:
-A legacy Match whose gameplay was manipulated directly by participants.
+A retired legacy Match whose gameplay was manipulated directly by participants. A stored one ends when its Room loads, and the Room returns to its lobby.
 
 **Solo Practice**:
 A practice mode with one human Match Player and an inert Practice Opponent using a mirror Decklist.

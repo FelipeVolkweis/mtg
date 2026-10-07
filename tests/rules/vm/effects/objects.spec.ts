@@ -87,7 +87,7 @@ test("tap a chosen set binds it for later instructions", async () => {
     ],
     { source },
   );
-  const option = game.prompt().selectionOptions.select;
+  const option = game.prompt().options.select;
   expect(option.minCount).toBe(0);
   expect(option.objectIds).toEqual(
     expect.arrayContaining(myr.map((m) => m.id)),

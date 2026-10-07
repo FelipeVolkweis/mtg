@@ -161,7 +161,7 @@ export async function triggerGame() {
   const answer = (selections: Record<string, string[]>, seat = 0) =>
     game.command(seat, {
       type: "rules-input",
-      procedureId: view(seat).rules!.pending!.id,
+      procedureId: view(seat).rules!.prompt!.procedureId,
       selections,
     });
   const handCount = (seat = 0) =>

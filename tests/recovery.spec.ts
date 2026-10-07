@@ -209,15 +209,15 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
         await act(1, { type: "pass-priority" });
       }
       const before = await snapshot(pages[0]);
-      expect(before.match!.rules!.pending!.kind).toBe(
+      expect(before.match!.rules!.prompt!.promptKind).toBe(
         kind === "casting" || kind === "practice"
-          ? "cast"
+          ? "pay-costs"
           : kind === "resolution"
-            ? "resolve"
-            : "trigger-order",
+            ? "resolution-choice"
+            : "order-triggers",
       );
       const opponentBefore = await snapshot(pages[1]);
-      expect(opponentBefore.match!.rules!.pending).toBeUndefined();
+      expect(opponentBefore.match!.rules!.prompt).toBeUndefined();
       await server.stop();
       server = await startServer("mtg_rules_recovery_test", 4321);
       await pages[0].reload();
@@ -226,29 +226,33 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
       const restored = await snapshot(pages[0]);
       expect(restored.match).toEqual(before.match);
       expect((await snapshot(pages[1])).match).toEqual(opponentBefore.match);
-      const pending = restored.match!.rules!.pending!;
+      const pending = restored.match!.rules!.prompt!;
       if (kind === "ordering")
         expect(
           (
             await act(0, {
               type: "rules-input",
-              procedureId: pending.id,
-              selections: { order: pending.selectionOptions.order.objectIds },
+              procedureId: pending.procedureId,
+              selections: { order: pending.options.order.objectIds },
             })
           ).event,
         ).toBe("view");
       else if (kind === "casting" || kind === "practice")
         expect(
-          (await act(0, { type: "cancel-procedure", procedureId: pending.id }))
-            .event,
+          (
+            await act(0, {
+              type: "reverse-proposal",
+              procedureId: pending.procedureId,
+            })
+          ).event,
         ).toBe("view");
       else {
-        const [key, option] = Object.entries(pending.selectionOptions)[0];
+        const [key, option] = Object.entries(pending.options)[0];
         expect(
           (
             await act(0, {
               type: "rules-input",
-              procedureId: pending.id,
+              procedureId: pending.procedureId,
               selections: { [key]: option.objectIds.slice(0, option.count) },
             })
           ).event,
@@ -258,7 +262,7 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
         (
           await act(0, {
             type: "rules-input",
-            procedureId: pending.id,
+            procedureId: pending.procedureId,
             selections: {},
           })
         ).event,

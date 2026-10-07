@@ -64,7 +64,7 @@ export function cardPiles(
     const attachments = Object.values(match.objects).filter(
       (o) => o.attachmentTo === object.id,
     );
-    const combat = match.rules?.combat?.attackers;
+    const combat = match.rules.combat?.attackers;
     const key =
       object.attachmentTo || attachments.length
         ? object.id
@@ -76,10 +76,10 @@ export function cardPiles(
               counters: [...object.counters].sort((a, b) =>
                 a.kind.localeCompare(b.kind),
               ),
-              variables: object.variables,
+              variables: object.proposal?.variables,
               face: object.currentFace,
               links: object.links,
-              damage: match.rules?.markedDamage?.[object.id] ?? 0,
+              damage: match.rules.markedDamage?.[object.id] ?? 0,
               attacker: combat?.find((a) => a.objectId === object.id),
               blocks: combat
                 ?.filter((a) => a.blockerIds.includes(object.id))

@@ -7,9 +7,9 @@
 // | artifact cast triggers keep their chosen Stack order across reconnects and tokens have no Card Instance | Preserve |
 // | Wellspring sacrificed during Sai payment triggers above the paid ability and both draw independently | Preserve |
 // | simultaneous triggers use active-player then nonactive-player order and state-based deaths retain both sources | Preserve |
-// | triggers caused by mana payment wait until casting completes or is cancelled | Change | cancels with `cancel-procedure`; recheck in issue 10 against RE §16 (abort only before cost lock)
+// | triggers caused by mana payment wait until casting completes; a reversed cast discards them with the mana ability | Change | issue 10: the spell is on the Stack while it is paid for (TP §11); after cost lock the way out is `reverse-proposal`, which rolls back the mana abilities too (RE §16)
 // | Tome's fourth page triggers exile above its independent scry, with private resumable inspection | Preserve |
-// | Tome cannot gain life when its exile fails and does not duplicate a pending state trigger | Preserve |
+// | Tome cannot gain life when its exile fails and does not duplicate a pending state trigger | Change | issue 10: an activated ability is on the Stack while its target is chosen (CR 602.2a)
 // | draw ordinals, live Hand size and optional effect payment resume without duplicating draws | Preserve |
 // | Mind's Eye accepts mana sources during its private effect payment and can decline without spending | Move | asserts internal procedure stage names (TP §7)
 // | Scrawling upkeep draws for each player, Fabricator resets ordinals, and Vessel removes cleanup's discard | Preserve |
@@ -68,15 +68,15 @@ test("artifact cast triggers keep their chosen Stack order across reconnects and
     "pending",
   );
   const own = matchView(match, room.participants[0].id, catalog);
-  expect(own.rules!.pending!.kind).toBe("trigger-order");
+  expect(own.rules!.prompt!.promptKind).toBe("order-triggers");
   expect(
-    matchView(match, room.participants[1].id, catalog).rules!.pending,
+    matchView(match, room.participants[1].id, catalog).rules!.prompt,
   ).toBeUndefined();
   const recovered = JSON.parse(JSON.stringify(match));
-  const pending = own.rules!.pending!;
-  const ids = pending.selectionOptions.order.objectIds;
+  const pending = own.rules!.prompt!;
+  const ids = pending.options.order.objectIds;
   const order = [...ids].sort((a, b) =>
-    pending.selectionOptions.order.labels![a].startsWith("Sai") ? -1 : 1,
+    pending.options.order.labels![a].startsWith("Sai") ? -1 : 1,
   );
   const send = (
     seat: number,
@@ -85,21 +85,21 @@ test("artifact cast triggers keep their chosen Stack order across reconnects and
   expect(
     send(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { order: [ids[0], ids[0]] },
     }).kind,
   ).toBe("rejected");
   expect(
     send(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { order },
     }).kind,
   ).toBe("accepted");
   expect(
     send(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { order },
     }).kind,
   ).toBe("rejected");
@@ -145,11 +145,11 @@ test("Wellspring sacrificed during Sai payment triggers above the paid ability a
     }).kind,
   ).toBe("pending");
   const pending = matchView(match, room.participants[0].id, catalog).rules!
-    .pending!;
+    .prompt!;
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { "1": [well.id, stone.id] },
     }).kind,
   ).toBe("accepted");
@@ -234,8 +234,8 @@ test("simultaneous triggers use active-player then nonactive-player order and st
   ).toBe(before + 1);
 });
 
-test("triggers caused by mana payment wait until casting completes or is cancelled", async () => {
-  for (const cancel of [true, false]) {
+test("triggers caused by mana payment wait until casting completes; a reversed cast discards them with the mana ability", async () => {
+  for (const reverse of [true, false]) {
     const { match, command, seed, room, catalog } = await rulesGame();
     const well = seed("Ichor Wellspring", "battlefield"),
       spell = seed("Hedron Archive", "hand");
@@ -254,7 +254,7 @@ test("triggers caused by mana payment wait until casting completes or is cancell
     ]);
     const view = () => matchView(match, room.participants[0].id, catalog);
     command(0, { type: "cast-spell", objectId: spell.id });
-    const pendingId = view().rules!.pending!.id;
+    const pendingId = view().rules!.prompt!.procedureId;
     expect(
       command(0, {
         type: "activate-ability",
@@ -262,21 +262,32 @@ test("triggers caused by mana payment wait until casting completes or is cancell
         abilityId: "sacrifice-mana",
       }).kind,
     ).toBe("pending");
-    expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+    // Only the spell being cast is on the Stack; the trigger waits.
+    expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
     expect(
       command(
         0,
-        cancel
-          ? { type: "cancel-procedure", procedureId: pendingId }
+        reverse
+          ? { type: "reverse-proposal", procedureId: pendingId }
           : { type: "rules-input", procedureId: pendingId, confirm: true },
       ).kind,
     ).toBe("accepted");
     const stack = view().zones.find((z) => z.kind === "stack")!;
-    expect(stack.count).toBe(cancel ? 1 : 2);
-    expect(view().objects[stack.objectIds!.at(-1)!].characteristics.name).toBe(
-      "Ichor Wellspring: graveyard",
-    );
-    expect(view().rules!.mana[match.players[0].id].C).toBe(cancel ? 4 : 0);
+    if (reverse) {
+      // The mana ability is reversed with the cast (RE §16).
+      expect(stack.count).toBe(0);
+      expect(match.objects[well.id].zoneId).toBe(
+        match.zones.find((z) => z.kind === "battlefield")!.id,
+      );
+      expect(match.objects[spell.id]).toBeDefined();
+      expect(view().rules!.mana[match.players[0].id].C).toBe(0);
+    } else {
+      expect(stack.count).toBe(2);
+      expect(
+        view().objects[stack.objectIds!.at(-1)!].characteristics.name,
+      ).toBe("Ichor Wellspring: graveyard");
+      expect(view().rules!.mana[match.players[0].id].C).toBe(0);
+    }
   }
 });
 
@@ -300,18 +311,18 @@ test("Tome's fourth page triggers exile above its independent scry, with private
   expect(view().objects[tome.id]).toBeUndefined();
   game.command(0, { type: "pass-priority" });
   expect(game.command(1, { type: "pass-priority" }).kind).toBe("pending");
-  const pending = view().rules!.pending!;
-  const inspected = pending.selectionOptions.bottom.objectIds;
+  const pending = view().rules!.prompt!;
+  const inspected = pending.options.bottom.objectIds;
   expect(inspected).toHaveLength(1);
   expect(view().objects[inspected[0]].characteristics.name).toBe("Island");
   expect(view(1).objects[inspected[0]]).toBeUndefined();
-  expect(view(1).rules!.pending).toBeUndefined();
+  expect(view(1).rules!.prompt).toBeUndefined();
   Object.assign(game.match, JSON.parse(JSON.stringify(game.match)));
-  expect(view().rules!.pending!.id).toBe(pending.id);
+  expect(view().rules!.prompt!.procedureId).toBe(pending.procedureId);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { bottom: [] },
     }).kind,
   ).toBe("accepted");
@@ -319,7 +330,7 @@ test("Tome's fourth page triggers exile above its independent scry, with private
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { bottom: [] },
     }).kind,
   ).toBe("rejected");
@@ -352,10 +363,11 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
     objectId: bomb.id,
     abilityId: "bounce",
   });
-  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(2);
+  // The ability is on the Stack while its target is chosen (CR 602.2a).
+  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(3);
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [tome.id],
   });
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(3);
@@ -398,27 +410,27 @@ test("draw ordinals, live Hand size and optional effect payment resume without d
     }).kind,
   ).toBe("accepted");
   pass();
-  const order = view().rules!.pending!;
-  expect(order.kind).toBe("trigger-order");
-  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
+  const order = view().rules!.prompt!;
+  expect(order.promptKind).toBe("order-triggers");
+  expect(order.options.order.objectIds).toHaveLength(3);
   game.command(0, {
     type: "rules-input",
-    procedureId: order.id,
-    selections: { order: order.selectionOptions.order.objectIds },
+    procedureId: order.procedureId,
+    selections: { order: order.options.order.objectIds },
   });
-  const order2 = view(1).rules!.pending!;
-  expect(order2.selectionOptions.order.objectIds).toHaveLength(4);
+  const order2 = view(1).rules!.prompt!;
+  expect(order2.options.order.objectIds).toHaveLength(4);
   game.command(1, {
     type: "rules-input",
-    procedureId: order2.id,
-    selections: { order: order2.selectionOptions.order.objectIds },
+    procedureId: order2.procedureId,
+    selections: { order: order2.options.order.objectIds },
   });
   expect(view().objects[crawler.id].characteristics.power).toBe(
     String(before + 2),
   );
   pass();
-  const pay = view(1).rules!.pending!;
-  expect(pay.kind).toBe("resolve");
+  const pay = view(1).rules!.prompt!;
+  expect(pay.promptKind).toBe("resolution-payment");
   const recovered = JSON.parse(JSON.stringify(game.match));
   // Recover the persisted choice and the already-present mana pool.
   force.mana(recovered, game.match.players[1].id, { U: 1 });
@@ -426,7 +438,7 @@ test("draw ordinals, live Hand size and optional effect payment resume without d
     game.service.execute(
       recovered,
       game.room.participants[1],
-      { type: "rules-input", procedureId: pay.id, confirm: true },
+      { type: "rules-input", procedureId: pay.procedureId, confirm: true },
       game.catalog,
     ).kind,
   ).toBe("accepted");
@@ -440,7 +452,7 @@ test("draw ordinals, live Hand size and optional effect payment resume without d
     game.service.execute(
       recovered,
       game.room.participants[1],
-      { type: "rules-input", procedureId: pay.id, confirm: true },
+      { type: "rules-input", procedureId: pay.procedureId, confirm: true },
       game.catalog,
     ).kind,
   ).toBe("rejected");
@@ -460,13 +472,13 @@ test("Mind's Eye accepts mana sources during its private effect payment and can 
     });
     game.pass();
     game.pass();
-    const choice = game.view(1).rules!.pending!;
-    expect(game.view().rules!.pending).toBeUndefined();
-    expect(choice.stage).toBe("payment");
+    const choice = game.view(1).rules!.prompt!;
+    expect(game.view().rules!.prompt).toBeUndefined();
+    expect(choice.promptKind).toBe("resolution-payment");
     expect(
       game.command(1, {
         type: "rules-input",
-        procedureId: choice.id,
+        procedureId: choice.procedureId,
         confirm: true,
       }).kind,
     ).toBe("rejected");
@@ -481,7 +493,7 @@ test("Mind's Eye accepts mana sources during its private effect payment and can 
     expect(
       game.command(1, {
         type: "rules-input",
-        procedureId: choice.id,
+        procedureId: choice.procedureId,
         confirm: pay,
       }).kind,
     ).toBe("accepted");
@@ -506,8 +518,8 @@ test("Scrawling upkeep draws for each player, Fabricator resets ordinals, and Ve
     abilityId: "draw",
   });
   game.pass();
-  const order = game.view(1).rules!.pending!;
-  game.answer({ order: order.selectionOptions.order.objectIds }, 1);
+  const order = game.view(1).rules!.prompt!;
+  game.answer({ order: order.options.order.objectIds }, 1);
   game.pass();
   game.pass();
   expect(game.handCount()).toBe(9);
@@ -563,7 +575,7 @@ test("Psychosis survives temporarily empty Hand inside a resolving draw sequence
   game.pass();
   expect(
     game.answer({
-      discard: game.view().rules!.pending!.selectionOptions.discard.objectIds,
+      discard: game.view().rules!.prompt!.options.discard.objectIds,
     }).kind,
   ).toBe("accepted");
   expect(game.view().objects[crawler.id].characteristics.toughness).toBe("1");
@@ -609,21 +621,21 @@ for (const pay of [false, true])
         abilityId: "bounce",
       }).kind,
     ).toBe("pending");
-    const pending = g.view().rules!.pending!;
+    const pending = g.view().rules!.prompt!;
     expect(
       g.command(0, {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         targetIds: [kappa.id],
       }).kind,
     ).toBe("accepted");
     expect(g.view().zones.find((z) => z.kind === "stack")!.count).toBe(2);
     g.pass();
-    expect(g.view().rules!.pending!.totalCost.generic).toBe(4);
+    expect(g.view().rules!.prompt!.lockedCost!.generic).toBe(4);
     expect(
       g.command(0, {
         type: "rules-input",
-        procedureId: g.view().rules!.pending!.id,
+        procedureId: g.view().rules!.prompt!.procedureId,
         confirm: pay,
       }).kind,
     ).toBe("accepted");
@@ -646,7 +658,7 @@ test("ward outlives its removed source and counters the captured responsible abi
   });
   g.command(0, {
     type: "rules-input",
-    procedureId: g.view().rules!.pending!.id,
+    procedureId: g.view().rules!.prompt!.procedureId,
     targetIds: [kappa.id],
   });
   g.command(0, { type: "pass-priority" });
@@ -658,7 +670,7 @@ test("ward outlives its removed source and counters the captured responsible abi
   expect(
     g.command(1, {
       type: "rules-input",
-      procedureId: g.view(1).rules!.pending!.id,
+      procedureId: g.view(1).rules!.prompt!.procedureId,
       targetIds: [kappa.id],
     }).kind,
   ).toBe("accepted");
@@ -668,7 +680,7 @@ test("ward outlives its removed source and counters the captured responsible abi
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       confirm: false,
     }).kind,
   ).toBe("accepted");
@@ -696,11 +708,11 @@ test("multiple ward triggers use their controller's ordering and independently p
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       targetIds: [kappa.id],
     }).kind,
   ).toBe("pending");
-  const order = g.view(1).rules!.pending!.selectionOptions.order.objectIds;
+  const order = g.view(1).rules!.prompt!.options.order.objectIds;
   expect(order).toHaveLength(2);
   expect(g.answer({ order }, 1).kind).toBe("accepted");
   for (let i = 0; i < 2; i++) {
@@ -708,7 +720,7 @@ test("multiple ward triggers use their controller's ordering and independently p
     expect(
       g.command(0, {
         type: "rules-input",
-        procedureId: g.view().rules!.pending!.id,
+        procedureId: g.view().rules!.prompt!.procedureId,
         confirm: false,
       }).kind,
     ).toBe("accepted");
@@ -729,10 +741,10 @@ for (const legacySnapshot of [false, true])
       "accepted",
     );
     g.pass();
-    const pending = g.view(1).rules!.pending!;
-    const order = pending.selectionOptions.order.objectIds;
+    const pending = g.view(1).rules!.prompt!;
+    const order = pending.options.order.objectIds;
     const destroyId = order.find((id) =>
-      pending.selectionOptions.order.labels![id].includes("destroy"),
+      pending.options.order.labels![id].includes("destroy"),
     )!;
     expect(
       g.answer(
@@ -762,7 +774,7 @@ for (const legacySnapshot of [false, true])
     expect(
       command(1, {
         type: "rules-input",
-        procedureId: g.view(1).rules!.pending!.id,
+        procedureId: g.view(1).rules!.prompt!.procedureId,
         targetIds: [target.id],
       }).kind,
     ).toBe("accepted");

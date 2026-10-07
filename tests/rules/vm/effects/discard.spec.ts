@@ -22,7 +22,7 @@ test("discard offers only matching cards and binds how many were discarded", asy
       { kind: "gain-life", amount: { binding: "discarded" } },
     ]).kind,
   ).toBe("pending");
-  const option = game.prompt().selectionOptions.discard;
+  const option = game.prompt().options.discard;
   // Only one artifact can be discarded of the two requested.
   expect(option).toMatchObject({
     count: 1,
@@ -84,7 +84,7 @@ test("choose-one offers every complete discard and takes one answer", async () =
   const artifact = game.seed("Sol Ring", "hand");
   const other = game.seed("Negate", "hand");
   game.resolve(thirst);
-  const options = game.prompt().selectionOptions;
+  const options = game.prompt().options;
   expect(Object.keys(options).sort()).toEqual(["artifact", "cards"]);
   // Answering two options at once is rejected.
   expect(
@@ -101,5 +101,5 @@ test("choose-one drops an incomplete option when a complete one exists", async (
   game.seed("Sol Ring", "hand");
   game.resolve(thirst);
   // One card can't complete "discard two"; the artifact option can.
-  expect(Object.keys(game.prompt().selectionOptions)).toEqual(["artifact"]);
+  expect(Object.keys(game.prompt().options)).toEqual(["artifact"]);
 });

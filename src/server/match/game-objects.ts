@@ -25,10 +25,9 @@ export function gameObject(
     currentFace: 0,
     status: { tapped: false },
     counters: [],
-    variables: [],
     attachmentTo: null,
     links: [],
-    casting: null,
+    proposal: null,
   };
 }
 
@@ -58,11 +57,7 @@ export function moveObject(
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
-  if (
-    match.rules &&
-    destination.kind !== "stack" &&
-    destination.kind !== "battlefield"
-  )
+  if (destination.kind !== "stack" && destination.kind !== "battlefield")
     fresh.controllerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;
@@ -78,19 +73,16 @@ export function moveObject(
     fresh.sourceAbilityId = object.sourceAbilityId;
   }
   if (source.kind === "stack" && destination.kind === "battlefield") {
-    fresh.casting = object.casting;
-    fresh.variables = object.variables;
+    fresh.proposal = object.proposal;
   }
   for (const other of Object.values(match.objects)) {
     if (other.attachmentTo === objectId) other.attachmentTo = null;
   }
-  if (match.rules) {
-    delete match.rules.markedDamage?.[objectId];
-    delete match.rules.controlledSinceTurn[objectId];
-    match.rules.temporaryEffects = match.rules.temporaryEffects?.filter(
-      (effect) => effect.sourceId !== objectId,
-    );
-  }
+  delete match.rules.markedDamage?.[objectId];
+  delete match.rules.controlledSinceTurn[objectId];
+  match.rules.temporaryEffects = match.rules.temporaryEffects?.filter(
+    (effect) => effect.sourceId !== objectId,
+  );
   delete match.objects[objectId];
   match.objects[fresh.id] = fresh;
   destination.objectIds.splice(
@@ -98,9 +90,7 @@ export function moveObject(
     0,
     fresh.id,
   );
-  if (destination.kind === "battlefield") {
-    if (match.rules)
-      match.rules.controlledSinceTurn[fresh.id] = match.turn.number;
-  }
+  if (destination.kind === "battlefield")
+    match.rules.controlledSinceTurn[fresh.id] = match.turn.number;
   return fresh;
 }

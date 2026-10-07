@@ -148,7 +148,7 @@ One pure function in `src/server/catalog/` derives these values when the catalog
 
 Each field listed in §2.2 as having no writer is removed from `src/shared/model.ts`, together with the code that only initializes, copies or projects it:
 
-- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11).
+- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11). As built: snapshot version 6 drops a stored manual Match (or one without `rules`) and its rematch proposal, clears ready flags and keeps Decklists.
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
 - `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
 - `GameObject.cannotBeCountered`: removed with the counter effect handler (roadmap issue 7). "Can't be countered" is the DSL v2 static grant `cant-be-countered`, which the counter handler reads from the spell's definition.
@@ -181,6 +181,8 @@ As built (issue #66): `src/server/match/object-visibility.ts` (face-down inspect
   ```
 
   It replaces `GameObject.variables` and `GameObject.casting` (spells), including the duplicated `chosenX`. It carries over from stack to battlefield as `casting` does today (`moveObject`), because permanents can ask how they were cast.
+
+  As built (roadmap issue 10): `GameObject.proposal`, set on every spell and activated ability from the start of its proposal; snapshot version 6 folds stored `variables` and `casting` into it.
 - **Ability objects.** Stack abilities currently get fake characteristics (`typeLine: "Ability"`, `rules-engine.ts:934`). Keep the shape for now. Stack Resolution Runtime work (runtime plan Phase 7) decides whether ability objects keep characteristics.
 
 ## 4.3 Kept

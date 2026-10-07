@@ -20,7 +20,7 @@ test("the TP §18 program: draw, discard, then draw as many as were drawn", asyn
   ]);
   const execution = game.match.rules!.resolving!;
   expect(execution.bindings.drawn).toEqual({ kind: "number", value: 2 });
-  const [card] = game.prompt().selectionOptions.discard.objectIds;
+  const [card] = game.prompt().options.discard.objectIds;
   game.answer({ discard: [card] });
   expect(game.handCount()).toBe(before + 2 - 1 + 2);
 });
@@ -78,6 +78,6 @@ test("the chosen X is a number binding from the start", async () => {
     kind: "number",
     value: 3,
   });
-  game.answer({ discard: game.prompt().selectionOptions.discard.objectIds });
+  game.answer({ discard: game.prompt().options.discard.objectIds });
   expect(game.life(0)).toBe("43");
 });

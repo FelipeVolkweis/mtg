@@ -95,6 +95,19 @@ export interface PendingProcedure {
   totalCost: ManaPool & { generic: number };
   /** A state-based choice: the State-Based Rule that answers it. */
   stateBasedRule?: string;
+  /** A cast or activation in progress (rules-engine-refactor.md §13–16). */
+  proposal?: StackProposal;
+}
+/**
+ * The spell or ability a player is proposing: it is on the Stack from the
+ * start (CR 601.2a, 602.2a). Rolling back restores `base`, the Match as it was
+ * before the proposal began (§16).
+ */
+export interface StackProposal {
+  stackObjectId: string;
+  /** The total cost is locked (CR 601.2f); abort is no longer offered. */
+  locked: boolean;
+  base: import("./model.js").MatchState;
 }
 export interface SelectionOption {
   count: number;

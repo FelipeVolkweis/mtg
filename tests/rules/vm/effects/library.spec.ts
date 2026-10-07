@@ -20,9 +20,9 @@ test("scry puts chosen cards on the bottom, then orders the rest on top", async 
   // The chooser sees the cards; the opponent doesn't.
   expect(game.view(0).objects[a]).toBeDefined();
   expect(game.view(1).objects[a]).toBeUndefined();
-  expect(game.prompt().selectionOptions.bottom.objectIds).toEqual([a, b, c]);
+  expect(game.prompt().options.bottom.objectIds).toEqual([a, b, c]);
   expect(game.answer({ bottom: [b] }).kind).toBe("pending");
-  expect(game.prompt().selectionOptions.top.objectIds).toEqual([a, c]);
+  expect(game.prompt().options.top.objectIds).toEqual([a, c]);
   // Ordering must name every remaining card.
   expect(game.answer({ top: [c] }).kind).toBe("rejected");
   expect(game.answer({ top: [c, a] }).kind).toBe("accepted");
@@ -58,7 +58,7 @@ test("select one matching card to the Hand, revealed, and the rest to the bottom
       rest: { to: { zone: "library", position: "bottom" }, order: "keep" },
     },
   ]);
-  const option = game.prompt().selectionOptions.select;
+  const option = game.prompt().options.select;
   expect(option.objectIds).toContain(artifact.id);
   expect(option.minCount).toBe(0);
   expect(game.answer({ select: [artifact.id] }).kind).toBe("accepted");

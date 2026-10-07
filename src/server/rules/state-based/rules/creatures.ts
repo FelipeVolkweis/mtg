@@ -27,7 +27,7 @@ export const lethalDamage: StateBasedRule = {
             value !== undefined &&
             value > 0n &&
             !hasKeyword(query, object, "Indestructible") &&
-            BigInt(query.match.rules!.markedDamage?.[object.id] ?? 0) >= value
+            BigInt(query.match.rules.markedDamage?.[object.id] ?? 0) >= value
           );
         })
         .map((object) => ({ kind: "graveyard", objectId: object.id })),

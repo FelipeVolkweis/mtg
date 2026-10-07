@@ -100,12 +100,12 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
   pass(); // Resolve the death draw during cleanup.
   pass(); // A further cleanup requires discarding the newly drawn eighth card.
-  expect(view().rules!.pending!.kind).toBe("cleanup");
-  const pending = view().rules!.pending!;
+  expect(view().rules!.prompt!.promptKind).toBe("cleanup-discard");
+  const pending = view().rules!.prompt!;
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
-    selections: { discard: [pending.selectionOptions.discard.objectIds[0]] },
+    procedureId: pending.procedureId,
+    selections: { discard: [pending.options.discard.objectIds[0]] },
   });
   expect(view().turn.number).toBe(2);
   expect(view().rules!.markedDamage).toEqual({});

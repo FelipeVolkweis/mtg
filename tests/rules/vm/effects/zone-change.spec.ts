@@ -111,7 +111,7 @@ test("a chosen object waits for its controller's selection and resumes once", as
     ]).kind,
   ).toBe("pending");
   const prompt = game.prompt();
-  expect(prompt.selectionOptions.select.objectIds.sort()).toEqual(
+  expect(prompt.options.select.objectIds.sort()).toEqual(
     [first.id, second.id].sort(),
   );
   // Choosing two objects for a one-object choice is rejected.

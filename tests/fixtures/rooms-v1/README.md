@@ -10,6 +10,11 @@ upgrades them with `upgradeRoom` and continues play from each.
 | `mid-resolution` | Thirst for Knowledge waits for its discard choice            |
 | `tokens`         | Myr Battlesphere's entry trigger has created four Myr tokens |
 | `stack-ability`  | Mind Stone's draw ability waits on the Stack                 |
+| `manual`         | A legacy manual Match with a pending rematch proposal        |
+
+`manual` is `mid-casting` rewritten by hand into the shape legacy Rooms stored
+(`mode: "manual"`, no `rules` or Priority, manual-era `layout`, `diceRolls` and
+`openingHandActions`): no supported command produces a manual Match any more.
 
 Each `<name>.catalog.json` holds the fixture-only cards (the generated
 commander and Islands) that are not in the released catalog.

@@ -800,6 +800,8 @@ The current `cancel-procedure` action is a **UI abort**, not a rules concept.
 
 Tests that use `cancel-procedure` are classified Change in the characterization file headers (`tests/rules/characterization/`) and rechecked against this rule in roadmap issue 10.
 
+**Decided (2026-10-07, roadmap issue 10):** the rules rollback after cost lock is a separate player action, `reverse-proposal` ("Can't pay — reverse"), offered only once the total cost is locked; `cancel-procedure` stays the before-lock UI abort. Both restore the snapshot of the Match taken when the proposal began, so mana abilities activated during the proposal are reversed too. The engine can't tell a player who can't pay from one who could, so the reversal is accepted on the player's word.
+
 ---
 
 # 17. Special Action Runtime
