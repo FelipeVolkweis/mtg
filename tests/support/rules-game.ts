@@ -4,6 +4,7 @@ import { readCatalog } from "../../src/server/catalog/catalog-files";
 import { force } from "./force";
 import { MatchService } from "../../src/server/match/match.service";
 import { matchView } from "../../src/server/match/match-view";
+import { currentSnapshotVersion } from "../../src/server/room/room-upgrade";
 import type {
   Catalog,
   MatchAction,
@@ -28,7 +29,7 @@ export function emptyRoom(): RoomState {
     },
   };
   return {
-    snapshotVersion: 3,
+    snapshotVersion: currentSnapshotVersion,
     id: randomUUID(),
     invite: "",
     revision: 0,

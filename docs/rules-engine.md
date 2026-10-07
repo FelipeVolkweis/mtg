@@ -187,9 +187,11 @@ there is no external Magic rules engine package in
 
 Pending procedures, trigger queues, combat state, resolving effects, mana pools,
 and other gameplay data are stored on `MatchState.rules`. Stored abilities and
-resolution queues hold Core AST effects since Room snapshot version 3;
-[upgradeRoom](../src/server/room/room-upgrade.ts) lifts the version 1 effects
-of older Rooms ([lift-v1-effects.ts](../src/server/room/lift-v1-effects.ts)). A pending procedure
+resolution queues hold Core AST effects. Rooms stored below snapshot version 7
+are deleted at startup (ADR-0019), so
+[upgradeRoom](../src/server/room/room-upgrade.ts) reads version 7 and refuses
+any other version; a later change to the stored shape adds its upgrade step
+there. A pending procedure
 contains the responsible Match Player, its stage, a fresh identifier, and the
 legal selection data needed to validate its answer; a cast or activation also
 holds its rollback snapshot. This lets the Room persist
