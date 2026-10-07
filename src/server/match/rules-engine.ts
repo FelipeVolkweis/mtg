@@ -58,6 +58,7 @@ import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
 import { StackProposalProcedure } from "../rules/proposals/stack-proposal.js";
+import { procedureHandler } from "../rules/procedures/registry.js";
 import {
   costOptions,
   determineCost,
@@ -129,42 +130,20 @@ export class RulesEngine implements RulesMutator {
       const pending = this.rules.pending;
       if (pending.playerId !== player.id)
         throw new Error("Another player must complete the pending choice.");
-      if (action.type === "rules-input" && action.procedureId === pending.id)
-        this.input(player.id, action);
+      const handler = procedureHandler(pending);
+      const current =
+        "procedureId" in action && action.procedureId === pending.id;
+      if (action.type === "rules-input" && current) handler.input(this, action);
       else if (
         action.type === "activate-ability" &&
-        pending.stage === "payment"
+        handler.manaWindow(pending)
       )
         this.activate(player.id, action, true);
-      else if (
-        action.type === "cancel-procedure" &&
-        action.procedureId === pending.id &&
-        pending.proposal
-      )
-        new StackProposalProcedure(this).cancel();
-      else if (
-        action.type === "reverse-proposal" &&
-        action.procedureId === pending.id &&
-        pending.proposal
-      )
-        new StackProposalProcedure(this).reverse();
-      else if (
-        action.type === "cancel-procedure" &&
-        action.procedureId === pending.id &&
-        pending.kind !== "commander-return" &&
-        pending.kind !== "cleanup" &&
-        pending.kind !== "resolve" &&
-        pending.kind !== "trigger-order" &&
-        pending.kind !== "trigger-target" &&
-        pending.kind !== "declare-attackers" &&
-        pending.kind !== "declare-blockers" &&
-        pending.kind !== "combat-damage"
-      ) {
-        delete this.rules.pending;
-        if (pending.kind === "attack-payment")
-          new Combat(this).beginAttackers();
-        else this.checkpoint({ playerId: player.id });
-      } else
+      else if (action.type === "cancel-procedure" && current && handler.abort)
+        handler.abort(this);
+      else if (action.type === "reverse-proposal" && current && handler.reverse)
+        handler.reverse(this);
+      else
         throw new Error(
           "Complete the current procedure using its latest identifier.",
         );
@@ -260,7 +239,8 @@ export class RulesEngine implements RulesMutator {
     const pending = this.rules.pending;
     if (
       pending &&
-      (pending.playerId !== playerId || pending.stage !== "payment")
+      (pending.playerId !== playerId ||
+        !procedureHandler(pending).manaWindow(pending))
     )
       return [];
     if (!pending && this.match.priority?.playerId !== playerId) return [];
@@ -341,22 +321,9 @@ export class RulesEngine implements RulesMutator {
     }
     return actions;
   }
+  /** The choices a pending procedure offers its player. */
   selectionOptions(pending: PendingProcedure): Record<string, SelectionOption> {
-    if (pending.options) return pending.options ?? {};
-    if (pending.kind === "cleanup")
-      return {
-        discard: {
-          count:
-            this.zone("hand", pending.playerId).objectIds.length -
-            this.maximumHandSize(pending.playerId),
-          objectIds: [...this.zone("hand", pending.playerId).objectIds],
-        },
-      };
-    if (pending.kind !== "cast" && pending.kind !== "activate") return {};
-    return costOptions(this, {
-      ...this.costProposal(pending),
-      totalCost: pending.totalCost,
-    });
+    return procedureHandler(pending).options(this, pending);
   }
   /** What the Cost Runtime determines and pays for a cast or activation. */
   costProposal(pending: PendingProcedure): CostProposal {
@@ -685,71 +652,6 @@ export class RulesEngine implements RulesMutator {
         );
       if (!duringPayment) this.checkpoint({ playerId });
     }
-  }
-  input(
-    playerId: string,
-    action: Extract<MatchAction, { type: "rules-input" }>,
-  ) {
-    const pending = this.rules.pending!;
-    if (pending.stateBasedRule) {
-      new PriorityCheckpoint(this).answerStateBased(action);
-      return;
-    }
-    if (pending.kind === "attack-payment") {
-      new Combat(this).payAttackers(action);
-      return;
-    }
-    if (pending.kind === "combat-damage") {
-      new Combat(this).answerDamage(action);
-      return;
-    }
-    if (
-      pending.kind === "declare-attackers" ||
-      pending.kind === "declare-blockers"
-    ) {
-      new Combat(this).answer(action);
-      return;
-    }
-    if (pending.kind === "trigger-target") {
-      new PriorityCheckpoint(this).answerTriggerTarget(action);
-      return;
-    }
-    if (pending.kind === "trigger-order") {
-      new PriorityCheckpoint(this).answerTriggerOrder(action);
-      return;
-    }
-    if (pending.kind === "resolve") {
-      new StackResolutionRuntime(this).answer(action);
-      return;
-    }
-    if (pending.proposal) {
-      new StackProposalProcedure(this).input(action);
-      return;
-    }
-    if (action.variables)
-      throw new Error("The chosen Variable Values are locked.");
-    if (pending.kind === "cleanup") {
-      const hand = this.zone("hand", playerId);
-      const ids = action.selections?.discard ?? [];
-      if (
-        ids.length !== hand.objectIds.length - this.maximumHandSize(playerId) ||
-        new Set(ids).size !== ids.length ||
-        ids.some((id) => !hand.objectIds.includes(id))
-      )
-        throw new Error("Choose the required cards to discard for cleanup.");
-      for (const id of ids)
-        this.propose({
-          kind: "zone-change",
-          objectId: id,
-          to: this.zone("graveyard", playerId),
-        });
-      delete this.rules.pending;
-      this.cleanup();
-      return;
-    }
-    throw new Error(
-      "Complete the current procedure using its latest identifier.",
-    );
   }
   targeted(stack: GameObject) {
     for (const id of stack.resolution?.targetIds ?? []) {

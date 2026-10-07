@@ -7,29 +7,10 @@ import type { MatchAction, MatchState } from "../../../src/shared/model";
 import "../../support/round-trip";
 import { rulesGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { logical } from "../../support/logical";
 
 const stack = (match: MatchState) =>
   match.zones.find((z) => z.kind === "stack")!.objectIds;
-/** What a player can tell about the Match, without generated identifiers. */
-const logical = (match: MatchState) => ({
-  zones: match.zones.map((zone) => ({
-    kind: zone.kind,
-    ownerId: zone.ownerId,
-    names: zone.objectIds.map((id) => match.objects[id].characteristics.name),
-  })),
-  tapped: Object.values(match.objects)
-    .filter((o) => o.status.tapped)
-    .map((o) => o.characteristics.name)
-    .sort(),
-  pending: match.rules.pending && {
-    kind: match.rules.pending.kind,
-    stage: match.rules.pending.stage,
-    totalCost: match.rules.pending.totalCost,
-  },
-  mana: match.rules.mana,
-  life: match.players.map((p) => p.life),
-  priority: match.priority,
-});
 /** The Match as it was, apart from the revision every accepted command moves. */
 const unchanged = (match: MatchState, before: MatchState) =>
   expect(match).toEqual({ ...before, revision: match.revision });
