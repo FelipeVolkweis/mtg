@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "7215ca87-bbff-4c14-a1f5-de5ddd97c875",
-  "canonicalName": "Spitfire Lagac",
-  "defaultPrintingId": "30f600cd-b696-4f49-9cbc-5a33aa43d04c",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Spitfire Lagac",
-      "manaCost": "{3}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Lizard",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Lizard"
-      ],
-      "keywords": [
-        "Landfall"
-      ],
-      "rulesText": "Landfall — Whenever a land you control enters, this creature deals 1 damage to each opponent.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Landfall — Whenever a land you control enters, this creature deals 1 damage to each opponent.",
-  "keywords": [
-    "Landfall"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Spitfire Lagac",
+        "manaCost": "{3}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Lizard"
+        ],
+        "keywords": [
+          "Landfall"
+        ],
+        "rulesText": "Landfall — Whenever a land you control enters, this creature deals 1 damage to each opponent.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "30f600cd-b696-4f49-9cbc-5a33aa43d04c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

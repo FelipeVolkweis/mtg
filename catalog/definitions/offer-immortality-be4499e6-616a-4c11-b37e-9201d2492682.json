@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "be4499e6-616a-4c11-b37e-9201d2492682",
-  "canonicalName": "Offer Immortality",
-  "defaultPrintingId": "6d5802ed-507d-4a52-90e3-d989cd61961b",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Offer Immortality",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target creature gains deathtouch and indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)"
-    }
-  ],
-  "oracleText": "Target creature gains deathtouch and indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Offer Immortality",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target creature gains deathtouch and indestructible until end of turn. (Damage and effects that say \"destroy\" don't destroy it.)"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "6d5802ed-507d-4a52-90e3-d989cd61961b"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "c26887e1-27f4-4550-921b-53460e43c079",
-  "canonicalName": "Undead Augur",
-  "defaultPrintingId": "63df1c6a-98b8-41c1-ac06-c816b50cb07c",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Undead Augur",
-      "manaCost": "{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie Wizard",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature or another Zombie you control dies, you draw a card and lose 1 life.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever this creature or another Zombie you control dies, you draw a card and lose 1 life.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Undead Augur",
+        "manaCost": "{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature or another Zombie you control dies, you draw a card and lose 1 life.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "63df1c6a-98b8-41c1-ac06-c816b50cb07c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

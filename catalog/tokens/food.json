@@ -1,0 +1,42 @@
+{
+  "id": "food",
+  "characteristics": {
+    "name": "Food",
+    "colors": [],
+    "supertypes": [],
+    "types": [
+      "Artifact"
+    ],
+    "subtypes": [
+      "Food"
+    ],
+    "keywords": [],
+    "rulesText": "{2}, {T}, Sacrifice this token: You gain 3 life."
+  },
+  "abilities": [
+    {
+      "id": "gain-life",
+      "kind": "activated",
+      "costs": [
+        {
+          "kind": "mana",
+          "symbols": [
+            "{2}"
+          ]
+        },
+        {
+          "kind": "tap-source"
+        },
+        {
+          "kind": "sacrifice-source"
+        }
+      ],
+      "effects": [
+        {
+          "kind": "gain-life",
+          "amount": 3
+        }
+      ]
+    }
+  ]
+}

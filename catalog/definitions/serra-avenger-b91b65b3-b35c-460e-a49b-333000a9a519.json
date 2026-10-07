@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "b91b65b3-b35c-460e-a49b-333000a9a519",
-  "canonicalName": "Serra Avenger",
-  "defaultPrintingId": "fd18cc57-9c28-4cd5-9ac0-389c4992eaff",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Serra Avenger",
-      "manaCost": "{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Vigilance"
-      ],
-      "rulesText": "You can't cast Serra Avenger during your first, second, or third turns of the game.\nFlying, vigilance",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "You can't cast Serra Avenger during your first, second, or third turns of the game.\nFlying, vigilance",
-  "keywords": [
-    "Flying",
-    "Vigilance"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Serra Avenger",
+        "manaCost": "{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance"
+        ],
+        "rulesText": "You can't cast Serra Avenger during your first, second, or third turns of the game.\nFlying, vigilance",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "fd18cc57-9c28-4cd5-9ac0-389c4992eaff"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

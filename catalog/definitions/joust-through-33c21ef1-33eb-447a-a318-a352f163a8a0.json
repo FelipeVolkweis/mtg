@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "33c21ef1-33eb-447a-a318-a352f163a8a0",
-  "canonicalName": "Joust Through",
-  "defaultPrintingId": "846adb38-f9bb-4fed-b8ed-36ec7885f989",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Joust Through",
-      "manaCost": "{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Joust Through deals 3 damage to target attacking or blocking creature. You gain 1 life."
-    }
-  ],
-  "oracleText": "Joust Through deals 3 damage to target attacking or blocking creature. You gain 1 life.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Joust Through",
+        "manaCost": "{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Joust Through deals 3 damage to target attacking or blocking creature. You gain 1 life."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "846adb38-f9bb-4fed-b8ed-36ec7885f989"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

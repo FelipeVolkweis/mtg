@@ -1,45 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "feb244f8-bcb1-44cf-9940-2719221a7309",
-  "canonicalName": "Vampire Nighthawk",
-  "defaultPrintingId": "7aff07f9-9528-4149-9af0-f4e3c66c9dc5",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Vampire Nighthawk",
-      "manaCost": "{1}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Shaman",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Shaman"
-      ],
-      "keywords": [
-        "Deathtouch",
-        "Flying",
-        "Lifelink"
-      ],
-      "rulesText": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
-  "keywords": [
-    "Deathtouch",
-    "Flying",
-    "Lifelink"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vampire Nighthawk",
+        "manaCost": "{1}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Shaman"
+        ],
+        "keywords": [
+          "Deathtouch",
+          "Flying",
+          "Lifelink"
+        ],
+        "rulesText": "Flying\nDeathtouch (Any amount of damage this deals to a creature is enough to destroy it.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "7aff07f9-9528-4149-9af0-f4e3c66c9dc5"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

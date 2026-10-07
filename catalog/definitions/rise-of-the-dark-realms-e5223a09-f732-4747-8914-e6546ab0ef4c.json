@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "e5223a09-f732-4747-8914-e6546ab0ef4c",
-  "canonicalName": "Rise of the Dark Realms",
-  "defaultPrintingId": "8645bf0c-631f-4003-bd24-3e069ae23513",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Rise of the Dark Realms",
-      "manaCost": "{7}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 9,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Put all creature cards from all graveyards onto the battlefield under your control."
-    }
-  ],
-  "oracleText": "Put all creature cards from all graveyards onto the battlefield under your control.",
-  "keywords": [],
-  "manaValue": 9,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rise of the Dark Realms",
+        "manaCost": "{7}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 9,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Put all creature cards from all graveyards onto the battlefield under your control."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "8645bf0c-631f-4003-bd24-3e069ae23513"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

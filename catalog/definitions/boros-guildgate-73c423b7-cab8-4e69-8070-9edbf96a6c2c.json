@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "73c423b7-cab8-4e69-8070-9edbf96a6c2c",
-  "canonicalName": "Boros Guildgate",
-  "defaultPrintingId": "3e3c74ea-40e9-4ad9-a491-c208403b68ad",
-  "form": "normal",
-  "colorIdentity": [
-    "R",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Boros Guildgate",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land — Gate",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Gate"
-      ],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\n{T}: Add {R} or {W}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {R} or {W}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Boros Guildgate",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Gate"
+        ],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\n{T}: Add {R} or {W}."
+      }
+    ],
+    "colorIdentity": [
+      "R",
+      "W"
+    ],
+    "defaultPrintingId": "3e3c74ea-40e9-4ad9-a491-c208403b68ad"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

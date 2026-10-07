@@ -1,101 +1,79 @@
 {
+  "catalogVersion": 2,
   "id": "24aebda0-315f-4d2f-8bd9-00bbaf5bd76a",
-  "canonicalName": "Remote Isle",
-  "defaultPrintingId": "444425b6-8529-430d-b74c-407ce462ad92",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Remote Isle",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Cycling"
-      ],
-      "rulesText": "This land enters tapped.\n{T}: Add {U}.\nCycling {2} ({2}, Discard this card: Draw a card.)"
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {U}.\nCycling {2} ({2}, Discard this card: Draw a card.)",
-  "keywords": [
-    "Cycling"
-  ],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "enter-tapped",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "enter-tapped"
-          }
-        ]
-      },
-      "description": "This land enters tapped."
-    },
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Remote Isle",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "U"
-            ],
-            "quantity": 1
-          }
+        "subtypes": [],
+        "keywords": [
+          "Cycling"
         ],
-        "manaAbility": true
+        "rulesText": "This land enters tapped.\n{T}: Add {U}.\nCycling {2} ({2}, Discard this card: Draw a card.)"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "444425b6-8529-430d-b74c-407ce462ad92"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enter-tapped",
+        "description": "This land enters tapped.",
+        "kind": "replacement",
+        "event": {
+          "event": "would-enter",
+          "object": "source"
+        },
+        "replace": {
+          "kind": "enter-tapped"
+        }
       },
-      "description": "{T}: Add {U}."
-    },
-    {
-      "id": "cycling",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "hand",
-      "rules": {
-        "costs": [
-          {
-            "kind": "mana",
-            "symbols": [
-              "{2}"
-            ]
-          },
-          {
-            "kind": "discard-source"
-          }
-        ],
-        "effects": [
-          {
-            "kind": "draw",
-            "count": 1
-          }
-        ]
+      {
+        "id": "mana",
+        "description": "{T}: Add {U}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "U"
+          ]
+        }
       },
-      "keyword": "cycling",
-      "description": "Cycling {2} ({2}, Discard this card: Draw a card.)"
-    }
-  ]
+      {
+        "id": "cycling",
+        "description": "Cycling {2} ({2}, Discard this card: Draw a card.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "cycling",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{2}"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

@@ -1,140 +1,137 @@
 {
+  "catalogVersion": 2,
   "id": "e91240bc-4a13-4131-9379-5ddac6555f4a",
-  "canonicalName": "Adaptive Omnitool",
-  "defaultPrintingId": "9e84f840-d7c6-4a82-8891-3d12281020ee",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Adaptive Omnitool",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact \u2014 Equipment",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Equip"
-      ],
-      "rulesText": "Equipped creature gets +1/+1 for each artifact you control.\nWhenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\nEquip {3}"
-    }
-  ],
-  "oracleText": "Equipped creature gets +1/+1 for each artifact you control.\nWhenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\nEquip {3}",
-  "keywords": [
-    "Equip"
-  ],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "equipped-bonus",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "attached": true,
-            "types": [
-              "Creature"
-            ]
-          },
-          "changes": [
-            {
-              "kind": "add-stats",
-              "power": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
-                }
-              },
-              "toughness": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Adaptive Omnitool",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "rulesText": "Equipped creature gets +1/+1 for each artifact you control.\nWhenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.\nEquip {3}"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "9e84f840-d7c6-4a82-8891-3d12281020ee"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "equipped-bonus",
+        "description": "Equipped creature gets +1/+1 for each artifact you control.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "is": {
+                  "attachedTo": "source"
                 }
               }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                },
+                "toughness": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "equip",
+        "description": "Equip {3}",
+        "kind": "keyword",
+        "keyword": {
+          "name": "equip",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{3}"
+              ]
             }
           ]
         }
       },
-      "description": "Equipped creature gets +1/+1 for each artifact you control."
-    },
-    {
-      "id": "equip",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "mana",
-            "symbols": [
-              "{3}"
-            ]
-          }
-        ],
-        "effects": [
-          {
-            "kind": "attach",
-            "to": "target"
-          }
-        ],
-        "timing": "sorcery",
-        "target": {
-          "zone": "battlefield",
-          "types": [
-            "Creature"
-          ],
-          "controller": "you"
-        }
-      },
-      "description": "Equip {3}"
-    },
-    {
-      "id": "attack-inspection",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "inspect",
-            "count": 6,
-            "select": {
-              "zone": "library",
-              "types": [
-                "Artifact"
-              ]
-            },
-            "randomBottom": true,
-            "revealSelected": true
-          }
-        ],
+      {
+        "id": "attack-inspection",
+        "description": "Whenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
+        "kind": "triggered",
         "trigger": {
-          "event": "attack",
-          "filter": {
+          "event": "attacks",
+          "attacker": {
             "zone": "battlefield",
-            "attached": true
+            "is": {
+              "attachedTo": "source"
+            }
           }
-        }
-      },
-      "description": "Whenever equipped creature attacks, look at the top six cards of your library. You may reveal an artifact card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
-    }
-  ]
+        },
+        "effects": [
+          {
+            "kind": "library-sequence",
+            "player": "you",
+            "count": 6,
+            "operation": "look",
+            "select": {
+              "filter": {
+                "zone": "library",
+                "type": [
+                  "Artifact"
+                ]
+              },
+              "max": 1,
+              "to": "hand",
+              "reveal": true
+            },
+            "rest": {
+              "to": {
+                "zone": "library",
+                "position": "bottom"
+              },
+              "order": "random"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }

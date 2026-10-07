@@ -1,94 +1,92 @@
 {
+  "catalogVersion": 2,
   "id": "e89e1fae-bac3-4cc0-a233-24b9e08a5290",
-  "canonicalName": "Fall from Favor",
-  "defaultPrintingId": "cd200502-84ad-40af-829d-ccb15859c226",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Fall from Favor",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment \u2014 Aura",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant"
-      ],
-      "rulesText": "Enchant creature\nWhen this Aura enters, tap enchanted creature and you become the monarch.\nEnchanted creature doesn't untap during its controller's untap step unless that player is the monarch."
-    }
-  ],
-  "oracleText": "Enchant creature\nWhen this Aura enters, tap enchanted creature and you become the monarch.\nEnchanted creature doesn't untap during its controller's untap step unless that player is the monarch.",
-  "keywords": [
-    "Enchant"
-  ],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "enchant",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "keyword": "Enchant",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "aura": {
-          "zone": "battlefield",
-          "types": [
-            "Creature"
-          ]
-        }
-      },
-      "description": "Enchant creature"
-    },
-    {
-      "id": "entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "tap-attached"
-          },
-          {
-            "kind": "become-monarch"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fall from Favor",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
         ],
-        "trigger": {
-          "event": "enter",
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "rulesText": "Enchant creature\nWhen this Aura enters, tap enchanted creature and you become the monarch.\nEnchanted creature doesn't untap during its controller's untap step unless that player is the monarch."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "cd200502-84ad-40af-829d-ccb15859c226"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enchant",
+        "description": "Enchant creature",
+        "kind": "keyword",
+        "keyword": {
+          "name": "enchant",
           "filter": {
             "zone": "battlefield",
-            "self": "only"
+            "type": [
+              "Creature"
+            ]
           }
         }
       },
-      "description": "When this Aura enters, tap enchanted creature and you become the monarch."
-    },
-    {
-      "id": "untap-restriction",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "monarchUntap": true
+      {
+        "id": "entry",
+        "description": "When this Aura enters, tap enchanted creature and you become the monarch.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "tap",
+            "objects": {
+              "attachedTo": "source"
+            }
+          },
+          {
+            "kind": "become-monarch",
+            "player": "you"
+          }
+        ]
       },
-      "description": "Enchanted creature doesn't untap during its controller's untap step unless that player is the monarch."
-    }
-  ]
+      {
+        "id": "untap-restriction",
+        "description": "Enchanted creature doesn't untap during its controller's untap step unless that player is the monarch.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "untap-restriction",
+            "objects": {
+              "attachedTo": "source"
+            },
+            "unless": {
+              "monarch": {
+                "controllerOf": {
+                  "attachedTo": "source"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
 }

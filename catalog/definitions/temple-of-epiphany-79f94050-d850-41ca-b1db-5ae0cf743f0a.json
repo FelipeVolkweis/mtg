@@ -1,35 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "79f94050-d850-41ca-b1db-5ae0cf743f0a",
-  "canonicalName": "Temple of Epiphany",
-  "defaultPrintingId": "224e8255-7bc6-44a2-86af-14f8446f4f77",
-  "form": "normal",
-  "colorIdentity": [
-    "R",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Temple of Epiphany",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Scry"
-      ],
-      "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {R}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {R}.",
-  "keywords": [
-    "Scry"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Temple of Epiphany",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Scry"
+        ],
+        "rulesText": "This land enters tapped.\nWhen this land enters, scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{T}: Add {U} or {R}."
+      }
+    ],
+    "colorIdentity": [
+      "R",
+      "U"
+    ],
+    "defaultPrintingId": "224e8255-7bc6-44a2-86af-14f8446f4f77"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

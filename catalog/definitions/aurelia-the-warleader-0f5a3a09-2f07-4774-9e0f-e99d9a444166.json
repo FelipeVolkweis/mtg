@@ -1,48 +1,44 @@
 {
+  "catalogVersion": 2,
   "id": "0f5a3a09-2f07-4774-9e0f-e99d9a444166",
-  "canonicalName": "Aurelia, the Warleader",
-  "defaultPrintingId": "bc6ffc1c-575b-4116-83c9-d13b29886c35",
-  "form": "normal",
-  "colorIdentity": [
-    "R",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Aurelia, the Warleader",
-      "manaCost": "{2}{R}{R}{W}{W}",
-      "colors": [
-        "R",
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Angel",
-      "manaValue": 6,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Vigilance",
-        "Haste"
-      ],
-      "rulesText": "Flying, vigilance, haste\nWhenever Aurelia attacks for the first time each turn, untap all creatures you control. After this phase, there is an additional combat phase.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying, vigilance, haste\nWhenever Aurelia attacks for the first time each turn, untap all creatures you control. After this phase, there is an additional combat phase.",
-  "keywords": [
-    "Flying",
-    "Vigilance",
-    "Haste"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Aurelia, the Warleader",
+        "manaCost": "{2}{R}{R}{W}{W}",
+        "colors": [
+          "R",
+          "W"
+        ],
+        "manaValue": 6,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance",
+          "Haste"
+        ],
+        "rulesText": "Flying, vigilance, haste\nWhenever Aurelia attacks for the first time each turn, untap all creatures you control. After this phase, there is an additional combat phase.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R",
+      "W"
+    ],
+    "defaultPrintingId": "bc6ffc1c-575b-4116-83c9-d13b29886c35"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

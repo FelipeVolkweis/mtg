@@ -1,38 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "f0691d46-5bf4-4617-8a0a-19d17afb7219",
-  "canonicalName": "Starlight Snare",
-  "defaultPrintingId": "74fb19b2-4f6c-4cbd-8756-a7eb5c7c9ef6",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Starlight Snare",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant"
-      ],
-      "rulesText": "Enchant creature\nWhen this Aura enters, tap enchanted creature.\nEnchanted creature doesn't untap during its controller's untap step."
-    }
-  ],
-  "oracleText": "Enchant creature\nWhen this Aura enters, tap enchanted creature.\nEnchanted creature doesn't untap during its controller's untap step.",
-  "keywords": [
-    "Enchant"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Starlight Snare",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "rulesText": "Enchant creature\nWhen this Aura enters, tap enchanted creature.\nEnchanted creature doesn't untap during its controller's untap step."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "74fb19b2-4f6c-4cbd-8756-a7eb5c7c9ef6"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

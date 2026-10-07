@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "13279222-422d-4447-9451-2463b0c714c6",
-  "canonicalName": "Garruk's Packleader",
-  "defaultPrintingId": "0975d711-aebe-4e31-8e27-19368ec9873c",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Garruk's Packleader",
-      "manaCost": "{4}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Beast",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Beast"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever another creature you control with power 3 or greater enters, you may draw a card.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Whenever another creature you control with power 3 or greater enters, you may draw a card.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Garruk's Packleader",
+        "manaCost": "{4}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever another creature you control with power 3 or greater enters, you may draw a card.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "0975d711-aebe-4e31-8e27-19368ec9873c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

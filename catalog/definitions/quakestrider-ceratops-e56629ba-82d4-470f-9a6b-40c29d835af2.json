@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "e56629ba-82d4-470f-9a6b-40c29d835af2",
-  "canonicalName": "Quakestrider Ceratops",
-  "defaultPrintingId": "067f72c2-ead6-4879-bc9d-696c9f87c0b2",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Quakestrider Ceratops",
-      "manaCost": "{3}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "12",
-      "toughness": "8"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Quakestrider Ceratops",
+        "manaCost": "{3}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "12",
+        "toughness": "8"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "067f72c2-ead6-4879-bc9d-696c9f87c0b2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

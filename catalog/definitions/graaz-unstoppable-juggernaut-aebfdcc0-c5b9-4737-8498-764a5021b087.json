@@ -1,101 +1,117 @@
 {
+  "catalogVersion": 2,
   "id": "aebfdcc0-c5b9-4737-8498-764a5021b087",
-  "canonicalName": "Graaz, Unstoppable Juggernaut",
-  "defaultPrintingId": "08947a4e-03cd-4e02-8eba-8f4087fad414",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Graaz, Unstoppable Juggernaut",
-      "manaCost": "{8}",
-      "colors": [],
-      "typeLine": "Legendary Artifact Creature \u2014 Juggernaut",
-      "manaValue": 8,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Juggernaut"
-      ],
-      "keywords": [],
-      "rulesText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
-      "power": "7",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
-  "keywords": [],
-  "manaValue": 8,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "juggernauts",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Creature"
-            ],
-            "subtypes": [
-              "Juggernaut"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Graaz, Unstoppable Juggernaut",
+        "manaCost": "{8}",
+        "colors": [],
+        "manaValue": 8,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Juggernaut"
+        ],
+        "keywords": [],
+        "rulesText": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.\nOther creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
+        "power": "7",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "08947a4e-03cd-4e02-8eba-8f4087fad414"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "juggernauts",
+        "description": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "attack-requirement",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "subtype": [
+                  "Juggernaut"
+                ],
+                "controller": "you"
+              }
+            }
+          },
+          {
+            "kind": "block-restriction",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "subtype": [
+                  "Juggernaut"
+                ],
+                "controller": "you"
+              }
+            },
+            "by": {
+              "subtype": "Wall"
+            }
+          }
+        ]
+      },
+      {
+        "id": "other-creatures",
+        "description": "Other creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you"
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-types",
+                "subtypes": [
+                  "Juggernaut"
+                ]
+              },
+              {
+                "kind": "set-base-stats",
+                "power": 5,
+                "toughness": 3
+              }
             ]
-          },
-          "changes": [
-            {
-              "kind": "grant-keyword",
-              "keyword": "Must attack"
-            },
-            {
-              "kind": "grant-keyword",
-              "keyword": "Cannot be blocked by Walls"
-            }
-          ]
-        }
-      },
-      "description": "Juggernauts you control attack each combat if able.\nJuggernauts you control can't be blocked by Walls."
-    },
-    {
-      "id": "other-creatures",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Creature"
-            ],
-            "self": "exclude"
-          },
-          "changes": [
-            {
-              "kind": "add-types",
-              "subtypes": [
-                "Juggernaut"
-              ]
-            },
-            {
-              "kind": "set-stats",
-              "power": 5,
-              "toughness": 3
-            }
-          ]
-        }
-      },
-      "description": "Other creatures you control have base power and toughness 5/3 and are Juggernauts in addition to their other creature types."
-    }
-  ]
+          }
+        ]
+      }
+    ]
+  }
 }

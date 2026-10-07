@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "9f2e7533-cfc1-4dd8-a9b8-09cdc712ef2f",
-  "canonicalName": "Hulking Raptor",
-  "defaultPrintingId": "10ddd8c1-6424-41cf-be1f-5fdc0b70a787",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Hulking Raptor",
-      "manaCost": "{2}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Dinosaur",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur"
-      ],
-      "keywords": [
-        "Ward"
-      ],
-      "rulesText": "Ward {2}\nAt the beginning of your first main phase, add {G}{G}.",
-      "power": "5",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Ward {2}\nAt the beginning of your first main phase, add {G}{G}.",
-  "keywords": [
-    "Ward"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hulking Raptor",
+        "manaCost": "{2}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur"
+        ],
+        "keywords": [
+          "Ward"
+        ],
+        "rulesText": "Ward {2}\nAt the beginning of your first main phase, add {G}{G}.",
+        "power": "5",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "10ddd8c1-6424-41cf-be1f-5fdc0b70a787"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

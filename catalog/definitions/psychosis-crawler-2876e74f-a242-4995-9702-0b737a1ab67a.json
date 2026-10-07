@@ -1,85 +1,80 @@
 {
+  "catalogVersion": 2,
   "id": "2876e74f-a242-4995-9702-0b737a1ab67a",
-  "canonicalName": "Psychosis Crawler",
-  "defaultPrintingId": "450a680b-a2fb-495b-b22e-8c799a495fdf",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Psychosis Crawler",
-      "manaCost": "{5}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Phyrexian Horror",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Phyrexian",
-        "Horror"
-      ],
-      "keywords": [],
-      "rulesText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
-      "power": "*",
-      "toughness": "*"
-    }
-  ],
-  "oracleText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "hand-stats",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "characteristicDefining": true,
-          "changes": [
-            {
-              "kind": "define-stats",
-              "power": {
-                "handSize": "you"
-              },
-              "toughness": {
-                "handSize": "you"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Psychosis Crawler",
+        "manaCost": "{5}",
+        "colors": [],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian",
+          "Horror"
+        ],
+        "keywords": [],
+        "rulesText": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.\nWhenever you draw a card, each opponent loses 1 life.",
+        "power": "*",
+        "toughness": "*"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "450a680b-a2fb-495b-b22e-8c799a495fdf"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "hand-stats",
+        "description": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand.",
+        "kind": "static",
+        "characteristicDefining": true,
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "define-stats",
+                "power": {
+                  "cardsIn": {
+                    "zone": "hand",
+                    "player": "you"
+                  }
+                },
+                "toughness": {
+                  "cardsIn": {
+                    "zone": "hand",
+                    "player": "you"
+                  }
+                }
               }
-            }
-          ]
-        }
+            ]
+          }
+        ]
       },
-      "description": "Psychosis Crawler's power and toughness are each equal to the number of cards in your hand."
-    },
-    {
-      "id": "draw-life-loss",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "draw-life-loss",
+        "description": "Whenever you draw a card, each opponent loses 1 life.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "draws",
+          "player": "you"
+        },
         "effects": [
           {
             "kind": "lose-life",
-            "amount": 1,
-            "player": "opponents"
+            "player": "opponents",
+            "amount": 1
           }
-        ],
-        "trigger": {
-          "event": "draw",
-          "player": "you"
-        }
-      },
-      "description": "Whenever you draw a card, each opponent loses 1 life."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

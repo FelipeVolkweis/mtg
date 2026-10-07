@@ -1,0 +1,97 @@
+{
+  "catalogVersion": 2,
+  "id": "17ce2c17-b69b-4ebf-9c3c-c64e771af101",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Alesha, Who Laughs at Fate",
+        "manaCost": "{1}{B}{R}",
+        "colors": ["B", "R"],
+        "manaValue": 3,
+        "supertypes": ["Legendary"],
+        "types": ["Creature"],
+        "subtypes": ["Human", "Warrior"],
+        "keywords": ["First strike", "Raid"],
+        "rulesText": "First strike\nWhenever Alesha attacks, put a +1/+1 counter on it.\nRaid — At the beginning of your end step, if you attacked this turn, return target creature card with mana value less than or equal to Alesha's power from your graveyard to the battlefield.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": ["B", "R"],
+    "defaultPrintingId": "a93e3406-4e29-4bc0-ae52-cbd2ac1f99a4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "first-strike",
+        "kind": "keyword",
+        "keyword": "first strike"
+      },
+      {
+        "id": "attack-counter",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": "source",
+            "counter": "+1/+1",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "raid",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "end",
+          "player": "you"
+        },
+        "interveningIf": {
+          "happened": {
+            "event": "attacks",
+            "player": "you",
+            "during": "this-turn"
+          }
+        },
+        "targets": [
+          {
+            "id": "creature",
+            "filter": {
+              "zone": "graveyard",
+              "owner": "you",
+              "object": "card",
+              "type": "Creature",
+              "manaValue": {
+                "<=": {
+                  "stat": {
+                    "of": "source",
+                    "name": "power"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "objects": {
+              "target": "creature"
+            },
+            "to": {
+              "zone": "battlefield",
+              "controller": "you"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

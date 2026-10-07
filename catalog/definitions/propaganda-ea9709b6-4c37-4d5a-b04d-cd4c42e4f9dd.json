@@ -1,48 +1,52 @@
 {
+  "catalogVersion": 2,
   "id": "ea9709b6-4c37-4d5a-b04d-cd4c42e4f9dd",
-  "canonicalName": "Propaganda",
-  "defaultPrintingId": "efc52d02-7d22-4ff6-b104-a6fe704e8ef2",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Propaganda",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
-    }
-  ],
-  "oracleText": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "attack-tax",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "attackCost": {
-          "symbols": [
-            "{2}"
-          ]
-        }
-      },
-      "description": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
-    }
-  ]
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Propaganda",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "efc52d02-7d22-4ff6-b104-a6fe704e8ef2"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "attack-tax",
+        "description": "Creatures can't attack you unless their controller pays {2} for each creature they control that's attacking you.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "attack-tax",
+            "defender": "you",
+            "costPerAttacker": [
+              {
+                "kind": "mana",
+                "symbols": [
+                  "{2}"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

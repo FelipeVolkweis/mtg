@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "7d4b6613-9000-4f53-9737-fe0338f3f629",
-  "canonicalName": "Erudite Wizard",
-  "defaultPrintingId": "9273c417-0fcd-4273-b24e-afff76336d0c",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Erudite Wizard",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Wizard",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever you draw your second card each turn, put a +1/+1 counter on this creature.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Whenever you draw your second card each turn, put a +1/+1 counter on this creature.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Erudite Wizard",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever you draw your second card each turn, put a +1/+1 counter on this creature.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "9273c417-0fcd-4273-b24e-afff76336d0c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

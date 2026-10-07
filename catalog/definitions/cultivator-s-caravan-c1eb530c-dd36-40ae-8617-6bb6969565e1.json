@@ -1,100 +1,66 @@
 {
+  "catalogVersion": 2,
   "id": "c1eb530c-dd36-40ae-8617-6bb6969565e1",
-  "canonicalName": "Cultivator's Caravan",
-  "defaultPrintingId": "f5ec4e50-b667-4376-913c-715959840850",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Cultivator's Caravan",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact \u2014 Vehicle",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Vehicle"
-      ],
-      "keywords": [
-        "Crew"
-      ],
-      "rulesText": "{T}: Add one mana of any color.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "{T}: Add one mana of any color.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
-  "keywords": [
-    "Crew"
-  ],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Cultivator's Caravan",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "W",
-              "U",
-              "B",
-              "R",
-              "G"
-            ]
-          }
+        "subtypes": [
+          "Vehicle"
         ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add one mana of any color."
-    },
-    {
-      "id": "crew",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
-          {
-            "kind": "crew",
-            "power": 3,
-            "filter": {
-              "zone": "battlefield",
-              "controller": "you",
-              "types": [
-                "Creature"
-              ]
+        "keywords": [
+          "Crew"
+        ],
+        "rulesText": "{T}: Add one mana of any color.\nCrew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "f5ec4e50-b667-4376-913c-715959840850"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
             }
-          }
-        ],
-        "effects": [
-          {
-            "kind": "animate-source",
-            "changes": [
-              {
-                "kind": "add-types",
-                "types": [
-                  "Artifact",
-                  "Creature"
-                ]
-              }
-            ]
-          }
-        ]
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "W",
+            "U",
+            "B",
+            "R",
+            "G"
+          ]
+        }
       },
-      "keyword": "Crew",
-      "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)"
-    }
-  ]
+      {
+        "id": "crew",
+        "description": "Crew 3 (Tap any number of creatures you control with total power 3 or more: This Vehicle becomes an artifact creature until end of turn.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "crew",
+          "power": 3
+        }
+      }
+    ]
+  }
 }

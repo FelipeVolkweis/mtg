@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "79824266-bffa-476c-bdd3-976e9d789a42",
-  "canonicalName": "Goblin Negotiation",
-  "defaultPrintingId": "f2016585-e26c-4d13-b09f-af6383c192f7",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Goblin Negotiation",
-      "manaCost": "{X}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Goblin Negotiation deals X damage to target creature. Create a number of 1/1 red Goblin creature tokens equal to the amount of excess damage dealt to that creature this way."
-    }
-  ],
-  "oracleText": "Goblin Negotiation deals X damage to target creature. Create a number of 1/1 red Goblin creature tokens equal to the amount of excess damage dealt to that creature this way.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Goblin Negotiation",
+        "manaCost": "{X}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Goblin Negotiation deals X damage to target creature. Create a number of 1/1 red Goblin creature tokens equal to the amount of excess damage dealt to that creature this way."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "f2016585-e26c-4d13-b09f-af6383c192f7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

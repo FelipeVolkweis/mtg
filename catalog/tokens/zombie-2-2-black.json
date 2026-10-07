@@ -1,0 +1,21 @@
+{
+  "id": "zombie-2-2-black",
+  "characteristics": {
+    "name": "Zombie",
+    "colors": [
+      "B"
+    ],
+    "supertypes": [],
+    "types": [
+      "Creature"
+    ],
+    "subtypes": [
+      "Zombie"
+    ],
+    "keywords": [],
+    "rulesText": "",
+    "power": "2",
+    "toughness": "2"
+  },
+  "abilities": []
+}

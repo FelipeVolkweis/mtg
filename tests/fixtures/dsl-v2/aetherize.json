@@ -1,0 +1,44 @@
+{
+  "catalogVersion": 2,
+  "id": "7c779721-cd1b-4696-9ae9-68ccc284ed2a",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Aetherize",
+        "manaCost": "{3}{U}",
+        "colors": ["U"],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Return all attacking creatures to their owner's hand."
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "55c94e96-6563-43d5-8787-17868846e010"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "return-attackers",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "move",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": "Creature",
+                "status": "attacking"
+              }
+            },
+            "to": "hand"
+          }
+        ]
+      }
+    ]
+  }
+}

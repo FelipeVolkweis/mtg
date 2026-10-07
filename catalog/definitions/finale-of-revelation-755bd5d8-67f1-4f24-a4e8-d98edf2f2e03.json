@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "755bd5d8-67f1-4f24-a4e8-d98edf2f2e03",
-  "canonicalName": "Finale of Revelation",
-  "defaultPrintingId": "0a77e063-e8f6-4cb2-954e-74cf41ce73da",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Finale of Revelation",
-      "manaCost": "{X}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Draw X cards. If X is 10 or more, instead shuffle your graveyard into your library, draw X cards, untap up to five lands, and you have no maximum hand size for the rest of the game.\nExile Finale of Revelation."
-    }
-  ],
-  "oracleText": "Draw X cards. If X is 10 or more, instead shuffle your graveyard into your library, draw X cards, untap up to five lands, and you have no maximum hand size for the rest of the game.\nExile Finale of Revelation.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Finale of Revelation",
+        "manaCost": "{X}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw X cards. If X is 10 or more, instead shuffle your graveyard into your library, draw X cards, untap up to five lands, and you have no maximum hand size for the rest of the game.\nExile Finale of Revelation."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "0a77e063-e8f6-4cb2-954e-74cf41ce73da"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

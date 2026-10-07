@@ -1,107 +1,116 @@
 {
+  "catalogVersion": 2,
   "id": "181e6b3e-c33e-49e7-acb8-67473289a856",
-  "canonicalName": "Master of Etherium",
-  "defaultPrintingId": "b5b7a5df-c926-45ea-af5a-008abc1f0f28",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Master of Etherium",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact Creature \u2014 Vedalken Wizard",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Vedalken",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
-      "power": "*",
-      "toughness": "*"
-    }
-  ],
-  "oracleText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "size",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "characteristicDefining": true,
-          "changes": [
-            {
-              "kind": "define-stats",
-              "power": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
-                }
-              },
-              "toughness": {
-                "count": {
-                  "zone": "battlefield",
-                  "controller": "you",
-                  "types": [
-                    "Artifact"
-                  ]
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Master of Etherium",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Vedalken",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.\nOther artifact creatures you control get +1/+1.",
+        "power": "*",
+        "toughness": "*"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "b5b7a5df-c926-45ea-af5a-008abc1f0f28"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "size",
+        "description": "Master of Etherium's power and toughness are each equal to the number of artifacts you control.",
+        "kind": "static",
+        "characteristicDefining": true,
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "define-stats",
+                "power": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                },
+                "toughness": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "controller": "you"
+                    }
+                  }
                 }
               }
-            }
-          ]
-        }
+            ]
+          }
+        ]
       },
-      "description": "Master of Etherium's power and toughness are each equal to the number of artifacts you control."
-    },
-    {
-      "id": "bonus",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "allTypes": [
-              "Artifact",
-              "Creature"
-            ],
-            "self": "exclude"
-          },
-          "changes": [
-            {
-              "kind": "add-stats",
-              "power": 1,
-              "toughness": 1
-            }
-          ]
-        }
-      },
-      "description": "Other artifact creatures you control get +1/+1."
-    }
-  ]
+      {
+        "id": "bonus",
+        "description": "Other artifact creatures you control get +1/+1.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "controller": "you"
+                  },
+                  {
+                    "type": "Artifact"
+                  },
+                  {
+                    "type": "Creature"
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

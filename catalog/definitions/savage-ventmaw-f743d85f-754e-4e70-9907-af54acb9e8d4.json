@@ -1,42 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "f743d85f-754e-4e70-9907-af54acb9e8d4",
-  "canonicalName": "Savage Ventmaw",
-  "defaultPrintingId": "50027d69-8bb0-444c-8e9b-4c9afd91cbda",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Savage Ventmaw",
-      "manaCost": "{4}{R}{G}",
-      "colors": [
-        "G",
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever this creature attacks, add {R}{R}{R}{G}{G}{G}. Until end of turn, you don't lose this mana as steps and phases end.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhenever this creature attacks, add {R}{R}{R}{G}{G}{G}. Until end of turn, you don't lose this mana as steps and phases end.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Savage Ventmaw",
+        "manaCost": "{4}{R}{G}",
+        "colors": [
+          "G",
+          "R"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever this creature attacks, add {R}{R}{R}{G}{G}{G}. Until end of turn, you don't lose this mana as steps and phases end.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "R"
+    ],
+    "defaultPrintingId": "50027d69-8bb0-444c-8e9b-4c9afd91cbda"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

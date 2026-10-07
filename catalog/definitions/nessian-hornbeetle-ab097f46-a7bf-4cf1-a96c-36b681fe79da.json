@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "ab097f46-a7bf-4cf1-a96c-36b681fe79da",
-  "canonicalName": "Nessian Hornbeetle",
-  "defaultPrintingId": "3d4d93de-85c6-4653-8ddd-d8bf21516d44",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Nessian Hornbeetle",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Insect",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Insect"
-      ],
-      "keywords": [],
-      "rulesText": "At the beginning of combat on your turn, if you control another creature with power 4 or greater, put a +1/+1 counter on this creature.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "At the beginning of combat on your turn, if you control another creature with power 4 or greater, put a +1/+1 counter on this creature.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Nessian Hornbeetle",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Insect"
+        ],
+        "keywords": [],
+        "rulesText": "At the beginning of combat on your turn, if you control another creature with power 4 or greater, put a +1/+1 counter on this creature.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "3d4d93de-85c6-4653-8ddd-d8bf21516d44"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

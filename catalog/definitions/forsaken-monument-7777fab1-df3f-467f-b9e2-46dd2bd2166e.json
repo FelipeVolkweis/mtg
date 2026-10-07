@@ -1,110 +1,97 @@
 {
+  "catalogVersion": 2,
   "id": "7777fab1-df3f-467f-b9e2-46dd2bd2166e",
-  "canonicalName": "Forsaken Monument",
-  "defaultPrintingId": "5f9e232e-39d0-4890-b935-98a1c14ef344",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Forsaken Monument",
-      "manaCost": "{5}",
-      "colors": [],
-      "typeLine": "Legendary Artifact",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Colorless creatures you control get +2/+2.\nWhenever you tap a permanent for {C}, add an additional {C}.\nWhenever you cast a colorless spell, you gain 2 life."
-    }
-  ],
-  "oracleText": "Colorless creatures you control get +2/+2.\nWhenever you tap a permanent for {C}, add an additional {C}.\nWhenever you cast a colorless spell, you gain 2 life.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "colorless-bonus",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "continuous": {
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Creature"
-            ],
-            "colorless": true
-          },
-          "changes": [
-            {
-              "kind": "add-stats",
-              "power": 2,
-              "toughness": 2
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Forsaken Monument",
+        "manaCost": "{5}",
+        "colors": [],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Colorless creatures you control get +2/+2.\nWhenever you tap a permanent for {C}, add an additional {C}.\nWhenever you cast a colorless spell, you gain 2 life."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "5f9e232e-39d0-4890-b935-98a1c14ef344"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "colorless-bonus",
+        "description": "Colorless creatures you control get +2/+2.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "color": "colorless",
+                "controller": "you"
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 2,
+                "toughness": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "additional-mana",
+        "description": "Whenever you tap a permanent for {C}, add an additional {C}.",
+        "kind": "mana",
+        "activation": {
+          "trigger": {
+            "event": "tapped-for-mana",
+            "object": {
+              "zone": "battlefield",
+              "controller": "you"
             }
+          }
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
           ]
         }
       },
-      "description": "Colorless creatures you control get +2/+2."
-    },
-    {
-      "id": "additional-mana",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "C"
-            ]
-          }
-        ],
-        "manaAbility": true,
+      {
+        "id": "colorless-cast",
+        "description": "Whenever you cast a colorless spell, you gain 2 life.",
+        "kind": "triggered",
         "trigger": {
-          "event": "mana",
-          "filter": {
-            "zone": "battlefield",
+          "event": "cast",
+          "spell": {
+            "zone": "stack",
+            "color": "colorless",
             "controller": "you"
           }
-        }
-      },
-      "description": "Whenever you tap a permanent for {C}, add an additional {C}."
-    },
-    {
-      "id": "colorless-cast",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+        },
         "effects": [
           {
             "kind": "gain-life",
             "amount": 2
           }
-        ],
-        "trigger": {
-          "event": "cast",
-          "filter": {
-            "zone": "stack",
-            "controller": "you",
-            "colorless": true
-          }
-        }
-      },
-      "description": "Whenever you cast a colorless spell, you gain 2 life."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

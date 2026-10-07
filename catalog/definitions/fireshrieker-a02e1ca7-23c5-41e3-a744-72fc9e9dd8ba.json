@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "a02e1ca7-23c5-41e3-a744-72fc9e9dd8ba",
-  "canonicalName": "Fireshrieker",
-  "defaultPrintingId": "484fbce6-71bd-40eb-a71b-86958a094708",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Fireshrieker",
-      "manaCost": "{3}",
-      "colors": [],
-      "typeLine": "Artifact — Equipment",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Equip"
-      ],
-      "rulesText": "Equipped creature has double strike. (It deals both first-strike and regular combat damage.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
-    }
-  ],
-  "oracleText": "Equipped creature has double strike. (It deals both first-strike and regular combat damage.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)",
-  "keywords": [
-    "Equip"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fireshrieker",
+        "manaCost": "{3}",
+        "colors": [],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Equip"
+        ],
+        "rulesText": "Equipped creature has double strike. (It deals both first-strike and regular combat damage.)\nEquip {2} ({2}: Attach to target creature you control. Equip only as a sorcery.)"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "484fbce6-71bd-40eb-a71b-86958a094708"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "666af637-9282-4121-962a-048e528f9221",
-  "canonicalName": "Steel Leaf Champion",
-  "defaultPrintingId": "d5362bf5-de79-4ad8-866a-1c590998fc96",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Steel Leaf Champion",
-      "manaCost": "{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Knight",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Knight"
-      ],
-      "keywords": [],
-      "rulesText": "This creature can't be blocked by creatures with power 2 or less.",
-      "power": "5",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "This creature can't be blocked by creatures with power 2 or less.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Steel Leaf Champion",
+        "manaCost": "{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Knight"
+        ],
+        "keywords": [],
+        "rulesText": "This creature can't be blocked by creatures with power 2 or less.",
+        "power": "5",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "d5362bf5-de79-4ad8-866a-1c590998fc96"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

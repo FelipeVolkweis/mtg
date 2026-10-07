@@ -1,42 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "800fb917-8898-4eba-9f94-aec6e9d75236",
-  "canonicalName": "Mazemind Tome",
-  "defaultPrintingId": "fbae0603-fdc3-488a-8917-08edf0884e1d",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Mazemind Tome",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact \u2014 Book",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Book"
-      ],
-      "keywords": [
-        "Scry"
-      ],
-      "rulesText": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{2}, {T}, Put a page counter on this artifact: Draw a card.\nWhen there are four or more page counters on this artifact, exile it. If you do, you gain 4 life."
-    }
-  ],
-  "oracleText": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{2}, {T}, Put a page counter on this artifact: Draw a card.\nWhen there are four or more page counters on this artifact, exile it. If you do, you gain 4 life.",
-  "keywords": [
-    "Scry"
-  ],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "scry",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mazemind Tome",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Book"
+        ],
+        "keywords": [
+          "Scry"
+        ],
+        "rulesText": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)\n{2}, {T}, Put a page counter on this artifact: Draw a card.\nWhen there are four or more page counters on this artifact, exile it. If you do, you gain 4 life."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "fbae0603-fdc3-488a-8917-08edf0884e1d"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "scry",
+        "description": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)",
+        "kind": "activated",
         "costs": [
           {
             "kind": "tap-source"
@@ -44,24 +39,21 @@
           {
             "kind": "counter-source",
             "counter": "page",
-            "count": 1
+            "count": 1,
+            "operation": "put"
           }
         ],
         "effects": [
           {
-            "kind": "inspect",
+            "kind": "scry",
             "count": 1
           }
         ]
       },
-      "description": "{T}, Put a page counter on this artifact: Scry 1. (Look at the top card of your library. You may put that card on the bottom.)"
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{2}, {T}, Put a page counter on this artifact: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -75,7 +67,8 @@
           {
             "kind": "counter-source",
             "counter": "page",
-            "count": 1
+            "count": 1,
+            "operation": "put"
           }
         ],
         "effects": [
@@ -85,47 +78,54 @@
           }
         ]
       },
-      "description": "{2}, {T}, Put a page counter on this artifact: Draw a card."
-    },
-    {
-      "id": "four-pages",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "four-pages",
+        "description": "When there are four or more page counters on this artifact, exile it. If you do, you gain 4 life.",
+        "kind": "triggered",
         "trigger": {
           "event": "state",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          },
-          "counter": "page",
-          "atLeast": 4
+          "condition": {
+            "matches": {
+              "selector": "source",
+              "predicate": {
+                "counters": {
+                  "kind": "page",
+                  "count": {
+                    ">=": 4
+                  }
+                }
+              }
+            }
+          }
         },
         "effects": [
           {
+            "bind": "exiled",
             "kind": "exile",
-            "subject": "source",
-            "bind": "exiled"
+            "objects": "source"
           },
           {
             "kind": "if",
             "condition": {
-              "binding": "exiled",
-              "atLeast": 1
+              "compare": [
+                {
+                  "count": {
+                    "binding": "exiled"
+                  }
+                },
+                ">=",
+                1
+              ]
             },
             "then": [
               {
                 "kind": "gain-life",
                 "amount": 4
               }
-            ],
-            "otherwise": []
+            ]
           }
-        ],
-        "costs": []
-      },
-      "description": "When there are four or more page counters on this artifact, exile it. If you do, you gain 4 life."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

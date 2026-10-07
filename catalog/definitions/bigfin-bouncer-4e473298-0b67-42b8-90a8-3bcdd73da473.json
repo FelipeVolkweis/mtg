@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "4e473298-0b67-42b8-90a8-3bcdd73da473",
-  "canonicalName": "Bigfin Bouncer",
-  "defaultPrintingId": "9b1d5b76-b07e-45c6-800d-4cfce085164f",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Bigfin Bouncer",
-      "manaCost": "{3}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Shark Pirate",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Shark",
-        "Pirate"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bigfin Bouncer",
+        "manaCost": "{3}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Shark",
+          "Pirate"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "9b1d5b76-b07e-45c6-800d-4cfce085164f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

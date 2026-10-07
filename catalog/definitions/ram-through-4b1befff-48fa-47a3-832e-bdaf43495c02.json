@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "4b1befff-48fa-47a3-832e-bdaf43495c02",
-  "canonicalName": "Ram Through",
-  "defaultPrintingId": "33516226-4b97-4cd1-a47f-a9b40631daea",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Ram Through",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Target creature you control deals damage equal to its power to target creature you don't control. If the creature you control has trample, excess damage is dealt to that creature's controller instead."
-    }
-  ],
-  "oracleText": "Target creature you control deals damage equal to its power to target creature you don't control. If the creature you control has trample, excess damage is dealt to that creature's controller instead.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ram Through",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Target creature you control deals damage equal to its power to target creature you don't control. If the creature you control has trample, excess damage is dealt to that creature's controller instead."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "33516226-4b97-4cd1-a47f-a9b40631daea"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "690c7f8e-fea2-4920-afa7-02ff120701a1",
-  "canonicalName": "Spinerock Knoll",
-  "defaultPrintingId": "d3534bc9-6208-4d29-923a-b18237f7c68c",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Spinerock Knoll",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Hideaway"
-      ],
-      "rulesText": "Hideaway 4 (When this land enters, look at the top four cards of your library, exile one face down, then put the rest on the bottom in a random order.)\nThis land enters tapped.\n{T}: Add {R}.\n{R}, {T}: You may play the exiled card without paying its mana cost if an opponent was dealt 7 or more damage this turn."
-    }
-  ],
-  "oracleText": "Hideaway 4 (When this land enters, look at the top four cards of your library, exile one face down, then put the rest on the bottom in a random order.)\nThis land enters tapped.\n{T}: Add {R}.\n{R}, {T}: You may play the exiled card without paying its mana cost if an opponent was dealt 7 or more damage this turn.",
-  "keywords": [
-    "Hideaway"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Spinerock Knoll",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Hideaway"
+        ],
+        "rulesText": "Hideaway 4 (When this land enters, look at the top four cards of your library, exile one face down, then put the rest on the bottom in a random order.)\nThis land enters tapped.\n{T}: Add {R}.\n{R}, {T}: You may play the exiled card without paying its mana cost if an opponent was dealt 7 or more damage this turn."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "d3534bc9-6208-4d29-923a-b18237f7c68c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

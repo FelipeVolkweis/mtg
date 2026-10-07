@@ -1,45 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "bad6a5a9-7010-418d-b042-182926aa999d",
-  "canonicalName": "Norn's Choirmaster",
-  "defaultPrintingId": "c7459da4-1081-4550-88c4-936f3662c5c8",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Norn's Choirmaster",
-      "manaCost": "{3}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Phyrexian Angel",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Phyrexian",
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "First strike",
-        "Proliferate"
-      ],
-      "rulesText": "Flying, first strike\nWhenever a commander you control enters or attacks, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
-      "power": "5",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying, first strike\nWhenever a commander you control enters or attacks, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
-  "keywords": [
-    "Flying",
-    "First strike",
-    "Proliferate"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Norn's Choirmaster",
+        "manaCost": "{3}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Phyrexian",
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "First strike",
+          "Proliferate"
+        ],
+        "rulesText": "Flying, first strike\nWhenever a commander you control enters or attacks, proliferate. (Choose any number of permanents and/or players, then give each another counter of each kind already there.)",
+        "power": "5",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "c7459da4-1081-4550-88c4-936f3662c5c8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

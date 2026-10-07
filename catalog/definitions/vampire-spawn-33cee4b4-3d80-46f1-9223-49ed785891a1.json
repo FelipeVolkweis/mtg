@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "33cee4b4-3d80-46f1-9223-49ed785891a1",
-  "canonicalName": "Vampire Spawn",
-  "defaultPrintingId": "b6fc8d2e-ad63-498d-83b6-5f72b5ae0e67",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Vampire Spawn",
-      "manaCost": "{2}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, each opponent loses 2 life and you gain 2 life.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "When this creature enters, each opponent loses 2 life and you gain 2 life.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vampire Spawn",
+        "manaCost": "{2}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, each opponent loses 2 life and you gain 2 life.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b6fc8d2e-ad63-498d-83b6-5f72b5ae0e67"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

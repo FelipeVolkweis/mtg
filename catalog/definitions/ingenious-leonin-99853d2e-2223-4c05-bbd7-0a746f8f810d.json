@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "99853d2e-2223-4c05-bbd7-0a746f8f810d",
-  "canonicalName": "Ingenious Leonin",
-  "defaultPrintingId": "ea566679-4202-4076-9314-142241485f6e",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Ingenious Leonin",
-      "manaCost": "{4}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Cat Soldier",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Cat",
-        "Soldier"
-      ],
-      "keywords": [],
-      "rulesText": "{3}{W}: Put a +1/+1 counter on another target attacking creature you control. If that creature is a Cat, it gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "{3}{W}: Put a +1/+1 counter on another target attacking creature you control. If that creature is a Cat, it gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ingenious Leonin",
+        "manaCost": "{4}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Soldier"
+        ],
+        "keywords": [],
+        "rulesText": "{3}{W}: Put a +1/+1 counter on another target attacking creature you control. If that creature is a Cat, it gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "ea566679-4202-4076-9314-142241485f6e"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

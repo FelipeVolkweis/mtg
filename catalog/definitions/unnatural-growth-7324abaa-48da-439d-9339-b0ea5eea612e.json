@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "7324abaa-48da-439d-9339-b0ea5eea612e",
-  "canonicalName": "Unnatural Growth",
-  "defaultPrintingId": "48325111-3702-4521-b4c2-39177530e569",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Unnatural Growth",
-      "manaCost": "{1}{G}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Double"
-      ],
-      "rulesText": "At the beginning of each combat, double the power and toughness of each creature you control until end of turn."
-    }
-  ],
-  "oracleText": "At the beginning of each combat, double the power and toughness of each creature you control until end of turn.",
-  "keywords": [
-    "Double"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Unnatural Growth",
+        "manaCost": "{1}{G}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Double"
+        ],
+        "rulesText": "At the beginning of each combat, double the power and toughness of each creature you control until end of turn."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "48325111-3702-4521-b4c2-39177530e569"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

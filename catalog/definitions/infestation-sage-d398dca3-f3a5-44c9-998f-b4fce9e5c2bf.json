@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "d398dca3-f3a5-44c9-998f-b4fce9e5c2bf",
-  "canonicalName": "Infestation Sage",
-  "defaultPrintingId": "d40c73de-7a5f-46f2-a70b-449bc8ecfe24",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Infestation Sage",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Elf Warlock",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Warlock"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature dies, create a 1/1 black and green Insect creature token with flying.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "When this creature dies, create a 1/1 black and green Insect creature token with flying.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Infestation Sage",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warlock"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature dies, create a 1/1 black and green Insect creature token with flying.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "d40c73de-7a5f-46f2-a70b-449bc8ecfe24"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

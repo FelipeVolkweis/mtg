@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "602e421e-afab-4488-8a52-af66b4fdce4b",
-  "canonicalName": "Noxious Ghoul",
-  "defaultPrintingId": "551de81f-35e9-4467-b575-ae5bf79d4e7c",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Noxious Ghoul",
-      "manaCost": "{3}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature or another Zombie enters, all non-Zombie creatures get -1/-1 until end of turn.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Whenever this creature or another Zombie enters, all non-Zombie creatures get -1/-1 until end of turn.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Noxious Ghoul",
+        "manaCost": "{3}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature or another Zombie enters, all non-Zombie creatures get -1/-1 until end of turn.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "551de81f-35e9-4467-b575-ae5bf79d4e7c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

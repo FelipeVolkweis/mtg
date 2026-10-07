@@ -1,45 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "c1111228-ef88-4b64-91e0-66ee32a1f5e4",
-  "canonicalName": "Nullpriest of Oblivion",
-  "defaultPrintingId": "b2c7613c-38fc-49c3-93ee-1df93136455a",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Nullpriest of Oblivion",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Cleric",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Cleric"
-      ],
-      "keywords": [
-        "Lifelink",
-        "Menace",
-        "Kicker"
-      ],
-      "rulesText": "Kicker {3}{B} (You may pay an additional {3}{B} as you cast this spell.)\nLifelink\nMenace (This creature can't be blocked except by two or more creatures.)\nWhen this creature enters, if it was kicked, return target creature card from your graveyard to the battlefield.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Kicker {3}{B} (You may pay an additional {3}{B} as you cast this spell.)\nLifelink\nMenace (This creature can't be blocked except by two or more creatures.)\nWhen this creature enters, if it was kicked, return target creature card from your graveyard to the battlefield.",
-  "keywords": [
-    "Lifelink",
-    "Menace",
-    "Kicker"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Nullpriest of Oblivion",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Cleric"
+        ],
+        "keywords": [
+          "Lifelink",
+          "Menace",
+          "Kicker"
+        ],
+        "rulesText": "Kicker {3}{B} (You may pay an additional {3}{B} as you cast this spell.)\nLifelink\nMenace (This creature can't be blocked except by two or more creatures.)\nWhen this creature enters, if it was kicked, return target creature card from your graveyard to the battlefield.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b2c7613c-38fc-49c3-93ee-1df93136455a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

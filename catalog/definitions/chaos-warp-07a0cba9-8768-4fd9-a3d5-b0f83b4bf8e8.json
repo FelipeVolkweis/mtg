@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
-  "canonicalName": "Chaos Warp",
-  "defaultPrintingId": "7bd1cdd2-9f55-49ee-9787-131f353e3ad0",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Chaos Warp",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield."
-    }
-  ],
-  "oracleText": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Chaos Warp",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "7bd1cdd2-9f55-49ee-9787-131f353e3ad0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,0 +1,98 @@
+{
+  "catalogVersion": 2,
+  "id": "c53ba31a-ba27-4e17-9a92-311acb1cab29",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Myr Battlesphere",
+        "manaCost": "{7}",
+        "colors": [],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": ["Artifact", "Creature"],
+        "subtypes": ["Myr", "Construct"],
+        "keywords": [],
+        "rulesText": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.\nWhenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
+        "power": "4",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "7d2ca7dc-a999-4708-aeec-9f8e0f0db1e5"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enters",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "myr-1-1",
+            "count": 4
+          }
+        ]
+      },
+      {
+        "id": "attack",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "effects": [
+          {
+            "kind": "tap",
+            "bind": "tapped",
+            "objects": {
+              "choose": {
+                "from": {
+                  "zone": "battlefield",
+                  "controller": "you",
+                  "subtype": "Myr",
+                  "status": "untapped"
+                },
+                "count": {
+                  "min": 0
+                }
+              }
+            }
+          },
+          {
+            "kind": "apply-continuous",
+            "objects": "source",
+            "duration": "end-of-turn",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": {
+                  "count": {
+                    "binding": "tapped"
+                  }
+                },
+                "toughness": 0
+              }
+            ]
+          },
+          {
+            "kind": "damage",
+            "amount": {
+              "count": {
+                "binding": "tapped"
+              }
+            },
+            "to": {
+              "attackedBy": "source"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

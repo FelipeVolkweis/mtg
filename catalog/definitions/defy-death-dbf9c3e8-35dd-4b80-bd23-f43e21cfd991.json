@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "dbf9c3e8-35dd-4b80-bd23-f43e21cfd991",
-  "canonicalName": "Defy Death",
-  "defaultPrintingId": "46643da0-44a9-4df5-a7d0-076af2c7c132",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Defy Death",
-      "manaCost": "{3}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Return target creature card from your graveyard to the battlefield. If it's an Angel, put two +1/+1 counters on it."
-    }
-  ],
-  "oracleText": "Return target creature card from your graveyard to the battlefield. If it's an Angel, put two +1/+1 counters on it.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Defy Death",
+        "manaCost": "{3}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Return target creature card from your graveyard to the battlefield. If it's an Angel, put two +1/+1 counters on it."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "46643da0-44a9-4df5-a7d0-076af2c7c132"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "f3dd1f6d-f7d7-4358-8139-7495404f29c7",
-  "canonicalName": "Breath Weapon",
-  "defaultPrintingId": "41946916-52d3-4fdd-aebb-11fa013af58c",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Breath Weapon",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Breath Weapon deals 2 damage to each non-Dragon creature."
-    }
-  ],
-  "oracleText": "Breath Weapon deals 2 damage to each non-Dragon creature.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Breath Weapon",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Breath Weapon deals 2 damage to each non-Dragon creature."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "41946916-52d3-4fdd-aebb-11fa013af58c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "6ac470a1-c2be-4971-a5ca-10bb189ebe4d",
-  "canonicalName": "Frenzied Goblin",
-  "defaultPrintingId": "d5592573-2889-40b1-b1d5-c2802482549a",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Frenzied Goblin",
-      "manaCost": "{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Berserker",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Berserker"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Frenzied Goblin",
+        "manaCost": "{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Berserker"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature attacks, you may pay {R}. If you do, target creature can't block this turn.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "d5592573-2889-40b1-b1d5-c2802482549a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

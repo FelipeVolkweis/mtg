@@ -1,0 +1,47 @@
+{
+  "catalogVersion": 2,
+  "id": "cce9bbff-82dc-4b2f-addd-d6715588de20",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thoughtcast",
+        "manaCost": "{4}{U}",
+        "colors": ["U"],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": ["Sorcery"],
+        "subtypes": [],
+        "keywords": ["Affinity"],
+        "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nDraw two cards."
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "0baa33b1-c37c-4d62-a7c9-c08e5ac9724a"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "affinity",
+        "kind": "keyword",
+        "keyword": {
+          "name": "affinity",
+          "for": {
+            "type": "Artifact"
+          }
+        }
+      },
+      {
+        "id": "draw",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  }
+}

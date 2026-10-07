@@ -1,113 +1,72 @@
 {
+  "catalogVersion": 2,
   "id": "8aab9181-c306-471a-8061-9a7a7654dab5",
-  "canonicalName": "Thopter Fabricator",
-  "defaultPrintingId": "36123651-430b-4ae3-a055-713f81bb0f53",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Thopter Fabricator",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact \u2014 Vehicle",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Vehicle"
-      ],
-      "keywords": [
-        "Flying",
-        "Crew"
-      ],
-      "rulesText": "Flying\nWhenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying.\nCrew 2",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying.\nCrew 2",
-  "keywords": [
-    "Flying",
-    "Crew"
-  ],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "crew",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
-        "costs": [
-          {
-            "kind": "crew",
-            "power": 2,
-            "filter": {
-              "zone": "battlefield",
-              "controller": "you",
-              "types": [
-                "Creature"
-              ]
-            }
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thopter Fabricator",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
         ],
-        "effects": [
-          {
-            "kind": "animate-source",
-            "changes": [
-              {
-                "kind": "add-types",
-                "types": [
-                  "Artifact",
-                  "Creature"
-                ]
-              }
-            ]
-          }
-        ]
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Vehicle"
+        ],
+        "keywords": [
+          "Flying",
+          "Crew"
+        ],
+        "rulesText": "Flying\nWhenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying.\nCrew 2",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "36123651-430b-4ae3-a055-713f81bb0f53"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "crew",
+        "description": "Crew 2",
+        "kind": "keyword",
+        "keyword": {
+          "name": "crew",
+          "power": 2
+        }
       },
-      "keyword": "Crew",
-      "description": "Crew 2"
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
       },
-      "description": "Flying"
-    },
-    {
-      "id": "second-draw",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "second-draw",
+        "description": "Whenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "draws",
+          "player": "you",
+          "nth": 2
+        },
         "effects": [
           {
             "kind": "create-token",
-            "token": "thopter",
+            "token": "thopter-1-1-flying",
             "count": 1
           }
-        ],
-        "trigger": {
-          "event": "draw",
-          "player": "you",
-          "ordinal": 2
-        }
-      },
-      "description": "Whenever you draw your second card each turn, create a 1/1 colorless Thopter artifact creature token with flying."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "bd0c0e85-ff24-46c9-a547-4f633355c131",
-  "canonicalName": "Giant Cindermaw",
-  "defaultPrintingId": "d65f5298-0e57-49cf-aaf5-2bb16f3e636c",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Giant Cindermaw",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dinosaur Beast",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dinosaur",
-        "Beast"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nPlayers can't gain life.",
-      "power": "4",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nPlayers can't gain life.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Giant Cindermaw",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dinosaur",
+          "Beast"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nPlayers can't gain life.",
+        "power": "4",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "d65f5298-0e57-49cf-aaf5-2bb16f3e636c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

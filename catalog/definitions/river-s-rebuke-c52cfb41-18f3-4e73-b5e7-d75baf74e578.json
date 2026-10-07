@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "c52cfb41-18f3-4e73-b5e7-d75baf74e578",
-  "canonicalName": "River's Rebuke",
-  "defaultPrintingId": "32ae984e-5d1e-4497-9a71-7406f78c09f3",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "River's Rebuke",
-      "manaCost": "{4}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Return all nonland permanents target player controls to their owner's hand."
-    }
-  ],
-  "oracleText": "Return all nonland permanents target player controls to their owner's hand.",
-  "keywords": [],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "River's Rebuke",
+        "manaCost": "{4}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Return all nonland permanents target player controls to their owner's hand."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "32ae984e-5d1e-4497-9a71-7406f78c09f3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

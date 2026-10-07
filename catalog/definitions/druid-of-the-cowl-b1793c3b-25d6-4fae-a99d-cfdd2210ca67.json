@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "b1793c3b-25d6-4fae-a99d-cfdd2210ca67",
-  "canonicalName": "Druid of the Cowl",
-  "defaultPrintingId": "db2d0ee9-865c-4fc9-8cb6-540c597e1bf4",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Druid of the Cowl",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Druid",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Druid"
-      ],
-      "keywords": [],
-      "rulesText": "{T}: Add {G}.",
-      "power": "1",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "{T}: Add {G}.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Druid of the Cowl",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Druid"
+        ],
+        "keywords": [],
+        "rulesText": "{T}: Add {G}.",
+        "power": "1",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "db2d0ee9-865c-4fc9-8cb6-540c597e1bf4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

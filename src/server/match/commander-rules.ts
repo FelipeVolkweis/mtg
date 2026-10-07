@@ -84,7 +84,11 @@ export class CommanderRules {
       throw new Error("Choose Confirm or Decline.");
     const cleanup = this.engine.rules.cleanupNeedsPriority !== undefined;
     if (action.confirm && pending.sourceId) {
-      this.engine.move(pending.sourceId, this.engine.zone("command"));
+      this.engine.propose({
+        kind: "zone-change",
+        objectId: pending.sourceId,
+        to: this.engine.zone("command"),
+      });
       if (cleanup) this.engine.rules.cleanupNeedsPriority = true;
     }
     delete this.engine.rules.pending;

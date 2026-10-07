@@ -1,44 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "397b9dcf-690a-4a58-8637-bb9baab7cc2f",
-  "canonicalName": "Elder Gargaroth",
-  "defaultPrintingId": "be0d51ff-9a01-41bd-8e80-ee1e7117d695",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Elder Gargaroth",
-      "manaCost": "{3}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Beast",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Beast"
-      ],
-      "keywords": [
-        "Reach",
-        "Vigilance",
-        "Trample"
-      ],
-      "rulesText": "Reach, vigilance, trample\nWhenever this creature attacks or blocks, choose one —\n• Create a 3/3 green Beast creature token.\n• You gain 3 life.\n• Draw a card.",
-      "power": "6",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Reach, vigilance, trample\nWhenever this creature attacks or blocks, choose one —\n• Create a 3/3 green Beast creature token.\n• You gain 3 life.\n• Draw a card.",
-  "keywords": [
-    "Reach",
-    "Vigilance",
-    "Trample"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Elder Gargaroth",
+        "manaCost": "{3}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Beast"
+        ],
+        "keywords": [
+          "Reach",
+          "Vigilance",
+          "Trample"
+        ],
+        "rulesText": "Reach, vigilance, trample\nWhenever this creature attacks or blocks, choose one —\n• Create a 3/3 green Beast creature token.\n• You gain 3 life.\n• Draw a card.",
+        "power": "6",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "be0d51ff-9a01-41bd-8e80-ee1e7117d695"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

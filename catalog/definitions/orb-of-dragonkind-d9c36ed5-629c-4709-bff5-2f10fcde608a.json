@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "d9c36ed5-629c-4709-bff5-2f10fcde608a",
-  "canonicalName": "Orb of Dragonkind",
-  "defaultPrintingId": "77cc81e4-c773-4809-87e4-239d18c220a7",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Orb of Dragonkind",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{1}, {T}: Add two mana in any combination of colors. Spend this mana only to cast Dragon spells or activate abilities of Dragons.\n{R}, {T}, Sacrifice this artifact: Look at the top seven cards of your library. You may reveal a Dragon card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
-    }
-  ],
-  "oracleText": "{1}, {T}: Add two mana in any combination of colors. Spend this mana only to cast Dragon spells or activate abilities of Dragons.\n{R}, {T}, Sacrifice this artifact: Look at the top seven cards of your library. You may reveal a Dragon card from among them and put it into your hand. Put the rest on the bottom of your library in a random order.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Orb of Dragonkind",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{1}, {T}: Add two mana in any combination of colors. Spend this mana only to cast Dragon spells or activate abilities of Dragons.\n{R}, {T}, Sacrifice this artifact: Look at the top seven cards of your library. You may reveal a Dragon card from among them and put it into your hand. Put the rest on the bottom of your library in a random order."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "77cc81e4-c773-4809-87e4-239d18c220a7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

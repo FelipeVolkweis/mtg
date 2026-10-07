@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "d96141af-313f-4ea9-a249-d9eb22cd2431",
-  "canonicalName": "Luminous Rebuke",
-  "defaultPrintingId": "621839e1-2756-4cdc-a25c-5f76ea98dd87",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Luminous Rebuke",
-      "manaCost": "{4}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This spell costs {3} less to cast if it targets a tapped creature.\nDestroy target creature."
-    }
-  ],
-  "oracleText": "This spell costs {3} less to cast if it targets a tapped creature.\nDestroy target creature.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Luminous Rebuke",
+        "manaCost": "{4}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This spell costs {3} less to cast if it targets a tapped creature.\nDestroy target creature."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "621839e1-2756-4cdc-a25c-5f76ea98dd87"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

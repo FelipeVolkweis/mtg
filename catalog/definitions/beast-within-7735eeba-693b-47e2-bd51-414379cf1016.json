@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "7735eeba-693b-47e2-bd51-414379cf1016",
-  "canonicalName": "Beast Within",
-  "defaultPrintingId": "cd6d61e9-239d-472b-a603-94290efbdad9",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Beast Within",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Destroy target permanent. Its controller creates a 3/3 green Beast creature token."
-    }
-  ],
-  "oracleText": "Destroy target permanent. Its controller creates a 3/3 green Beast creature token.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Beast Within",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Destroy target permanent. Its controller creates a 3/3 green Beast creature token."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "cd6d61e9-239d-472b-a603-94290efbdad9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

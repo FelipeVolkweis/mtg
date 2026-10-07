@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "9a440122-a015-4af2-b270-37f019884458",
-  "canonicalName": "Diamond Mare",
-  "defaultPrintingId": "3c39b0ce-db4c-472c-b68e-07e6ba3a4588",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Diamond Mare",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Horse",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Horse"
-      ],
-      "keywords": [],
-      "rulesText": "As this creature enters, choose a color.\nWhenever you cast a spell of the chosen color, you gain 1 life.",
-      "power": "1",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "As this creature enters, choose a color.\nWhenever you cast a spell of the chosen color, you gain 1 life.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Diamond Mare",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Horse"
+        ],
+        "keywords": [],
+        "rulesText": "As this creature enters, choose a color.\nWhenever you cast a spell of the chosen color, you gain 1 life.",
+        "power": "1",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "3c39b0ce-db4c-472c-b68e-07e6ba3a4588"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

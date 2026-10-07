@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "2e9289d6-dbc6-456d-88cf-d1f534e731d6",
-  "canonicalName": "Firebrand Archer",
-  "defaultPrintingId": "fe0312f1-4c98-4b7f-8a34-0059ea80edef",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Firebrand Archer",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Human Archer",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Archer"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever you cast a noncreature spell, this creature deals 1 damage to each opponent.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Whenever you cast a noncreature spell, this creature deals 1 damage to each opponent.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Firebrand Archer",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Archer"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever you cast a noncreature spell, this creature deals 1 damage to each opponent.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "fe0312f1-4c98-4b7f-8a34-0059ea80edef"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

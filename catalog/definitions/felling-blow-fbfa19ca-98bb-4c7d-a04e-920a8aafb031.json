@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "fbfa19ca-98bb-4c7d-a04e-920a8aafb031",
-  "canonicalName": "Felling Blow",
-  "defaultPrintingId": "96948ae3-b15d-4d6d-aa73-9f52084cd903",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Felling Blow",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Put a +1/+1 counter on target creature you control. Then that creature deals damage equal to its power to target creature an opponent controls."
-    }
-  ],
-  "oracleText": "Put a +1/+1 counter on target creature you control. Then that creature deals damage equal to its power to target creature an opponent controls.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Felling Blow",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Put a +1/+1 counter on target creature you control. Then that creature deals damage equal to its power to target creature an opponent controls."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "96948ae3-b15d-4d6d-aa73-9f52084cd903"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

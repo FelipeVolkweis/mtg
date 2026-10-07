@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "270d14b2-07bc-46bc-918f-658102265ccf",
-  "canonicalName": "Empyrean Eagle",
-  "defaultPrintingId": "577e99a7-4a55-4314-8f08-2ae0c33b85c7",
-  "form": "normal",
-  "colorIdentity": [
-    "U",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Empyrean Eagle",
-      "manaCost": "{1}{W}{U}",
-      "colors": [
-        "U",
-        "W"
-      ],
-      "typeLine": "Creature — Bird Spirit",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird",
-        "Spirit"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nOther creatures you control with flying get +1/+1.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nOther creatures you control with flying get +1/+1.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Empyrean Eagle",
+        "manaCost": "{1}{W}{U}",
+        "colors": [
+          "U",
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird",
+          "Spirit"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nOther creatures you control with flying get +1/+1.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "U",
+      "W"
+    ],
+    "defaultPrintingId": "577e99a7-4a55-4314-8f08-2ae0c33b85c7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }
