@@ -57,19 +57,17 @@ test("force.step sets the named step and force.activePlayer/priority hand over t
   expect(match.priority).toEqual({ playerId: other, passedPlayerIds: [] });
 });
 
-test("object helpers set counters, attachment, controller and uncounterability", async () => {
+test("object helpers set counters, attachment and controller", async () => {
   const { match, seed } = await rulesGame();
   const creature = seed("Silver Myr", "battlefield"),
     tool = seed("Adaptive Omnitool", "battlefield");
   force.counters(creature, [{ kind: "+1/+1", quantity: "2" }]);
   force.attach(tool, creature);
   force.controller(creature, match.players[1].id);
-  force.uncounterable(creature);
   force.controlledSince(match, creature, 4);
   expect(creature.counters).toEqual([{ kind: "+1/+1", quantity: "2" }]);
   expect(tool.attachmentTo).toBe(creature.id);
   expect(creature.controllerId).toBe(match.players[1].id);
-  expect(creature.cannotBeCountered).toBe(true);
   expect(match.rules!.controlledSinceTurn[creature.id]).toBe(4);
   force.attach(tool, null);
   expect(tool.attachmentTo).toBeNull();

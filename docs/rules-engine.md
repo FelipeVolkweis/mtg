@@ -20,7 +20,9 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 | [MatchService](../src/server/match/match.service.ts) | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results. |
 | [RulesEngine](../src/server/match/rules-engine.ts) | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints. |
 | [Card DSL v2](../src/shared/rules-v2.ts) | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords. |
-| [Rules Compiler](../src/server/rules/compiler.ts) and [down-compiler](../src/server/rules/down-compiler.ts) | Validate and desugar authored abilities into the Core AST, then lower it into the runtime shapes the engine executes today. |
+| [Rules Compiler](../src/server/rules/compiler.ts) and [down-compiler](../src/server/rules/down-compiler.ts) | Validate and desugar authored abilities into the Core AST. The down-compiler lowers targets, triggers, costs and static abilities into the runtime shapes the engine executes today; effects stay Core AST. |
+| [Rules context](../src/server/rules/context.ts) and [event runtime](../src/server/rules/events/event-runtime.ts) | `RulesQuery` (read-only view) and `RulesMutator.propose`: every zone change, draw, damage event, life change and object creation is proposed, applied and reported to trigger observation. |
+| [Effect handlers](../src/server/rules/vm/effects/registry.ts) | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions, or suspends for a choice; it also reports at load time what it can't run. |
 | [Shared rules model](../src/shared/rules.ts) | Defines the runtime ability shape the down-compiler emits, pending procedures, and persisted rules state. |
 | [Match view](../src/server/match/match-view.ts) | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see. |
 | [Commander support gate](../src/server/match/commander.ts) | Validates Commander Decklist rules and checks that each Card Definition has implemented, schema-valid, supported behavior. |
@@ -54,15 +56,17 @@ four steps:
    keywords and tags layers. An authoring error fails the load with the card
    name and the path.
 4. Down-compile the Core AST into `CardAbility.rules`, the shapes the engine
-   executes. An implemented card that uses a construct the current runtime
-   can't run fails the load; an unimplemented one loads without runtime
-   abilities.
+   executes. Effects pass through as Core AST once the effect handler
+   registry confirms it can run each one. An implemented card that uses a
+   construct the current runtime can't run fails the load; an unimplemented
+   one loads without runtime abilities.
 
 The catalog gate (`tests/rules/compiler/catalog-gate.spec.ts`) compiles every
 definition and down-compiles every implemented one. Publishing writes each
 definition back as its version 2 file, so reading and republishing the catalog
 reproduces it byte for byte. The down-compiler is temporary: the effect
-handlers and the rule VM read the Core AST directly once they exist.
+handlers already read the Core AST, and the rule VM (roadmap issue 8) will
+replace the rest.
 
 Commander setup calls `automationEligible` for every card in the selected
 Decklist. It requires an implemented Card Definition, a supported card form,
@@ -95,11 +99,16 @@ costs, choices, events, and effects correctly.
    Player activate mana abilities explicitly, and then places a spell or
    Ability Game Object on the Stack. Casting Records, chosen values, targets,
    and captured ability data are stored with the relevant Game Object.
-5. After all Match Players pass Priority, the top Stack object resolves. The
-   [Resolution](../src/server/match/resolution.ts) interpreter processes its
-   ordered effects and bindings. It can pause for a private selection or payment
-   and resume from persisted progress; the Match does not receive Priority in
-   the middle of that resolution.
+5. After all Match Players pass Priority, the top Stack object resolves.
+   [Resolution](../src/server/match/resolution.ts) runs its Core AST
+   instructions in order, dispatching each through the effect handler
+   registry. Handlers evaluate selectors, predicates, values and conditions
+   with the [evaluator](../src/server/rules/vm/evaluate.ts), change the game
+   only through `propose` (or object state such as tapping and counters), and
+   name results as number or object-set bindings. A handler can suspend for a
+   private selection or payment; its instruction and state persist in
+   `resolving.waiting`, and the answer resumes it. The Match does not receive
+   Priority in the middle of that resolution.
 6. Zone changes, attacks, draws, damage, and other modeled events are collected
    by the [trigger system](../src/server/match/triggers.ts). At checkpoints the
    engine applies state-based changes, gathers waiting triggers, asks for
@@ -110,7 +119,8 @@ costs, choices, events, and effects correctly.
 The engine uses fresh Game Object identities when objects change Zones while
 Card Instance identity remains stable. Semantic events retain the object owner,
 controller, and relevant pre-change characteristics needed by triggered
-abilities. These distinctions let the engine handle such cases as a source
+abilities; a zone-change event also carries the object's last known
+information (characteristics, controller, counters, attachment, tapped). These distinctions let the engine handle such cases as a source
 leaving before its ability resolves or simultaneous objects changing Zones.
 
 ## Main collaborators
@@ -119,7 +129,8 @@ The core engine delegates focused rules work to these modules:
 
 - [game-objects.ts](../src/server/match/game-objects.ts) and
   [zones.ts](../src/server/match/zones.ts) create Game Objects, move them between
-  Zones, preserve Card Instance identity, and operate on Libraries.
+  Zones, preserve Card Instance identity, and operate on Libraries. Rules code
+  moves objects only through `propose`.
 - [characteristics.ts](../src/server/match/characteristics.ts) calculates
   effective characteristics and evaluates shared Object Filters.
 - [mana.ts](../src/server/match/mana.ts) parses mana costs and applies the
@@ -129,9 +140,9 @@ The core engine delegates focused rules work to these modules:
 - [triggers.ts](../src/server/match/triggers.ts) collects semantic events,
   creates triggered Ability Game Objects, and handles trigger ordering and
   target choices.
-- [resolution.ts](../src/server/match/resolution.ts) runs persisted effect
-  sequences; [object-effects.ts](../src/server/match/object-effects.ts) handles
-  shared object-selection and movement effects.
+- [resolution.ts](../src/server/match/resolution.ts) runs persisted Core AST
+  instruction queues through the
+  [effect handlers](../src/server/rules/vm/effects/).
 - [commander-rules.ts](../src/server/match/commander-rules.ts) handles Commander
   replacement choices and return procedures; [tokens.ts](../src/server/match/tokens.ts)
   supplies supported token characteristics.
@@ -146,7 +157,10 @@ there is no external Magic rules engine package in
 ## Persisted choices and private information
 
 Pending procedures, trigger queues, combat state, resolving effects, mana pools,
-and other gameplay data are stored on `MatchState.rules`. A pending procedure
+and other gameplay data are stored on `MatchState.rules`. Stored abilities and
+resolution queues hold Core AST effects since Room snapshot version 3;
+[upgradeRoom](../src/server/room/room-upgrade.ts) lifts the version 1 effects
+of older Rooms ([lift-v1-effects.ts](../src/server/room/lift-v1-effects.ts)). A pending procedure
 contains the responsible Match Player, its stage, a fresh identifier, and the
 legal selection data needed to validate its answer. This lets the Room persist
 and restore an interrupted Match without replaying completed instructions.

@@ -180,7 +180,13 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   retrievalCard.abilities[0].rules = {
     costs: [],
     target: { zone: "exile", kind: "card" },
-    effects: [{ kind: "move", subject: "target", destination: "graveyard" }],
+    effects: [
+      {
+        kind: "move",
+        objects: { target: "target-0" },
+        to: { zone: "graveyard" },
+      },
+    ],
   };
   force.mana(game.match, game.match.players[0].id, { U: 8 });
   const view = () =>

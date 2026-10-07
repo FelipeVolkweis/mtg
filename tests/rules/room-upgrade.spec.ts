@@ -7,6 +7,7 @@ import {
   currentSnapshotVersion,
   upgradeRoom,
 } from "../../src/server/room/room-upgrade";
+import { liftResolution } from "../../src/server/room/lift-v1-effects";
 import type { Catalog, MatchAction, RoomState } from "../../src/shared/model";
 
 // Version 1 Room documents captured from the runtime model before ADR-0018
@@ -69,8 +70,12 @@ for (const name of fixtures)
         before.controllerId;
       expect(object.ownerId).toBe(expected);
     }
-    // Everything else is untouched.
-    expect(match.rules).toEqual(original.match.rules);
+    // Everything else is untouched; version 3 lifts an in-flight resolution
+    // to Core AST effects (tested below).
+    const { resolving, ...rules } = match.rules!;
+    const { resolving: stored, ...storedRules } = original.match.rules;
+    expect(rules).toEqual(storedRules);
+    expect(!!resolving).toBe(!!stored);
     expect(match.zones).toEqual(original.match.zones);
     expect(match.instances).toEqual(original.match.instances);
     expect(room.participants).toEqual(original.participants);
@@ -156,4 +161,143 @@ test("a room from a newer server version is refused", () => {
   expect(() =>
     upgradeRoom({ snapshotVersion: currentSnapshotVersion + 1 } as RoomState),
   ).toThrow("newer than this server supports");
+});
+
+// Snapshot version 3 lifts in-flight version 1 resolutions to Core AST
+// effects. The captured fixtures cover a pending discard; these cover the
+// other waiting choices the version 1 resolver stored.
+test("a waiting version 1 payment becomes a may-pay holding its branches", () => {
+  const progress: Record<string, unknown> = {
+    sourceId: "s",
+    playerId: "p",
+    bindings: {},
+    actionChoice: {
+      kind: "pay-mana",
+      symbols: ["{4}"],
+      bind: "paid",
+      player: "event-player",
+    },
+    remaining: [
+      {
+        kind: "if",
+        condition: { binding: "paid", atLeast: 1 },
+        then: [],
+        otherwise: [{ kind: "counter-event" }],
+      },
+      { kind: "draw", count: 1 },
+    ],
+  };
+  liftResolution(progress);
+  expect(progress).toEqual({
+    sourceId: "s",
+    playerId: "p",
+    bindings: {},
+    remaining: [{ kind: "draw", count: 1 }],
+    waiting: {
+      effect: {
+        kind: "may-pay",
+        player: { event: "player" },
+        costs: [{ kind: "mana", symbols: ["{4}"] }],
+        else: [{ kind: "counter", objects: { event: "source" } }],
+      },
+      state: null,
+    },
+  });
+});
+
+test("waiting version 1 Library, each-player, tap and optional choices keep their progress", () => {
+  const filter = { zone: "battlefield", colored: true };
+  const cases: [Record<string, unknown>, unknown][] = [
+    [
+      { choiceEffect: { kind: "inspect", count: 2 }, inspectedIds: ["a", "b"] },
+      {
+        effect: expect.objectContaining({ kind: "library-sequence", count: 2 }),
+        state: { inspected: ["a", "b"] },
+      },
+    ],
+    [
+      {
+        choiceEffect: {
+          kind: "sacrifice",
+          subject: "set",
+          eachPlayer: true,
+          filter,
+        },
+        selectionPlayers: ["p2"],
+        simultaneousIds: ["x"],
+      },
+      {
+        effect: expect.objectContaining({ kind: "for-each-player" }),
+        state: { players: ["p2"], chosen: ["x"] },
+      },
+    ],
+    [
+      { actionChoice: { kind: "tap-choice", filter, bind: "tapped" } },
+      {
+        effect: {
+          kind: "tap",
+          objects: {
+            choose: {
+              from: { zone: "battlefield", color: "any" },
+              count: { min: 0 },
+            },
+          },
+          bind: "tapped",
+        },
+        state: null,
+      },
+    ],
+    [
+      {
+        choiceEffect: {
+          kind: "exile",
+          subject: "target",
+          optional: true,
+          link: "imprint",
+        },
+      },
+      {
+        effect: {
+          kind: "may",
+          effects: [
+            {
+              kind: "exile",
+              objects: { target: "target-0" },
+              linkAs: "imprint",
+            },
+          ],
+        },
+        state: null,
+      },
+    ],
+  ];
+  for (const [stored, waiting] of cases) {
+    const progress: Record<string, unknown> = {
+      remaining: [],
+      bindings: {},
+      ...stored,
+    };
+    liftResolution(progress);
+    expect(progress.waiting).toEqual(waiting);
+    for (const field of [
+      "actionChoice",
+      "choiceEffect",
+      "selectionPlayers",
+      "simultaneousIds",
+    ])
+      expect(progress).not.toHaveProperty(field);
+  }
+});
+
+test("created tokens become the binding a lifted attach reads", () => {
+  const progress: Record<string, unknown> = {
+    remaining: [{ kind: "attach", to: "created" }],
+    bindings: {},
+    createdIds: ["germ"],
+  };
+  liftResolution(progress);
+  expect(progress.objects).toEqual({ created: ["germ"] });
+  expect(progress.remaining).toEqual([
+    { kind: "attach", object: "source", to: { binding: "created" } },
+  ]);
 });

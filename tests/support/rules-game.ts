@@ -29,7 +29,7 @@ export function emptyRoom(): RoomState {
     entries: [],
   });
   return {
-    snapshotVersion: 2,
+    snapshotVersion: 3,
     id: randomUUID(),
     invite: "",
     revision: 0,

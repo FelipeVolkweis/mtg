@@ -151,7 +151,7 @@ Each field listed in §2.2 as having no writer is removed from `src/shared/model
 - **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11).
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
 - `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
-- `GameObject.cannotBeCountered`, later: counter resolution reads it until DSL v2 provides a "can't be countered" grant, so it is removed together with the counter effect handler (roadmap issue 7).
+- `GameObject.cannotBeCountered`: removed with the counter effect handler (roadmap issue 7). "Can't be countered" is the DSL v2 static grant `cant-be-countered`, which the counter handler reads from the spell's definition.
 - `status.flipped` and `status.phasedOut`, leaving `status.tapped`. Keep `status` as an object so later statuses don't change the shape again.
 - `MatchState.diceRolls`, `openingHandActions`, `stickerSheets`, `copiableValues`, `layout`, and the `position` match action.
 - Object kinds other than `card`, `token` and `ability`. Zone kinds `supplementary` and `special`.
@@ -243,7 +243,7 @@ Added to the test plan (rules-test-plan.md, M1 Phase 2):
 - **Import ownership:** re-importing a set leaves `authored` byte-identical.
 - **Snapshot upgrade:** fixtures of version 1 rooms (mid-casting, mid-resolution, with tokens and stack abilities) upgrade to valid version 2 rooms, and the characterization scenarios continue from them.
 - **Owner:** every object created by setup, casting, token creation, triggers and zone changes has `ownerId` set. No fallback chain remains (lint-style grep test or code review).
-- `cannotBeCountered`: its one test already uses `force.uncounterable` (issue #65). When the field is removed (roadmap issue 7), the test switches to a card definition with a DSL v2 "can't be countered" grant.
+- `cannotBeCountered`: removed in roadmap issue 7; its test authors Silver Myr with a DSL v2 `cant-be-countered` grant instead of the removed `force.uncounterable`.
 
 ---
 

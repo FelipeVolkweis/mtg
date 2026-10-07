@@ -206,7 +206,6 @@ export interface GameObject {
     targetIds: string[];
     color?: import("./rules.js").ManaType;
   };
-  cannotBeCountered?: boolean;
   ownerId: string;
 }
 export interface MatchState {

@@ -1,11 +1,9 @@
 import type { Characteristics } from "../../shared/model.js";
 
-// Shared explicit descriptors: each token has its own Match state and no Card Instance.
-export const tokenCharacteristics: Record<
-  "thopter" | "myr" | "germ",
-  Characteristics
-> = {
-  germ: {
+// Shared explicit descriptors: each token has its own Match state and no Card
+// Instance. Keyed by token registry id (catalog/tokens/).
+export const tokenCharacteristics: Record<string, Characteristics> = {
+  "phyrexian-germ-0-0": {
     name: "Phyrexian Germ",
     colors: ["B"],
     typeLine: "Token Creature — Phyrexian Germ",
@@ -16,7 +14,7 @@ export const tokenCharacteristics: Record<
     power: "0",
     toughness: "0",
   },
-  thopter: {
+  "thopter-1-1-flying": {
     name: "Thopter",
     colors: [],
     typeLine: "Token Artifact Creature — Thopter",
@@ -27,7 +25,7 @@ export const tokenCharacteristics: Record<
     power: "1",
     toughness: "1",
   },
-  myr: {
+  "myr-1-1": {
     name: "Myr",
     colors: [],
     typeLine: "Token Artifact Creature — Myr",
