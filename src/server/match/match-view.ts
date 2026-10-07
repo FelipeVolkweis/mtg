@@ -23,7 +23,7 @@ export function matchView(
   const instances: MatchView["instances"] = {};
   const zones = match.zones.map((zone) => {
     const visible =
-      !(match.mode === "rules" && zone.kind === "library") &&
+      zone.kind !== "library" &&
       (zoneFor(match, zone.id).canInspect(playerId) ||
         zoneFor(match, zone.id).canInspect(choicePlayerId));
     if (visible)
@@ -31,10 +31,9 @@ export function matchView(
         const object = match.objects[objectId];
         objects[objectId] = {
           ...object,
-          characteristics:
-            match.rules && catalog
-              ? new CharacteristicsCalculator(match, catalog).effective(object)
-              : object.characteristics,
+          characteristics: catalog
+            ? new CharacteristicsCalculator(match, catalog).effective(object)
+            : object.characteristics,
         };
         for (const instanceId of object.cardInstanceIds)
           instances[instanceId] = match.instances[instanceId];
@@ -50,7 +49,6 @@ export function matchView(
     };
   });
   if (
-    match.rules &&
     match.rules.pending?.playerId === choicePlayerId &&
     match.rules.resolving?.inspectedIds
   ) {
@@ -62,7 +60,7 @@ export function matchView(
         instances[instanceId] = match.instances[instanceId];
     }
   }
-  for (const id of match.rules?.revealedHandIds ?? []) {
+  for (const id of match.rules.revealedHandIds ?? []) {
     const object = match.objects[id];
     if (
       !object ||
@@ -92,60 +90,57 @@ export function matchView(
   // Build the projection explicitly: no private-zone identifiers cross the transport.
   return {
     id: match.id,
-    mode: match.mode,
     revision: match.revision,
     priority: match.priority,
-    ...(match.rules
-      ? (() => {
-          const {
-            pending,
-            commanderReplay,
-            commanderReturns,
-            checkpoint,
-            orderedTriggerPlayerIds,
-            resolving,
-            waitingTriggers,
-            triggerPlacement,
-            continuousEffects,
-            controlledSinceTurn,
-            turnStarted,
-            revealedHandIds,
-            ...rules
-          } = match.rules;
-          const engine = catalog ? new RulesEngine(match, catalog) : undefined;
-          return {
-            rules: {
-              ...rules,
-              continuousEffects: engine
-                ? new CharacteristicsCalculator(match, catalog!)
-                    .active()
-                    .filter((effect) => !!objects[effect.sourceId])
-                : [],
-              waiting: pending
-                ? { playerId: pending.playerId, kind: pending.kind }
-                : undefined,
-              pending:
-                pending && pending.playerId === choicePlayerId
-                  ? {
-                      ...pending,
-                      legalTargetIds:
-                        targetFilter(pending.ability) && engine
-                          ? engine.legalTargets(
-                              choicePlayerId!,
-                              targetFilter(pending.ability)!,
-                              engine.targetSource(pending),
-                            )
-                          : [],
-                      selectionOptions: engine
-                        ? engine.selectionOptions(pending)
-                        : {},
-                    }
-                  : undefined,
-            },
-            actions: engine && playerId ? engine.actions(choicePlayerId!) : [],
-          };
-        })()
-      : {}),
+    ...(() => {
+      const {
+        pending,
+        commanderReplay,
+        commanderReturns,
+        checkpoint,
+        orderedTriggerPlayerIds,
+        resolving,
+        waitingTriggers,
+        triggerPlacement,
+        continuousEffects,
+        controlledSinceTurn,
+        turnStarted,
+        revealedHandIds,
+        ...rules
+      } = match.rules;
+      const engine = catalog ? new RulesEngine(match, catalog) : undefined;
+      return {
+        rules: {
+          ...rules,
+          continuousEffects: engine
+            ? new CharacteristicsCalculator(match, catalog!)
+                .active()
+                .filter((effect) => !!objects[effect.sourceId])
+            : [],
+          waiting: pending
+            ? { playerId: pending.playerId, kind: pending.kind }
+            : undefined,
+          pending:
+            pending && pending.playerId === choicePlayerId
+              ? {
+                  ...pending,
+                  legalTargetIds:
+                    targetFilter(pending.ability) && engine
+                      ? engine.legalTargets(
+                          choicePlayerId!,
+                          targetFilter(pending.ability)!,
+                          engine.targetSource(pending),
+                        )
+                      : [],
+                  selectionOptions: engine
+                    ? engine.selectionOptions(pending)
+                    : {},
+                }
+              : undefined,
+        },
+        actions: engine && playerId ? engine.actions(choicePlayerId!) : [],
+      };
+    })(),
     players: match.players.map((player) => ({
       ...player,
       mulliganCount: player.mulliganCount ?? 0,

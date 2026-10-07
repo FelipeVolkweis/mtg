@@ -7,7 +7,7 @@ import {
 } from "./lift-v1-effects.js";
 
 /** The Room document shape this server writes (CM §5). */
-export const currentSnapshotVersion = 5;
+export const currentSnapshotVersion = 6;
 
 type Document = Record<string, unknown>;
 
@@ -206,6 +206,24 @@ function upgradeMatchToVersion5(match: Document) {
 }
 
 /**
+ * Version 6 (roadmap issue 11): legacy manual Matches are retired. A stored
+ * manual Match ends and its Room returns to the lobby, keeping each
+ * participant's Decklists; an automated Match drops its mode marker.
+ */
+function upgradeRoomToVersion6(room: Document) {
+  const match = room.match as Document | undefined;
+  if (!match) return;
+  if (match.mode === "manual" || !match.rules) {
+    delete room.match;
+    delete room.rematch;
+    for (const participant of (room.participants ?? []) as Document[])
+      participant.ready = false;
+    return;
+  }
+  delete match.mode;
+}
+
+/**
  * Brings a stored Room document up to the current snapshot version. Pure: it
  * returns the upgraded document and never touches storage. Version 1 handling
  * can be deleted once every version 1 Room has expired (ROOM_EXPIRY_DAYS after
@@ -222,6 +240,7 @@ export function upgradeRoom(stored: RoomState): RoomState {
   if (version < 3 && room.match) upgradeMatchToVersion3(room.match as Document);
   if (version < 4 && room.match) upgradeMatchToVersion4(room.match as Document);
   if (version < 5 && room.match) upgradeMatchToVersion5(room.match as Document);
+  if (version < 6) upgradeRoomToVersion6(room);
   room.snapshotVersion = currentSnapshotVersion;
   return stored;
 }

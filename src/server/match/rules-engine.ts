@@ -83,7 +83,6 @@ export class RulesEngine implements RulesMutator {
     readonly match: MatchState,
     readonly catalog: Catalog,
   ) {
-    if (!match.rules) throw new Error("Rules Match state is missing.");
     this.rules = match.rules;
   }
   /** The read-only rules context (rules-engine-refactor.md §6). */

@@ -205,8 +205,7 @@ export interface GameObject {
 }
 export interface MatchState {
   id: string;
-  mode: "manual" | "rules";
-  rules?: RulesState;
+  rules: RulesState;
   revision: number;
   players: MatchPlayer[];
   instances: Record<string, CardInstance>;
@@ -263,7 +262,7 @@ export interface MatchView extends Omit<
   MatchState,
   "zones" | "objects" | "rules"
 > {
-  rules?: Omit<
+  rules: Omit<
     RulesState,
     | "commanderReplay"
     | "commanderReturns"

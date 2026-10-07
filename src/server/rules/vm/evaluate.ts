@@ -132,7 +132,7 @@ export class Evaluator {
   /** The player or planeswalker an attacker attacks, if it can still be dealt damage. */
   private defender(attackerId: string): string[] {
     const match = this.match;
-    const attacker = match.rules?.combat?.attackers.find(
+    const attacker = match.rules.combat?.attackers.find(
       (a) => a.objectId === attackerId,
     );
     const defenderId = attacker?.defenderId ?? this.scope.event?.defenderId;
@@ -208,7 +208,7 @@ export class Evaluator {
       return false;
     if (p.status)
       for (const status of list(p.status)) {
-        const attackers = match.rules?.combat?.attackers ?? [];
+        const attackers = match.rules.combat?.attackers ?? [];
         const ok =
           status === "tapped"
             ? object.status.tapped
@@ -242,7 +242,7 @@ export class Evaluator {
       // combat damage by the source this turn (Steel Hellkite).
       const sources = this.objects(p.dealtDamageBy);
       if (
-        !match.rules?.damageEvents?.some(
+        !match.rules.damageEvents?.some(
           (e) =>
             sources.includes(e.sourceId) &&
             e.combat &&
@@ -324,7 +324,7 @@ export class Evaluator {
     }
     if ("commanderColors" in value) {
       const [playerId] = this.players(value.commanderColors);
-      return match.rules?.commanders[playerId]?.colorIdentity.length ?? 0;
+      return match.rules.commanders[playerId]?.colorIdentity.length ?? 0;
     }
     if ("eventAmount" in value) return scope.event?.damage?.amount ?? 0;
     return this.condition(value.if)
@@ -357,7 +357,7 @@ export class Evaluator {
       });
     if ("monarch" in condition)
       return this.players(condition.monarch).includes(
-        this.match.rules?.monarchId ?? "",
+        this.match.rules.monarchId ?? "",
       );
     if ("didPerform" in condition)
       return !!this.scope.bindings?.[condition.didPerform];

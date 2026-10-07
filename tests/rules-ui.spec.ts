@@ -102,7 +102,7 @@ test("two players configure Commander, keep private opening Hands, pass Priority
     await expect
       .poll(async () => (await snapshot(alice)).match!.id)
       .not.toBe(recovered.id);
-    expect((await snapshot(alice)).match!.mode).toBe("rules");
+    expect((await snapshot(alice)).match!.rules).toBeDefined();
   } finally {
     await Promise.all(contexts.map((context) => context.close()));
   }
@@ -971,7 +971,7 @@ test("solo full mono-U practice resumes, delegates opponent choices and replaces
   }
 });
 
-test("legacy Matches preserve Decklists and require every human's consent for automated replacement", async ({
+test("a stored legacy manual Match ends on load and its Room returns to the lobby with Decklists kept", async ({
   browser,
 }) => {
   const { Pool } = await import("pg");
@@ -987,14 +987,17 @@ test("legacy Matches preserve Decklists and require every human's consent for au
   });
   try {
     const invite = invitation.split("/").pop()!;
+    const before = await snapshot(alice);
     const document = (
-      await pool.query<{ document: import("../src/shared/model").RoomState }>(
+      await pool.query<{ document: Record<string, any> }>(
         "SELECT document FROM rooms WHERE invite = $1",
         [invite],
       )
     ).rows[0].document;
-    document.match!.mode = "manual";
-    delete document.match!.rules;
+    // A version 5 document holding a manual Match, as legacy Rooms stored it.
+    document.snapshotVersion = 5;
+    document.match.mode = "manual";
+    delete document.match.rules;
     document.revision++;
     await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [
       invite,
@@ -1002,35 +1005,12 @@ test("legacy Matches preserve Decklists and require every human's consent for au
     ]);
     await alice.reload();
     await bob.reload();
-    await expect(alice.getByRole("status")).toContainText(
-      "legacy Match requires replacement",
-    );
-    const before = await snapshot(alice);
-    const response = await exchange(alice, {
-      type: "match-action",
-      matchId: before.match!.id,
-      revision: before.match!.revision,
-      action: { type: "pass-priority" },
-    });
-    expect(response.event).toBe("rejected");
-    expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
-    await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
-    await alice
-      .getByRole("button", { name: "Request new Match", exact: true })
-      .click();
-    await alice
-      .getByRole("button", { name: "Confirm new Match", exact: true })
-      .click();
-    expect((await snapshot(alice)).match!.id).toBe(before.match!.id);
-    await bob.getByLabel("Room lobby and Decklists", { exact: true }).click();
-    await bob
-      .getByRole("button", { name: "Confirm new Match", exact: true })
-      .click();
-    await expect
-      .poll(async () => (await snapshot(alice)).match!.id)
-      .not.toBe(before.match!.id);
-    expect((await snapshot(alice)).match!.mode).toBe("rules");
-    expect((await snapshot(alice)).decklists).toEqual(before.decklists);
+    const after = await snapshot(alice);
+    expect(after.match).toBeUndefined();
+    expect(after.decklists).toEqual(before.decklists);
+    await expect(
+      alice.getByRole("button", { name: "Pass Priority", exact: true }),
+    ).toHaveCount(0);
   } finally {
     await pool.end();
     await Promise.all(contexts.map((c) => c.close()));

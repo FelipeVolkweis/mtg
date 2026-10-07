@@ -58,7 +58,7 @@ function CardState({
           {counter.quantity} {counter.kind} counters
         </span>
       ))}
-      {!!match.rules?.markedDamage?.[object.id] && (
+      {!!match.rules.markedDamage?.[object.id] && (
         <span>{match.rules.markedDamage[object.id]} damage</span>
       )}
     </span>
@@ -223,7 +223,7 @@ export function RulesBoard({
   const permanents = zoneObjects(match, battlefield);
   const stack = match.zones.find((z) => z.kind === "stack");
   const stackObjects = zoneObjects(match, stack).slice().reverse();
-  const pendingKey = `${match.rules?.pending?.id}:${match.rules?.pending?.stage}`;
+  const pendingKey = `${match.rules.pending?.id}:${match.rules.pending?.stage}`;
   useLayoutEffect(() => {
     const board = root.current;
     if (!board) return;
@@ -524,13 +524,12 @@ export function RulesBoard({
       : objects.filter((o) => objectOwner(match, o) === playerId);
   }
   function commander(player: MatchPlayer) {
-    const info = match.rules?.commanders[player.id];
+    const info = match.rules.commanders[player.id];
     const object = Object.values(match.objects).find((o) =>
       o.cardInstanceIds?.includes(info?.instanceId ?? ""),
     );
     const kind = match.zones.find((z) => z.id === object?.zoneId)?.kind;
-    const tax =
-      2 * (match.rules?.commanderCasts?.[info?.instanceId ?? ""] ?? 0);
+    const tax = 2 * (match.rules.commanderCasts?.[info?.instanceId ?? ""] ?? 0);
     return (
       <section
         className="commander-slot"
@@ -637,7 +636,7 @@ export function RulesBoard({
     });
   }
   function playerInfo(player: MatchPlayer) {
-    const damage = match.rules?.commanderDamage?.[player.id] ?? {};
+    const damage = match.rules.commanderDamage?.[player.id] ?? {};
     return (
       <div className="rules-player-info" data-testid={`player-${player.name}`}>
         <button
@@ -673,16 +672,16 @@ export function RulesBoard({
               key={type}
               className={`mana-circle mana-${type}`}
               title={type}
-              aria-label={`${match.rules?.mana[player.id]?.[type] ?? 0} ${type}`}
+              aria-label={`${match.rules.mana[player.id]?.[type] ?? 0} ${type}`}
             >
-              {match.rules?.mana[player.id]?.[type] ?? 0}
+              {match.rules.mana[player.id]?.[type] ?? 0}
               <small>{type}</small>
             </span>
           ))}
         </div>
         <span className="player-extra">
           {player.counters.map((c) => `${c.quantity} ${c.kind}`).join(" · ")}
-          {match.rules?.monarchId === player.id && " · Monarch"}
+          {match.rules.monarchId === player.id && " · Monarch"}
         </span>
         <span className="commander-damage">
           Commander damage:{" "}

@@ -303,7 +303,7 @@ export class RoomService implements OnModuleInit {
           if (
             room.match.players
               .filter(
-                (player) => player.id !== room.match!.rules?.practice?.playerId,
+                (player) => player.id !== room.match!.rules.practice?.playerId,
               )
               .every(
                 (player) =>

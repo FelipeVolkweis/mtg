@@ -142,7 +142,7 @@ export function App() {
     }
   }
   return (
-    <div className={`app ${view?.match?.mode === "rules" ? "match-app" : ""}`}>
+    <div className={`app ${view?.match ? "match-app" : ""}`}>
       <header>
         <a href="/" className="brand">
           ◈ Magic Tabletop
@@ -201,15 +201,7 @@ export function App() {
         </main>
       ) : view.match ? (
         <>
-          {view.match.mode === "rules" ? (
-            <RulesTabletop view={view} send={send} busy={busy} />
-          ) : (
-            <section role="status">
-              This legacy Match requires replacement. Open the Room lobby and
-              request a new automated Commander Match. Every current Match
-              Player must confirm.
-            </section>
-          )}
+          <RulesTabletop view={view} send={send} busy={busy} />
           <details className="room-panel">
             <summary aria-label="Room lobby and Decklists">
               <span className="room-trigger">Room</span>

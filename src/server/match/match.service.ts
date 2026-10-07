@@ -50,7 +50,15 @@ export class MatchService implements GameplayExecutor {
       );
     const match: MatchState = {
       id: randomUUID(),
-      mode: "rules",
+      rules: {
+        format: "commander",
+        setup: { keptPlayerIds: [], startingPlayerId: "" },
+        mana: {},
+        landsPlayed: {},
+        controlledSinceTurn: {},
+        turnStarted: {},
+        commanders: {},
+      },
       revision: 0,
       players: [],
       instances: {},
@@ -177,7 +185,6 @@ export class MatchService implements GameplayExecutor {
       commanders.push(commanders[0]);
     }
     const match = this.create({ ...room, participants }, catalog, "40");
-    match.mode = "rules";
     const startingPlayerId =
       match.players[
         startingParticipantId
@@ -187,33 +194,25 @@ export class MatchService implements GameplayExecutor {
             : randomInt(2)
       ].id;
     match.turn.activePlayerId = startingPlayerId;
-    match.rules = {
-      format: "commander",
-      setup: { keptPlayerIds: [], startingPlayerId },
-      mana: {},
-      landsPlayed: {},
-      controlledSinceTurn: {},
-      turnStarted: {},
-      commanders: {},
-    };
+    match.rules.setup.startingPlayerId = startingPlayerId;
     match.players.forEach((player, index) => {
       const instance = Object.values(match.instances).find(
         (i) =>
           i.ownerId === player.id && i.definitionId === commanders[index].id,
       )!;
       instance.commander = true;
-      match.rules!.commanders[player.id] = {
+      match.rules.commanders[player.id] = {
         instanceId: instance.id,
         colorIdentity: [...commanders[index].colorIdentity],
       };
       if (solo && index === 1) {
-        match.rules!.practice = {
+        match.rules.practice = {
           playerId: player.id,
           controllerParticipantId: participants[0].id,
         };
-        match.rules!.setup.keptPlayerIds.push(player.id);
+        match.rules.setup.keptPlayerIds.push(player.id);
       }
-      match.rules!.mana[player.id] = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
+      match.rules.mana[player.id] = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0 };
       const object = Object.values(match.objects).find((o) =>
         o.cardInstanceIds.includes(instance.id),
       )!;
@@ -238,11 +237,11 @@ export class MatchService implements GameplayExecutor {
     catalog: Catalog,
   ): ExecutionResult {
     const next = structuredClone(match);
-    const replay = next.rules?.commanderReplay;
+    const replay = next.rules.commanderReplay;
     let actor: Pick<Participant, "id"> = participant;
     let command = action;
     try {
-      if (replay && next.rules?.pending?.kind === "commander-return") {
+      if (replay && next.rules.pending?.kind === "commander-return") {
         const pending = next.rules.pending;
         const player = actingPlayer(next, participant.id);
         if (
@@ -262,30 +261,24 @@ export class MatchService implements GameplayExecutor {
         next.priority = replay.previousPriority;
         command = replay.action;
       }
-      if (next.mode !== "rules" || !next.rules)
-        throw new Error(
-          "This legacy Match requires replacement with an automated Commander Match.",
-        );
       const notice = new RulesEngine(next, catalog).apply(actor, command);
-      if (next.rules) {
-        delete next.rules.commanderReplay;
-        const engine = new RulesEngine(next, catalog);
-        while (
-          next.rules.practice &&
-          !next.rules.pending &&
-          next.outcome === "ongoing" &&
-          next.priority?.playerId === next.rules.practice.playerId
-        )
-          engine.pass(next.rules.practice.playerId);
-      }
+      delete next.rules.commanderReplay;
+      const engine = new RulesEngine(next, catalog);
+      while (
+        next.rules.practice &&
+        !next.rules.pending &&
+        next.outcome === "ongoing" &&
+        next.priority?.playerId === next.rules.practice.playerId
+      )
+        engine.pass(next.rules.practice.playerId);
       for (const key of Object.keys(match))
         if (!(key in next)) Reflect.deleteProperty(match, key);
       Object.assign(match, next);
-      return next.rules?.pending
+      return next.rules.pending
         ? { kind: "pending", playerId: next.rules.pending.playerId }
         : { kind: "accepted", notice };
     } catch (error) {
-      if (error instanceof CommanderReplacement && match.rules) {
+      if (error instanceof CommanderReplacement) {
         match.rules.commanderReplay = {
           action: command,
           participantId: actor.id,

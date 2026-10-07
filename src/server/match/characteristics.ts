@@ -95,7 +95,7 @@ export class CharacteristicsCalculator {
   }
   active(): ActiveContinuousEffect[] {
     return [
-      ...(this.match.rules?.temporaryEffects ?? []).filter(
+      ...(this.match.rules.temporaryEffects ?? []).filter(
         (effect) => !!this.match.objects[effect.sourceId],
       ),
       ...Object.values(this.match.objects).flatMap((source) => {

@@ -102,7 +102,7 @@ function CombatProcedure({
   selections: Record<string, string[]>;
   setSelections: (selections: Record<string, string[]>) => void;
 }) {
-  const pending = match.rules!.pending!;
+  const pending = match.rules.pending!;
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const attacking = pending.kind === "declare-attackers";
   const damage = pending.kind === "combat-damage";
@@ -229,7 +229,7 @@ function Procedure({
   targetId: string;
   setTargetId: (id: string) => void;
 }) {
-  const pending = match.rules!.pending!;
+  const pending = match.rules.pending!;
   const [chosenX, setChosenX] = useState(0);
   const [alternative, setAlternative] = useState("");
   const [selections, setSelections] = useState(pending.selections);

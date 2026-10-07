@@ -148,7 +148,7 @@ One pure function in `src/server/catalog/` derives these values when the catalog
 
 Each field listed in §2.2 as having no writer is removed from `src/shared/model.ts`, together with the code that only initializes, copies or projects it:
 
-- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11).
+- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11). As built: snapshot version 6 drops a stored manual Match (or one without `rules`) and its rematch proposal, clears ready flags and keeps Decklists.
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
 - `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
 - `GameObject.cannotBeCountered`: removed with the counter effect handler (roadmap issue 7). "Can't be countered" is the DSL v2 static grant `cant-be-countered`, which the counter handler reads from the spell's definition.

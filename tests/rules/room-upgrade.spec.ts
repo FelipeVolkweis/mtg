@@ -173,6 +173,36 @@ test("an upgraded room resolves the ability waiting on the Stack", async () => {
   expect(hand()).toBe(before + 1);
 });
 
+// Snapshot version 6 retires legacy manual Matches (roadmap issue 11).
+test("a stored manual Match ends and its Room returns to the lobby with Decklists kept", () => {
+  const stored = JSON.parse(readFileSync(`${dir}/manual.json`, "utf8"));
+  const original = structuredClone(stored);
+  expect(original.match.mode).toBe("manual");
+  const room = upgradeRoom(stored as RoomState);
+  expect(room.snapshotVersion).toBe(currentSnapshotVersion);
+  expect(room.match).toBeUndefined();
+  expect(room.rematch).toBeUndefined();
+  expect(room.participants.map((p) => p.id)).toEqual(
+    original.participants.map((p: { id: string }) => p.id),
+  );
+  for (const [index, participant] of room.participants.entries()) {
+    expect(participant.decklists).toEqual(
+      original.participants[index].decklists,
+    );
+    expect(participant.selectedDecklistId).toBe(
+      original.participants[index].selectedDecklistId,
+    );
+    expect(participant.ready).toBe(false);
+  }
+});
+
+test("an automated Match loses its mode marker on upgrade", async () => {
+  const { original, match } = await load("mid-casting");
+  expect(original.match.mode).toBe("rules");
+  expect(match).not.toHaveProperty("mode");
+  expect(match.rules).toBeDefined();
+});
+
 test("a room from a newer server version is refused", () => {
   expect(() =>
     upgradeRoom({ snapshotVersion: currentSnapshotVersion + 1 } as RoomState),

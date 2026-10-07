@@ -5,9 +5,9 @@ import type { MatchState } from "../../shared/model.js";
 export function actingPlayer(match: MatchState, participantId: string) {
   const own = match.players.find((p) => p.participantId === participantId);
   if (!own) return undefined;
-  const practice = match.rules?.practice;
+  const practice = match.rules.practice;
   return practice?.controllerParticipantId === participantId &&
-    match.rules?.pending?.playerId === practice.playerId
+    match.rules.pending?.playerId === practice.playerId
     ? match.players.find((p) => p.id === practice.playerId)
     : own;
 }

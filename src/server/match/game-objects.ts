@@ -58,11 +58,7 @@ export function moveObject(
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
-  if (
-    match.rules &&
-    destination.kind !== "stack" &&
-    destination.kind !== "battlefield"
-  )
+  if (destination.kind !== "stack" && destination.kind !== "battlefield")
     fresh.controllerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;

@@ -33,7 +33,7 @@ for (const [name, value, message] of [
 test("round-trip mode reloads the Match around every command", () => {
   test.skip(!roundTripEnabled, "Runs only with ROUND_TRIP=1.");
   const players: MatchState["players"] = [];
-  const match = { mode: "manual", players } as unknown as MatchState;
+  const match = { players, rules: {} } as unknown as MatchState;
   const result = new MatchService().execute(
     match,
     { id: "someone" } as Participant,
@@ -47,7 +47,7 @@ test("round-trip mode reloads the Match around every command", () => {
 
 test("round-trip mode rejects state that would not survive persistence", () => {
   test.skip(!roundTripEnabled, "Runs only with ROUND_TRIP=1.");
-  const match = { mode: "manual", seen: new Set() } as unknown as MatchState;
+  const match = { seen: new Set() } as unknown as MatchState;
   expect(() =>
     new MatchService().execute(
       match,
