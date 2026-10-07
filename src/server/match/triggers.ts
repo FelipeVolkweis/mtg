@@ -114,7 +114,7 @@ export class Triggers {
         if (trigger.grouped && groups.has(groupKey)) continue;
         if (trigger.grouped) groups.add(groupKey);
         if (ability.rules?.manaAbility) {
-          this.engine.effects(source.controllerId, ability.rules, []);
+          this.engine.produceMana(source.controllerId, ability.rules);
           continue;
         }
         this.engine.rules.waitingTriggers ??= [];
@@ -191,8 +191,7 @@ export class Triggers {
       ).length
     )
       return;
-    engine.match.objects[object.id] = object;
-    engine.zone("stack").objectIds.push(object.id);
+    engine.propose({ kind: "create", object, zone: engine.zone("stack") });
     if (trigger.ability.target) {
       engine.rules.pending = {
         id: randomUUID(),

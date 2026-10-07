@@ -74,7 +74,8 @@ test("the reader derives name, mana value, keywords, Oracle text and type lines"
       rules: {
         manaAbility: true,
         costs: [{ kind: "tap-source" }],
-        effects: [{ kind: "add-mana", quantity: 2, colors: ["C"] }],
+        effects: [],
+        produce: { quantity: 2, colors: ["C"] },
       },
     },
   ]);

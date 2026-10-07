@@ -191,11 +191,6 @@ export const force = {
     match.priority = { playerId, passedPlayerIds: [] };
   },
 
-  /** Makes a spell uncounterable (until DSL v2 provides the static grant). */
-  uncounterable(object: GameObject, value = true) {
-    object.cannotBeCountered = value;
-  },
-
   /** Sets rules-state fields directly, for one-off scenario setup. */
   rules(match: MatchState, patch: Partial<RulesState>) {
     Object.assign(rules(match), patch);

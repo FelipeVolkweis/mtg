@@ -38,12 +38,9 @@ export async function cardAction(page: Page, label: string) {
       ? ability.rules?.manaAbility
       : ability.id === identifier,
   );
-  const mana = ability?.rules?.effects.find(
-    (effect) => effect.kind === "add-mana",
-  );
+  const mana = ability?.rules?.produce;
   const chooseColor =
-    mana?.kind === "add-mana" &&
-    (mana.colors === "commander-colors" || mana.colors.length > 1);
+    !!mana && (mana.colors === "commander-colors" || mana.colors.length > 1);
   const description = ability?.description
     ? `${ability.description}${chooseColor ? ` Choose {${identifier.split(" ").at(-1)}}.` : ""}`
     : label;
