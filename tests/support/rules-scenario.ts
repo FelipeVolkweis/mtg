@@ -85,21 +85,6 @@ export async function seedRulesScenario(
       ];
       const host = add("Silver Myr", "battlefield");
       add("Adaptive Omnitool", "battlefield").attachmentTo = host.id;
-      const hidden = add("Silver Myr", "battlefield", 1);
-      hidden.faceDown = {
-        mode: "morph",
-        inspectableBy: [],
-        turnUpProcedure: "",
-        characteristics: {
-          name: "Face-down creature",
-          typeLine: "Creature",
-          types: ["Creature"],
-          colors: [],
-          rulesText: "",
-          power: "2",
-          toughness: "2",
-        },
-      };
     }
     if (synergies) {
       add("Sai, Master Thopterist", "battlefield");

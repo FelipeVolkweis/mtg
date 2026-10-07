@@ -41,11 +41,11 @@ Other findings:
 
 ## 2.2 Runtime model
 
-Manual Matches are legacy: `match.service.ts:272` rejects them and requires replacement with an automated Commander Match. New matches always set `mode: "rules"` (`match.service.ts:55`, `:186`).
+Manual Matches are legacy: `match.service.ts:272` rejects their actions and the Room offers replacement with an automated Commander Match, with every human player's consent (`tests/rules-ui.spec.ts`, "legacy Matches preserve Decklists…"). New matches always set `mode: "rules"` (`match.service.ts:55`, `:186`).
 
 | Field | Writers outside initialization and copying | Readers |
 |---|---|---|
-| `MatchState.mode`, optional `MatchState.rules` | none (always `"rules"` with `rules` present) | `match.rules &&` guards across the engine |
+| `MatchState.mode`, optional `MatchState.rules` | stored legacy documents keep `mode: "manual"` without `rules` | legacy detection in `MatchService.execute`, `matchView` and `App.tsx` (**kept**, see §4.1) |
 | `objectPatchSchema` | none (manual-mode edit schema; only its types are reused) | — |
 | `GameObject.designations` | none | client display |
 | `GameObject.choices` | none | — |
@@ -62,7 +62,7 @@ Manual Matches are legacy: `match.service.ts:272` rejects them and requires repl
 | object kinds `dungeon`, `plane`, `phenomenon`, `conspiracy`, `attraction`, `contraption` | none | — |
 | zone kinds `supplementary`, `special` | none | — |
 
-Ownership is stored three ways: `CardInstance.ownerId`, an optional `GameObject.ownerId` (set only on ability and token objects: `triggers.ts:56`, `rules-engine.ts:559`, `:774`, `:894`), and `controllerId` as a last resort. The chain `instances[object.cardInstanceIds[0]]?.ownerId ?? object.ownerId ?? object.controllerId` appears 14 times.
+Ownership is stored three ways: `CardInstance.ownerId`, an optional `GameObject.ownerId` (set only on tokens, `rules-engine.ts` token creation; the other `ownerId:` sites are events and source snapshots), and `controllerId` as a last resort. The chain `instances[object.cardInstanceIds[0]]?.ownerId ?? object.ownerId ?? object.controllerId` appears 14 times.
 
 X is stored twice on spells: `variables` (`rules-engine.ts:915`) and `casting.chosenX` (`:918`). The casting record keeps `modes`, `alternativeCost` and `additionalCosts` as free text.
 
@@ -148,7 +148,7 @@ One pure function in `src/server/catalog/` derives these values when the catalog
 
 Each field listed in §2.2 as having no writer is removed from `src/shared/model.ts`, together with the code that only initializes, copies or projects it:
 
-- `MatchState.mode`. `MatchState.rules` becomes required, and the `match.rules &&` guards go away.
+- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. Retiring legacy Matches (for example, ending them in `upgradeRoom`) is a product decision recorded as an open question on roadmap issue 3; once made, `rules` becomes required and the `match.rules &&` guards go away.
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
 - `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
 - `GameObject.cannotBeCountered`, later: counter resolution reads it until DSL v2 provides a "can't be countered" grant, so it is removed together with the counter effect handler (roadmap issue 7).
@@ -157,6 +157,8 @@ Each field listed in §2.2 as having no writer is removed from `src/shared/model
 - Object kinds other than `card`, `token` and `ability`. Zone kinds `supplementary` and `special`.
 
 Client code that reads these fields (`RulesBoard.tsx` status badges, `rules-presentation.ts` `designations`/`faceDown`/`protector`) is removed with them.
+
+As built (issue #66): `src/server/match/object-visibility.ts` (face-down inspection) and `src/shared/table-layout.ts` (spatial positions) had no other purpose and are deleted. Without face-down state every object in a visible Zone is fully visible, so `ObjectView` loses `hidden`, `melded` and `canTurnFaceUp`. Combat no longer offers Battles as defenders, since there is no Battle Protector. The face-down part of the UI presentation test is removed (classified Change).
 
 ## 4.2 Changed
 
@@ -255,7 +257,7 @@ Every current field, and what happens to it.
 
 **`GameObject`:** `id`, `kind` (narrowed), `zoneId`, `cardInstanceIds`, `controllerId`, `characteristics`, `components`, `artwork`, `currentFace`, `status` (tapped only), `counters`, `attachmentTo`, `links`, `sourceObjectId`, `sourceAbilityId`, `resolution` kept · `ownerId` required · `variables` + `casting` become the proposal record · `designations`, `faceDown`, `protectorId`, `choices`, `copiableValuesId`, `stickerPlacements`, `meldParts` removed · `cannotBeCountered` removed with the counter effect handler (roadmap issue 7).
 
-**`MatchState`:** `id`, `revision`, `players`, `instances`, `objects`, `zones`, `turn`, `outcome`, `priority` kept · `rules` required · `mode`, `layout`, `openingHandActions`, `copiableValues`, `diceRolls`, `stickerSheets` removed.
+**`MatchState`:** `id`, `revision`, `players`, `instances`, `objects`, `zones`, `turn`, `outcome`, `priority`, `mode`, optional `rules` kept (legacy Matches, §4.1) · `layout`, `openingHandActions`, `copiableValues`, `diceRolls`, `stickerSheets` removed.
 
 ---
 

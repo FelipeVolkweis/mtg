@@ -88,7 +88,7 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 - **Done when:**
   - [ ] `RoomState.snapshotVersion` exists and `upgradeRoom` runs on load, tested with captured version 1 room documents (mid-casting, mid-resolution, tokens, stack abilities);
   - [ ] `GameObject.ownerId` is required and set at creation; `grep -n "ownerId ??" src` is empty;
-  - [ ] every field CM §8 marks removed is gone from types and code, the `position` action is removed, and `upgradeRoom` strips them;
+  - [ ] every field CM §8 marks removed is gone from types and code, the `position` action is removed, and `upgradeRoom` strips them (`mode` and the optional `rules` stay for legacy Matches, CM §4.1);
   - [ ] gates and `npm test` are green.
 
 ### 4. DSL v2 schema, registries and compiler

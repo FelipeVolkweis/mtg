@@ -5,7 +5,6 @@ import type {
   MatchState,
   ZoneState,
 } from "../../shared/model.js";
-import { initialPosition } from "../../shared/table-layout.js";
 export function gameObject(
   kind: GameObject["kind"],
   zoneId: string,
@@ -24,17 +23,12 @@ export function gameObject(
     artwork: [],
     cardInstanceIds: [],
     currentFace: 0,
-    status: { tapped: false, flipped: false, phasedOut: false },
-    designations: [],
+    status: { tapped: false },
     counters: [],
-    faceDown: null,
-    protectorId: null,
-    choices: [],
     variables: [],
     attachmentTo: null,
     links: [],
     casting: null,
-    stickerPlacements: [],
   };
 }
 
@@ -72,8 +66,6 @@ export function moveObject(
     fresh.controllerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;
-  fresh.faceDown = object.faceDown;
-  fresh.meldParts = object.meldParts;
   if (destination.kind === "stack" || destination.kind === "battlefield") {
     fresh.currentFace = object.currentFace;
     fresh.characteristics = structuredClone(object.characteristics);
@@ -82,13 +74,11 @@ export function moveObject(
     !object.cardInstanceIds.length ||
     (source.kind === "stack" && destination.kind === "battlefield")
   ) {
-    fresh.copiableValuesId = object.copiableValuesId;
     fresh.sourceObjectId = object.sourceObjectId;
     fresh.sourceAbilityId = object.sourceAbilityId;
   }
   if (source.kind === "stack" && destination.kind === "battlefield") {
     fresh.casting = object.casting;
-    fresh.choices = object.choices;
     fresh.variables = object.variables;
   }
   for (const other of Object.values(match.objects)) {
@@ -102,7 +92,6 @@ export function moveObject(
     );
   }
   delete match.objects[objectId];
-  delete match.layout.positions[objectId];
   match.objects[fresh.id] = fresh;
   destination.objectIds.splice(
     index ?? destination.objectIds.length,
@@ -110,14 +99,6 @@ export function moveObject(
     fresh.id,
   );
   if (destination.kind === "battlefield") {
-    const player = match.players.find(
-      (player) => player.id === fresh.controllerId,
-    )!;
-    match.layout.positions[fresh.id] = initialPosition(
-      match.players.length,
-      player.seat,
-      Object.keys(match.layout.positions).length,
-    );
     if (match.rules)
       match.rules.controlledSinceTurn[fresh.id] = match.turn.number;
   }

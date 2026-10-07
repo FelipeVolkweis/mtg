@@ -115,10 +115,7 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   const germ = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden &&
-      o.kind === "token" &&
-      o.characteristics.name === "Phyrexian Germ",
+    (o) => o.kind === "token" && o.characteristics.name === "Phyrexian Germ",
   )!;
   expect(germ).toBeDefined();
   expect(germ.characteristics).toMatchObject({
@@ -128,7 +125,7 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
     toughness: "2",
   });
   const nettle = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Nettlecyst",
+    (o) => o.characteristics.name === "Nettlecyst",
   )!;
   expect(nettle.attachmentTo).toBe(germ.id);
   const creature = game.seed("Silver Myr", "battlefield");
@@ -209,7 +206,7 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
     selections: { select: [creature.id] },
   });
   let permanent = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   // Master counts its owner's artifacts even in Exile; its former Battlefield 2/2 is not frozen.
   expect(permanent.characteristics).toMatchObject({
@@ -288,7 +285,7 @@ for (const decline of [true, false]) {
       ).toBe("accepted");
     expect(view().rules!.pending).toBeUndefined();
     const permanent = Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === "Duplicant",
+      (o) => o.characteristics.name === "Duplicant",
     )!;
     expect(permanent.characteristics).toMatchObject({
       power: "2",
@@ -381,7 +378,7 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
     selections: { select: [victim.id] },
   });
   const old = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   expect(old.characteristics).toMatchObject({ power: "1", toughness: "1" });
   game.command(0, {
@@ -396,13 +393,12 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   });
   resolve();
   const returned = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Duplicant",
+    (o) => o.characteristics.name === "Duplicant",
   )!;
   game.command(0, { type: "cast-spell", objectId: returned.id });
   resolve();
   const fresh = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden && o.characteristics.name === "Duplicant" && o.kind === "card",
+    (o) => o.characteristics.name === "Duplicant" && o.kind === "card",
   )!;
   expect(fresh.id).not.toBe(old.id);
   expect(fresh.links).toEqual([]);
@@ -458,14 +454,13 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
     selections: {
       select: [
         Object.values(view().objects).find(
-          (o) => !o.hidden && o.characteristics.name === "Nettlecyst",
+          (o) => o.characteristics.name === "Nettlecyst",
         )!.id,
       ],
     },
   });
   const fresh = Object.values(view().objects).find(
-    (o) =>
-      !o.hidden && o.kind === "card" && o.characteristics.name === "Nettlecyst",
+    (o) => o.kind === "card" && o.characteristics.name === "Nettlecyst",
   )!;
   game.command(0, {
     type: "activate-ability",

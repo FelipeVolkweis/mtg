@@ -409,7 +409,6 @@ test("Disk destroys its union simultaneously, including itself, while captured d
   expect(
     Object.values(view().objects).filter(
       (o) =>
-        !o.hidden &&
         o.zoneId === view().zones.find((z) => z.kind === "battlefield")!.id,
     ),
   ).toHaveLength(1);
@@ -423,10 +422,10 @@ test("Disk destroys its union simultaneously, including itself, while captured d
   const target = view().rules!.pending!;
   expect(target.kind).toBe("trigger-target");
   const graveSpring = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Ichor Wellspring",
+    (o) => o.characteristics.name === "Ichor Wellspring",
   )!;
   const graveRetriever = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Myr Retriever",
+    (o) => o.characteristics.name === "Myr Retriever",
   )!;
   expect(target.legalTargetIds).toContain(graveSpring.id);
   expect(target.legalTargetIds).not.toContain(graveRetriever.id);
@@ -474,7 +473,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
       }).kind,
     ).toBe("accepted");
     const entered = Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === name,
+      (o) => o.characteristics.name === name,
     )!;
     expect(entered.status.tapped).toBe(true);
     expect(entered.casting).toBeNull();
@@ -558,7 +557,7 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   game.command(1, { type: "pass-priority" });
   expect(view().objects[own.id]).toBeDefined();
   const dead = Object.values(view().objects).find(
-    (o) => !o.hidden && o.cardInstanceIds?.[0] === enemy.cardInstanceIds[0],
+    (o) => o.cardInstanceIds?.[0] === enemy.cardInstanceIds[0],
   )!;
   expect(dead.zoneId).toBe(
     view().zones.find(
@@ -576,7 +575,7 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   expect(view().zones.find((z) => z.kind === "exile")!.count).toBe(1);
   expect(
     Object.values(view().objects).find(
-      (o) => !o.hidden && o.characteristics.name === "Soul-Guide Lantern",
+      (o) => o.characteristics.name === "Soul-Guide Lantern",
     )!.zoneId,
   ).toBe(
     view().zones.find(

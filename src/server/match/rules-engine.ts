@@ -103,15 +103,7 @@ export class RulesEngine {
         this.cast(player.id, action.objectId);
       else if (action.type === "activate-ability")
         this.activate(player.id, action);
-      else if (action.type === "position") {
-        const object = this.object(action.objectId);
-        if (
-          object.zoneId !== this.zone("battlefield").id ||
-          object.controllerId !== player.id
-        )
-          throw new Error("Choose your Battlefield object.");
-        this.match.layout.positions[object.id] = action.position;
-      } else throw new Error("Use a legal rules action.");
+      else throw new Error("Use a legal rules action.");
     }
     this.match.revision++;
     return undefined;
@@ -414,7 +406,7 @@ export class RulesEngine {
   }
   battlefieldSources() {
     return Object.values(this.match.objects).filter(
-      (o) => o.zoneId === this.zone("battlefield").id && !o.status.phasedOut,
+      (o) => o.zoneId === this.zone("battlefield").id,
     );
   }
   emit(kind: "enter" | "cast", object: GameObject) {
@@ -989,8 +981,7 @@ export class RulesEngine {
         ] ?? 0);
     let reduction = 0;
     for (const source of Object.values(this.match.objects)) {
-      if (source.status.phasedOut || source.controllerId !== pending.playerId)
-        continue;
+      if (source.controllerId !== pending.playerId) continue;
       for (const ability of this.definition(source)?.abilities ?? []) {
         for (const modifier of ability.rules?.costModifiers ?? []) {
           if (modifier.use !== pending.kind) continue;
