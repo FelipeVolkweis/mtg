@@ -42,7 +42,7 @@ export class MatchService implements GameplayExecutor {
     startingLife: string,
   ): MatchState {
     const participants = room.participants.filter(
-      (participant) => participant.ready && participant.selectedDecklistId,
+      (participant) => participant.ready && participant.deck,
     );
     if (participants.length < 1 || participants.length > 4)
       throw new Error(
@@ -97,9 +97,7 @@ export class MatchService implements GameplayExecutor {
       const library = addZone("library", `${player.name}'s Library`, player.id);
       addZone("hand", `${player.name}'s Hand`, player.id);
       addZone("graveyard", `${player.name}'s Graveyard`, player.id);
-      const decklist = participant.decklists.find(
-        (decklist) => decklist.id === participant.selectedDecklistId,
-      );
+      const decklist = participant.deck;
       if (!decklist)
         throw new Error("A selected Decklist is no longer available.");
       for (const entry of decklist.entries) {
@@ -149,9 +147,7 @@ export class MatchService implements GameplayExecutor {
     catalog: Catalog,
     startingParticipantId?: string,
   ) {
-    const participants = room.participants.filter(
-      (p) => p.ready && p.selectedDecklistId,
-    );
+    const participants = room.participants.filter((p) => p.ready && p.deck);
     if (![1, 2].includes(participants.length))
       throw new Error("Commander requires one or two ready Room Participants.");
     const commanders = participants.map((p) =>

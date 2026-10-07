@@ -13,8 +13,8 @@ export async function exchange(
   return page.evaluate(
     (command) =>
       new Promise<ServerMessage>((resolve, reject) => {
+        // The session cookie identifies the signed-in User.
         const invite = location.pathname.split("/").pop()!;
-        const credential = localStorage.getItem(`mtg:${invite}`);
         const ws = new WebSocket(
           `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`,
         );
@@ -28,7 +28,7 @@ export async function exchange(
           ws.send(
             JSON.stringify({
               event: "authenticate",
-              data: { invite, credential },
+              data: { invite },
             }),
           );
         ws.onmessage = (event) => {

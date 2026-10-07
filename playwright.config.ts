@@ -19,6 +19,7 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120_000,
     env: {
+      AUTH_DEV_LOGIN: "1",
       DATABASE_URL:
         process.env.TEST_DATABASE_URL ??
         "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",

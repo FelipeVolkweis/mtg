@@ -1,44 +1,37 @@
 import {
-  Body,
+  BadRequestException,
   Controller,
   Get,
   Inject,
+  NotFoundException,
   Param,
   Post,
-  BadRequestException,
+  Req,
 } from "@nestjs/common";
-import { z } from "zod";
+import type { IncomingMessage } from "node:http";
 import { RoomService } from "./room.service.js";
+import { UserService } from "../user/user.service.js";
 
-const name = z.string().trim().min(1).max(64);
 @Controller("api")
 export class RoomController {
-  constructor(@Inject(RoomService) private readonly rooms: RoomService) {}
+  constructor(
+    @Inject(RoomService) private readonly rooms: RoomService,
+    @Inject(UserService) private readonly users: UserService,
+  ) {}
   @Get("health") health() {
     return { ok: true };
   }
-  @Post("rooms") async create(@Body() body: unknown) {
-    const result = z.object({ name }).strict().safeParse(body);
-    if (!result.success)
-      throw new BadRequestException("Enter a guest name of 1–64 characters.");
-    return this.rooms.create(result.data.name);
+  @Post("rooms") async create(@Req() request: IncomingMessage) {
+    return this.rooms.create(await this.users.require(request));
   }
   @Post("rooms/:invite/join") async join(
+    @Req() request: IncomingMessage,
     @Param("invite") invite: string,
-    @Body() body: unknown,
   ) {
-    const result = z
-      .object({ name, credential: z.string().max(128).optional() })
-      .strict()
-      .safeParse(body);
-    if (!result.success)
-      throw new BadRequestException("Enter a guest name of 1–64 characters.");
+    const user = await this.users.require(request);
+    if (!/^[a-f0-9]{48}$/.test(invite)) throw new NotFoundException();
     try {
-      return await this.rooms.join(
-        invite,
-        result.data.name,
-        result.data.credential,
-      );
+      return await this.rooms.join(invite, user);
     } catch (error) {
       throw new BadRequestException(
         error instanceof Error ? error.message : "Unable to join Room",

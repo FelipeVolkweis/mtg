@@ -114,7 +114,9 @@ for (const name of fixtures)
     if (pending?.ability) expect(pending.ability).toHaveProperty("kind");
     expect(match.zones).toEqual(original.match.zones);
     expect(match.instances).toEqual(original.match.instances);
-    expect(room.participants).toEqual(original.participants);
+    expect(room.participants.map((p) => p.id)).toEqual(
+      original.participants.map((p: { id: string }) => p.id),
+    );
     // Upgrading again changes nothing.
     expect(upgradeRoom(structuredClone(room))).toEqual(room);
   });
@@ -214,7 +216,7 @@ test("an upgraded room resolves the ability waiting on the Stack", async () => {
 });
 
 // Snapshot version 6 retires legacy manual Matches (roadmap issue 11).
-test("a stored manual Match ends and its Room returns to the lobby with Decklists kept", () => {
+test("a stored manual Match ends and its Room returns to the lobby", () => {
   const stored = JSON.parse(readFileSync(`${dir}/manual.json`, "utf8"));
   const original = structuredClone(stored);
   expect(original.match.mode).toBe("manual");
@@ -225,15 +227,24 @@ test("a stored manual Match ends and its Room returns to the lobby with Decklist
   expect(room.participants.map((p) => p.id)).toEqual(
     original.participants.map((p: { id: string }) => p.id),
   );
-  for (const [index, participant] of room.participants.entries()) {
-    expect(participant.decklists).toEqual(
-      original.participants[index].decklists,
-    );
-    expect(participant.selectedDecklistId).toBe(
-      original.participants[index].selectedDecklistId,
-    );
+  for (const participant of room.participants)
     expect(participant.ready).toBe(false);
+});
+
+// Snapshot version 7 moves Decklists to each User's Deck Catalog (ADR-0019).
+test("guest credentials and Room-owned Decklists are dropped on upgrade", () => {
+  const stored = JSON.parse(readFileSync(`${dir}/manual.json`, "utf8"));
+  const original = structuredClone(stored);
+  expect(original.participants[0].decklists.length).toBeGreaterThan(0);
+  const room = upgradeRoom(stored as RoomState);
+  for (const [index, participant] of room.participants.entries()) {
+    expect(participant).toEqual({
+      id: original.participants[index].id,
+      name: original.participants[index].name,
+      ready: false,
+    });
   }
+  expect(upgradeRoom(structuredClone(room))).toEqual(room);
 });
 
 test("an automated Match loses its mode marker on upgrade", async () => {

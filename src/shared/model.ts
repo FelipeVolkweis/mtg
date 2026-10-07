@@ -79,19 +79,64 @@ export interface DeckEntry {
   definitionId: string;
   printingId: string;
 }
+export const deckFormats = [
+  "commander",
+  "standard",
+  "pioneer",
+  "modern",
+  "legacy",
+  "vintage",
+  "pauper",
+] as const;
+export type DeckFormat = (typeof deckFormats)[number];
+export const deckFormatNames: Record<DeckFormat, string> = {
+  commander: "Commander",
+  standard: "Standard",
+  pioneer: "Pioneer",
+  modern: "Modern",
+  legacy: "Legacy",
+  vintage: "Vintage",
+  pauper: "Pauper",
+};
+/** Formats a Match can be played in; other Decks are catalogued only. */
+export const playableFormats: readonly DeckFormat[] = ["commander"];
+/** The Deck contents a Match is built from. */
 export interface Decklist {
   id: string;
   name: string;
+  format: DeckFormat;
   text: string;
   entries: DeckEntry[];
+  commanderId?: string;
+}
+/** A Decklist in a User's Deck Catalog. */
+export interface Deck extends Decklist {
+  updatedAt: number;
+}
+export interface DeckView extends Deck {
+  /** Format rule violations; a Deck with issues can be saved but not played. */
+  issues: string[];
+  commanderOptions: { definitionId: string; name: string }[];
+}
+export const deckInputSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100),
+    format: z.enum(deckFormats),
+    text: z.string().min(1).max(100000),
+    commanderId: id.nullable().optional(),
+  })
+  .strict();
+export type DeckInput = z.infer<typeof deckInputSchema>;
+export interface User {
+  id: string;
+  name: string;
 }
 export interface Participant {
   id: string;
+  userId: string;
   name: string;
-  credentialHash: string;
-  decklists: Decklist[];
-  selectedDecklistId?: string;
-  selectedCommanderId?: string;
+  /** Copy of the selected Deck, refreshed on select, ready and Match start. */
+  deck?: Decklist;
   ready: boolean;
 }
 export const phaseSteps = [
@@ -335,16 +380,9 @@ export interface RoomView {
   invitation: string;
   participantId: string;
   participants: ParticipantView[];
-  decklists: Decklist[];
-  selectedDecklistId?: string;
+  selectedDeck?: Decklist;
   match?: MatchView;
   rematch?: RematchProposal;
-  selectedCommanderId?: string;
-  commanderOptions?: {
-    definitionId: string;
-    name: string;
-    eligible: boolean;
-  }[];
 }
 export const matchActionSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("pass-priority") }).strict(),
@@ -396,24 +434,9 @@ export type MatchAction = z.infer<typeof matchActionSchema>;
 export const roomCommandSchema = z.discriminatedUnion("type", [
   z
     .object({
-      type: z.literal("save-decklist"),
-      id: id.optional(),
-      name: z.string().trim().min(1).max(100),
-      text: z.string().min(1).max(100000),
-    })
-    .strict(),
-  z
-    .object({
       type: z.literal("ready"),
-      decklistId: id.optional(),
+      deckId: id.optional(),
       ready: z.boolean(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("configure-commander"),
-      decklistId: id,
-      definitionId: id,
     })
     .strict(),
   z
@@ -438,10 +461,6 @@ export const roomCommandSchema = z.discriminatedUnion("type", [
     .strict(),
 ]);
 export type RoomCommand = z.infer<typeof roomCommandSchema>;
-export interface Session {
-  invite: string;
-  credential: string;
-}
 export type ServerMessage =
   | {
       event: "view";

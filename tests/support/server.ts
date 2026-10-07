@@ -14,6 +14,7 @@ export async function startServer(
   const child = spawn(process.execPath, ["tests/start-server.mjs"], {
     env: {
       ...process.env,
+      AUTH_DEV_LOGIN: "1",
       DATABASE_URL: url.toString(),
       PORT: String(port),
       ...extraEnv,

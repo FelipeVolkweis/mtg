@@ -7,14 +7,31 @@ import { RoomController } from "./room/room.controller.js";
 import { RoomGateway } from "./room/room.gateway.js";
 import { CatalogModule } from "./catalog/catalog.module.js";
 import { MatchService } from "./match/match.service.js";
+import { UserService } from "./user/user.service.js";
+import { AuthController } from "./user/auth.controller.js";
+import { DeckService } from "./deck/deck.service.js";
+import { DeckController } from "./deck/deck.controller.js";
 
 @Global()
 @Module({ providers: [Database], exports: [Database] })
 export class StorageModule {}
+@Module({
+  providers: [UserService],
+  controllers: [AuthController],
+  exports: [UserService],
+})
+export class UserModule {}
+@Module({
+  imports: [CatalogModule, UserModule],
+  providers: [DeckService],
+  controllers: [DeckController],
+  exports: [DeckService],
+})
+export class DeckModule {}
 @Module({ providers: [MatchService], exports: [MatchService] })
 export class MatchModule {}
 @Module({
-  imports: [CatalogModule, MatchModule],
+  imports: [MatchModule, UserModule, DeckModule],
   providers: [RoomService, RoomGateway],
   controllers: [RoomController],
 })

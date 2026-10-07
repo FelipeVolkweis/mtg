@@ -13,7 +13,6 @@ test("repeated authentication on one socket cannot leave a disconnected guest co
     () =>
       new Promise<void>((resolve, reject) => {
         const invite = location.pathname.split("/").pop()!;
-        const credential = localStorage.getItem(`mtg:${invite}`);
         const ws = new WebSocket(`ws://${location.host}/ws`);
         const timeout = setTimeout(() => {
           ws.close();
@@ -25,7 +24,7 @@ test("repeated authentication on one socket cannot leave a disconnected guest co
             ws.send(
               JSON.stringify({
                 event: "authenticate",
-                data: { invite, credential },
+                data: { invite },
               }),
             );
         };

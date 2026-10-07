@@ -7,13 +7,14 @@ Shared language for an invitation-only Magic tabletop where Room Participants pl
 ### Rooms and Matches
 
 **Room**:
-An invitation-only online session for guest players and successive Matches. A Room can hold waiting guests while one human plays Solo Practice or two humans play a Commander Match.
+An invitation-only online session for signed-in Users and successive Matches. A Room can hold waiting participants while one human plays Solo Practice or two humans play a Commander Match.
 
-**Guest player**:
-A person playing in a room under a chosen name, without a persistent account.
+**User**:
+A person with a persistent account, signed in through a provider such as Google. A User owns a Deck Catalog and is named after their email address, before the @.
+_Avoid_: Guest player (retired by ADR-0019)
 
 **Room Participant**:
-A Guest player's identity within a Room, retained across successive Matches. Participants outside the active Match are spectators waiting for a later Match.
+A User's seat at a Room, retained across successive Matches and found again whenever that User returns. Participants outside the active Match are spectators waiting for a later Match.
 
 **Match**:
 One game of Magic played by one or more Match Players in a Room.
@@ -40,7 +41,13 @@ A seat in a Match with its own game state, occupied by a Room Participant or a P
 An inert Match Player in Solo Practice with its own Library, Hand, Commander, and Life Total. It passes Priority automatically; the human handles its required choices.
 
 **Decklist**:
-A private, reusable list owned by a room participant, containing card quantities and optional exact printings.
+A private, reusable list in a User's Deck Catalog, built for one Format and containing card quantities, optional exact printings and, for Commander, its Commander. A Room Participant selects one to play. In code, a saved Decklist is a `Deck`.
+
+**Deck Catalog**:
+All the Decklists a User owns, independent of any Room.
+
+**Format**:
+The construction rules a Decklist is built for: Commander, Standard, Pioneer, Modern, Legacy, Vintage or Pauper. Only Commander Decklists can be played in a Match; other Formats are catalogued.
 
 **Deck Entry**:
 One card and quantity in a decklist, optionally identifying a specific printing.

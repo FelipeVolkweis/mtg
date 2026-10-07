@@ -8,29 +8,47 @@ import {
   OnGatewayConnection,
 } from "@nestjs/websockets";
 import { randomUUID } from "node:crypto";
+import type { IncomingMessage } from "node:http";
 import WebSocket from "ws";
 import { z } from "zod";
-import type { ServerMessage, Session } from "../../shared/model.js";
+import type { ServerMessage, User } from "../../shared/model.js";
 import { roomCommandSchema } from "../../shared/model.js";
 import { RoomService, TabletopError } from "./room.service.js";
+import { UserService } from "../user/user.service.js";
 
-interface Connection extends Session {
+interface Connection {
   id: string;
+  invite: string;
+  userId: string;
   participantId: string;
   lastPong: number;
+}
+/** A browser on another site must not open a socket with the session cookie. */
+function sameOrigin(request: IncomingMessage) {
+  const origin = request.headers.origin;
+  if (!origin) return true;
+  try {
+    return new URL(origin).host === request.headers.host;
+  } catch {
+    return false;
+  }
 }
 @WebSocketGateway({ path: "/ws", maxPayload: 150_000 })
 export class RoomGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
 {
   private readonly sessions = new Map<WebSocket, Connection>();
+  private readonly users = new Map<WebSocket, Promise<User | undefined>>();
   private shuttingDown = false;
   private readonly authenticationTimers = new Map<
     WebSocket,
     ReturnType<typeof setTimeout>
   >();
   private readonly timer: ReturnType<typeof setInterval>;
-  constructor(@Inject(RoomService) private readonly rooms: RoomService) {
+  constructor(
+    @Inject(RoomService) private readonly rooms: RoomService,
+    @Inject(UserService) private readonly accounts: UserService,
+  ) {
     this.timer = setInterval(
       () => void this.expire(),
       Math.max(50, Math.min(30_000, this.rooms.expiryMs / 2)),
@@ -41,7 +59,15 @@ export class RoomGateway
     if (client.readyState === WebSocket.OPEN)
       client.send(JSON.stringify(message));
   }
-  handleConnection(client: WebSocket) {
+  handleConnection(client: WebSocket, request: IncomingMessage) {
+    if (!sameOrigin(request)) {
+      client.terminate();
+      return;
+    }
+    this.users.set(
+      client,
+      this.accounts.user(request).catch(() => undefined),
+    );
     const timer = setTimeout(() => client.terminate(), 10000);
     timer.unref();
     this.authenticationTimers.set(client, timer);
@@ -57,30 +83,26 @@ export class RoomGateway
   ) {
     if (this.sessions.has(client)) return;
     const parsed = z
-      .object({
-        invite: z.string().regex(/^[a-f0-9]{48}$/),
-        credential: z.string().regex(/^[a-f0-9]{64}$/),
-      })
+      .object({ invite: z.string().regex(/^[a-f0-9]{48}$/) })
       .strict()
       .safeParse(body);
-    if (!parsed.success) {
+    const user = await this.users.get(client);
+    if (!parsed.success || !user) {
       this.send(client, {
-        event: "rejected",
-        data: { message: "Invalid guest credential." },
+        event: "closed",
+        data: { message: "Sign in to join this Room." },
       });
       client.close();
       return;
     }
     try {
-      const view = await this.rooms.view(
-        parsed.data.invite,
-        parsed.data.credential,
-      );
+      const view = await this.rooms.view(parsed.data.invite, user.id);
       if (client.readyState !== WebSocket.OPEN || this.sessions.has(client))
         return;
       const connection = {
-        ...parsed.data,
         id: randomUUID(),
+        invite: parsed.data.invite,
+        userId: user.id,
         participantId: view.participantId,
         lastPong: Date.now(),
       };
@@ -129,7 +151,7 @@ export class RoomGateway
         .safeParse(body);
       const view = session
         ? await this.rooms
-            .view(session.invite, session.credential)
+            .view(session.invite, session.userId)
             .catch(() => undefined)
         : undefined;
       this.send(client, {
@@ -146,7 +168,7 @@ export class RoomGateway
     try {
       const notice = await this.rooms.command(
         session.invite,
-        session.credential,
+        session.userId,
         parsed.data.command,
       );
       if (parsed.data.command.type === "close") {
@@ -156,7 +178,7 @@ export class RoomGateway
       this.send(client, {
         event: "view",
         data: {
-          view: await this.rooms.view(session.invite, session.credential),
+          view: await this.rooms.view(session.invite, session.userId),
           requestId: parsed.data.requestId,
           notice,
         },
@@ -165,7 +187,7 @@ export class RoomGateway
     } catch (error) {
       let view;
       try {
-        view = await this.rooms.view(session.invite, session.credential);
+        view = await this.rooms.view(session.invite, session.userId);
       } catch {}
       this.send(client, {
         event: "rejected",
@@ -185,7 +207,7 @@ export class RoomGateway
           try {
             this.send(client, {
               event: "view",
-              data: { view: await this.rooms.view(invite, session.credential) },
+              data: { view: await this.rooms.view(invite, session.userId) },
             });
           } catch (error) {
             if (error instanceof TabletopError)
@@ -201,6 +223,7 @@ export class RoomGateway
   async handleDisconnect(client: WebSocket) {
     clearTimeout(this.authenticationTimers.get(client));
     this.authenticationTimers.delete(client);
+    this.users.delete(client);
     const session = this.sessions.get(client);
     if (!session) return;
     this.sessions.delete(client);
@@ -219,6 +242,7 @@ export class RoomGateway
         else client.ping();
       }
       await this.rooms.purgeExpired();
+      await this.accounts.purgeExpiredSessions();
       await Promise.all(
         [
           ...new Set(

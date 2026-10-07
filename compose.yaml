@@ -20,6 +20,10 @@ services:
       DATABASE_URL: postgres://mtg:${POSTGRES_PASSWORD:-mtg-local}@db:5432/mtg
       PORT: 3000
       ROOM_EXPIRY_DAYS: ${ROOM_EXPIRY_DAYS:-30}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost:3000}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      AUTH_DEV_LOGIN: ${AUTH_DEV_LOGIN:-}
     ports:
       - "3000:3000"
     depends_on:

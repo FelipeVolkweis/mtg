@@ -15,7 +15,12 @@ docker compose up -d db
 npm start
 ```
 
-Open [localhost:3000](http://localhost:3000), choose a guest name, and share the Room invitation. The importer writes `catalog/definitions/<canonical-name-slug>-<oracle-id>.json`, `catalog/printings/<printing-id>.json`, `catalog/names.json`, and `catalog/sets.json`. Review and commit those files with the application revision before release. Import another set with the same command to grow the available pool. The importer also populates the independent full Card Name Directory from Scryfall's compressed bulk data and current name index; allow time for that download. Every fetched page and card must validate before the released catalog is replaced. An unchanged re-import produces no catalog diff.
+Open [localhost:3000](http://localhost:3000), sign in, and share the Room invitation. Signing in needs one of:
+
+- **Google**: create an OAuth client ("Web application") in Google Cloud Console, add `<PUBLIC_ORIGIN>/api/auth/google/callback` as an authorized redirect URI, and set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `PUBLIC_ORIGIN` (for example `http://localhost:3000`, or `http://localhost:5173` when using Vite). A User is named after their email address, before the @.
+- **Development sign-in**: set `AUTH_DEV_LOGIN=1` to sign in with any username. Never enable it on a public deployment.
+
+The importer writes The importer writes `catalog/definitions/<canonical-name-slug>-<oracle-id>.json`, `catalog/printings/<printing-id>.json`, `catalog/names.json`, and `catalog/sets.json`. Review and commit those files with the application revision before release. Import another set with the same command to grow the available pool. The importer also populates the independent full Card Name Directory from Scryfall's compressed bulk data and current name index; allow time for that download. Every fetched page and card must validate before the released catalog is replaced. An unchanged re-import produces no catalog diff.
 
 Run `npm run catalog:import -- SET` in the checkout whenever you want to add a set; for example, `npm run catalog:import -- fdn`. Saving a Decklist only reads the JSON already in `catalog/`. It never runs the importer or requests cards from Scryfall. A card that has not been imported is rejected when the Decklist is saved.
 
@@ -23,7 +28,7 @@ Definitions start with `automationStatus: "unimplemented"` and `abilities: []`. 
 
 Each implemented Card Ability includes a `description` copied from the matching Oracle Text excerpt, including its costs and restrictions. Card action buttons display that description; mana abilities with multiple color choices identify each choice. Imports preserve these authored descriptions with the structured abilities.
 
-For development, run `npm run dev` and `npm run dev:client` in separate terminals; open Vite's printed URL. Configure `DATABASE_URL`, `PORT`, and `ROOM_EXPIRY_DAYS` in the shell. `.env.example` documents defaults; Docker Compose reads `.env` for its password and expiry settings. Node does not load `.env` automatically.
+For development, run `npm run dev` and `npm run dev:client` in separate terminals; open Vite's printed URL. Configure `DATABASE_URL`, `PORT`, `ROOM_EXPIRY_DAYS` and the sign-in variables in the shell. `.env.example` documents defaults; Docker Compose reads `.env` for its password and expiry settings. Node does not load `.env` automatically.
 
 ## Container deployment
 
@@ -31,9 +36,11 @@ For development, run `npm run dev` and `npm run dev:client` in separate terminal
 docker compose up --build -d
 ```
 
-Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. After importing more sets into a running Compose checkout, run `docker compose up -d --build app` so the app serves the new catalog. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Room and Match state only and lives in a persistent Compose volume. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
+Import and review sets in the checkout before building the image; the image includes that revision's catalog JSON. After importing more sets into a running Compose checkout, run `docker compose up -d --build app` so the app serves the new catalog. The application serves its built React assets and WebSocket endpoint on port 3000. PostgreSQL retains Users, sessions, Deck Catalogs and Room and Match state in a persistent Compose volume. Set the Google sign-in variables (or `AUTH_DEV_LOGIN` for a private test deployment) in `.env`. Set `POSTGRES_PASSWORD` before starting a fresh deployment and provide HTTPS with a reverse proxy when using it outside localhost. Run one application process; connection presence and rematch confirmations belong to that process, while PostgreSQL transactions serialize Room changes and Match revisions. Existing persisted Rooms and Decklists with earlier random Card Definition IDs need a separate migration before adopting this catalog.
 
 ## Decklists and play
+
+Every signed-in User has a private Deck Catalog at **My decks** (`/decks`), shared by every Room they join; the Room lobby can also create and edit Decklists. Each Decklist has a Format: Commander, Standard, Pioneer, Modern, Legacy, Vintage or Pauper. Format construction problems (a missing commander, the wrong card count, too many copies, Color Identity) are listed under the Decklist and do not prevent saving; card bans and set legality are not checked. Only a Commander Decklist without problems can be marked ready.
 
 Paste one entry per line. Only locally imported canonical names are eligible; double-faced cards use their front-face name.
 
@@ -42,7 +49,7 @@ Paste one entry per line. Only locally imported canonical names are eligible; do
 4 Llanowar Elves
 ```
 
-Use `quantity Card Name` for the designated default printing, or `quantity Card Name (SET) collector-number` for an exact imported printing. Empty lines and `#` comments are ignored. An unresolved entry rejects the whole list. Select a saved 100-card Decklist, choose an eligible legendary creature as commander, and mark ready. The complete [mono-U sample](sample-decklists/mono-u.md) is supported; every Decklist card must pass automation eligibility. Two ready participants can start a mirror Match, and the sole ready participant can start solo practice.
+Use `quantity Card Name` for the designated default printing, or `quantity Card Name (SET) collector-number` for an exact imported printing. Empty lines and `#` comments are ignored. An unresolved entry rejects the whole list. Save a 100-card Commander Decklist, choose an eligible legendary creature from it as commander, select it in the Room and mark ready. The complete [mono-U sample](sample-decklists/mono-u.md) is supported; every Decklist card must pass automation eligibility. Two ready participants can start a mirror Match, and the sole ready participant can start solo practice.
 
 Drag a playable card from your Hand or Command Zone onto the Battlefield to play a land or begin casting. Click a permanent for its available activated abilities; clicking outside closes the menu. Select legal targets by clicking their cards or player labels, and declare combat by clicking a creature followed by its defender or attack assignment. Confirm the declaration when ready, and explicitly pass Priority with the Pass Priority control. A payment window accepts selected mana sources and nonmana costs; improvise taps selected artifacts for generic payment. Targeting, resolution selections, trigger ordering, and combat use the existing engine procedures, with required choices restored after reconnects.
 
@@ -50,7 +57,7 @@ The match board uses a top-down view with color-coded player sides and an indepe
 
 Solo practice creates an inert Match Player with a supported mirror Library. It automatically passes Priority and makes no proactive casts or activations; the human handles its required choices. Spectators can observe permitted public state.
 
-The Room holds four participant identities. A late guest waits for the next Match and observes public state. Guest credentials stay in browser storage; the invitation plus an existing unique Room name can reclaim that identity if the credential is lost. This intentionally permits someone who knows both to recover the same private information. Name recovery replaces the previous credential.
+The Room holds four participants, each a signed-in User; opening the invitation link while signed in takes a seat. A late participant waits for the next Match and observes public state. Signing in again, on any browser, returns a User to their seat.
 
 A new Match replaces the active one only after every current human Match Player is connected and confirms the current request. Disconnecting revokes that player's consent; changing readiness or a Decklist cancels the proposal. Rooms expire after 30 days of meaningful activity by default; snapshots, connections, and keepalives do not extend expiry. Any participant can close a Room.
 
