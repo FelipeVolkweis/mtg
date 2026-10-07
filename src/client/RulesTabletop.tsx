@@ -1,7 +1,12 @@
 import { useLayoutEffect, useState } from "react";
 import { cardArtwork } from "./rules-presentation";
 import { RulesBoard, type BoardSelection } from "./RulesBoard";
-import type { MatchAction, MatchView, RoomView } from "../shared/model";
+import type {
+  MatchAction,
+  MatchView,
+  PromptKind,
+  RoomView,
+} from "../shared/model";
 import { phaseSteps } from "../shared/model";
 import { manaTypes } from "../shared/rules";
 import type { Send } from "./Lobby";
@@ -91,6 +96,9 @@ function CardChoices({
   );
 }
 
+/** A waiting player's procedure, as other players read it. */
+const waitingLabel = (kind: PromptKind) => kind.replaceAll("-", " ");
+
 function CombatProcedure({
   match,
   act,
@@ -102,32 +110,26 @@ function CombatProcedure({
   selections: Record<string, string[]>;
   setSelections: (selections: Record<string, string[]>) => void;
 }) {
-  const pending = match.rules.pending!;
+  const prompt = match.rules.prompt!;
   const [amounts, setAmounts] = useState<Record<string, number>>({});
-  const attacking = pending.kind === "declare-attackers";
-  const damage = pending.kind === "combat-damage";
+  const attacking = prompt.promptKind === "declare-attackers";
+  const damage = prompt.promptKind === "combat-damage";
   const name = (id: string) =>
     match.objects[id]?.characteristics.name ??
     match.players.find((p) => p.id === id)?.name ??
     "Permanent";
   return (
     <section aria-label="Pending combat choice">
-      <h2>
-        {damage
-          ? "Assign combat damage"
-          : attacking
-            ? "Declare attackers"
-            : "Declare blockers"}
-      </h2>
+      <h2>{prompt.title}</h2>
       <form
         onSubmit={(event) => {
           event.preventDefault();
           act({
             type: "rules-input",
-            procedureId: pending.id,
+            procedureId: prompt.procedureId,
             ...(damage
               ? {
-                  damageAssignments: (pending.damageChoices ?? []).flatMap(
+                  damageAssignments: (prompt.damageChoices ?? []).flatMap(
                     (choice) =>
                       choice.recipientIds.map((recipientId) => ({
                         sourceId: choice.sourceId,
@@ -145,7 +147,7 @@ function CombatProcedure({
         }}
       >
         {damage ? (
-          (pending.damageChoices ?? []).map((choice) => (
+          (prompt.damageChoices ?? []).map((choice) => (
             <fieldset key={choice.sourceId}>
               <legend>
                 {name(choice.sourceId)}: assign {choice.amount} damage
@@ -180,7 +182,7 @@ function CombatProcedure({
         ) : (
           <details>
             <summary>Review assignments</summary>
-            {Object.entries(pending.selectionOptions).map(([id, option]) => (
+            {Object.entries(prompt.options).map(([id, option]) => (
               <label key={id}>
                 {option.label}
                 <select
@@ -229,37 +231,24 @@ function Procedure({
   targetId: string;
   setTargetId: (id: string) => void;
 }) {
-  const pending = match.rules.pending!;
+  const prompt = match.rules.prompt!;
+  const kind = prompt.promptKind;
   const [chosenX, setChosenX] = useState(0);
   const [alternative, setAlternative] = useState("");
-  const [selections, setSelections] = useState(pending.selections);
+  const [selections, setSelections] = useState(prompt.selections);
+  const resolution = kind === "resolution-choice";
+  const legalTargets = prompt.targets[0]?.legalIds ?? [];
   return (
     <section aria-label="Pending rules choice">
-      <h2>
-        {pending.kind === "commander-return"
-          ? "Commander return"
-          : pending.kind === "attack-payment"
-            ? "Pay attack costs"
-            : pending.kind === "trigger-order"
-              ? "Order simultaneous triggers"
-              : pending.stage === "variable"
-                ? "Choose X"
-                : pending.kind === "resolve"
-                  ? "Resolve spell or ability"
-                  : pending.kind === "cleanup"
-                    ? "Cleanup discard"
-                    : pending.stage === "targets"
-                      ? "Choose target"
-                      : "Pay costs"}
-      </h2>
-      {pending.context && <p>{pending.context}</p>}
-      {pending.kind === "commander-return" ? (
+      <h2>{prompt.title}</h2>
+      {prompt.context && <p>{prompt.context}</p>}
+      {kind === "commander-return" ? (
         <div>
           <button
             onClick={() =>
               act({
                 type: "rules-input",
-                procedureId: pending.id,
+                procedureId: prompt.procedureId,
                 confirm: true,
               })
             }
@@ -270,7 +259,7 @@ function Procedure({
             onClick={() =>
               act({
                 type: "rules-input",
-                procedureId: pending.id,
+                procedureId: prompt.procedureId,
                 confirm: false,
               })
             }
@@ -278,14 +267,18 @@ function Procedure({
             Decline return
           </button>
         </div>
-      ) : pending.kind === "trigger-order" ? (
+      ) : kind === "order-triggers" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            act({ type: "rules-input", procedureId: pending.id, selections });
+            act({
+              type: "rules-input",
+              procedureId: prompt.procedureId,
+              selections,
+            });
           }}
         >
-          {pending.selectionOptions.order.objectIds.map((_, index) => (
+          {prompt.options.order.objectIds.map((_, index) => (
             <label key={index}>
               Stack position {index + 1} (bottom first)
               <select
@@ -298,9 +291,9 @@ function Procedure({
                 }}
               >
                 <option value="">Choose trigger</option>
-                {pending.selectionOptions.order.objectIds.map((id) => (
+                {prompt.options.order.objectIds.map((id) => (
                   <option key={id} value={id}>
-                    {pending.selectionOptions.order.labels?.[id]}
+                    {prompt.options.order.labels?.[id]}
                   </option>
                 ))}
               </select>
@@ -308,13 +301,13 @@ function Procedure({
           ))}
           <button>Confirm trigger order</button>
         </form>
-      ) : pending.stage === "variable" ? (
+      ) : kind === "choose-x" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
             act({
               type: "rules-input",
-              procedureId: pending.id,
+              procedureId: prompt.procedureId,
               variables: { X: chosenX },
             });
           }}
@@ -333,13 +326,13 @@ function Procedure({
           </label>
           <button>Confirm X</button>
         </form>
-      ) : pending.stage === "targets" ? (
+      ) : kind === "choose-targets" || kind === "trigger-targets" ? (
         <form
           onSubmit={(event) => {
             event.preventDefault();
             act({
               type: "rules-input",
-              procedureId: pending.id,
+              procedureId: prompt.procedureId,
               targetIds: [targetId],
               confirm: false,
             });
@@ -353,9 +346,10 @@ function Procedure({
               onChange={(event) => setTargetId(event.target.value)}
             >
               <option value="">Choose an object</option>
-              {pending.legalTargetIds.map((id) => (
+              {legalTargets.map((id) => (
                 <option key={id} value={id}>
-                  {match.objects[id]?.characteristics.name}
+                  {match.objects[id]?.characteristics.name ??
+                    match.players.find((p) => p.id === id)?.name}
                 </option>
               ))}
             </select>
@@ -364,12 +358,12 @@ function Procedure({
         </form>
       ) : (
         <>
-          {pending.kind === "resolve" && pending.stage === "payment" && (
+          {kind === "resolution-payment" && (
             <button
               onClick={() =>
                 act({
                   type: "rules-input",
-                  procedureId: pending.id,
+                  procedureId: prompt.procedureId,
                   confirm: false,
                 })
               }
@@ -377,43 +371,40 @@ function Procedure({
               Decline payment
             </button>
           )}
-          {pending.stage === "payment" && (
+          {prompt.lockedCost && (
             <p>
-              Locked mana cost: {pending.totalCost.generic} generic
+              Locked mana cost: {prompt.lockedCost.generic} generic
               {manaTypes
-                .filter((color) => pending.totalCost[color] > 0)
-                .map((color) => ` · ${pending.totalCost[color]} ${color}`)
+                .filter((color) => prompt.lockedCost![color] > 0)
+                .map((color) => ` · ${prompt.lockedCost![color]} ${color}`)
                 .join("")}
               . Choose mana sources below, then complete payment.
             </p>
           )}
-          {pending.kind === "resolve" &&
-            Object.keys(pending.selectionOptions).length > 1 && (
-              <label>
-                Discard option
-                <select
-                  value={alternative}
-                  onChange={(event) => {
-                    setAlternative(event.target.value);
-                    setSelections({});
-                  }}
-                >
-                  <option value="">Choose a discard option</option>
-                  {Object.entries(pending.selectionOptions).map(
-                    ([key, option]) => (
-                      <option key={key} value={key}>
-                        {option.label}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </label>
-            )}
-          {Object.entries(pending.selectionOptions)
+          {resolution && Object.keys(prompt.options).length > 1 && (
+            <label>
+              Discard option
+              <select
+                value={alternative}
+                onChange={(event) => {
+                  setAlternative(event.target.value);
+                  setSelections({});
+                }}
+              >
+                <option value="">Choose a discard option</option>
+                {Object.entries(prompt.options).map(([key, option]) => (
+                  <option key={key} value={key}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {Object.entries(prompt.options)
             .filter(
               ([key]) =>
-                pending.kind !== "resolve" ||
-                Object.keys(pending.selectionOptions).length === 1 ||
+                !resolution ||
+                Object.keys(prompt.options).length === 1 ||
                 key === alternative,
             )
             .map(([key, option]) => (
@@ -424,12 +415,7 @@ function Procedure({
                 count={option.count}
                 minCount={option.minCount}
                 ordered={option.ordered}
-                label={
-                  option.label ??
-                  (key === "discard"
-                    ? "Discard"
-                    : `Pay ${pending.ability?.kind === "activated" ? pending.ability.costs[Number(key)]?.kind : undefined} cost`)
-                }
+                label={option.label ?? (key === "discard" ? "Discard" : key)}
                 selected={selections[key] ?? []}
                 onChange={(ids) => setSelections({ ...selections, [key]: ids })}
               />
@@ -438,20 +424,19 @@ function Procedure({
             onClick={() =>
               act({
                 type: "rules-input",
-                procedureId: pending.id,
-                ...(pending.kind === "attack-payment" ||
-                (pending.kind === "resolve" && pending.stage === "payment")
+                procedureId: prompt.procedureId,
+                ...(kind === "attack-payment" || kind === "resolution-payment"
                   ? {}
                   : { selections }),
                 confirm: true,
               })
             }
           >
-            {pending.kind === "resolve" && pending.stage === "payment"
+            {kind === "resolution-payment"
               ? "Pay mana"
-              : pending.kind === "cleanup" || pending.kind === "resolve"
-                ? pending.kind === "resolve" &&
-                  !Object.values(pending.selectionOptions).some(
+              : kind === "cleanup-discard" || resolution
+                ? resolution &&
+                  !Object.values(prompt.options).some(
                     (option) => option.requestedCount !== undefined,
                   )
                   ? "Confirm choice"
@@ -460,19 +445,24 @@ function Procedure({
           </button>
         </>
       )}
-      {pending.kind !== "commander-return" &&
-        pending.kind !== "cleanup" &&
-        pending.kind !== "resolve" &&
-        pending.kind !== "trigger-order" &&
-        pending.kind !== "trigger-target" && (
-          <button
-            onClick={() =>
-              act({ type: "cancel-procedure", procedureId: pending.id })
-            }
-          >
-            Cancel procedure
-          </button>
-        )}
+      {prompt.canAbort && (
+        <button
+          onClick={() =>
+            act({ type: "cancel-procedure", procedureId: prompt.procedureId })
+          }
+        >
+          Cancel procedure
+        </button>
+      )}
+      {prompt.canReverse && (
+        <button
+          onClick={() =>
+            act({ type: "reverse-proposal", procedureId: prompt.procedureId })
+          }
+        >
+          Can't pay — reverse
+        </button>
+      )}
     </section>
   );
 }
@@ -491,7 +481,7 @@ export function RulesTabletop({
   const player = match.players.find(
     (p) => p.participantId === view.participantId,
   );
-  const pending = rules.pending;
+  const prompt = rules.prompt;
   const [bottom, setBottom] = useState<string[]>([]);
   const [targetId, setTargetId] = useState("");
   const [selections, setSelections] = useState<Record<string, string[]>>({});
@@ -500,7 +490,7 @@ export function RulesTabletop({
     setTargetId("");
     setSelections({});
     setSourceId("");
-  }, [pending?.id, pending?.stage, match.id]);
+  }, [prompt?.procedureId, prompt?.promptKind, match.id]);
   const act = (action: MatchAction) =>
     send({
       type: "match-action",
@@ -513,37 +503,37 @@ export function RulesTabletop({
     (z) => z.kind === "hand" && z.ownerId === player?.id,
   );
   const declaration =
-    pending && ["declare-attackers", "declare-blockers"].includes(pending.kind);
+    prompt &&
+    ["declare-attackers", "declare-blockers"].includes(prompt.promptKind);
+  const targeting =
+    prompt?.promptKind === "choose-targets" ||
+    prompt?.promptKind === "trigger-targets";
+  const legalTargets = prompt?.targets[0]?.legalIds ?? [];
   const [phase, step] = phaseSteps[match.turn.stepIndex];
   const name = (id: string) =>
     match.objects[id]?.characteristics.name ??
     match.players.find((p) => p.id === id)?.name ??
     "Departed object";
-  const sources = declaration ? Object.keys(pending.selectionOptions) : [];
+  const sources = declaration ? Object.keys(prompt.options) : [];
   const selection: BoardSelection = {
-    eligible:
-      pending?.stage === "targets"
-        ? pending.legalTargetIds
-        : declaration
-          ? [
-              ...sources,
-              ...(pending.selectionOptions[sourceId]?.objectIds ?? []),
-            ]
-          : [],
-    selected:
-      pending?.stage === "targets"
-        ? [targetId]
-        : declaration
-          ? [
-              sourceId,
-              ...Object.entries(selections)
-                .filter(([, ids]) => ids.length)
-                .map(([id]) => id),
-            ]
-          : [],
+    eligible: targeting
+      ? legalTargets
+      : declaration
+        ? [...sources, ...(prompt.options[sourceId]?.objectIds ?? [])]
+        : [],
+    selected: targeting
+      ? [targetId]
+      : declaration
+        ? [
+            sourceId,
+            ...Object.entries(selections)
+              .filter(([, ids]) => ids.length)
+              .map(([id]) => id),
+          ]
+        : [],
     assigning: !!declaration && !!sourceId,
     links: [
-      ...(pending?.kind === "declare-attackers"
+      ...(prompt?.promptKind === "declare-attackers"
         ? []
         : (rules.combat?.attackers ?? []).flatMap((a) => [
             { from: a.objectId, to: a.defenderId },
@@ -556,15 +546,12 @@ export function RulesTabletop({
         : []),
     ],
     choose(id) {
-      if (pending?.stage === "targets") {
-        if (pending.legalTargetIds.includes(id)) setTargetId(id);
+      if (targeting) {
+        if (legalTargets.includes(id)) setTargetId(id);
         return true;
       }
       if (!declaration) return false;
-      if (
-        sourceId &&
-        pending.selectionOptions[sourceId]?.objectIds.includes(id)
-      ) {
+      if (sourceId && prompt.options[sourceId]?.objectIds.includes(id)) {
         setSelections((previous) => ({
           ...previous,
           [sourceId]: previous[sourceId]?.includes(id) ? [] : [id],
@@ -682,7 +669,7 @@ export function RulesTabletop({
         }
       >
         <aside
-          className={`choice-panel ${opening || pending || rules.waiting ? "has-choice" : "quiet-panel"} ${opening ? "opening-choice" : ""}`}
+          className={`choice-panel ${opening || prompt || rules.waiting ? "has-choice" : "quiet-panel"} ${opening ? "opening-choice" : ""}`}
         >
           <fieldset disabled={busy}>
             {rules.practice && (
@@ -727,12 +714,12 @@ export function RulesTabletop({
               !opening && (
                 <p>Waiting for the other player to keep their opening Hand.</p>
               )}
-            {pending ? (
+            {prompt ? (
               [
                 "declare-attackers",
                 "declare-blockers",
                 "combat-damage",
-              ].includes(pending.kind) ? (
+              ].includes(prompt.promptKind) ? (
                 <>
                   <p>
                     {sourceId
@@ -740,7 +727,7 @@ export function RulesTabletop({
                       : "Click a creature, then its destination. Confirm when ready."}
                   </p>
                   <CombatProcedure
-                    key={pending.id}
+                    key={prompt.procedureId}
                     match={match}
                     act={act}
                     selections={selections}
@@ -749,7 +736,7 @@ export function RulesTabletop({
                 </>
               ) : (
                 <Procedure
-                  key={`${pending.id}:${pending.stage}`}
+                  key={`${prompt.procedureId}:${prompt.promptKind}`}
                   match={match}
                   act={act}
                   targetId={targetId}
@@ -760,7 +747,7 @@ export function RulesTabletop({
               rules.waiting && (
                 <p>
                   Waiting for {name(rules.waiting.playerId)} to complete{" "}
-                  {rules.waiting.kind}.
+                  {waitingLabel(rules.waiting.promptKind)}.
                 </p>
               )
             )}
@@ -777,7 +764,7 @@ export function RulesTabletop({
                 ))}
               </section>
             )}
-            {!pending && !opening && !rules.waiting && (
+            {!prompt && !opening && !rules.waiting && (
               <p>
                 Drag a playable card onto the Battlefield. Click a permanent for
                 abilities. Alt + hover to enlarge.

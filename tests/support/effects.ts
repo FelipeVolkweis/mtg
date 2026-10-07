@@ -72,7 +72,7 @@ export async function effectGame() {
   }
 
   /** The pending resolution prompt as the given seat sees it. */
-  const prompt = (seat = 0) => game.view(seat).rules!.pending!;
+  const prompt = (seat = 0) => game.view(seat).rules!.prompt!;
 
   return { ...game, player, zone, ids, life, resolve, prompt };
 }

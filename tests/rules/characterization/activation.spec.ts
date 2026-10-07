@@ -156,11 +156,11 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
       abilityId: "transmute",
     }).kind,
   ).toBe("pending");
-  const payment = view().rules!.pending!;
+  const payment = view().rules!.prompt!;
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: payment.id,
+      procedureId: payment.procedureId,
       selections: { "2": [spring.id] },
       confirm: true,
     }).kind,
@@ -173,13 +173,13 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
   expect(view(1).objects[returned.id]).toBeUndefined();
   game.command(0, { type: "pass-priority" });
   expect(game.command(1, { type: "pass-priority" }).kind).toBe("pending");
-  const choice = view().rules!.pending!;
-  expect(choice.selectionOptions.select.objectIds).toContain(returned.id);
+  const choice = view().rules!.prompt!;
+  expect(choice.options.select.objectIds).toContain(returned.id);
   Object.assign(game.match, JSON.parse(JSON.stringify(game.match)));
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: choice.id,
+      procedureId: choice.procedureId,
       selections: { select: [returned.id] },
     }).kind,
   ).toBe("accepted");
@@ -238,7 +238,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [stolen.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -254,18 +254,18 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
     objectId: ruin.id,
     abilityId: "retrieve",
   });
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   expect(
-    pending.legalTargetIds
+    pending.targets[0].legalIds
       .map((id) => view().objects[id].characteristics.name)
       .sort(),
   ).toEqual(["Aether Spellbomb", "Mind Stone"]);
-  const target = pending.legalTargetIds.find(
+  const target = pending.targets[0].legalIds.find(
     (id) => view().objects[id].characteristics.name === "Mind Stone",
   )!;
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [target],
   });
   game.command(0, { type: "pass-priority" });
@@ -310,21 +310,21 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
     });
     game.command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       selections: { "2": [payment.id] },
     });
     game.command(0, { type: "pass-priority" });
     game.command(1, { type: "pass-priority" });
     if (!hasCard) {
-      expect(view().rules!.pending).toBeUndefined();
+      expect(view().rules!.prompt).toBeUndefined();
       expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
       continue;
     }
-    const pending = view().rules!.pending!;
+    const pending = view().rules!.prompt!;
     expect(
       game.command(0, {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         selections: { select: [] },
       }).kind,
     ).toBe("accepted");
@@ -357,12 +357,12 @@ test("crew taps newly controlled creatures for effective power and animation exp
       abilityId: "crew",
     }).kind,
   ).toBe("pending");
-  const pending = view().rules!.pending!;
-  expect(pending.selectionOptions["0"].objectIds).toContain(myr.id);
+  const pending = view().rules!.prompt!;
+  expect(pending.options["0"].objectIds).toContain(myr.id);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { "0": [] },
       confirm: true,
     }).kind,
@@ -370,7 +370,7 @@ test("crew taps newly controlled creatures for effective power and animation exp
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { "0": [chief.id] },
       confirm: true,
     }).kind,
@@ -378,7 +378,7 @@ test("crew taps newly controlled creatures for effective power and animation exp
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { "0": [myr.id] },
       confirm: true,
     }).kind,

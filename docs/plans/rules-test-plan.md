@@ -524,6 +524,8 @@ CR illegal-action rollback behavior
 
 Do not let current cancellation semantics become an accidental rules contract.
 
+As built (roadmap issue 10): before cost lock the UI abort is `cancel-procedure`; after it the rules rollback is `reverse-proposal` (rules-engine-refactor.md §16). Characterization tests that left a locked cast now use `reverse-proposal`.
+
 ---
 
 # 14. Transactional proposal tests

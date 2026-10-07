@@ -39,27 +39,27 @@ test("combat declarations enforce controllers, flying, timing and public partici
     game.command(0, { type: "pass-priority" });
     game.command(1, { type: "pass-priority" });
   }
-  const attack = view().rules!.pending!;
-  expect(attack.kind).toBe("declare-attackers");
-  expect(attack.selectionOptions[newCreature.id]).toBeUndefined();
+  const attack = view().rules!.prompt!;
+  expect(attack.promptKind).toBe("declare-attackers");
+  expect(attack.options[newCreature.id]).toBeUndefined();
   expect(
     game.command(1, {
       type: "rules-input",
-      procedureId: attack.id,
+      procedureId: attack.procedureId,
       selections: {},
     }).kind,
   ).toBe("rejected");
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: attack.id,
+      procedureId: attack.procedureId,
       selections: { [newCreature.id]: [game.match.players[1].id] },
     }).kind,
   ).toBe("rejected");
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: attack.id,
+      procedureId: attack.procedureId,
       selections: {
         [ground.id]: [game.match.players[1].id],
         [flyer.id]: [game.match.players[1].id],
@@ -70,20 +70,20 @@ test("combat declarations enforce controllers, flying, timing and public partici
   expect(view().objects[ground.id].status.tapped).toBe(true);
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const block = view(1).rules!.pending!;
-  expect(block.kind).toBe("declare-blockers");
-  expect(block.selectionOptions[blocker.id].objectIds).toEqual([ground.id]);
+  const block = view(1).rules!.prompt!;
+  expect(block.promptKind).toBe("declare-blockers");
+  expect(block.options[blocker.id].objectIds).toEqual([ground.id]);
   expect(
     game.command(1, {
       type: "rules-input",
-      procedureId: block.id,
+      procedureId: block.procedureId,
       selections: { [blocker.id]: [flyer.id] },
     }).kind,
   ).toBe("rejected");
   expect(
     game.command(1, {
       type: "rules-input",
-      procedureId: block.id,
+      procedureId: block.procedureId,
       selections: { [blocker.id]: [ground.id] },
     }).kind,
   ).toBe("accepted");
@@ -119,21 +119,21 @@ test("combat damage assignments apply simultaneously, keep damage distinct and d
   pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { [attacker.id]: [game.match.players[1].id] },
   });
   pass();
   game.command(1, {
     type: "rules-input",
-    procedureId: view(1).rules!.pending!.id,
+    procedureId: view(1).rules!.prompt!.procedureId,
     selections: { [a.id]: [attacker.id], [b.id]: [attacker.id] },
   });
   pass();
-  const pending = view().rules!.pending!;
-  expect(pending.kind).toBe("combat-damage");
+  const pending = view().rules!.prompt!;
+  expect(pending.promptKind).toBe("combat-damage");
   const bad = {
     type: "rules-input" as const,
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     damageAssignments: [
       { sourceId: attacker.id, recipientId: a.id, amount: 3 },
     ],
@@ -170,13 +170,13 @@ test("an unblocked attacker deals damage before a zero-life loss completes the M
   pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { [creature.id]: [game.match.players[1].id] },
   });
   pass();
   game.command(1, {
     type: "rules-input",
-    procedureId: view(1).rules!.pending!.id,
+    procedureId: view(1).rules!.prompt!.procedureId,
     selections: {},
   });
   pass();
@@ -208,13 +208,13 @@ test("an attacker stays blocked after its blocker leaves during the response win
   pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { [creature.id]: [game.match.players[1].id] },
   });
   pass();
   game.command(1, {
     type: "rules-input",
-    procedureId: view(1).rules!.pending!.id,
+    procedureId: view(1).rules!.prompt!.procedureId,
     selections: { [blocker.id]: [creature.id] },
   });
   force.mana(game.match, game.match.players[0].id, { U: 1 });
@@ -225,7 +225,7 @@ test("an attacker stays blocked after its blocker leaves during the response win
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [blocker.id],
   });
   pass();
@@ -251,13 +251,13 @@ test("damage attribution expires at the next turn while surviving the current tu
   pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { [creature.id]: [game.match.players[1].id] },
   });
   pass();
   game.command(1, {
     type: "rules-input",
-    procedureId: view(1).rules!.pending!.id,
+    procedureId: view(1).rules!.prompt!.procedureId,
     selections: {},
   });
   pass();
@@ -298,15 +298,15 @@ test("Battlesphere creates Myr and binds an optional attack payment across recov
   force.controlledSince(game.match, attacker, 0);
   pass();
   pass();
-  const declare = view().rules!.pending!;
+  const declare = view().rules!.prompt!;
   game.command(0, {
     type: "rules-input",
-    procedureId: declare.id,
+    procedureId: declare.procedureId,
     selections: { [attacker.id]: [game.match.players[1].id] },
   });
   pass();
-  const choice = view().rules!.pending!;
-  expect(choice.kind).toBe("resolve");
+  const choice = view().rules!.prompt!;
+  expect(choice.promptKind).toBe("resolution-choice");
   const ids = Object.values(view().objects)
     .filter((o) => o.kind === "token")
     .slice(0, 2)
@@ -318,7 +318,7 @@ test("Battlesphere creates Myr and binds an optional attack payment across recov
       game.room.participants[0],
       {
         type: "rules-input",
-        procedureId: choice.id,
+        procedureId: choice.procedureId,
         selections: { select: ids },
       },
       game.catalog,
@@ -352,7 +352,7 @@ test("individual and grouped artifact combat triggers differ and Hellkite uses c
   pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: {
       [hellkite.id]: [game.match.players[1].id],
       [myr.id]: [game.match.players[1].id],
@@ -365,16 +365,16 @@ test("individual and grouped artifact combat triggers differ and Hellkite uses c
     selections: {},
   });
   pass();
-  const order = view().rules!.pending!;
-  expect(order.kind).toBe("trigger-order");
-  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
+  const order = view().rules!.prompt!;
+  expect(order.promptKind).toBe("order-triggers");
+  expect(order.options.order.objectIds).toHaveLength(3);
   const handBefore = view().zones.find(
     (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
   )!.count;
   game.command(0, {
     type: "rules-input",
-    procedureId: order.id,
-    selections: { order: order.selectionOptions.order.objectIds },
+    procedureId: order.procedureId,
+    selections: { order: order.options.order.objectIds },
   });
   pass();
   pass();
@@ -394,12 +394,12 @@ test("individual and grouped artifact combat triggers differ and Hellkite uses c
   ).toBe("pending");
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     variables: { X: 2 },
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     confirm: true,
   });
   expect(
@@ -427,9 +427,9 @@ for (const count of [0, 1, 3]) {
     game.pass();
     game.answer({ [sphere.id]: [game.match.players[1].id] });
     game.pass();
-    expect(
-      game.view().rules!.pending!.selectionOptions.select.objectIds,
-    ).not.toContain(tapped.id);
+    expect(game.view().rules!.prompt!.options.select.objectIds).not.toContain(
+      tapped.id,
+    );
     expect(
       game.answer({ select: myr.slice(0, count).map((o) => o.id) }).kind,
     ).toBe("accepted");
@@ -463,16 +463,16 @@ test("Signpost redirects an existing attack before Battlesphere reads its defend
     "accepted",
   );
   game.pass();
-  const target = game.view(1).rules!.pending!;
-  expect(target.kind).toBe("trigger-target");
+  const target = game.view(1).rules!.prompt!;
+  expect(target.promptKind).toBe("trigger-targets");
   game.command(1, {
     type: "rules-input",
-    procedureId: target.id,
+    procedureId: target.procedureId,
     targetIds: [sphere.id],
   });
   game.pass();
-  const choice = game.view(1).rules!.pending!;
-  expect(choice.selectionOptions.select.objectIds).not.toContain(ownWalker.id);
+  const choice = game.view(1).rules!.prompt!;
+  expect(choice.options.select.objectIds).not.toContain(ownWalker.id);
   expect(game.answer({ select: [ownWalker.id] }, 1).kind).toBe("rejected");
   expect(game.answer({ select: [game.match.players[0].id] }, 1).kind).toBe(
     "rejected",
@@ -495,12 +495,12 @@ test("Skysovereign's entry and attack damage use opponent targets and stay separ
   force.mana(game.match, game.match.players[0].id, { C: 5 });
   game.command(0, { type: "cast-spell", objectId: sky.id });
   game.pass();
-  let pending = game.view().rules!.pending!;
-  expect(pending.legalTargetIds).toContain(victim.id);
-  expect(pending.legalTargetIds).not.toContain(pilot.id);
+  let pending = game.view().rules!.prompt!;
+  expect(pending.targets[0].legalIds).toContain(victim.id);
+  expect(pending.targets[0].legalIds).not.toContain(pilot.id);
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [victim.id],
   });
   game.pass();
@@ -519,10 +519,10 @@ test("Skysovereign's entry and attack damage use opponent targets and stay separ
   game.pass();
   game.pass();
   game.answer({ [vehicle.id]: [game.match.players[1].id] });
-  pending = game.view().rules!.pending!;
+  pending = game.view().rules!.prompt!;
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [victim.id],
   });
   game.pass();
@@ -549,9 +549,9 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   game.pass();
   game.answer({}, 1);
   game.pass();
-  let order = game.view().rules!.pending!;
-  expect(order.selectionOptions.order.objectIds).toHaveLength(3);
-  game.answer({ order: order.selectionOptions.order.objectIds });
+  let order = game.view().rules!.prompt!;
+  expect(order.options.order.objectIds).toHaveLength(3);
+  game.answer({ order: order.options.order.objectIds });
   for (let i = 0; i < 3; i++) game.pass();
   force.mana(game.match, game.match.players[0].id, { U: 3 });
   game.command(0, {
@@ -561,12 +561,12 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     variables: { X: 2 },
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     confirm: true,
   });
   game.pass();
@@ -581,7 +581,7 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   game.pass();
   const returned = game
     .view()
-    .rules!.pending!.selectionOptions.select.objectIds.find(
+    .rules!.prompt!.options.select.objectIds.find(
       (id) => game.view().objects[id].characteristics.name === "Steel Hellkite",
     )!;
   game.answer({ select: [returned] });
@@ -599,12 +599,12 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   ).toBe("pending");
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     variables: { X: 1 },
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     confirm: true,
   });
   game.pass();
@@ -634,12 +634,12 @@ test("Hellkite's power bonus expires and once-per-turn use clears on the next tu
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     variables: { X: 0 },
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     confirm: true,
   });
   game.pass();
@@ -680,7 +680,7 @@ test("Battlesphere retains its selected bonus when the attacked planeswalker lea
   game.pass();
   game.command(0, {
     type: "rules-input",
-    procedureId: game.view().rules!.pending!.id,
+    procedureId: game.view().rules!.prompt!.procedureId,
     targetIds: [walker.id],
   });
   game.pass();
@@ -698,7 +698,7 @@ test("Signpost outside declare attackers has no redirection trigger and retains 
   force.mana(game.match, game.match.players[0].id, { U: 3 });
   game.command(0, { type: "cast-spell", objectId: sign.id });
   game.pass();
-  expect(game.view().rules!.pending).toBeUndefined();
+  expect(game.view().rules!.prompt).toBeUndefined();
   expect(game.view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
   const source = Object.values(game.view().objects).find(
     (o) => o.characteristics.name === "Misleading Signpost",
@@ -751,7 +751,7 @@ for (const defenderKind of [
       expect(
         g.command(1, {
           type: "rules-input",
-          procedureId: g.view(1).rules!.pending!.id,
+          procedureId: g.view(1).rules!.prompt!.procedureId,
           targetIds: [sphere.id],
         }).kind,
       ).toBe("accepted");
@@ -770,7 +770,7 @@ for (const defenderKind of [
     expect(
       g.command(1, {
         type: "rules-input",
-        procedureId: g.view(1).rules!.pending!.id,
+        procedureId: g.view(1).rules!.prompt!.procedureId,
         targetIds: [sphere.id],
       }).kind,
     ).toBe("accepted");
@@ -784,7 +784,7 @@ for (const defenderKind of [
         g.room.participants[0],
         {
           type: "rules-input",
-          procedureId: g.view().rules!.pending!.id,
+          procedureId: g.view().rules!.prompt!.procedureId,
           selections: { select: [myr.id] },
         },
         g.catalog,

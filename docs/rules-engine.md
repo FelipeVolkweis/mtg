@@ -28,6 +28,9 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 | [Trigger Runtime](../src/server/rules/triggers/trigger-runtime.ts) and [placement](../src/server/rules/triggers/trigger-placement.ts) | Event and state observers match each source's Core trigger and record waiting triggers; placement puts a batch on the Stack in two parts, each in APNAP order, with ordering and target choices.                                      |
 | [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts)                                                             | The resolution envelope for the top Stack object: intervening-if, target revalidation, then the permanent-spell path or the Rule VM, then Stack cleanup.                                                                              |
 | [Rule VM](../src/server/rules/vm/rule-vm.ts)                                                                                          | Runs a resolving instruction program: frames with program counters and typed bindings, persisted in `rules.resolving`, suspending for choices and resuming without replay.                                                            |
+| [Stack Proposal Procedure](../src/server/rules/proposals/stack-proposal.ts)                                                           | Casting and activation (CR 601/602): the spell or ability is on the Stack from the start, X and targets are chosen, the total cost is locked, mana abilities may be activated, then the cost is paid. Rollback restores the Match from before the proposal. |
+| [Cost Runtime](../src/server/rules/costs/cost-runtime.ts)                                                                             | Determines the total cost (printed cost, X, commander tax, reductions), then plans every cost component through one handler per Core cost kind and commits the whole payment or nothing. |
+| [Procedure Registry](../src/server/rules/procedures/registry.ts)                                                                      | One handler per pending procedure kind: its input, abort and reversal when it has them, its mana window, options and projected prompt. `RulesEngine.apply` dispatches through it. |
 | [Effect handlers](../src/server/rules/vm/effects/registry.ts)                                                                         | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions (run in a new VM frame), or suspends for a choice; it also reports at load time what it can't run. |
 | [Shared rules model](../src/shared/rules.ts)                                                                                          | Defines pending procedures, the Rule VM's execution state, continuous effects in force, and persisted rules state.                                                                                                                    |
 | [Match view](../src/server/match/match-view.ts)                                                                                       | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see.                                                                                       |
@@ -99,11 +102,19 @@ costs, choices, events, and effects correctly.
    Player. Most gameplay actions require Priority. A pending procedure instead
    accepts only the designated choice or payment, identified by its current
    procedure ID. Match views use the same action generation for the browser.
-4. Casting a spell or activating an ability can suspend for a variable, target,
-   or cost payment. The engine locks the cost before payment, lets the Match
-   Player activate mana abilities explicitly, and then places a spell or
-   Ability Game Object on the Stack. Casting Records, chosen values, targets,
-   and captured ability data are stored with the relevant Game Object.
+4. Casting a spell moves the card to the Stack at once (CR 601.2a), and
+   activating an ability creates its Ability Game Object there (CR 602.2a).
+   The [Stack Proposal Procedure](../src/server/rules/proposals/stack-proposal.ts)
+   then suspends for X and targets, determines and locks the total cost
+   through the [Cost Runtime](../src/server/rules/costs/cost-runtime.ts), lets
+   the Match Player activate mana abilities explicitly, and pays. Payment
+   finalizes the proposal: the spell is cast (cast triggers wait) or the
+   ability activated. The pending procedure keeps a snapshot of the Match from
+   before the proposal began. `cancel-procedure` aborts before the cost is
+   locked; after that, `reverse-proposal` rolls back a proposal its player
+   can't pay, mana abilities included. The Proposal Record (source Zone,
+   chosen values, mana spent) stays with the object, including onto the
+   Battlefield.
 5. After all Match Players pass Priority, the top Stack object resolves
    through the [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts).
    A triggered ability's intervening-if is checked again and targets are
@@ -149,7 +160,9 @@ The core engine delegates focused rules work to these modules:
 - [characteristics.ts](../src/server/match/characteristics.ts) calculates
   effective characteristics and evaluates shared Object Filters.
 - [mana.ts](../src/server/match/mana.ts) parses mana costs and applies the
-  engine's mana-pool spending policy.
+  engine's mana-pool spending policy; the
+  [Cost Runtime](../src/server/rules/costs/) spends mana through it for
+  casting, activation, attack costs and resolution payments.
 - [combat.ts](../src/server/match/combat.ts) persists combat declarations,
   payments, and damage assignments.
 - [state-based/](../src/server/rules/state-based/) holds the State-Based
@@ -178,13 +191,17 @@ resolution queues hold Core AST effects since Room snapshot version 3;
 [upgradeRoom](../src/server/room/room-upgrade.ts) lifts the version 1 effects
 of older Rooms ([lift-v1-effects.ts](../src/server/room/lift-v1-effects.ts)). A pending procedure
 contains the responsible Match Player, its stage, a fresh identifier, and the
-legal selection data needed to validate its answer. This lets the Room persist
+legal selection data needed to validate its answer; a cast or activation also
+holds its rollback snapshot. This lets the Room persist
 and restore an interrupted Match without replaying completed instructions.
 
 The Match view is a filtered projection, not the raw server state. It hides
 Library contents and opponent Hands, keeps resolution queues and event context
-server-side, and sends detailed pending choices only to the Match Player who
-answers them. Other participants receive only the pending-choice summary needed
-to know whose action is awaited. Solo Practice routes required Practice
+server-side, and sends only the responsible Match Player a projected prompt:
+a stable `promptKind`, a title, options with labels, legal targets per target
+clause, the locked cost and whether abort or reversal is offered. Authored
+abilities, stage names and rollback snapshots never cross the transport.
+Other participants receive only whose choice is awaited and its prompt kind.
+A spell or ability being proposed is public on the Stack, marked `beingCast`. Solo Practice routes required Practice
 Opponent choices to the human controller while leaving that seat's Priority
 passes automatic.

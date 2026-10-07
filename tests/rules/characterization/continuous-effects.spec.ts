@@ -79,7 +79,7 @@ test("removing a continuous source updates recipients and captured abilities sur
   command(0, { type: "activate-ability", objectId: sai.id, abilityId: "draw" });
   command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { "1": [chief.id, ring.id] },
   });
   expect(view().objects[overseer.id].characteristics.power).toBe("1");
@@ -138,17 +138,17 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
       abilityId: "equip",
     }).kind,
   ).toBe("pending");
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       targetIds: [spring.id],
     }).kind,
   ).toBe("rejected");
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [creature.id],
   });
   expect(
@@ -198,20 +198,20 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   ).toBe("accepted");
   game.command(0, { type: "pass-priority" });
   expect(game.command(1, { type: "pass-priority" }).kind).toBe("pending");
-  const target = view().rules!.pending!;
-  expect(target.kind).toBe("trigger-target");
+  const target = view().rules!.prompt!;
+  expect(target.promptKind).toBe("trigger-targets");
   game.command(0, {
     type: "rules-input",
-    procedureId: target.id,
+    procedureId: target.procedureId,
     targetIds: [creature.id],
   });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const choice = view().rules!.pending!;
-  expect(choice.selectionOptions.select.minCount).toBe(0);
+  const choice = view().rules!.prompt!;
+  expect(choice.options.select.minCount).toBe(0);
   game.command(0, {
     type: "rules-input",
-    procedureId: choice.id,
+    procedureId: choice.procedureId,
     selections: { select: [creature.id] },
   });
   let permanent = Object.values(view().objects).find(
@@ -231,7 +231,7 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   game.command(0, { type: "cast-spell", objectId: retrieval.id });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [exiled],
   });
   game.command(0, { type: "pass-priority" });
@@ -265,7 +265,7 @@ for (const decline of [true, false]) {
     game.command(1, { type: "pass-priority" });
     game.command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       targetIds: [target.id],
     });
     if (!decline) {
@@ -276,7 +276,7 @@ for (const decline of [true, false]) {
       });
       game.command(0, {
         type: "rules-input",
-        procedureId: view().rules!.pending!.id,
+        procedureId: view().rules!.prompt!.procedureId,
         targetIds: [target.id],
       });
       game.command(0, { type: "pass-priority" });
@@ -288,11 +288,11 @@ for (const decline of [true, false]) {
       expect(
         game.command(0, {
           type: "rules-input",
-          procedureId: view().rules!.pending!.id,
+          procedureId: view().rules!.prompt!.procedureId,
           selections: { select: [] },
         }).kind,
       ).toBe("accepted");
-    expect(view().rules!.pending).toBeUndefined();
+    expect(view().rules!.prompt).toBeUndefined();
     const permanent = Object.values(view().objects).find(
       (o) => o.characteristics.name === "Duplicant",
     )!;
@@ -336,7 +336,7 @@ test("Equipment counts an artifact enchantment once and detaches when its recipi
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [creature.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -352,7 +352,7 @@ test("Equipment counts an artifact enchantment once and detaches when its recipi
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [creature.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -377,13 +377,13 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   resolve();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [victim.id],
   });
   resolve();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { select: [victim.id] },
   });
   const old = Object.values(view().objects).find(
@@ -397,7 +397,7 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [old.id],
   });
   resolve();
@@ -412,17 +412,17 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   expect(fresh.id).not.toBe(old.id);
   expect(fresh.links).toEqual([]);
   expect(fresh.characteristics).toMatchObject({ power: "2", toughness: "4" });
-  const pending = view().rules!.pending!;
-  expect(pending.legalTargetIds).toEqual([fresh.id]);
+  const pending = view().rules!.prompt!;
+  expect(pending.targets[0].legalIds).toEqual([fresh.id]);
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [fresh.id],
   });
   resolve();
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { select: [] },
   });
   expect(view().objects[fresh.id].links).toEqual([]);
@@ -454,7 +454,7 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { "2": [nettle.id] },
   });
   expect(view().objects[creature.id].characteristics.power).toBe("1");
@@ -463,7 +463,7 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
   game.command(1, { type: "pass-priority" });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: {
       select: [
         Object.values(view().objects).find(
@@ -482,7 +482,7 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [fresh.id],
   });
   for (let i = 0; i < 2; i++) {
@@ -538,19 +538,21 @@ test("source grants enforce opponent hexproof and artifact flash through current
       abilityId: "bounce",
     }).kind,
   ).toBe("pending");
-  expect(view().rules!.pending!.legalTargetIds).not.toContain(protectedMyr.id);
-  expect(view().rules!.pending!.legalTargetIds).toContain(myr.id);
+  expect(view().rules!.prompt!.targets[0].legalIds).not.toContain(
+    protectedMyr.id,
+  );
+  expect(view().rules!.prompt!.targets[0].legalIds).toContain(myr.id);
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       targetIds: [protectedMyr.id],
     }).kind,
   ).toBe("rejected");
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       targetIds: [padeem.id],
     }).kind,
   ).toBe("accepted");
@@ -562,7 +564,7 @@ test("source grants enforce opponent hexproof and artifact flash through current
     objectId: secondBomb.id,
     abilityId: "bounce",
   });
-  expect(view().rules!.pending!.legalTargetIds).toContain(protectedMyr.id);
+  expect(view().rules!.prompt!.targets[0].legalIds).toContain(protectedMyr.id);
 });
 
 test("Propaganda payment is optional for required attackers and Graaz composes types, base stats and bonuses", async () => {
@@ -585,20 +587,20 @@ test("Propaganda payment is optional for required attackers and Graaz composes t
   };
   pass();
   pass();
-  const declare = view().rules!.pending!;
+  const declare = view().rules!.prompt!;
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: declare.id,
+      procedureId: declare.procedureId,
       selections: {
         [jug.id]: [game.match.players[1].id],
         [graaz.id]: [game.match.players[1].id],
       },
     }).kind,
   ).toBe("pending");
-  const payment = view().rules!.pending!;
-  expect(payment.kind).toBe("attack-payment");
-  expect(payment.totalCost.generic).toBe(4);
+  const payment = view().rules!.prompt!;
+  expect(payment.promptKind).toBe("attack-payment");
+  expect(payment.lockedCost!.generic).toBe(4);
   expect(view().objects[jug.id].status.tapped).toBe(false);
   const ring = game.seed("Sol Ring", "battlefield");
   game.command(0, {
@@ -609,7 +611,7 @@ test("Propaganda payment is optional for required attackers and Graaz composes t
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: payment.id,
+      procedureId: payment.procedureId,
       confirm: true,
     }).kind,
   ).toBe("rejected");
@@ -622,7 +624,7 @@ test("Propaganda payment is optional for required attackers and Graaz composes t
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: payment.id,
+      procedureId: payment.procedureId,
       confirm: true,
     }).kind,
   ).toBe("accepted");
@@ -663,7 +665,7 @@ test("Graaz animates no Vehicle itself, but layers its creature changes onto cre
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { "0": [myr.id] },
   });
   const pass = () => {
@@ -678,30 +680,28 @@ test("Graaz animates no Vehicle itself, but layers its creature changes onto cre
   expect(view().objects[vehicle.id].characteristics.toughness).toBe("3");
   pass();
   pass();
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: {},
     }).kind,
   ).toBe("rejected");
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     selections: {
       [vehicle.id]: [game.match.players[1].id],
       [graaz.id]: [game.match.players[1].id],
     },
   });
   pass();
-  expect(view(1).rules!.pending!.selectionOptions[wall.id].objectIds).toEqual(
-    [],
-  );
+  expect(view(1).rules!.prompt!.options[wall.id].objectIds).toEqual([]);
   expect(
     game.command(1, {
       type: "rules-input",
-      procedureId: view(1).rules!.pending!.id,
+      procedureId: view(1).rules!.prompt!.procedureId,
       selections: { [wall.id]: [vehicle.id] },
     }).kind,
   ).toBe("rejected");
@@ -744,7 +744,7 @@ test("hexproof gained in response invalidates an opponent target while preservin
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [myr.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -763,7 +763,7 @@ test("hexproof gained in response invalidates an opponent target while preservin
     objectId: ownBomb.id,
     abilityId: "bounce",
   });
-  expect(view(1).rules!.pending!.legalTargetIds).toContain(myr.id);
+  expect(view(1).rules!.prompt!.targets[0].legalIds).toContain(myr.id);
 });
 
 test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches when animation expires", async () => {
@@ -785,7 +785,7 @@ test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches w
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     selections: { "0": [myr.id] },
   });
   pass();
@@ -795,10 +795,10 @@ test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches w
     objectId: nettle.id,
     abilityId: "equip",
   });
-  expect(view().rules!.pending!.legalTargetIds).toContain(vehicle.id);
+  expect(view().rules!.prompt!.targets[0].legalIds).toContain(vehicle.id);
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [vehicle.id],
   });
   pass();
@@ -871,10 +871,10 @@ test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants
       abilityId: "draw",
     }).kind,
   ).toBe("pending");
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     selections: { "0": artifacts.slice(0, 2).map((o) => o.id) },
     confirm: true,
   });

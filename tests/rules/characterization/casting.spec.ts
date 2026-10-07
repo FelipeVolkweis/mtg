@@ -318,17 +318,22 @@ test("a spell being cast is public on the Stack while its casting choices stay w
     ]);
     expect(view.objects[stackId].characteristics.name).toBe("Hedron Archive");
   }
-  expect(owner.rules!.pending!.sourceId).toBe(stackId);
-  expect(opponent.rules!.pending).toBeUndefined();
+  expect(owner.rules!.prompt!.promptKind).toBe("pay-costs");
+  for (const view of [owner, opponent])
+    expect(view.objects[stackId].beingCast).toBe(true);
+  expect(opponent.rules!.prompt).toBeUndefined();
   expect(opponent.actions).toEqual([]);
   // The rollback snapshot never crosses the transport: the card's Hand
   // identity appears in neither view.
   expect(JSON.stringify(opponent)).not.toContain(spell.id);
   expect(JSON.stringify(owner)).not.toContain(spell.id);
-  const pending = owner.rules!.pending!;
+  const pending = owner.rules!.prompt!;
   expect(
-    command(1, { type: "rules-input", procedureId: pending.id, confirm: true })
-      .kind,
+    command(1, {
+      type: "rules-input",
+      procedureId: pending.procedureId,
+      confirm: true,
+    }).kind,
   ).toBe("rejected");
 });
 
@@ -506,68 +511,72 @@ test("Pull from Tomorrow locks chosen X before mana payment, draws X, and allows
   expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
     "pending",
   );
-  const choose = view().rules!.pending!;
-  expect(choose.stage).toBe("variable");
+  const choose = view().rules!.prompt!;
+  expect(choose.promptKind).toBe("choose-x");
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: choose.id,
+      procedureId: choose.procedureId,
       variables: { X: -1 },
     }).kind,
   ).toBe("rejected");
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: choose.id,
+      procedureId: choose.procedureId,
       variables: { X: 2 },
     }).kind,
   ).toBe("pending");
-  const payment = view().rules!.pending!;
-  expect(payment.totalCost).toMatchObject({ U: 2, generic: 2 });
+  const payment = view().rules!.prompt!;
+  expect(payment.lockedCost!).toMatchObject({ U: 2, generic: 2 });
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: choose.id,
+      procedureId: choose.procedureId,
       variables: { X: 0 },
     }).kind,
   ).toBe("rejected");
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: payment.id,
+      procedureId: payment.procedureId,
       variables: { X: 0 },
     }).kind,
   ).toBe("rejected");
   expect(
-    command(0, { type: "rules-input", procedureId: payment.id, confirm: true })
-      .kind,
+    command(0, {
+      type: "rules-input",
+      procedureId: payment.procedureId,
+      confirm: true,
+    }).kind,
   ).toBe("accepted");
   const stack = view().zones.find((z) => z.kind === "stack")!;
   expect(view().objects[stack.objectIds![0]].proposal?.variables.X).toBe(2);
   expect(view().rules!.mana[player].U).toBe(0);
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   const drawn = hand().objectIds!.filter((id) => !oldHand.includes(id));
   expect(drawn).toHaveLength(2);
-  expect(pending.selectionOptions.discard.objectIds).toEqual(
+  expect(pending.options.discard.objectIds).toEqual(
     expect.arrayContaining(drawn),
   );
   expect(
     command(1, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { discard: [drawn[0]] },
     }).kind,
   ).toBe("rejected");
   expect(
-    command(0, { type: "cancel-procedure", procedureId: pending.id }).kind,
+    command(0, { type: "cancel-procedure", procedureId: pending.procedureId })
+      .kind,
   ).toBe("rejected");
   const before = view();
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { discard: [drawn[0], drawn[0]] },
     }).kind,
   ).toBe("rejected");
@@ -575,7 +584,7 @@ test("Pull from Tomorrow locks chosen X before mana payment, draws X, and allows
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { discard: [drawn[0]] },
     }).kind,
   ).toBe("accepted");
@@ -592,8 +601,8 @@ test("stacked artifact discounts and affinity reduce generic cost while preservi
     "pending",
   );
   expect(
-    matchView(match, room.participants[0].id, catalog).rules!.pending!.totalCost
-      .generic,
+    matchView(match, room.participants[0].id, catalog).rules!.prompt!
+      .lockedCost!.generic,
   ).toBe(2);
 });
 
@@ -607,18 +616,18 @@ test("affinity preserves colored requirements, clamps generic mana and excludes 
     "pending",
   );
   const view = () => matchView(match, room.participants[0].id, catalog);
-  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 2, U: 1 });
+  expect(view().rules!.prompt!.lockedCost!).toMatchObject({ generic: 2, U: 1 });
   command(0, {
     type: "reverse-proposal",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
   });
   for (let i = 0; i < 4; i++) seed("Sol Ring", "battlefield");
   const island = seed("Island", "battlefield");
   expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
     "pending",
   );
-  const id = view().rules!.pending!.id;
-  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 0, U: 1 });
+  const id = view().rules!.prompt!.procedureId;
+  expect(view().rules!.prompt!.lockedCost!).toMatchObject({ generic: 0, U: 1 });
   command(0, {
     type: "activate-ability",
     objectId: island.id,
@@ -664,8 +673,8 @@ test("Logbook's other-artifact discount stays locked when a mana source is sacri
     }).kind,
   ).toBe("pending");
   const view = () => matchView(match, room.participants[0].id, catalog);
-  const id = view().rules!.pending!.id;
-  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 3, U: 1 });
+  const id = view().rules!.prompt!.procedureId;
+  expect(view().rules!.prompt!.lockedCost!).toMatchObject({ generic: 3, U: 1 });
   command(0, {
     type: "activate-ability",
     objectId: lotus.id,
@@ -673,11 +682,11 @@ test("Logbook's other-artifact discount stays locked when a mana source is sacri
     color: "U",
   });
   expect(view().objects[lotus.id]).toBeUndefined();
-  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 3, U: 1 });
+  expect(view().rules!.prompt!.lockedCost!).toMatchObject({ generic: 3, U: 1 });
   expect(
     command(0, { type: "rules-input", procedureId: id, confirm: true }).kind,
   ).toBe("rejected");
-  expect(view().rules!.pending!.totalCost.generic).toBe(3);
+  expect(view().rules!.prompt!.lockedCost!.generic).toBe(3);
 });
 
 test("Island affinity and chosen X are evaluated before the payment cost is locked", async () => {
@@ -688,10 +697,10 @@ test("Island affinity and chosen X are evaluated before the payment cost is lock
   const golem = seed("Spire Golem", "hand");
   const view = () => matchView(match, room.participants[0].id, catalog);
   command(0, { type: "cast-spell", objectId: golem.id });
-  expect(view().rules!.pending!.totalCost.generic).toBe(4);
+  expect(view().rules!.prompt!.lockedCost!.generic).toBe(4);
   command(0, {
     type: "reverse-proposal",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
   });
   const pull = seed("Pull from Tomorrow", "hand");
   // A fixture composition exercises chosen X with a source-local generic modifier.
@@ -715,11 +724,11 @@ test("Island affinity and chosen X are evaluated before the payment cost is lock
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       variables: { X: 4 },
     }).kind,
   ).toBe("pending");
-  expect(view().rules!.pending!.totalCost).toMatchObject({ generic: 0, U: 2 });
+  expect(view().rules!.prompt!.lockedCost!).toMatchObject({ generic: 0, U: 2 });
 });
 
 test("improvise taps explicit artifacts without producing mana and Cannoneer entry grows it", async () => {
@@ -733,7 +742,7 @@ test("improvise taps explicit artifacts without producing mana and Cannoneer ent
   expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
     "pending",
   );
-  expect(g.view().rules!.pending!.selectionOptions.improvise.objectIds).toEqual(
+  expect(g.view().rules!.prompt!.options.improvise.objectIds).toEqual(
     expect.arrayContaining(artifacts.map((a) => a.id)),
   );
   expect(g.answer({ improvise: artifacts.map((a) => a.id) }).kind).toBe(
@@ -751,7 +760,8 @@ test("improvise taps explicit artifacts without producing mana and Cannoneer ent
   expect(permanent.counters).toContainEqual({ kind: "+1/+1", quantity: "1" });
   expect(permanent.characteristics.keywords).toContain("Unblockable");
   for (let i = 0; i < 15 && g.match.turn.number === 1; i++) {
-    if (g.view().rules!.pending?.kind === "declare-attackers") g.answer({});
+    if (g.view().rules!.prompt?.promptKind === "declare-attackers")
+      g.answer({});
     else g.pass();
   }
   expect(g.match.turn.number).toBe(2);
@@ -803,7 +813,7 @@ test("improvise composes discounts and rejects tapped or duplicate artifacts ato
   expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
     "pending",
   );
-  expect(g.view().rules!.pending!.totalCost.generic).toBe(4);
+  expect(g.view().rules!.prompt!.lockedCost!.generic).toBe(4);
   const before = g.view();
   expect(g.answer({ improvise: [tapped.id] }).kind).toBe("rejected");
   expect(g.answer({ improvise: [ring.id, ring.id] }).kind).toBe("rejected");
@@ -834,5 +844,5 @@ test("commander tax and artifact reducers compose before the locked Command Zone
   expect(
     g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
   ).toBe("pending");
-  expect(g.view().rules!.pending!.totalCost.generic).toBe(8);
+  expect(g.view().rules!.prompt!.lockedCost!.generic).toBe(8);
 });

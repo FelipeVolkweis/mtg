@@ -52,6 +52,7 @@ function CardState({
       )}
       {c.loyalty !== undefined && <span>Loyalty {c.loyalty}</span>}
       {c.defense !== undefined && <span>Defense {c.defense}</span>}
+      {object.beingCast && <span>Being cast</span>}
       {object.status.tapped && <span>Tapped</span>}
       {object.counters.map((counter) => (
         <span key={counter.kind}>
@@ -223,7 +224,7 @@ export function RulesBoard({
   const permanents = zoneObjects(match, battlefield);
   const stack = match.zones.find((z) => z.kind === "stack");
   const stackObjects = zoneObjects(match, stack).slice().reverse();
-  const pendingKey = `${match.rules.pending?.id}:${match.rules.pending?.stage}`;
+  const promptKey = `${match.rules.prompt?.procedureId}:${match.rules.prompt?.promptKind}`;
   useLayoutEffect(() => {
     const board = root.current;
     if (!board) return;
@@ -328,7 +329,7 @@ export function RulesBoard({
   }, [match.revision, expanded]);
   useLayoutEffect(() => {
     setMenu(null);
-  }, [pendingKey]);
+  }, [promptKey]);
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
       setAlt(event.altKey);
@@ -449,7 +450,7 @@ export function RulesBoard({
           setMenu({
             id: object.id,
             rect: event.currentTarget.getBoundingClientRect(),
-            procedureKey: pendingKey,
+            procedureKey: promptKey,
           });
         }}
       >
@@ -740,7 +741,7 @@ export function RulesBoard({
     );
   }
   const menuObject =
-    menu && menu.procedureKey === pendingKey
+    menu && menu.procedureKey === promptKey
       ? match.objects[menu.id]
       : undefined;
   const menuSource =

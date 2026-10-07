@@ -169,7 +169,7 @@ test("an upgraded mid-casting room completes its payment", async () => {
 
 test("an upgraded mid-resolution room accepts the pending discard", async () => {
   const { match, command, view } = await load("mid-resolution");
-  const pending = view().rules!.pending!;
+  const pending = view().rules!.prompt!;
   const hand = () =>
     view().zones.find(
       (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
@@ -178,9 +178,9 @@ test("an upgraded mid-resolution room accepts the pending discard", async () => 
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: {
-        cards: pending.selectionOptions.cards.objectIds.slice(0, 2),
+        cards: pending.options.cards.objectIds.slice(0, 2),
       },
     }).kind,
   ).toBe("accepted");

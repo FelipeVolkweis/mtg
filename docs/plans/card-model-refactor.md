@@ -181,6 +181,8 @@ As built (issue #66): `src/server/match/object-visibility.ts` (face-down inspect
   ```
 
   It replaces `GameObject.variables` and `GameObject.casting` (spells), including the duplicated `chosenX`. It carries over from stack to battlefield as `casting` does today (`moveObject`), because permanents can ask how they were cast.
+
+  As built (roadmap issue 10): `GameObject.proposal`, set on every spell and activated ability from the start of its proposal; snapshot version 6 folds stored `variables` and `casting` into it.
 - **Ability objects.** Stack abilities currently get fake characteristics (`typeLine: "Ability"`, `rules-engine.ts:934`). Keep the shape for now. Stack Resolution Runtime work (runtime plan Phase 7) decides whether ability objects keep characteristics.
 
 ## 4.3 Kept

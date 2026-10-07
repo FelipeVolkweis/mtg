@@ -1,10 +1,15 @@
-import type { MatchAction } from "../../../shared/model.js";
+import type {
+  MatchAction,
+  PromptKind,
+  PromptTargets,
+} from "../../../shared/model.js";
 import type {
   PendingProcedure,
   SelectionOption,
 } from "../../../shared/rules.js";
 import { Combat } from "../../match/combat.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
+import { targetClause } from "../abilities.js";
 import { costOptions } from "../costs/cost-runtime.js";
 import { PriorityCheckpoint } from "../priority/priority-checkpoint.js";
 import { StackProposalProcedure } from "../proposals/stack-proposal.js";
@@ -34,6 +39,43 @@ export interface ProcedureHandler {
     engine: RulesEngine,
     pending: PendingProcedure,
   ): Record<string, SelectionOption>;
+  /** What the projected prompt asks (rules-engine-refactor.md §57). */
+  prompt(engine: RulesEngine, pending: PendingProcedure): PromptBasics;
+  /** Is the UI abort offered right now? */
+  canAbort?(pending: PendingProcedure): boolean;
+  /** Is reversing the proposal offered right now? */
+  canReverse?(pending: PendingProcedure): boolean;
+}
+
+export interface PromptBasics {
+  promptKind: PromptKind;
+  title: string;
+  targets?: PromptTargets[];
+}
+
+const ask = (promptKind: PromptKind, title: string) => (): PromptBasics => ({
+  promptKind,
+  title,
+});
+
+/** Legal targets for the waiting target clause, by clause id. */
+function clauseTargets(
+  engine: RulesEngine,
+  pending: PendingProcedure,
+): PromptTargets[] {
+  const clause = targetClause(pending.ability);
+  if (!clause || pending.stage !== "targets") return [];
+  return [
+    {
+      clauseId: clause.id,
+      legalIds: engine.legalTargets(
+        pending.playerId,
+        clause.filter,
+        engine.targetSource(pending),
+        pending.proposal?.stackObjectId,
+      ),
+    },
+  ];
 }
 
 const stored = (_: RulesEngine, pending: PendingProcedure) =>
@@ -52,6 +94,18 @@ const proposal: ProcedureHandler = {
       ...engine.costProposal(pending),
       totalCost: pending.totalCost,
     }),
+  prompt: (engine, pending) =>
+    pending.stage === "variable"
+      ? { promptKind: "choose-x", title: "Choose X" }
+      : pending.stage === "targets"
+        ? {
+            promptKind: "choose-targets",
+            title: "Choose target",
+            targets: clauseTargets(engine, pending),
+          }
+        : { promptKind: "pay-costs", title: "Pay costs" },
+  canAbort: (pending) => !pending.proposal?.locked,
+  canReverse: (pending) => !!pending.proposal?.locked,
 };
 
 /** A resolving spell or ability's choice (§28), including a may-pay payment. */
@@ -59,6 +113,10 @@ const resolution: ProcedureHandler = {
   input: (engine, action) => new StackResolutionRuntime(engine).answer(action),
   manaWindow: paying,
   options: stored,
+  prompt: (_, pending) => ({
+    promptKind: paying(pending) ? "resolution-payment" : "resolution-choice",
+    title: "Resolve spell or ability",
+  }),
 };
 
 const triggerOrder: ProcedureHandler = {
@@ -66,6 +124,7 @@ const triggerOrder: ProcedureHandler = {
     new PriorityCheckpoint(engine).answerTriggerOrder(action),
   manaWindow: never,
   options: stored,
+  prompt: ask("order-triggers", "Order simultaneous triggers"),
 };
 
 const triggerTarget: ProcedureHandler = {
@@ -73,6 +132,11 @@ const triggerTarget: ProcedureHandler = {
     new PriorityCheckpoint(engine).answerTriggerTarget(action),
   manaWindow: never,
   options: stored,
+  prompt: (engine, pending) => ({
+    promptKind: "trigger-targets",
+    title: "Choose target",
+    targets: clauseTargets(engine, pending),
+  }),
 };
 
 /** A State-Based Rule's choice (§47), such as a commander return. */
@@ -81,12 +145,20 @@ const stateBasedChoice: ProcedureHandler = {
     new PriorityCheckpoint(engine).answerStateBased(action),
   manaWindow: never,
   options: stored,
+  prompt: (_, pending) =>
+    pending.stateBasedRule === "commander-return"
+      ? { promptKind: "commander-return", title: "Commander return" }
+      : { promptKind: "state-based-choice", title: "Required choice" },
 };
 
 const declaration: ProcedureHandler = {
   input: (engine, action) => new Combat(engine).answer(action),
   manaWindow: never,
   options: stored,
+  prompt: (_, pending) =>
+    pending.kind === "declare-attackers"
+      ? { promptKind: "declare-attackers", title: "Declare attackers" }
+      : { promptKind: "declare-blockers", title: "Declare blockers" },
 };
 
 const attackPayment: ProcedureHandler = {
@@ -98,12 +170,15 @@ const attackPayment: ProcedureHandler = {
   },
   manaWindow: paying,
   options: stored,
+  prompt: ask("attack-payment", "Pay attack costs"),
+  canAbort: () => true,
 };
 
 const combatDamage: ProcedureHandler = {
   input: (engine, action) => new Combat(engine).answerDamage(action),
   manaWindow: never,
   options: stored,
+  prompt: ask("combat-damage", "Assign combat damage"),
 };
 
 /** CR 514.1: the active player discards down to maximum hand size. */
@@ -139,6 +214,7 @@ const cleanupDiscard: ProcedureHandler = {
       },
     };
   },
+  prompt: ask("cleanup-discard", "Cleanup discard"),
 };
 
 /**
@@ -151,6 +227,7 @@ const commanderReplacement: ProcedureHandler = {
   },
   manaWindow: never,
   options: stored,
+  prompt: ask("commander-return", "Commander return"),
 };
 
 const handlers: Record<PendingProcedure["kind"], ProcedureHandler> = {

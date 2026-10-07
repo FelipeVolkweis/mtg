@@ -31,7 +31,7 @@ test("a restored suspension resumes without replaying earlier instructions", asy
   restore(game.match);
   expect(JSON.stringify(game.match.rules!.resolving)).toBe(saved);
   expect(game.handCount()).toBe(before + 2);
-  const [card] = game.prompt().selectionOptions.discard.objectIds;
+  const [card] = game.prompt().options.discard.objectIds;
   game.answer({ discard: [card] });
   // Drawn once, discarded once; life from both gain-life instructions once.
   expect(game.handCount()).toBe(before + 1);

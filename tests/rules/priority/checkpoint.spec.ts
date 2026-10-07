@@ -193,8 +193,8 @@ test("a state-based choice suspends the checkpoint, survives restore, and resume
       passedPlayerIds: [game.player(0)],
     });
     // Only the chooser sees the procedure; nobody has Priority.
-    expect(game.view(1).rules!.pending!.id).toBe(pending.id);
-    expect(game.view(0).rules!.pending).toBeUndefined();
+    expect(game.view(1).rules!.prompt!.procedureId).toBe(pending.id);
+    expect(game.view(0).rules!.prompt).toBeUndefined();
     expect(game.view(0).priority).toBeUndefined();
     expect(game.command(1, { type: "pass-priority" }).kind).toBe("rejected");
 

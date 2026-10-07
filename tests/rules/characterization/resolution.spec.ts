@@ -194,18 +194,18 @@ test("Thirst for Knowledge draws before offering private discard alternatives an
   command(0, { type: "pass-priority" });
   expect(command(1, { type: "pass-priority" }).kind).toBe("pending");
   expect(library()).toBe(before - 3);
-  const pending = view().rules!.pending!;
-  expect(pending.kind).toBe("resolve");
+  const pending = view().rules!.prompt!;
+  expect(pending.promptKind).toBe("resolution-choice");
   expect(view().priority).toBeUndefined();
   expect(view().actions).toEqual([]);
   expect(
-    matchView(match, room.participants[1].id, catalog).rules!.pending,
+    matchView(match, room.participants[1].id, catalog).rules!.prompt,
   ).toBeUndefined();
-  expect(pending.selectionOptions.artifact).toMatchObject({
+  expect(pending.options.artifact).toMatchObject({
     count: 1,
     objectIds: [artifact.id],
   });
-  expect(pending.selectionOptions.cards.count).toBe(2);
+  expect(pending.options.cards.count).toBe(2);
   const restored = JSON.parse(JSON.stringify(match));
   expect(
     service.execute(
@@ -213,7 +213,7 @@ test("Thirst for Knowledge draws before offering private discard alternatives an
       room.participants[0],
       {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         selections: { artifact: [artifact.id] },
         confirm: true,
       },
@@ -232,7 +232,7 @@ test("Thirst for Knowledge draws before offering private discard alternatives an
       room.participants[0],
       {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         selections: { artifact: [artifact.id] },
       },
       catalog,
@@ -269,18 +269,18 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
     expect(view.outcome).toBe("ongoing");
     expect(view.players[0].outcome).toBe("playing");
     expect(view.priority).toBeUndefined();
-    const pending = view.rules!.pending!;
+    const pending = view.rules!.prompt!;
     const key = name === "Thirst for Knowledge" ? "cards" : "discard";
-    expect(Object.keys(pending.selectionOptions)).toEqual([key]);
-    expect(pending.selectionOptions[key]).toMatchObject({
+    expect(Object.keys(pending.options)).toEqual([key]);
+    expect(pending.options[key]).toMatchObject({
       count: 1,
       requestedCount: name === "Thirst for Knowledge" ? 2 : 1,
     });
-    const ids = pending.selectionOptions[key].objectIds;
+    const ids = pending.options[key].objectIds;
     expect(
       command(0, {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         selections: { [key]: ids },
       }).kind,
     ).toBe("accepted");
@@ -317,7 +317,7 @@ test("zero X with an empty Hand skips the impossible discard without attempting 
   command(0, { type: "pass-priority" });
   expect(command(1, { type: "pass-priority" }).kind).toBe("accepted");
   const view = matchView(match, room.participants[0].id, catalog);
-  expect(view.rules!.pending).toBeUndefined();
+  expect(view.rules!.prompt).toBeUndefined();
   expect(view.outcome).toBe("ongoing");
   expect(
     view.zones.find((z) => z.kind === "library" && z.ownerId === player)!.count,
@@ -358,27 +358,27 @@ test("nested sequences bind results, take conditions, and rotate choice identifi
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
   const view = () => matchView(match, room.participants[0].id, catalog);
-  const first = view().rules!.pending!;
+  const first = view().rules!.prompt!;
   command(0, {
     type: "rules-input",
-    procedureId: first.id,
-    selections: { discard: [first.selectionOptions.discard.objectIds[0]] },
+    procedureId: first.procedureId,
+    selections: { discard: [first.options.discard.objectIds[0]] },
   });
-  const second = view().rules!.pending!;
-  expect(second.id).not.toBe(first.id);
+  const second = view().rules!.prompt!;
+  expect(second.procedureId).not.toBe(first.procedureId);
   expect(
     view().zones.find((z) => z.kind === "library" && z.ownerId === player)!
       .count,
   ).toBe(90);
   expect(
     JSON.stringify(matchView(match, room.participants[1].id, catalog)),
-  ).not.toContain(second.selectionOptions.discard.objectIds[0]);
+  ).not.toContain(second.options.discard.objectIds[0]);
   const before = view();
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: first.id,
-      selections: { discard: [second.selectionOptions.discard.objectIds[0]] },
+      procedureId: first.procedureId,
+      selections: { discard: [second.options.discard.objectIds[0]] },
     }).kind,
   ).toBe("rejected");
   expect(view()).toEqual(before);
@@ -389,8 +389,8 @@ test("nested sequences bind results, take conditions, and rotate choice identifi
       room.participants[0],
       {
         type: "rules-input",
-        procedureId: second.id,
-        selections: { discard: [second.selectionOptions.discard.objectIds[0]] },
+        procedureId: second.procedureId,
+        selections: { discard: [second.options.discard.objectIds[0]] },
       },
       catalog,
     ).kind,
@@ -429,27 +429,27 @@ test("Disk destroys its union simultaneously, including itself, while captured d
         o.zoneId === view().zones.find((z) => z.kind === "battlefield")!.id,
     ),
   ).toHaveLength(1);
-  const order = view().rules!.pending!;
-  expect(order.kind).toBe("trigger-order");
+  const order = view().rules!.prompt!;
+  expect(order.promptKind).toBe("order-triggers");
   game.command(0, {
     type: "rules-input",
-    procedureId: order.id,
-    selections: { order: order.selectionOptions.order.objectIds },
+    procedureId: order.procedureId,
+    selections: { order: order.options.order.objectIds },
   });
-  const target = view().rules!.pending!;
-  expect(target.kind).toBe("trigger-target");
+  const target = view().rules!.prompt!;
+  expect(target.promptKind).toBe("trigger-targets");
   const graveSpring = Object.values(view().objects).find(
     (o) => o.characteristics.name === "Ichor Wellspring",
   )!;
   const graveRetriever = Object.values(view().objects).find(
     (o) => o.characteristics.name === "Myr Retriever",
   )!;
-  expect(target.legalTargetIds).toContain(graveSpring.id);
-  expect(target.legalTargetIds).not.toContain(graveRetriever.id);
+  expect(target.targets[0].legalIds).toContain(graveSpring.id);
+  expect(target.targets[0].legalIds).not.toContain(graveRetriever.id);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: target.id,
+      procedureId: target.procedureId,
       targetIds: [graveSpring.id],
     }).kind,
   ).toBe("accepted");
@@ -480,7 +480,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
     });
     game.command(0, {
       type: "rules-input",
-      procedureId: view().rules!.pending!.id,
+      procedureId: view().rules!.prompt!.procedureId,
       selections: { "2": [payment.id] },
     });
     game.command(0, { type: "pass-priority" });
@@ -488,7 +488,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
     expect(
       game.command(0, {
         type: "rules-input",
-        procedureId: view().rules!.pending!.id,
+        procedureId: view().rules!.prompt!.procedureId,
         selections: { select: [selected.id] },
       }).kind,
     ).toBe("accepted");
@@ -513,31 +513,31 @@ test("All Is Dust collects each player's colored permanents before simultaneous 
   game.command(0, { type: "cast-spell", objectId: dust.id });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const first = view().rules!.pending!;
-  expect(first.selectionOptions.select.objectIds).toEqual([blue.id]);
+  const first = view().rules!.prompt!;
+  expect(first.options.select.objectIds).toEqual([blue.id]);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: first.id,
+      procedureId: first.procedureId,
       selections: { select: [] },
     }).kind,
   ).toBe("rejected");
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: first.id,
+      procedureId: first.procedureId,
       selections: { select: [blue.id] },
     }).kind,
   ).toBe("pending");
   expect(view().objects[blue.id]).toBeDefined();
   expect(view().objects[opponent.id]).toBeDefined();
-  expect(view().rules!.pending).toBeUndefined();
-  const second = view(1).rules!.pending!;
+  expect(view().rules!.prompt).toBeUndefined();
+  const second = view(1).rules!.prompt!;
   Object.assign(game.match, JSON.parse(JSON.stringify(game.match)));
   expect(
     game.command(1, {
       type: "rules-input",
-      procedureId: second.id,
+      procedureId: second.procedureId,
       selections: { select: [opponent.id] },
     }).kind,
   ).toBe("accepted");
@@ -559,18 +559,18 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   game.command(0, { type: "cast-spell", objectId: golem.id });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const pending = view().rules!.pending!;
-  expect(pending.legalTargetIds).toEqual([enemy.id]);
+  const pending = view().rules!.prompt!;
+  expect(pending.targets[0].legalIds).toEqual([enemy.id]);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       targetIds: [land.id],
     }).kind,
   ).toBe("rejected");
   game.command(0, {
     type: "rules-input",
-    procedureId: pending.id,
+    procedureId: pending.procedureId,
     targetIds: [enemy.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -630,31 +630,31 @@ test("private Library selection and top/bottom ordering validate quantities and 
   });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const first = view().rules!.pending!;
-  const ids = first.selectionOptions.bottom.objectIds;
+  const first = view().rules!.prompt!;
+  const ids = first.options.bottom.objectIds;
   expect(ids).toHaveLength(3);
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: first.id,
+      procedureId: first.procedureId,
       selections: { bottom: [ids[0], ids[0]] },
     }).kind,
   ).toBe("rejected");
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: first.id,
+      procedureId: first.procedureId,
       selections: { bottom: [ids[1]] },
     }).kind,
   ).toBe("pending");
-  const top = view().rules!.pending!;
-  expect(top.id).not.toBe(first.id);
-  expect(top.selectionOptions.top.objectIds).toEqual([ids[0], ids[2]]);
+  const top = view().rules!.prompt!;
+  expect(top.procedureId).not.toBe(first.procedureId);
+  expect(top.options.top.objectIds).toEqual([ids[0], ids[2]]);
   Object.assign(game.match, JSON.parse(JSON.stringify(game.match)));
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: top.id,
+      procedureId: top.procedureId,
       selections: { top: [ids[2], ids[0]] },
     }).kind,
   ).toBe("accepted");
@@ -666,9 +666,10 @@ test("private Library selection and top/bottom ordering validate quantities and 
   });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  expect(
-    view().rules!.pending!.selectionOptions.bottom.objectIds.slice(0, 2),
-  ).toEqual([ids[2], ids[0]]);
+  expect(view().rules!.prompt!.options.bottom.objectIds.slice(0, 2)).toEqual([
+    ids[2],
+    ids[0],
+  ]);
   expect(view(1).objects[ids[2]]).toBeUndefined();
 });
 
@@ -700,7 +701,7 @@ test("noncombat ability damage retains the permanent source after sacrifice", as
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [target.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -731,7 +732,7 @@ test("Launch Mishap counters a creature spell and creates its Thopter through th
   expect(
     g.command(1, {
       type: "rules-input",
-      procedureId: g.view(1).rules!.pending!.id,
+      procedureId: g.view(1).rules!.prompt!.procedureId,
       targetIds: [target],
     }).kind,
   ).toBe("accepted");
@@ -770,7 +771,7 @@ test("Whirler Rogue creates two Thopters and taps selected artifacts to make a c
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       targetIds: [permanent.id],
       selections: { "0": thopters.map((o) => o.id) },
     }).kind,

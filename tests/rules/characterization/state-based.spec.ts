@@ -121,7 +121,7 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
   game.command(0, { type: "cast-spell", objectId: spell.id });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.pending!.id,
+    procedureId: view().rules!.prompt!.procedureId,
     targetIds: [jug.id],
   });
   game.command(0, { type: "pass-priority" });

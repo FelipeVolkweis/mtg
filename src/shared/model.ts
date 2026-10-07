@@ -255,6 +255,54 @@ export interface ObjectView extends Partial<GameObject> {
   characteristics: Characteristics;
   status: GameObject["status"];
   counters: Counter[];
+  /** A spell or ability on the Stack while its controller proposes it (CR 601.2a). */
+  beingCast?: true;
+}
+/**
+ * What a pending procedure asks of its player: a stable kind, not internal
+ * stage names (rules-engine-refactor.md §57).
+ */
+export type PromptKind =
+  | "choose-x"
+  | "choose-targets"
+  | "pay-costs"
+  | "resolution-choice"
+  | "resolution-payment"
+  | "order-triggers"
+  | "trigger-targets"
+  | "commander-return"
+  | "state-based-choice"
+  | "declare-attackers"
+  | "declare-blockers"
+  | "attack-payment"
+  | "combat-damage"
+  | "cleanup-discard";
+/** Legal targets for one target clause of the spell or ability. */
+export interface PromptTargets {
+  clauseId: string;
+  legalIds: string[];
+}
+/**
+ * The acting player's projected prompt: what is asked, its options and
+ * labels. Authored abilities, stage names and rollback state stay on the
+ * server.
+ */
+export interface ProcedurePrompt {
+  procedureId: string;
+  promptKind: PromptKind;
+  title: string;
+  context?: string;
+  targets: PromptTargets[];
+  options: Record<string, import("./rules.js").SelectionOption>;
+  /** Selections saved with the procedure (a resumed payment keeps them). */
+  selections: Record<string, string[]>;
+  /** The locked total cost while the procedure waits for payment. */
+  lockedCost?: import("./rules.js").ManaPool & { generic: number };
+  damageChoices?: import("./rules.js").DamageChoice[];
+  /** A UI abort is offered (before a proposal's cost is locked). */
+  canAbort: boolean;
+  /** Reversing an unpayable proposal is offered (after its cost is locked). */
+  canReverse: boolean;
 }
 export interface MatchView extends Omit<
   MatchState,
@@ -274,11 +322,8 @@ export interface MatchView extends Omit<
     | "turnStarted"
     | "revealedHandIds"
   > & {
-    waiting?: { playerId: string; kind: string };
-    pending?: import("./rules.js").PendingProcedure & {
-      legalTargetIds: string[];
-      selectionOptions: Record<string, import("./rules.js").SelectionOption>;
-    };
+    waiting?: { playerId: string; promptKind: PromptKind };
+    prompt?: ProcedurePrompt;
   };
   actions?: { label: string; action: MatchAction }[];
   zones: ZoneView[];

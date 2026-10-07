@@ -45,7 +45,7 @@ test("may lets the controller decline an optional move and binds whether it happ
       ],
       { targetIds: [target.id] },
     );
-    const option = game.prompt().selectionOptions.select;
+    const option = game.prompt().options.select;
     expect(option).toMatchObject({ minCount: 0, objectIds: [target.id] });
     game.answer({ select: accept ? [target.id] : [] });
     expect(!!game.match.objects[target.id]).toBe(!accept);
@@ -79,13 +79,13 @@ test("may-pay asks the named player and runs then or else", async () => {
         },
       },
     );
-    const pending = game.view(1).rules!.pending!;
-    expect(pending.playerId).toBe(game.player(1));
+    const pending = game.view(1).rules!.prompt!;
+    expect(game.match.rules.pending!.playerId).toBe(game.player(1));
     const hand = game.ids("hand", 0).length;
     expect(
       game.command(1, {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         confirm: pay,
       }).kind,
     ).toBe("accepted");
@@ -107,7 +107,7 @@ test("may-pay can't be paid without the mana", async () => {
   expect(
     game.command(0, {
       type: "rules-input",
-      procedureId: game.prompt().id,
+      procedureId: game.prompt().procedureId,
       confirm: true,
     }).kind,
   ).toBe("rejected");
@@ -141,15 +141,11 @@ test("for-each-player collects each player's selection, then all leave together"
       ],
     },
   ]);
-  expect(game.prompt(0).selectionOptions.select.objectIds).toEqual([
-    blue[0].id,
-  ]);
+  expect(game.prompt(0).options.select.objectIds).toEqual([blue[0].id]);
   expect(game.answer({ select: [blue[0].id] }).kind).toBe("pending");
   // Nothing has left yet: every selection leaves at once.
   expect(game.match.objects[blue[0].id]).toBeDefined();
-  expect(game.prompt(1).selectionOptions.select.objectIds).toEqual([
-    blue[1].id,
-  ]);
+  expect(game.prompt(1).options.select.objectIds).toEqual([blue[1].id]);
   expect(game.answer({ select: [blue[1].id] }, 1).kind).toBe("accepted");
   expect(game.match.objects[blue[0].id]).toBeUndefined();
   expect(game.match.objects[blue[1].id]).toBeUndefined();

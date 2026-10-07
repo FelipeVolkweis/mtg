@@ -240,7 +240,11 @@ export function costOptions(
   if (improvise) options.improvise = improvise;
   for (const [index, cost] of costsOf(payment.ability).entries()) {
     const option = costHandler(cost).options?.(cost, ctx);
-    if (option) options[String(index)] = option;
+    if (option)
+      options[String(index)] = {
+        ...option,
+        label: option.label ?? `Pay ${cost.kind} cost`,
+      };
   }
   return options;
 }

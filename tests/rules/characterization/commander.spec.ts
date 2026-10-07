@@ -50,12 +50,12 @@ test("Commander casts retain designation, tax is locked, and graveyard return re
     }).kind,
   ).toBe("accepted");
   g.pass();
-  expect(g.view().rules!.pending!.kind).toBe("commander-return");
-  expect(g.view(1).rules!.pending).toBeUndefined();
+  expect(g.view().rules!.prompt!.promptKind).toBe("commander-return");
+  expect(g.view(1).rules!.prompt).toBeUndefined();
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       confirm: true,
     }).kind,
   ).toBe("accepted");
@@ -69,7 +69,7 @@ test("Commander casts retain designation, tax is locked, and graveyard return re
   expect(g.command(0, { type: "cast-spell", objectId: returned.id }).kind).toBe(
     "pending",
   );
-  expect(g.view().rules!.pending!.totalCost.generic).toBe(2);
+  expect(g.view().rules!.prompt!.lockedCost!.generic).toBe(2);
   expect(g.view().objects[creature.id]).toBeUndefined();
 });
 
@@ -84,7 +84,7 @@ test("Favor attaches before its entry trigger, taps the creature and crowns the 
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       targetIds: [creature.id],
     }).kind,
   ).toBe("accepted");
@@ -148,21 +148,21 @@ for (const returnToCommand of [true, false])
     expect(
       g.command(0, {
         type: "rules-input",
-        procedureId: g.view().rules!.pending!.id,
+        procedureId: g.view().rules!.prompt!.procedureId,
         targetIds: [creature.id],
       }).kind,
     ).toBe("accepted");
     g.pass();
-    const pending = g.view().rules!.pending!;
-    expect(pending.kind).toBe("commander-return");
-    expect(g.view(1).rules!.pending).toBeUndefined();
+    const pending = g.view().rules!.prompt!;
+    expect(pending.promptKind).toBe("commander-return");
+    expect(g.view(1).rules!.prompt).toBeUndefined();
     const restored = JSON.parse(JSON.stringify(g.match));
     const result = g.service.execute(
       restored,
       g.room.participants[0],
       {
         type: "rules-input",
-        procedureId: pending.id,
+        procedureId: pending.procedureId,
         confirm: returnToCommand,
       },
       g.catalog,
@@ -186,7 +186,7 @@ for (const returnToCommand of [true, false])
         g.room.participants[0],
         {
           type: "rules-input",
-          procedureId: pending.id,
+          procedureId: pending.procedureId,
           confirm: returnToCommand,
         },
         g.catalog,
@@ -278,11 +278,11 @@ test("a commander destroyed in the second player's Graveyard offers that owner's
     }).kind,
   ).toBe("accepted");
   g.pass();
-  expect(g.view(1).rules!.pending!.kind).toBe("commander-return");
+  expect(g.view(1).rules!.prompt!.promptKind).toBe("commander-return");
   expect(
     g.command(1, {
       type: "rules-input",
-      procedureId: g.view(1).rules!.pending!.id,
+      procedureId: g.view(1).rules!.prompt!.procedureId,
       confirm: true,
     }).kind,
   ).toBe("accepted");
@@ -307,7 +307,7 @@ test("the monarch controls its transfer trigger above the attacker's Research Th
   g.pass();
   expect(g.answer({}, 1).kind).toBe("accepted");
   g.pass();
-  expect(g.view().rules!.pending).toBeUndefined();
+  expect(g.view().rules!.prompt).toBeUndefined();
   const stack = g.view().zones.find((z) => z.kind === "stack")!.objectIds!;
   expect(stack).toHaveLength(2);
   expect(g.view().objects[stack[1]].controllerId).toBe(opponent);
@@ -336,10 +336,10 @@ test("solo controller answers the practice opponent's required sacrifice while s
     "accepted",
   );
   expect(g.command(0, { type: "pass-priority" }).kind).toBe("pending");
-  const pending = g.view().rules!.pending!;
-  expect(pending.playerId).toBe(practiceId);
+  const pending = g.view().rules!.prompt!;
+  expect(g.match.rules.pending!.playerId).toBe(practiceId);
   const spectator = matchView(g.match, g.room.participants[1].id, g.catalog);
-  expect(spectator.rules!.pending).toBeUndefined();
+  expect(spectator.rules!.prompt).toBeUndefined();
   expect(spectator.actions).toEqual([]);
   const hand = g
     .view()
@@ -350,14 +350,14 @@ test("solo controller answers the practice opponent's required sacrifice while s
   expect(
     g.command(1, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { select: [padeem.id] },
     }).kind,
   ).toBe("rejected");
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: pending.id,
+      procedureId: pending.procedureId,
       selections: { select: [padeem.id] },
     }).kind,
   ).toBe("accepted");
@@ -382,7 +382,7 @@ test("Favor goes to its owner's Graveyard when its enchanted creature leaves whi
   expect(
     g.command(0, {
       type: "rules-input",
-      procedureId: g.view().rules!.pending!.id,
+      procedureId: g.view().rules!.prompt!.procedureId,
       targetIds: [creature.id],
     }).kind,
   ).toBe("accepted");
@@ -416,9 +416,9 @@ for (const returnToCommand of [true, false])
     stone.status.tapped = true;
     force.step(g.match, "end");
     g.pass();
-    expect(g.view().rules!.pending!.kind).toBe("cleanup");
+    expect(g.view().rules!.prompt!.promptKind).toBe("cleanup-discard");
     expect(g.answer({ discard: [discarded.id] }).kind).toBe("pending");
-    expect(g.view().rules!.pending!.kind).toBe("commander-return");
+    expect(g.view().rules!.prompt!.promptKind).toBe("commander-return");
     expect(g.match.turn.number).toBe(1);
     expect(g.match.turn.stepIndex).toBe(11);
     expect(g.view().objects[stone.id].status.tapped).toBe(true);
@@ -429,7 +429,7 @@ for (const returnToCommand of [true, false])
         g.room.participants[0],
         {
           type: "rules-input",
-          procedureId: g.view().rules!.pending!.id,
+          procedureId: g.view().rules!.prompt!.procedureId,
           confirm: returnToCommand,
         },
         g.catalog,

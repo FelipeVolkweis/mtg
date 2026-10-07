@@ -1,10 +1,12 @@
-import { targetFilter } from "../rules/abilities.js";
 import type {
   Catalog,
   MatchState,
   MatchView,
   ObjectView,
+  ProcedurePrompt,
 } from "../../shared/model.js";
+import type { PendingProcedure } from "../../shared/rules.js";
+import { procedureHandler } from "../rules/procedures/registry.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
@@ -87,6 +89,9 @@ export function matchView(
       delete object.sourceAbilityId;
     }
   }
+  const proposed = match.rules.pending?.proposal?.stackObjectId;
+  if (proposed && objects[proposed])
+    objects[proposed] = { ...objects[proposed], beingCast: true };
   // Build the projection explicitly: no private-zone identifiers cross the transport.
   return {
     id: match.id,
@@ -118,30 +123,17 @@ export function matchView(
                 .filter((effect) => !!objects[effect.sourceId])
             : [],
           waiting: pending
-            ? { playerId: pending.playerId, kind: pending.kind }
+            ? {
+                playerId: pending.playerId,
+                promptKind: procedureHandler(pending).prompt(
+                  engine ?? new RulesEngine(match, noCatalog),
+                  pending,
+                ).promptKind,
+              }
             : undefined,
-          pending:
+          prompt:
             pending && pending.playerId === choicePlayerId
-              ? {
-                  ...pending,
-                  // The rollback snapshot is server-only (it holds hidden Zones).
-                  proposal: pending.proposal && {
-                    ...pending.proposal,
-                    base: undefined as never,
-                  },
-                  legalTargetIds:
-                    targetFilter(pending.ability) && engine
-                      ? engine.legalTargets(
-                          choicePlayerId!,
-                          targetFilter(pending.ability)!,
-                          engine.targetSource(pending),
-                          pending.proposal?.stackObjectId,
-                        )
-                      : [],
-                  selectionOptions: engine
-                    ? engine.selectionOptions(pending)
-                    : {},
-                }
+              ? prompt(match, pending, catalog)
               : undefined,
         },
         actions: engine && playerId ? engine.actions(choicePlayerId!) : [],
@@ -156,5 +148,44 @@ export function matchView(
     zones,
     turn: match.turn,
     outcome: match.outcome,
+  };
+}
+
+const noCatalog: Catalog = {
+  definitions: {},
+  printings: {},
+  names: {},
+  importedSets: [],
+};
+
+/**
+ * The responsible player's prompt (rules-engine-refactor.md §57): what is
+ * asked and its options, never the authored ability, internal stage names
+ * or the proposal's rollback snapshot.
+ */
+function prompt(
+  match: MatchState,
+  pending: PendingProcedure,
+  catalog: Catalog = noCatalog,
+): ProcedurePrompt {
+  const engine = new RulesEngine(match, catalog);
+  const handler = procedureHandler(pending);
+  const { promptKind, title, targets } = handler.prompt(engine, pending);
+  return {
+    procedureId: pending.id,
+    promptKind,
+    title,
+    ...(pending.context ? { context: pending.context } : {}),
+    targets: targets ?? [],
+    options: handler.options(engine, pending),
+    selections: structuredClone(pending.selections),
+    ...(handler.manaWindow(pending)
+      ? { lockedCost: { ...pending.totalCost } }
+      : {}),
+    ...(pending.damageChoices
+      ? { damageChoices: structuredClone(pending.damageChoices) }
+      : {}),
+    canAbort: handler.canAbort?.(pending) ?? false,
+    canReverse: handler.canReverse?.(pending) ?? false,
   };
 }
