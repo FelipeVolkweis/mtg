@@ -164,6 +164,7 @@ export class Triggers {
       "ability",
       engine.zone("stack").id,
       trigger.playerId,
+      trigger.playerId,
       {
         name: `${trigger.sourceName}: ${trigger.abilityId}`,
         colors: [],

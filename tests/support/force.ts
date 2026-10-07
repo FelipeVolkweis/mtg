@@ -166,6 +166,7 @@ export const force = {
       "card",
       zone.id,
       playerId,
+      playerId,
       definition.components[0],
     );
     object.cardInstanceIds = [instanceId];

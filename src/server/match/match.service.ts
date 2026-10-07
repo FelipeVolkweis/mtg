@@ -120,6 +120,7 @@ export class MatchService implements GameplayExecutor {
             "card",
             library.id,
             player.id,
+            player.id,
             definition.components[0],
           );
           object.cardInstanceIds = [instance.id];

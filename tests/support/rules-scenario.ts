@@ -50,7 +50,13 @@ export async function seedRulesScenario(
         definitionId: card.id,
         printingId: card.defaultPrintingId,
       };
-      const object = gameObject("card", zone.id, player.id, card.components[0]);
+      const object = gameObject(
+        "card",
+        zone.id,
+        player.id,
+        player.id,
+        card.components[0],
+      );
       object.cardInstanceIds = [instanceId];
       object.artwork = catalog.printings[card.defaultPrintingId].artwork;
       match.objects[object.id] = object;

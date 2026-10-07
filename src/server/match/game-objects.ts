@@ -10,6 +10,7 @@ export function gameObject(
   kind: GameObject["kind"],
   zoneId: string,
   controllerId: string,
+  ownerId: string,
   characteristics: Characteristics,
 ): GameObject {
   return {
@@ -17,6 +18,7 @@ export function gameObject(
     kind,
     zoneId,
     controllerId,
+    ownerId,
     characteristics: structuredClone(characteristics),
     components: [structuredClone(characteristics)],
     artwork: [],
@@ -58,6 +60,7 @@ export function moveObject(
     object.kind,
     destination.id,
     object.controllerId,
+    object.ownerId,
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
@@ -66,11 +69,7 @@ export function moveObject(
     destination.kind !== "stack" &&
     destination.kind !== "battlefield"
   )
-    fresh.controllerId =
-      match.instances[object.cardInstanceIds[0]]?.ownerId ??
-      object.ownerId ??
-      object.controllerId;
-  fresh.ownerId = object.ownerId;
+    fresh.controllerId = object.ownerId;
   fresh.components = object.components;
   fresh.artwork = object.artwork;
   fresh.faceDown = object.faceDown;

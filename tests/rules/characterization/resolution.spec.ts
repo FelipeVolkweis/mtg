@@ -137,12 +137,18 @@ test("Counterspell cannot select an Ability Game Object on the Stack", async () 
   const { match, command, seed, catalog, room } = await rulesGame();
   const counter = seed("Counterspell", "hand");
   const stack = match.zones.find((zone) => zone.kind === "stack")!;
-  const ability = gameObject("ability", stack.id, match.players[1].id, {
-    name: "Draw ability",
-    typeLine: "Ability",
-    colors: [],
-    rulesText: "",
-  });
+  const ability = gameObject(
+    "ability",
+    stack.id,
+    match.players[1].id,
+    match.players[1].id,
+    {
+      name: "Draw ability",
+      typeLine: "Ability",
+      colors: [],
+      rulesText: "",
+    },
+  );
   force.addObject(match, ability);
   force.mana(match, match.players[0].id, { U: 2 });
   expect(command(0, { type: "cast-spell", objectId: counter.id }).kind).toBe(

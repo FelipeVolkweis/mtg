@@ -29,12 +29,8 @@ export function matchesFilter(
         : object.controllerId !== playerId)) &&
     (!filter.owner ||
       (filter.owner === "you"
-        ? (match.instances[object.cardInstanceIds[0]]?.ownerId ??
-            object.ownerId ??
-            object.controllerId) === playerId
-        : (match.instances[object.cardInstanceIds[0]]?.ownerId ??
-            object.ownerId ??
-            object.controllerId) !== playerId)) &&
+        ? object.ownerId === playerId
+        : object.ownerId !== playerId)) &&
     (!filter.nontoken || object.kind !== "token") &&
     (!filter.colored || !!object.characteristics.colors.length) &&
     (!filter.colorless || !object.characteristics.colors.length) &&
