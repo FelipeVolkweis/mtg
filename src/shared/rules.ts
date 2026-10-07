@@ -78,7 +78,8 @@ export interface PendingProcedure {
     | "cleanup"
     | "resolve"
     | "trigger-order"
-    | "trigger-target";
+    | "trigger-target"
+    | "state-based-choice";
   stage: "variable" | "targets" | "payment" | "selection";
   damageChoices?: DamageChoice[];
   variables?: Record<string, number>;
@@ -92,6 +93,8 @@ export interface PendingProcedure {
   selections: Record<string, string[]>;
   color?: ManaType;
   totalCost: ManaPool & { generic: number };
+  /** A state-based choice: the State-Based Rule that answers it. */
+  stateBasedRule?: string;
 }
 export interface SelectionOption {
   count: number;
@@ -165,13 +168,22 @@ export interface DamageChoice {
   amount: number;
   recipientIds: string[];
 }
+/**
+ * What a suspended Priority Checkpoint resumes toward: Priority for a player
+ * (keeping recorded passes), or the end of the cleanup step, which grants
+ * Priority only if a state-based action or trigger happened (CR 514.3a).
+ */
+export interface CheckpointState {
+  playerId?: string;
+  passedPlayerIds?: string[];
+  cleanup?: { performed: boolean };
+}
 export interface RulesState {
   practice?: { playerId: string; controllerParticipantId: string };
   monarchId?: string;
   commanderCasts?: Record<string, number>;
   commanderDamage?: Record<string, Record<string, number>>;
   commanderReturns?: string[];
-  cleanupNeedsPriority?: boolean;
   commanderReplay?: {
     action: import("./model.js").MatchAction;
     participantId: string;
@@ -191,7 +203,8 @@ export interface RulesState {
   continuousEffects?: ActiveContinuousEffect[];
   waitingTriggers?: WaitingTrigger[];
   triggerPlacement?: WaitingTrigger[];
-  priorityAfterTriggers?: string;
+  /** A Priority Checkpoint suspended on a choice (rules-engine-refactor.md §11, §47). */
+  checkpoint?: CheckpointState;
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
   pending?: PendingProcedure;

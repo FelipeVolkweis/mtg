@@ -12,7 +12,7 @@ import {
   enchantFilter,
   hasImprovise,
   ownKeyword,
-  triggerPattern,
+  triggerSubject,
 } from "../rules/abilities.js";
 import { conjuncts } from "../rules/support.js";
 import { unsupportedEffect } from "../rules/vm/effects/registry.js";
@@ -85,12 +85,14 @@ export function automationEligible(card: CardDefinition): boolean {
           });
         if (name === "improvise") return hasImprovise([ability]);
         if (name === "ward") {
-          const trigger = triggerPattern(ability);
+          const trigger =
+            ability.kind === "triggered" ? ability.trigger : undefined;
           return (
-            ability.kind === "triggered" &&
-            trigger?.event === "target" &&
-            trigger.player === "opponent" &&
-            conjuncts(trigger.filter ?? {}).some((f) => f.is === "source") &&
+            trigger?.event === "becomes-target" &&
+            trigger.by === "opponents" &&
+            conjuncts(triggerSubject(trigger.object)).some(
+              (f) => f.is === "source",
+            ) &&
             effects.some(
               (effect) =>
                 effect.kind === "may-pay" &&
