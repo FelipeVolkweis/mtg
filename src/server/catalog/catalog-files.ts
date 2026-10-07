@@ -65,7 +65,8 @@ const ability = z
     effects: z.array(primitive).optional(),
   })
   .strict();
-const definition = z
+/** A version 1 definition file, as the engine loads it today. */
+export const definitionV1Schema = z
   .object({
     id: uuid,
     canonicalName: z.string().min(1),
@@ -170,7 +171,7 @@ export async function readCatalog(root = catalogRoot()): Promise<Catalog> {
   const inode = await catalogInode(root);
   if (loaded?.root === root && loaded.inode === inode) return loaded.catalog;
   const [definitions, printings, directory, importedSets] = await Promise.all([
-    records(root, "definitions", definition, definitionFilename),
+    records(root, "definitions", definitionV1Schema, definitionFilename),
     records(root, "printings", printing),
     json(join(root, "names.json")).then((value) => names.parse(value)),
     json(join(root, "sets.json")).then((value) => sets.parse(value)),

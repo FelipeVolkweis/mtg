@@ -282,8 +282,9 @@ export type Trigger =
       object: Selector | Predicate;
       from?: ZoneKind;
       to?: ZoneKind;
+      during?: TurnStep;
     }
-  | { event: "enters"; object: Selector | Predicate }
+  | { event: "enters"; object: Selector | Predicate; during?: TurnStep }
   | { event: "dies"; object: Selector | Predicate }
   | { event: "cast"; spell: Predicate; caster?: PlayerRef }
   | { event: "attacks"; attacker: Selector | Predicate }
@@ -839,11 +840,14 @@ export const triggerSchema: z.ZodType<Trigger> = z.lazy(
         object: selectorOrPredicate,
         from: zone.optional(),
         to: zone.optional(),
+        during: z.enum(turnSteps).optional(),
       }),
       strict({
-        event: z.enum(["enters", "dies"]),
+        event: z.literal("enters"),
         object: selectorOrPredicate,
+        during: z.enum(turnSteps).optional(),
       }),
+      strict({ event: z.literal("dies"), object: selectorOrPredicate }),
       strict({
         event: z.literal("cast"),
         spell: predicateSchema,

@@ -1125,6 +1125,7 @@ class Compiler {
           event: "zone-change",
           object: object(trigger.object, "object"),
           to: "battlefield",
+          ...(trigger.during ? { during: trigger.during } : {}),
         };
       case "dies":
         return {
