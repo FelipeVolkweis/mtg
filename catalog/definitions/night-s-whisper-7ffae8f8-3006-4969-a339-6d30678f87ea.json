@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "7ffae8f8-3006-4969-a339-6d30678f87ea",
-  "canonicalName": "Night's Whisper",
-  "defaultPrintingId": "b7d4377e-d96f-475b-9512-0a1c4fbcd4e3",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Night's Whisper",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "You draw two cards and lose 2 life."
-    }
-  ],
-  "oracleText": "You draw two cards and lose 2 life.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Night's Whisper",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "You draw two cards and lose 2 life."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "b7d4377e-d96f-475b-9512-0a1c4fbcd4e3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

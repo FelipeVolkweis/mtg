@@ -1,57 +1,46 @@
 {
+  "catalogVersion": 2,
   "id": "6e64f1e0-ddd6-4ee7-8797-086e234b02e8",
-  "canonicalName": "Steel Hellkite",
-  "defaultPrintingId": "7ce14b48-34db-4308-8f5a-7b62d0e97d0e",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Steel Hellkite",
-      "manaCost": "{6}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Dragon",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 6,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Steel Hellkite",
+        "manaCost": "{6}",
+        "colors": [],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\n{2}: This creature gets +1/+0 until end of turn.\n{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "7ce14b48-34db-4308-8f5a-7b62d0e97d0e"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
       },
-      "description": "Flying"
-    },
-    {
-      "id": "pump",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "pump",
+        "description": "{2}: This creature gets +1/+0 until end of turn.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -62,25 +51,23 @@
         ],
         "effects": [
           {
-            "kind": "animate-source",
+            "kind": "apply-continuous",
+            "objects": "source",
             "changes": [
               {
                 "kind": "add-stats",
                 "power": 1,
                 "toughness": 0
               }
-            ]
+            ],
+            "duration": "end-of-turn"
           }
         ]
       },
-      "description": "{2}: This creature gets +1/+0 until end of turn."
-    },
-    {
-      "id": "destroy-damaged",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "destroy-damaged",
+        "description": "{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -89,28 +76,35 @@
             ]
           }
         ],
+        "limit": {
+          "perTurn": 1
+        },
         "effects": [
           {
             "kind": "destroy",
-            "subject": "set",
-            "filter": {
-              "zone": "battlefield",
-              "excludeTypes": [
-                "Land"
-              ],
-              "manaValue": {
-                "binding": "X"
-              },
-              "damagedBySource": true
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "manaValue": {
+                      "variable": "X"
+                    },
+                    "dealtDamageBy": "source"
+                  },
+                  {
+                    "not": {
+                      "type": [
+                        "Land"
+                      ]
+                    }
+                  }
+                ]
+              }
             }
           }
-        ],
-        "chosenVariables": [
-          "X"
-        ],
-        "oncePerTurn": true
-      },
-      "description": "{X}: Destroy each nonland permanent with mana value X whose controller was dealt combat damage by this creature this turn. Activate only once each turn."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

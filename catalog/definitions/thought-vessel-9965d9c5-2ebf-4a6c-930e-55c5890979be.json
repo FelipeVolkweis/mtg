@@ -1,65 +1,59 @@
 {
+  "catalogVersion": 2,
   "id": "9965d9c5-2ebf-4a6c-930e-55c5890979be",
-  "canonicalName": "Thought Vessel",
-  "defaultPrintingId": "ddd26152-5e1f-4c48-99e0-a4fdc5155d98",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Thought Vessel",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "You have no maximum hand size.\n{T}: Add {C}."
-    }
-  ],
-  "oracleText": "You have no maximum hand size.\n{T}: Add {C}.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "hand-size",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "maximumHandSize": "unlimited"
-      },
-      "description": "You have no maximum hand size."
-    },
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thought Vessel",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "You have no maximum hand size.\n{T}: Add {C}."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "ddd26152-5e1f-4c48-99e0-a4fdc5155d98"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "hand-size",
+        "description": "You have no maximum hand size.",
+        "kind": "static",
+        "grants": [
           {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "C"
-            ]
+            "kind": "maximum-hand-size",
+            "player": "you",
+            "value": "unlimited"
           }
-        ],
-        "manaAbility": true
+        ]
       },
-      "description": "{T}: Add {C}."
-    }
-  ]
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
+      }
+    ]
+  }
 }

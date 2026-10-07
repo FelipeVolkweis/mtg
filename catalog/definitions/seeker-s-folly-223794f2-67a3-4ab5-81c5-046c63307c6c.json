@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "223794f2-67a3-4ab5-81c5-046c63307c6c",
-  "canonicalName": "Seeker's Folly",
-  "defaultPrintingId": "bc359da6-8b7f-45ec-b530-ce159fc35953",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Seeker's Folly",
-      "manaCost": "{2}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose one —\n• Target opponent discards two cards.\n• Creatures your opponents control get -1/-1 until end of turn."
-    }
-  ],
-  "oracleText": "Choose one —\n• Target opponent discards two cards.\n• Creatures your opponents control get -1/-1 until end of turn.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Seeker's Folly",
+        "manaCost": "{2}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose one —\n• Target opponent discards two cards.\n• Creatures your opponents control get -1/-1 until end of turn."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "bc359da6-8b7f-45ec-b530-ce159fc35953"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,46 +1,42 @@
 {
+  "catalogVersion": 2,
   "id": "592c91fc-6430-4c76-9460-65f047350f67",
-  "canonicalName": "Lyra Dawnbringer",
-  "defaultPrintingId": "15e10422-44e9-421c-b9ec-4006245f71a2",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Lyra Dawnbringer",
-      "manaCost": "{3}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Legendary Creature — Angel",
-      "manaValue": 5,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying",
-        "Lifelink",
-        "First strike"
-      ],
-      "rulesText": "Flying\nFirst strike (This creature deals combat damage before creatures without first strike.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nOther Angels you control get +1/+1 and have lifelink.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nFirst strike (This creature deals combat damage before creatures without first strike.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nOther Angels you control get +1/+1 and have lifelink.",
-  "keywords": [
-    "Flying",
-    "Lifelink",
-    "First strike"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Lyra Dawnbringer",
+        "manaCost": "{3}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying",
+          "Lifelink",
+          "First strike"
+        ],
+        "rulesText": "Flying\nFirst strike (This creature deals combat damage before creatures without first strike.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nOther Angels you control get +1/+1 and have lifelink.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "15e10422-44e9-421c-b9ec-4006245f71a2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

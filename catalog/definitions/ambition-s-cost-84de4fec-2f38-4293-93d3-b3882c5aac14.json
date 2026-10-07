@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "84de4fec-2f38-4293-93d3-b3882c5aac14",
-  "canonicalName": "Ambition's Cost",
-  "defaultPrintingId": "2f7c9824-b7b0-47f9-ad3f-59037871b7ca",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Ambition's Cost",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "You draw three cards and lose 3 life."
-    }
-  ],
-  "oracleText": "You draw three cards and lose 3 life.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ambition's Cost",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "You draw three cards and lose 3 life."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "2f7c9824-b7b0-47f9-ad3f-59037871b7ca"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

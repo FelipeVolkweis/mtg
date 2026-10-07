@@ -1,47 +1,44 @@
 {
+  "catalogVersion": 2,
   "id": "b347be2d-9aa1-42a9-b652-8fb032832f09",
-  "canonicalName": "Halana and Alena, Partners",
-  "defaultPrintingId": "b649f459-c9dc-495d-8703-b685996bb80c",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Halana and Alena, Partners",
-      "manaCost": "{2}{R}{G}",
-      "colors": [
-        "G",
-        "R"
-      ],
-      "typeLine": "Legendary Creature — Human Ranger",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Ranger"
-      ],
-      "keywords": [
-        "Reach",
-        "First strike"
-      ],
-      "rulesText": "Reach (This creature can block creatures with flying.)\nFirst strike (This creature deals combat damage before creatures without first strike.)\nAt the beginning of combat on your turn, put X +1/+1 counters on another target creature you control, where X is Halana and Alena's power. That creature gains haste until end of turn.",
-      "power": "2",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Reach (This creature can block creatures with flying.)\nFirst strike (This creature deals combat damage before creatures without first strike.)\nAt the beginning of combat on your turn, put X +1/+1 counters on another target creature you control, where X is Halana and Alena's power. That creature gains haste until end of turn.",
-  "keywords": [
-    "Reach",
-    "First strike"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Halana and Alena, Partners",
+        "manaCost": "{2}{R}{G}",
+        "colors": [
+          "G",
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Ranger"
+        ],
+        "keywords": [
+          "Reach",
+          "First strike"
+        ],
+        "rulesText": "Reach (This creature can block creatures with flying.)\nFirst strike (This creature deals combat damage before creatures without first strike.)\nAt the beginning of combat on your turn, put X +1/+1 counters on another target creature you control, where X is Halana and Alena's power. That creature gains haste until end of turn.",
+        "power": "2",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "R"
+    ],
+    "defaultPrintingId": "b649f459-c9dc-495d-8703-b685996bb80c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

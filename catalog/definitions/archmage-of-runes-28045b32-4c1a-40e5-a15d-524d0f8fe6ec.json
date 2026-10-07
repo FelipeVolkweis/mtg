@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "28045b32-4c1a-40e5-a15d-524d0f8fe6ec",
-  "canonicalName": "Archmage of Runes",
-  "defaultPrintingId": "334b5018-2da9-49f1-9d09-83d312ecfb02",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Archmage of Runes",
-      "manaCost": "{3}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Giant Wizard",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Giant",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "Instant and sorcery spells you cast cost {1} less to cast.\nWhenever you cast an instant or sorcery spell, draw a card.",
-      "power": "3",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Instant and sorcery spells you cast cost {1} less to cast.\nWhenever you cast an instant or sorcery spell, draw a card.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Archmage of Runes",
+        "manaCost": "{3}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Giant",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "Instant and sorcery spells you cast cost {1} less to cast.\nWhenever you cast an instant or sorcery spell, draw a card.",
+        "power": "3",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "334b5018-2da9-49f1-9d09-83d312ecfb02"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

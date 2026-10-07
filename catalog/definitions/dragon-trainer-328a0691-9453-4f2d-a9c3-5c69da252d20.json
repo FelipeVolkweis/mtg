@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "328a0691-9453-4f2d-a9c3-5c69da252d20",
-  "canonicalName": "Dragon Trainer",
-  "defaultPrintingId": "91bd75a1-cb54-4e38-9ce1-e8f32a73c6eb",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Dragon Trainer",
-      "manaCost": "{3}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Human",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, create a 4/4 red Dragon creature token with flying.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "When this creature enters, create a 4/4 red Dragon creature token with flying.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dragon Trainer",
+        "manaCost": "{3}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, create a 4/4 red Dragon creature token with flying.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "91bd75a1-cb54-4e38-9ce1-e8f32a73c6eb"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

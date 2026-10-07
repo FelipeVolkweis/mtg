@@ -1,40 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "c37eae65-1afe-4242-b677-24dd40e6f401",
-  "canonicalName": "Eaten by Piranhas",
-  "defaultPrintingId": "475e28bb-1333-45e1-b6fd-83121c2f1ab9",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Eaten by Piranhas",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant",
-        "Flash"
-      ],
-      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature loses all abilities and is a black Skeleton creature with base power and toughness 1/1. (It loses all other colors, card types, and creature types.)"
-    }
-  ],
-  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature loses all abilities and is a black Skeleton creature with base power and toughness 1/1. (It loses all other colors, card types, and creature types.)",
-  "keywords": [
-    "Enchant",
-    "Flash"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Eaten by Piranhas",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant",
+          "Flash"
+        ],
+        "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nEnchant creature\nEnchanted creature loses all abilities and is a black Skeleton creature with base power and toughness 1/1. (It loses all other colors, card types, and creature types.)"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "475e28bb-1333-45e1-b6fd-83121c2f1ab9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

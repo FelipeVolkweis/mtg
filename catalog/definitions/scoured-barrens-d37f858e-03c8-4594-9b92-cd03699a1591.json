@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "d37f858e-03c8-4594-9b92-cd03699a1591",
-  "canonicalName": "Scoured Barrens",
-  "defaultPrintingId": "2632a4b2-9ca6-4b67-9a99-14f52ad3dc41",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Scoured Barrens",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {B}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {B}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Scoured Barrens",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {W} or {B}."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "W"
+    ],
+    "defaultPrintingId": "2632a4b2-9ca6-4b67-9a99-14f52ad3dc41"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,38 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "339a7418-9a29-4eae-a3c2-ea590d175936",
-  "canonicalName": "Imprisoned in the Moon",
-  "defaultPrintingId": "ee28e147-6622-4399-a314-c14a5c912dd0",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Imprisoned in the Moon",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Enchantment — Aura",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [
-        "Aura"
-      ],
-      "keywords": [
-        "Enchant"
-      ],
-      "rulesText": "Enchant creature, land, or planeswalker\nEnchanted permanent is a colorless land with \"{T}: Add {C}\" and loses all other card types and abilities."
-    }
-  ],
-  "oracleText": "Enchant creature, land, or planeswalker\nEnchanted permanent is a colorless land with \"{T}: Add {C}\" and loses all other card types and abilities.",
-  "keywords": [
-    "Enchant"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Imprisoned in the Moon",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [
+          "Aura"
+        ],
+        "keywords": [
+          "Enchant"
+        ],
+        "rulesText": "Enchant creature, land, or planeswalker\nEnchanted permanent is a colorless land with \"{T}: Add {C}\" and loses all other card types and abilities."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "ee28e147-6622-4399-a314-c14a5c912dd0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "49479778-c4c0-43ba-a7b7-45f00d067462",
-  "canonicalName": "Maze's End",
-  "defaultPrintingId": "ea9a4d1a-79dd-4b15-8e3b-f111f16d6bfc",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Maze's End",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\n{T}: Add {C}.\n{3}, {T}, Return this land to its owner's hand: Search your library for a Gate card, put it onto the battlefield, then shuffle. If you control ten or more Gates with different names, you win the game."
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {C}.\n{3}, {T}, Return this land to its owner's hand: Search your library for a Gate card, put it onto the battlefield, then shuffle. If you control ten or more Gates with different names, you win the game.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Maze's End",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\n{T}: Add {C}.\n{3}, {T}, Return this land to its owner's hand: Search your library for a Gate card, put it onto the battlefield, then shuffle. If you control ten or more Gates with different names, you win the game."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "ea9a4d1a-79dd-4b15-8e3b-f111f16d6bfc"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

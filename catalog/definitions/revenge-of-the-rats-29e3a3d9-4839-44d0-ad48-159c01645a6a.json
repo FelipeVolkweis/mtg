@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "29e3a3d9-4839-44d0-ad48-159c01645a6a",
-  "canonicalName": "Revenge of the Rats",
-  "defaultPrintingId": "1f463c55-39a0-4f2f-aae3-0c5540bde5b7",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Revenge of the Rats",
-      "manaCost": "{2}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Flashback"
-      ],
-      "rulesText": "Create a tapped 1/1 black Rat creature token for each creature card in your graveyard.\nFlashback {2}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
-    }
-  ],
-  "oracleText": "Create a tapped 1/1 black Rat creature token for each creature card in your graveyard.\nFlashback {2}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)",
-  "keywords": [
-    "Flashback"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Revenge of the Rats",
+        "manaCost": "{2}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Flashback"
+        ],
+        "rulesText": "Create a tapped 1/1 black Rat creature token for each creature card in your graveyard.\nFlashback {2}{B}{B} (You may cast this card from your graveyard for its flashback cost. Then exile it.)"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "1f463c55-39a0-4f2f-aae3-0c5540bde5b7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

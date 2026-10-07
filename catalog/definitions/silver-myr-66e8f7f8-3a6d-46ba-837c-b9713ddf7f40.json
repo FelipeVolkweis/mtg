@@ -1,60 +1,54 @@
 {
+  "catalogVersion": 2,
   "id": "66e8f7f8-3a6d-46ba-837c-b9713ddf7f40",
-  "canonicalName": "Silver Myr",
-  "defaultPrintingId": "13d8a661-8e06-4625-8543-2c6ce7aaf03a",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Silver Myr",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Myr",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Myr"
-      ],
-      "keywords": [],
-      "rulesText": "{T}: Add {U}.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "{T}: Add {U}.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Silver Myr",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "U"
-            ],
-            "quantity": 1
-          }
+        "subtypes": [
+          "Myr"
         ],
-        "manaAbility": true
-      },
-      "description": "{T}: Add {U}."
-    }
-  ]
+        "keywords": [],
+        "rulesText": "{T}: Add {U}.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "13d8a661-8e06-4625-8543-2c6ce7aaf03a"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {U}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "U"
+          ]
+        }
+      }
+    ]
+  }
 }

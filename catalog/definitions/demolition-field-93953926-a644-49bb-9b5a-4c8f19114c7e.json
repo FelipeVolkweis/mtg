@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "93953926-a644-49bb-9b5a-4c8f19114c7e",
-  "canonicalName": "Demolition Field",
-  "defaultPrintingId": "0c7e51b6-4898-4632-b39c-3ce438caa882",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Demolition Field",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Destroy target nonbasic land an opponent controls. That land's controller may search their library for a basic land card, put it onto the battlefield, then shuffle. You may search your library for a basic land card, put it onto the battlefield, then shuffle."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Destroy target nonbasic land an opponent controls. That land's controller may search their library for a basic land card, put it onto the battlefield, then shuffle. You may search your library for a basic land card, put it onto the battlefield, then shuffle.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Demolition Field",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Destroy target nonbasic land an opponent controls. That land's controller may search their library for a basic land card, put it onto the battlefield, then shuffle. You may search your library for a basic land card, put it onto the battlefield, then shuffle."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "0c7e51b6-4898-4632-b39c-3ce438caa882"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

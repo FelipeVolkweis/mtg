@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "d9a3207a-a330-4517-967e-f37c9a9f1355",
-  "canonicalName": "Clinquant Skymage",
-  "defaultPrintingId": "36012810-0e83-4640-8ba7-7262229f1b84",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Clinquant Skymage",
-      "manaCost": "{3}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Bird Wizard",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird",
-        "Wizard"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever you draw a card, put a +1/+1 counter on this creature.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you draw a card, put a +1/+1 counter on this creature.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Clinquant Skymage",
+        "manaCost": "{3}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird",
+          "Wizard"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever you draw a card, put a +1/+1 counter on this creature.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "36012810-0e83-4640-8ba7-7262229f1b84"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

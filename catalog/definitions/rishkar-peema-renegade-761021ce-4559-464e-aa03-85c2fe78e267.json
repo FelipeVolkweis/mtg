@@ -1,39 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "761021ce-4559-464e-aa03-85c2fe78e267",
-  "canonicalName": "Rishkar, Peema Renegade",
-  "defaultPrintingId": "f542fbf8-3700-4b86-83d8-d8bdf8f14285",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Rishkar, Peema Renegade",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Legendary Creature — Elf Druid",
-      "manaValue": 3,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Druid"
-      ],
-      "keywords": [],
-      "rulesText": "When Rishkar enters, put a +1/+1 counter on each of up to two target creatures.\nEach creature you control with a counter on it has \"{T}: Add {G}.\"",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When Rishkar enters, put a +1/+1 counter on each of up to two target creatures.\nEach creature you control with a counter on it has \"{T}: Add {G}.\"",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Rishkar, Peema Renegade",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Druid"
+        ],
+        "keywords": [],
+        "rulesText": "When Rishkar enters, put a +1/+1 counter on each of up to two target creatures.\nEach creature you control with a counter on it has \"{T}: Add {G}.\"",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "f542fbf8-3700-4b86-83d8-d8bdf8f14285"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "2ed1879a-83b8-48df-a6d2-fe28e912b4c5",
-  "canonicalName": "Slagstorm",
-  "defaultPrintingId": "9db2e3a9-b90d-44cd-a2bd-eeb7dbe255b0",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Slagstorm",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose one —\n• Slagstorm deals 3 damage to each creature.\n• Slagstorm deals 3 damage to each player."
-    }
-  ],
-  "oracleText": "Choose one —\n• Slagstorm deals 3 damage to each creature.\n• Slagstorm deals 3 damage to each player.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Slagstorm",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose one —\n• Slagstorm deals 3 damage to each creature.\n• Slagstorm deals 3 damage to each player."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "9db2e3a9-b90d-44cd-a2bd-eeb7dbe255b0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

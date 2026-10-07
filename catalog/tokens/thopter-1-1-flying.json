@@ -1,0 +1,28 @@
+{
+  "id": "thopter-1-1-flying",
+  "characteristics": {
+    "name": "Thopter",
+    "colors": [],
+    "supertypes": [],
+    "types": [
+      "Artifact",
+      "Creature"
+    ],
+    "subtypes": [
+      "Thopter"
+    ],
+    "keywords": [
+      "Flying"
+    ],
+    "rulesText": "Flying",
+    "power": "1",
+    "toughness": "1"
+  },
+  "abilities": [
+    {
+      "id": "flying",
+      "kind": "keyword",
+      "keyword": "flying"
+    }
+  ]
+}

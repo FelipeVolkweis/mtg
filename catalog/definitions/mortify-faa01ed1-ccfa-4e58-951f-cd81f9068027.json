@@ -1,34 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "faa01ed1-ccfa-4e58-951f-cd81f9068027",
-  "canonicalName": "Mortify",
-  "defaultPrintingId": "88e85619-3a7d-48c2-b9b0-20718c913696",
-  "form": "normal",
-  "colorIdentity": [
-    "B",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Mortify",
-      "manaCost": "{1}{W}{B}",
-      "colors": [
-        "B",
-        "W"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Destroy target creature or enchantment."
-    }
-  ],
-  "oracleText": "Destroy target creature or enchantment.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mortify",
+        "manaCost": "{1}{W}{B}",
+        "colors": [
+          "B",
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Destroy target creature or enchantment."
+      }
+    ],
+    "colorIdentity": [
+      "B",
+      "W"
+    ],
+    "defaultPrintingId": "88e85619-3a7d-48c2-b9b0-20718c913696"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

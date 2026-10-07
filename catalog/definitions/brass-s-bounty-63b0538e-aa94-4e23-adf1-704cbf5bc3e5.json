@@ -1,36 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "63b0538e-aa94-4e23-adf1-704cbf5bc3e5",
-  "canonicalName": "Brass's Bounty",
-  "defaultPrintingId": "65fe7127-b0ec-400f-97f1-6e17ab8e319d",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Brass's Bounty",
-      "manaCost": "{6}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Treasure"
-      ],
-      "rulesText": "For each land you control, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")"
-    }
-  ],
-  "oracleText": "For each land you control, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-  "keywords": [
-    "Treasure"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Brass's Bounty",
+        "manaCost": "{6}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Treasure"
+        ],
+        "rulesText": "For each land you control, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "65fe7127-b0ec-400f-97f1-6e17ab8e319d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

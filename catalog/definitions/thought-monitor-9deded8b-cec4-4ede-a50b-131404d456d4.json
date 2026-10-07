@@ -1,105 +1,75 @@
 {
+  "catalogVersion": 2,
   "id": "9deded8b-cec4-4ede-a50b-131404d456d4",
-  "canonicalName": "Thought Monitor",
-  "defaultPrintingId": "03fd75f3-e545-4a07-ab1d-9b51612a1463",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Thought Monitor",
-      "manaCost": "{6}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact Creature \u2014 Construct",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Construct"
-      ],
-      "keywords": [
-        "Flying",
-        "Affinity"
-      ],
-      "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nWhen this creature enters, draw two cards.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nWhen this creature enters, draw two cards.",
-  "keywords": [
-    "Flying",
-    "Affinity"
-  ],
-  "manaValue": 7,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "affinity",
-      "kind": "static",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "costModifiers": [
-          {
-            "use": "cast",
-            "scope": "source",
-            "component": "generic",
-            "amount": {
-              "count": {
-                "zone": "battlefield",
-                "controller": "you",
-                "types": [
-                  "Artifact"
-                ]
-              }
-            }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thought Monitor",
+        "manaCost": "{6}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "keywords": [
+          "Flying",
+          "Affinity"
+        ],
+        "rulesText": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)\nFlying\nWhen this creature enters, draw two cards.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "03fd75f3-e545-4a07-ab1d-9b51612a1463"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "affinity",
+        "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "affinity",
+          "for": {
+            "type": [
+              "Artifact"
+            ]
           }
-        ]
+        }
       },
-      "keyword": "Affinity",
-      "description": "Affinity for artifacts (This spell costs {1} less to cast for each artifact you control.)"
-    },
-    {
-      "id": "entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
+      {
+        "id": "entry",
+        "description": "When this creature enters, draw two cards.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
         "effects": [
           {
             "kind": "draw",
             "count": 2
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
+        ]
       },
-      "description": "When this creature enters, draw two cards."
-    },
-    {
-      "id": "flying",
-      "kind": "static",
-      "origin": "printed",
-      "keyword": "Flying",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "keyword": "Flying"
-      },
-      "description": "Flying"
-    }
-  ]
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      }
+    ]
+  }
 }

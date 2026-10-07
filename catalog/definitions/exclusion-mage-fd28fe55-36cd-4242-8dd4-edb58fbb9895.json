@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "fd28fe55-36cd-4242-8dd4-edb58fbb9895",
-  "canonicalName": "Exclusion Mage",
-  "defaultPrintingId": "62c8024e-490a-484a-bcee-da7728a64a1f",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Exclusion Mage",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Human Wizard",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Exclusion Mage",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, return target creature an opponent controls to its owner's hand.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "62c8024e-490a-484a-bcee-da7728a64a1f"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

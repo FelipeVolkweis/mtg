@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "1ba99ade-df8d-4654-882a-a5f4256ada3d",
-  "canonicalName": "Grappling Kraken",
-  "defaultPrintingId": "d1f5cab3-3fc0-448d-8252-cd55abf5b596",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Grappling Kraken",
-      "manaCost": "{4}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Kraken",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Kraken"
-      ],
-      "keywords": [
-        "Landfall"
-      ],
-      "rulesText": "Landfall — Whenever a land you control enters, tap target creature an opponent controls and put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
-      "power": "5",
-      "toughness": "6"
-    }
-  ],
-  "oracleText": "Landfall — Whenever a land you control enters, tap target creature an opponent controls and put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
-  "keywords": [
-    "Landfall"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Grappling Kraken",
+        "manaCost": "{4}{U}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kraken"
+        ],
+        "keywords": [
+          "Landfall"
+        ],
+        "rulesText": "Landfall — Whenever a land you control enters, tap target creature an opponent controls and put a stun counter on it. (If a permanent with a stun counter would become untapped, remove one from it instead.)",
+        "power": "5",
+        "toughness": "6"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "d1f5cab3-3fc0-448d-8252-cd55abf5b596"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

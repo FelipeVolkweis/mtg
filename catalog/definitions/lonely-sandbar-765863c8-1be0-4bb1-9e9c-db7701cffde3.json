@@ -1,101 +1,79 @@
 {
+  "catalogVersion": 2,
   "id": "765863c8-1be0-4bb1-9e9c-db7701cffde3",
-  "canonicalName": "Lonely Sandbar",
-  "defaultPrintingId": "6c8281c0-161b-45c9-abe0-5527b644b7d0",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Lonely Sandbar",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Cycling"
-      ],
-      "rulesText": "This land enters tapped.\n{T}: Add {U}.\nCycling {U} ({U}, Discard this card: Draw a card.)"
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {U}.\nCycling {U} ({U}, Discard this card: Draw a card.)",
-  "keywords": [
-    "Cycling"
-  ],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "enter-tapped",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "enter-tapped"
-          }
-        ]
-      },
-      "description": "This land enters tapped."
-    },
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Lonely Sandbar",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "U"
-            ],
-            "quantity": 1
-          }
+        "subtypes": [],
+        "keywords": [
+          "Cycling"
         ],
-        "manaAbility": true
+        "rulesText": "This land enters tapped.\n{T}: Add {U}.\nCycling {U} ({U}, Discard this card: Draw a card.)"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "6c8281c0-161b-45c9-abe0-5527b644b7d0"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enter-tapped",
+        "description": "This land enters tapped.",
+        "kind": "replacement",
+        "event": {
+          "event": "would-enter",
+          "object": "source"
+        },
+        "replace": {
+          "kind": "enter-tapped"
+        }
       },
-      "description": "{T}: Add {U}."
-    },
-    {
-      "id": "cycling",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "hand",
-      "rules": {
-        "costs": [
-          {
-            "kind": "mana",
-            "symbols": [
-              "{U}"
-            ]
-          },
-          {
-            "kind": "discard-source"
-          }
-        ],
-        "effects": [
-          {
-            "kind": "draw",
-            "count": 1
-          }
-        ]
+      {
+        "id": "mana",
+        "description": "{T}: Add {U}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "U"
+          ]
+        }
       },
-      "keyword": "cycling",
-      "description": "Cycling {U} ({U}, Discard this card: Draw a card.)"
-    }
-  ]
+      {
+        "id": "cycling",
+        "description": "Cycling {U} ({U}, Discard this card: Draw a card.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "cycling",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{U}"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

@@ -55,9 +55,13 @@ test("imports a single-faced Saga with its chapter text", async (t) => {
       "utf8",
     ),
   );
-  assert.equal(definition.form, "saga");
-  assert.equal(definition.components.length, 1);
-  assert.deepEqual(definition.components[0].types, ["Enchantment"]);
-  assert.deepEqual(definition.components[0].subtypes, ["Saga"]);
-  assert.match(definition.components[0].rulesText, /III — Create a Dragon/);
+  assert.equal(definition.catalogVersion, 2);
+  assert.equal(definition.imported.form, "saga");
+  assert.equal(definition.imported.components.length, 1);
+  assert.deepEqual(definition.imported.components[0].types, ["Enchantment"]);
+  assert.deepEqual(definition.imported.components[0].subtypes, ["Saga"]);
+  assert.match(
+    definition.imported.components[0].rulesText,
+    /III — Create a Dragon/,
+  );
 });

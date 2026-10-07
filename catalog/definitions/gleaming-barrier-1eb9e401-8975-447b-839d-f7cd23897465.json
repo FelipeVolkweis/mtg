@@ -1,39 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "1eb9e401-8975-447b-839d-f7cd23897465",
-  "canonicalName": "Gleaming Barrier",
-  "defaultPrintingId": "1b49b009-e6f2-494a-9235-f5c25c2d70a9",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Gleaming Barrier",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature — Wall",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Wall"
-      ],
-      "keywords": [
-        "Treasure",
-        "Defender"
-      ],
-      "rulesText": "Defender\nWhen this creature dies, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-      "power": "0",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Defender\nWhen this creature dies, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
-  "keywords": [
-    "Treasure",
-    "Defender"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Gleaming Barrier",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Wall"
+        ],
+        "keywords": [
+          "Treasure",
+          "Defender"
+        ],
+        "rulesText": "Defender\nWhen this creature dies, create a Treasure token. (It's an artifact with \"{T}, Sacrifice this token: Add one mana of any color.\")",
+        "power": "0",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "1b49b009-e6f2-494a-9235-f5c25c2d70a9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

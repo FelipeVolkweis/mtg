@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "679841ad-f3ac-48e2-ba11-2cf6d78642b4",
-  "canonicalName": "Raging Redcap",
-  "defaultPrintingId": "9627b0a7-bda9-44df-81c9-aa70cc976331",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Raging Redcap",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Knight",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Knight"
-      ],
-      "keywords": [
-        "Double strike"
-      ],
-      "rulesText": "Double strike (This creature deals both first-strike and regular combat damage.)",
-      "power": "1",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Double strike (This creature deals both first-strike and regular combat damage.)",
-  "keywords": [
-    "Double strike"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Raging Redcap",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Knight"
+        ],
+        "keywords": [
+          "Double strike"
+        ],
+        "rulesText": "Double strike (This creature deals both first-strike and regular combat damage.)",
+        "power": "1",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "9627b0a7-bda9-44df-81c9-aa70cc976331"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

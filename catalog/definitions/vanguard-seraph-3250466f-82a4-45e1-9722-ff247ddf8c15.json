@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "3250466f-82a4-45e1-9722-ff247ddf8c15",
-  "canonicalName": "Vanguard Seraph",
-  "defaultPrintingId": "e545bc61-02f9-4f3f-b5ba-f9d32ea515d2",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Vanguard Seraph",
-      "manaCost": "{3}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel Warrior",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel",
-        "Warrior"
-      ],
-      "keywords": [
-        "Flying",
-        "Surveil"
-      ],
-      "rulesText": "Flying\nWhenever you gain life for the first time each turn, surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nWhenever you gain life for the first time each turn, surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
-  "keywords": [
-    "Flying",
-    "Surveil"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vanguard Seraph",
+        "manaCost": "{3}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel",
+          "Warrior"
+        ],
+        "keywords": [
+          "Flying",
+          "Surveil"
+        ],
+        "rulesText": "Flying\nWhenever you gain life for the first time each turn, surveil 1. (Look at the top card of your library. You may put it into your graveyard.)",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "e545bc61-02f9-4f3f-b5ba-f9d32ea515d2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

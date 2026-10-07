@@ -1,0 +1,67 @@
+{
+  "catalogVersion": 2,
+  "id": "234a734b-ba28-4f1b-9d01-3c3e7d516590",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "An Offer You Can't Refuse",
+        "manaCost": "{U}",
+        "colors": ["U"],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": ["Treasure"],
+        "rulesText": "Counter target noncreature spell. Its controller creates two Treasure tokens. (They're artifacts with \"{T}, Sacrifice this token: Add one mana of any color.\")"
+      }
+    ],
+    "colorIdentity": ["U"],
+    "defaultPrintingId": "a829747f-cf9b-4d81-ba66-9f0630ed4565"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "counter",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "spell",
+            "filter": {
+              "and": [
+                {
+                  "zone": "stack",
+                  "object": "spell"
+                },
+                {
+                  "not": {
+                    "type": "Creature"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "counter",
+            "objects": {
+              "target": "spell"
+            }
+          },
+          {
+            "kind": "create-token",
+            "token": "treasure",
+            "count": 2,
+            "controller": {
+              "controllerOf": {
+                "target": "spell"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

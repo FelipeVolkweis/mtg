@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "4c48de92-e053-4af7-b936-d7ec0875e0d3",
-  "canonicalName": "Ambush Wolf",
-  "defaultPrintingId": "2903832c-318e-42ab-bf58-c682ec2f7afd",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Ambush Wolf",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Wolf",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Wolf"
-      ],
-      "keywords": [
-        "Flash"
-      ],
-      "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, exile up to one target card from a graveyard.",
-      "power": "4",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, exile up to one target card from a graveyard.",
-  "keywords": [
-    "Flash"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ambush Wolf",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wolf"
+        ],
+        "keywords": [
+          "Flash"
+        ],
+        "rulesText": "Flash (You may cast this spell any time you could cast an instant.)\nWhen this creature enters, exile up to one target card from a graveyard.",
+        "power": "4",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "2903832c-318e-42ab-bf58-c682ec2f7afd"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

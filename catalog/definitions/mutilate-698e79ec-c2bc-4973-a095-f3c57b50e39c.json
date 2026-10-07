@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "698e79ec-c2bc-4973-a095-f3c57b50e39c",
-  "canonicalName": "Mutilate",
-  "defaultPrintingId": "c2038b12-30b8-42ff-a15d-87cbbf72c939",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Mutilate",
-      "manaCost": "{2}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "All creatures get -1/-1 until end of turn for each Swamp you control."
-    }
-  ],
-  "oracleText": "All creatures get -1/-1 until end of turn for each Swamp you control.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Mutilate",
+        "manaCost": "{2}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "All creatures get -1/-1 until end of turn for each Swamp you control."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "c2038b12-30b8-42ff-a15d-87cbbf72c939"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

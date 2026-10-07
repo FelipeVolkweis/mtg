@@ -1,0 +1,82 @@
+{
+  "catalogVersion": 2,
+  "id": "04b7362d-0490-4cb0-b5d7-2a7732f659ce",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bojuka Bog",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": ["Land"],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, exile target player's graveyard.\n{T}: Add {B}."
+      }
+    ],
+    "colorIdentity": ["B"],
+    "defaultPrintingId": "3999a519-bfd5-43cf-b7b1-40ed5eb0a05a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "enters-tapped",
+        "kind": "replacement",
+        "event": {
+          "event": "would-enter",
+          "object": "source"
+        },
+        "replace": {
+          "kind": "enter-tapped"
+        }
+      },
+      {
+        "id": "exile-graveyard",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
+          {
+            "id": "player",
+            "filter": {
+              "object": "player"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "exile",
+            "objects": {
+              "all": {
+                "zone": "graveyard",
+                "owner": {
+                  "target": "player"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "mana",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": ["B"]
+        }
+      }
+    ]
+  }
+}

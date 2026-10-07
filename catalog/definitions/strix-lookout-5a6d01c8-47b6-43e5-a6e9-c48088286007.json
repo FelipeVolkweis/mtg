@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "5a6d01c8-47b6-43e5-a6e9-c48088286007",
-  "canonicalName": "Strix Lookout",
-  "defaultPrintingId": "3b0c77ab-15cd-49d8-ac5b-7b8b968d14cd",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Strix Lookout",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Bird",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bird"
-      ],
-      "keywords": [
-        "Flying",
-        "Vigilance"
-      ],
-      "rulesText": "Flying, vigilance (Attacking doesn't cause this creature to tap.)\n{1}{U}, {T}: Draw a card, then discard a card.",
-      "power": "1",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying, vigilance (Attacking doesn't cause this creature to tap.)\n{1}{U}, {T}: Draw a card, then discard a card.",
-  "keywords": [
-    "Flying",
-    "Vigilance"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Strix Lookout",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bird"
+        ],
+        "keywords": [
+          "Flying",
+          "Vigilance"
+        ],
+        "rulesText": "Flying, vigilance (Attacking doesn't cause this creature to tap.)\n{1}{U}, {T}: Draw a card, then discard a card.",
+        "power": "1",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "3b0c77ab-15cd-49d8-ac5b-7b8b968d14cd"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

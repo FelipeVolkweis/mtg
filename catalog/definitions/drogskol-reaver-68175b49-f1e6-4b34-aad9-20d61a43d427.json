@@ -1,46 +1,42 @@
 {
+  "catalogVersion": 2,
   "id": "68175b49-f1e6-4b34-aad9-20d61a43d427",
-  "canonicalName": "Drogskol Reaver",
-  "defaultPrintingId": "c0a4450c-8dfd-4d05-adb9-e84ec6066c7d",
-  "form": "normal",
-  "colorIdentity": [
-    "U",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Drogskol Reaver",
-      "manaCost": "{5}{W}{U}",
-      "colors": [
-        "U",
-        "W"
-      ],
-      "typeLine": "Creature — Spirit",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Spirit"
-      ],
-      "keywords": [
-        "Flying",
-        "Lifelink",
-        "Double strike"
-      ],
-      "rulesText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nWhenever you gain life, draw a card.",
-      "power": "3",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nWhenever you gain life, draw a card.",
-  "keywords": [
-    "Flying",
-    "Lifelink",
-    "Double strike"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Drogskol Reaver",
+        "manaCost": "{5}{W}{U}",
+        "colors": [
+          "U",
+          "W"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Spirit"
+        ],
+        "keywords": [
+          "Flying",
+          "Lifelink",
+          "Double strike"
+        ],
+        "rulesText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nLifelink (Damage dealt by this creature also causes you to gain that much life.)\nWhenever you gain life, draw a card.",
+        "power": "3",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "U",
+      "W"
+    ],
+    "defaultPrintingId": "c0a4450c-8dfd-4d05-adb9-e84ec6066c7d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

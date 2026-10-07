@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "517c7295-8ba2-47a6-a1c6-aee722f8ca88",
-  "canonicalName": "Leonin Skyhunter",
-  "defaultPrintingId": "218e0009-5f11-4348-97b8-4bc7b41f80b8",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Leonin Skyhunter",
-      "manaCost": "{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Cat Knight",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Cat",
-        "Knight"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Leonin Skyhunter",
+        "manaCost": "{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Knight"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "218e0009-5f11-4348-97b8-4bc7b41f80b8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

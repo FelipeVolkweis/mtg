@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "db794af5-ba2e-4b10-b213-e481e8a50432",
-  "canonicalName": "Beast-Kin Ranger",
-  "defaultPrintingId": "0102e0be-5783-4825-9489-713b1b1df0b2",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Beast-Kin Ranger",
-      "manaCost": "{2}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Ranger",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Ranger"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever another creature you control enters, this creature gets +1/+0 until end of turn.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever another creature you control enters, this creature gets +1/+0 until end of turn.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Beast-Kin Ranger",
+        "manaCost": "{2}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Ranger"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhenever another creature you control enters, this creature gets +1/+0 until end of turn.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "0102e0be-5783-4825-9489-713b1b1df0b2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

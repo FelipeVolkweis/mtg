@@ -1,31 +1,31 @@
 import { Injectable } from "@nestjs/common";
-import type {
-  Catalog,
-  Characteristics,
-  DeckEntry,
-} from "../../shared/model.js";
+import type { Catalog, DeckEntry } from "../../shared/model.js";
 import { ScryfallSource, SourceCard } from "./scryfall-source.js";
 import {
+  catalogRoot,
+  definitionFromFile,
   publishCatalog,
   readCatalog,
   readIdentityMap,
 } from "./catalog-files.js";
+import { nameEntries, nameKey as key } from "./card-names.js";
 import {
-  canonicalName as cardName,
-  nameEntries,
-  nameKey as key,
-} from "./card-names.js";
+  cardDefinitionFileSchema,
+  cardForms,
+  type CardDefinitionFile,
+  type ComponentCharacteristics,
+} from "../../shared/rules-v2.js";
+import { readRegistries } from "../rules/registries.js";
 
 function characteristics(
   face: SourceCard | NonNullable<SourceCard["card_faces"]>[number],
   card: SourceCard,
-): Characteristics {
+): ComponentCharacteristics {
   return {
     name: face.name,
     manaCost: face.mana_cost,
     colors: face.colors ?? [],
     colorIndicator: face.color_indicator,
-    typeLine: face.type_line,
     manaValue: face.cmc ?? (face === card ? card.cmc : undefined),
     ...parseTypes(face.type_line),
     keywords: face.keywords ?? (face === card ? card.keywords : []),
@@ -66,22 +66,13 @@ function parseTypes(line: string) {
   };
 }
 
-const supportedLayouts = new Set([
-  "normal",
-  "saga",
-  "transform",
-  "modal_dfc",
-  "split",
-  "reversible_card",
-  "room",
-  "flip",
-]);
+const supportedLayouts = new Set<string>(cardForms);
 const singleFaceLayouts = new Set(["normal", "saga"]);
-function importedDefinition(
+/** The `imported` section of a definition file (card-model-refactor.md §3.2). */
+function importedSection(
   card: SourceCard,
-  oracleId: string,
   defaultPrintingId: string,
-) {
+): CardDefinitionFile["imported"] {
   if (
     !supportedLayouts.has(card.layout) ||
     (!singleFaceLayouts.has(card.layout) && !card.card_faces?.length) ||
@@ -92,17 +83,11 @@ function importedDefinition(
   if (faces.some((face) => !face.type_line))
     throw new Error(`Missing card type for ${card.id}`);
   return {
-    id: oracleId,
-    canonicalName: cardName(card),
-    defaultPrintingId,
-    form: card.layout,
-    colorIdentity: card.color_identity,
+    form: card.layout as CardDefinitionFile["imported"]["form"],
     components: faces.map((face) => characteristics(face, card)),
-    oracleText:
-      card.oracle_text ??
-      faces.map((face) => face.oracle_text ?? "").join("\n//\n"),
-    keywords: card.keywords,
-    manaValue: card.cmc,
+    colorIdentity:
+      card.color_identity as CardDefinitionFile["imported"]["colorIdentity"],
+    defaultPrintingId,
   };
 }
 
@@ -111,9 +96,10 @@ export class CatalogService {
   async importSet(code: string, source = new ScryfallSource()) {
     const setCode = code.trim().toLowerCase();
     const fetched = await source.fetchSet(setCode);
-    const [current, identityMap] = await Promise.all([
+    const [current, identityMap, registries] = await Promise.all([
       readCatalog(),
       readIdentityMap(),
+      readRegistries(catalogRoot()),
     ]);
     const catalog = structuredClone(current);
     const seen = new Set<string>();
@@ -149,16 +135,22 @@ export class CatalogService {
       const chosen =
         cards.find((card) => card.id === existing?.defaultPrintingId) ??
         cards[0];
-      const fields = importedDefinition(
-        chosen,
-        oracleId,
-        existing?.defaultPrintingId ?? chosen.id,
+      // A set import writes only `imported`; `authored` is kept as it is.
+      catalog.definitions[oracleId] = definitionFromFile(
+        cardDefinitionFileSchema.parse({
+          catalogVersion: 2,
+          id: oracleId,
+          imported: importedSection(
+            chosen,
+            existing?.defaultPrintingId ?? chosen.id,
+          ),
+          authored: {
+            automationStatus: existing?.automationStatus ?? "unimplemented",
+            abilities: existing?.authoredAbilities ?? [],
+          },
+        }),
+        registries,
       );
-      catalog.definitions[oracleId] = {
-        ...fields,
-        automationStatus: existing?.automationStatus ?? "unimplemented",
-        abilities: existing?.abilities ?? [],
-      };
     }
     for (const { card, oracleId } of resolved) {
       const artwork = (card.card_faces ?? [card])

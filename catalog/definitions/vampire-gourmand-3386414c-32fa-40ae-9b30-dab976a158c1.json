@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "3386414c-32fa-40ae-9b30-dab976a158c1",
-  "canonicalName": "Vampire Gourmand",
-  "defaultPrintingId": "917514c0-9cd5-4b97-85b9-c4f753560ad4",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Vampire Gourmand",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature attacks, you may sacrifice another creature. If you do, draw a card and this creature can't be blocked this turn.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever this creature attacks, you may sacrifice another creature. If you do, draw a card and this creature can't be blocked this turn.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vampire Gourmand",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature attacks, you may sacrifice another creature. If you do, draw a card and this creature can't be blocked this turn.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "917514c0-9cd5-4b97-85b9-c4f753560ad4"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

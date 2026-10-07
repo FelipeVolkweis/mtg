@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "8161248c-16a3-47db-a3ae-cdfd878d49e0",
-  "canonicalName": "Terror of Mount Velus",
-  "defaultPrintingId": "be3bcdcc-61b6-4f46-8154-f047e281e217",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Terror of Mount Velus",
-      "manaCost": "{5}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying",
-        "Double strike"
-      ],
-      "rulesText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nWhen this creature enters, creatures you control gain double strike until end of turn.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nWhen this creature enters, creatures you control gain double strike until end of turn.",
-  "keywords": [
-    "Flying",
-    "Double strike"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Terror of Mount Velus",
+        "manaCost": "{5}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying",
+          "Double strike"
+        ],
+        "rulesText": "Flying\nDouble strike (This creature deals both first-strike and regular combat damage.)\nWhen this creature enters, creatures you control gain double strike until end of turn.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "be3bcdcc-61b6-4f46-8154-f047e281e217"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "ed206651-3d9b-4546-8d45-0682817192fd",
-  "canonicalName": "Bear Cub",
-  "defaultPrintingId": "d8662ebb-068b-41d2-b504-4b5854e4d4aa",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Bear Cub",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Bear",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Bear"
-      ],
-      "keywords": [],
-      "rulesText": "",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bear Cub",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Bear"
+        ],
+        "keywords": [],
+        "rulesText": "",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "d8662ebb-068b-41d2-b504-4b5854e4d4aa"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

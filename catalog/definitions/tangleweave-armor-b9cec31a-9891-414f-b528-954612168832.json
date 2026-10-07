@@ -1,40 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "b9cec31a-9891-414f-b528-954612168832",
-  "canonicalName": "Tangleweave Armor",
-  "defaultPrintingId": "9fd7ac91-8f76-4fd1-afc5-9a3fd5ce6894",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Tangleweave Armor",
-      "manaCost": "{2}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Artifact — Equipment",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [
-        "Equipment"
-      ],
-      "keywords": [
-        "Equip",
-        "Living weapon"
-      ],
-      "rulesText": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)\nEquipped creature gets +X/+X, where X is the greatest mana value among your commanders.\nEquip {4}"
-    }
-  ],
-  "oracleText": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)\nEquipped creature gets +X/+X, where X is the greatest mana value among your commanders.\nEquip {4}",
-  "keywords": [
-    "Equip",
-    "Living weapon"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Tangleweave Armor",
+        "manaCost": "{2}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [
+          "Equipment"
+        ],
+        "keywords": [
+          "Equip",
+          "Living weapon"
+        ],
+        "rulesText": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)\nEquipped creature gets +X/+X, where X is the greatest mana value among your commanders.\nEquip {4}"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "9fd7ac91-8f76-4fd1-afc5-9a3fd5ce6894"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

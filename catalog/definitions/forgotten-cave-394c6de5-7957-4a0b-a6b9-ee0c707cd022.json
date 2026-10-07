@@ -1,34 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "394c6de5-7957-4a0b-a6b9-ee0c707cd022",
-  "canonicalName": "Forgotten Cave",
-  "defaultPrintingId": "3c5b7833-1b94-4cc9-8695-f87de3d31393",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Forgotten Cave",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [
-        "Cycling"
-      ],
-      "rulesText": "This land enters tapped.\n{T}: Add {R}.\nCycling {R} ({R}, Discard this card: Draw a card.)"
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {R}.\nCycling {R} ({R}, Discard this card: Draw a card.)",
-  "keywords": [
-    "Cycling"
-  ],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Forgotten Cave",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [
+          "Cycling"
+        ],
+        "rulesText": "This land enters tapped.\n{T}: Add {R}.\nCycling {R} ({R}, Discard this card: Draw a card.)"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "3c5b7833-1b94-4cc9-8695-f87de3d31393"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

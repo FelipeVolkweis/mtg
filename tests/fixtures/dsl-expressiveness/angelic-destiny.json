@@ -1,0 +1,85 @@
+{
+  "catalogVersion": 2,
+  "id": "8ba36878-0816-44c7-b543-8ebfc28c2ecd",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Angelic Destiny",
+        "manaCost": "{2}{W}{W}",
+        "colors": ["W"],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": ["Enchantment"],
+        "subtypes": ["Aura"],
+        "keywords": ["Enchant"],
+        "rulesText": "Enchant creature\nEnchanted creature gets +4/+4, has flying and first strike, and is an Angel in addition to its other types.\nWhen enchanted creature dies, return this card to its owner's hand."
+      }
+    ],
+    "colorIdentity": ["W"],
+    "defaultPrintingId": "a8c5b900-650b-4655-b8f8-a7d454b20207"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "enchant",
+        "kind": "keyword",
+        "keyword": {
+          "name": "enchant",
+          "filter": {
+            "type": "Creature"
+          }
+        }
+      },
+      {
+        "id": "bonus",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "attachedTo": "source"
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 4,
+                "toughness": 4
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "flying"
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "first strike"
+              },
+              {
+                "kind": "add-types",
+                "subtypes": ["Angel"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "return",
+        "kind": "triggered",
+        "trigger": {
+          "event": "dies",
+          "object": {
+            "attachedTo": "source"
+          }
+        },
+        "effects": [
+          {
+            "kind": "move",
+            "objects": "source",
+            "to": "hand"
+          }
+        ]
+      }
+    ]
+  }
+}

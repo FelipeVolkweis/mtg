@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "a7c6c9b3-91f2-4ecf-b2b0-b0edd96974d9",
-  "canonicalName": "Zul Ashur, Lich Lord",
-  "defaultPrintingId": "e92dcd69-8978-4afe-b83d-c9224dfb6a9e",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Zul Ashur, Lich Lord",
-      "manaCost": "{1}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Legendary Creature — Zombie Warlock",
-      "manaValue": 2,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie",
-        "Warlock"
-      ],
-      "keywords": [
-        "Ward"
-      ],
-      "rulesText": "Ward—Pay 2 life. (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2 life.)\n{T}: You may cast target Zombie creature card from your graveyard this turn.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Ward—Pay 2 life. (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2 life.)\n{T}: You may cast target Zombie creature card from your graveyard this turn.",
-  "keywords": [
-    "Ward"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Zul Ashur, Lich Lord",
+        "manaCost": "{1}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 2,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie",
+          "Warlock"
+        ],
+        "keywords": [
+          "Ward"
+        ],
+        "rulesText": "Ward—Pay 2 life. (Whenever this creature becomes the target of a spell or ability an opponent controls, counter it unless that player pays 2 life.)\n{T}: You may cast target Zombie creature card from your graveyard this turn.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "e92dcd69-8978-4afe-b83d-c9224dfb6a9e"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

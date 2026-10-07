@@ -25,6 +25,7 @@ import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
+import { author } from "../../support/authored";
 
 test("continuous artifact bonuses, characteristic-defining counts and Overseer counters compose in player views", async () => {
   const { match, command, seed, room, catalog } = await rulesGame();
@@ -179,7 +180,13 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
   retrievalCard.abilities[0].rules = {
     costs: [],
     target: { zone: "exile", kind: "card" },
-    effects: [{ kind: "move", subject: "target", destination: "graveyard" }],
+    effects: [
+      {
+        kind: "move",
+        objects: { target: "target-0" },
+        to: { zone: "graveyard" },
+      },
+    ],
   };
   force.mana(game.match, game.match.players[0].id, { U: 8 });
   const view = () =>
@@ -489,25 +496,25 @@ test("source grants enforce opponent hexproof and artifact flash through current
   const ring = seed("Sol Ring", "hand");
   const protectedMyr = seed("Silver Myr", "battlefield", 1);
   const padeem = seed("Padeem, Consul of Innovation", "battlefield", 1);
-  Object.values(catalog.definitions)
-    .find((c) => c.canonicalName === "Padeem, Consul of Innovation")!
-    .abilities.push({
+  const padeemCard = Object.values(catalog.definitions).find(
+    (c) => c.canonicalName === "Padeem, Consul of Innovation",
+  )!;
+  await author(padeemCard, [
+    ...padeemCard.authoredAbilities,
+    {
       id: "protection",
       kind: "static",
-      origin: "printed",
-      rules: {
-        costs: [],
-        effects: [],
-        continuous: {
-          filter: {
-            zone: "battlefield",
-            controller: "you",
-            types: ["Artifact"],
+      grants: [
+        {
+          kind: "continuous",
+          objects: {
+            all: { zone: "battlefield", controller: "you", type: ["Artifact"] },
           },
-          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+          changes: [{ kind: "grant-keyword", keyword: "hexproof" }],
         },
-      },
-    });
+      ],
+    },
+  ]);
   const bomb = seed("Aether Spellbomb", "battlefield");
   force.step(match, "begin-combat");
   force.mana(match, match.players[0].id, { U: 2 });
@@ -703,26 +710,22 @@ test("hexproof gained in response invalidates an opponent target while preservin
     game.catalog.definitions[
       game.match.instances[padeem.cardInstanceIds[0]].definitionId
     ];
-  card.abilities = [
+  await author(card, [
+    { id: "flash", kind: "keyword", keyword: "flash" },
     {
       id: "scenario-grant",
       kind: "static",
-      origin: "printed",
-      rules: {
-        keyword: "Flash",
-        costs: [],
-        effects: [],
-        continuous: {
-          filter: {
-            zone: "battlefield",
-            controller: "you",
-            types: ["Artifact"],
+      grants: [
+        {
+          kind: "continuous",
+          objects: {
+            all: { zone: "battlefield", controller: "you", type: ["Artifact"] },
           },
-          changes: [{ kind: "grant-keyword", keyword: "Hexproof" }],
+          changes: [{ kind: "grant-keyword", keyword: "hexproof" }],
         },
-      },
+      ],
     },
-  ];
+  ]);
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   force.mana(game.match, game.match.players[0].id, { U: 1 });

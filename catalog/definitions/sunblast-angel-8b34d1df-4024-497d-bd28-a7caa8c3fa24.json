@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "8b34d1df-4024-497d-bd28-a7caa8c3fa24",
-  "canonicalName": "Sunblast Angel",
-  "defaultPrintingId": "2b5e1bb7-14a3-4737-bdac-8da4c3746e7d",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Sunblast Angel",
-      "manaCost": "{4}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Angel",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Angel"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhen this creature enters, destroy all tapped creatures.",
-      "power": "4",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying\nWhen this creature enters, destroy all tapped creatures.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Sunblast Angel",
+        "manaCost": "{4}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Angel"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhen this creature enters, destroy all tapped creatures.",
+        "power": "4",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "2b5e1bb7-14a3-4737-bdac-8da4c3746e7d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

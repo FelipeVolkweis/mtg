@@ -1,53 +1,47 @@
 {
+  "catalogVersion": 2,
   "id": "b1a23235-3076-475c-a68a-db29cf2a9dba",
-  "canonicalName": "Pull from Tomorrow",
-  "defaultPrintingId": "99d9d3a9-442b-485c-88e7-91de7278bde9",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Pull from Tomorrow",
-      "manaCost": "{X}{U}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Draw X cards, then discard a card."
-    }
-  ],
-  "oracleText": "Draw X cards, then discard a card.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "spell",
-      "kind": "spell",
-      "origin": "printed",
-      "rules": {
-        "chosenVariables": [
-          "X"
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Pull from Tomorrow",
+        "manaCost": "{X}{U}{U}",
+        "colors": [
+          "U"
         ],
-        "costs": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw X cards, then discard a card."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "99d9d3a9-442b-485c-88e7-91de7278bde9"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "spell",
+        "description": "Draw X cards, then discard a card.",
+        "kind": "spell",
         "effects": [
           {
             "kind": "sequence",
             "effects": [
               {
+                "bind": "drawn",
                 "kind": "draw",
                 "count": {
-                  "binding": "X"
-                },
-                "bind": "drawn"
+                  "variable": "X"
+                }
               },
               {
                 "kind": "discard",
@@ -56,8 +50,7 @@
             ]
           }
         ]
-      },
-      "description": "Draw X cards, then discard a card."
-    }
-  ]
+      }
+    ]
+  }
 }

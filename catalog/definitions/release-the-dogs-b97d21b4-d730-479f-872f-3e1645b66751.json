@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "b97d21b4-d730-479f-872f-3e1645b66751",
-  "canonicalName": "Release the Dogs",
-  "defaultPrintingId": "07f10906-4fd5-44e8-99c7-3f9dcc988c48",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Release the Dogs",
-      "manaCost": "{3}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Create four 1/1 white Dog creature tokens."
-    }
-  ],
-  "oracleText": "Create four 1/1 white Dog creature tokens.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Release the Dogs",
+        "manaCost": "{3}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Create four 1/1 white Dog creature tokens."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "07f10906-4fd5-44e8-99c7-3f9dcc988c48"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

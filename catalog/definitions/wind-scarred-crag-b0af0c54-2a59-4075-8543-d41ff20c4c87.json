@@ -1,31 +1,31 @@
 {
+  "catalogVersion": 2,
   "id": "b0af0c54-2a59-4075-8543-d41ff20c4c87",
-  "canonicalName": "Wind-Scarred Crag",
-  "defaultPrintingId": "759e99df-11a8-4aee-b6bc-344e84e10d94",
-  "form": "normal",
-  "colorIdentity": [
-    "R",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Wind-Scarred Crag",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {W}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {W}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Wind-Scarred Crag",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\nWhen this land enters, you gain 1 life.\n{T}: Add {R} or {W}."
+      }
+    ],
+    "colorIdentity": [
+      "R",
+      "W"
+    ],
+    "defaultPrintingId": "759e99df-11a8-4aee-b6bc-344e84e10d94"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,0 +1,52 @@
+{
+  "catalogVersion": 2,
+  "id": "1b9ec782-0ba1-41f1-bc39-d3302494ecb3",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bake into a Pie",
+        "manaCost": "{2}{B}{B}",
+        "colors": ["B"],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": ["Food"],
+        "rulesText": "Destroy target creature. Create a Food token. (It's an artifact with \"{2}, {T}, Sacrifice this token: You gain 3 life.\")"
+      }
+    ],
+    "colorIdentity": ["B"],
+    "defaultPrintingId": "2ab0e660-86a3-4b92-82fa-77dcb5db947d"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "destroy",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "creature",
+            "filter": {
+              "zone": "battlefield",
+              "type": "Creature"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "objects": {
+              "target": "creature"
+            }
+          },
+          {
+            "kind": "create-token",
+            "token": "food"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "986ae327-f433-4c58-93dc-afc544b9bfcb",
-  "canonicalName": "Steel Overseer",
-  "defaultPrintingId": "d306b8c9-7a7f-4238-8496-6df10782afaa",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Steel Overseer",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Construct",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Construct"
-      ],
-      "keywords": [],
-      "rulesText": "{T}: Put a +1/+1 counter on each artifact creature you control.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "{T}: Put a +1/+1 counter on each artifact creature you control.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "counters",
-      "kind": "activated",
-      "origin": "printed",
-      "rules": {
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Steel Overseer",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Construct"
+        ],
+        "keywords": [],
+        "rulesText": "{T}: Put a +1/+1 counter on each artifact creature you control.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "d306b8c9-7a7f-4238-8496-6df10782afaa"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "counters",
+        "description": "{T}: Put a +1/+1 counter on each artifact creature you control.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "tap-source"
@@ -43,20 +41,27 @@
         "effects": [
           {
             "kind": "add-counters",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "controller": "you"
+                  },
+                  {
+                    "type": "Artifact"
+                  },
+                  {
+                    "type": "Creature"
+                  }
+                ]
+              }
+            },
             "counter": "+1/+1",
-            "count": 1,
-            "filter": {
-              "zone": "battlefield",
-              "controller": "you",
-              "allTypes": [
-                "Artifact",
-                "Creature"
-              ]
-            }
+            "count": 1
           }
         ]
-      },
-      "description": "{T}: Put a +1/+1 counter on each artifact creature you control."
-    }
-  ]
+      }
+    ]
+  }
 }
