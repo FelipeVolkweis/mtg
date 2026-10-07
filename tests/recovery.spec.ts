@@ -160,7 +160,7 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
       await pages[0].reload();
       const act = async (
         seat: number,
-        action: import("../src/shared/model").MatchAction,
+        action: import("../src/shared/rules-state").MatchAction,
       ) => {
         const match = (await snapshot(pages[seat])).match!;
         return exchange(pages[seat], {

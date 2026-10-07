@@ -2,8 +2,8 @@ import type {
   ExecutionFrame,
   RuleExecution,
   RuntimeValue,
-} from "../../../shared/rules.js";
-import type { Effect } from "../../../shared/rules-v2.js";
+} from "../../../shared/rules-state.js";
+import type { Effect } from "../../../shared/card-dsl.js";
 import { budget } from "../loop-budget.js";
 import { answerEffect, executeEffect } from "./effects/registry.js";
 import type {

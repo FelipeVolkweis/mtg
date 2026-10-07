@@ -11,7 +11,7 @@ import type {
   TargetClause,
   Trigger,
   Value,
-} from "../../shared/rules-v2.js";
+} from "../../shared/card-dsl.js";
 import type { CompileError, CoreAbility } from "./compiler.js";
 import { grantKeyword, runtimeKeyword, same } from "./abilities.js";
 import { unsupportedEffect } from "./vm/effects/registry.js";

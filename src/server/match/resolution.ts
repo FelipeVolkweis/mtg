@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
-import type { GameObject, MatchAction } from "../../shared/model.js";
-import type { SelectionOption } from "../../shared/rules.js";
-import type { Effect } from "../../shared/rules-v2.js";
+import type {
+  GameObject,
+  MatchAction,
+  SelectionOption,
+} from "../../shared/rules-state.js";
+import type { Effect } from "../../shared/card-dsl.js";
 import type { ProposedEvent } from "../rules/context.js";
 import { Evaluator, type Scope } from "../rules/vm/evaluate.js";
 import type {

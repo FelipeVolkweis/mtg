@@ -1,11 +1,12 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { randomBytes, randomUUID } from "node:crypto";
 import type {
+  Catalog,
   Decklist,
   Participant,
+  RoomCommand,
   RoomState,
   RoomView,
-  RoomCommand,
   User,
 } from "../../shared/model.js";
 import { Database } from "../storage/database.js";
@@ -13,7 +14,6 @@ import { readCatalog } from "../catalog/catalog-files.js";
 import { MatchService } from "../match/match.service.js";
 import { DeckError, DeckService } from "../deck/deck.service.js";
 import { deckIssues } from "../deck/format-rules.js";
-import type { Catalog } from "../../shared/model.js";
 import { matchView } from "../match/match-view.js";
 import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";
 

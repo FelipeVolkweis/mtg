@@ -13,8 +13,8 @@ import {
   planPayment,
   type CostPayment,
 } from "../../../src/server/rules/costs/cost-runtime";
-import type { GameObject } from "../../../src/shared/model";
-import type { Ability, Cost } from "../../../src/shared/rules-v2";
+import type { GameObject } from "../../../src/shared/rules-state";
+import type { Ability, Cost } from "../../../src/shared/card-dsl";
 import "../../support/round-trip";
 import { rulesGame } from "../../support/rules-game";
 import { force } from "../../support/force";

@@ -1,12 +1,9 @@
 import type {
   MatchAction,
-  PromptKind,
-  PromptTargets,
-} from "../../../shared/model.js";
-import type {
   PendingProcedure,
   SelectionOption,
-} from "../../../shared/rules.js";
+} from "../../../shared/rules-state.js";
+import type { PromptKind, PromptTargets } from "../../../shared/model.js";
 import { Combat } from "../../match/combat.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { targetClause } from "../abilities.js";

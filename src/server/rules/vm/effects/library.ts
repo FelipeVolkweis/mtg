@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import type { JsonValue } from "../../../../shared/rules.js";
+import type { JsonValue } from "../../../../shared/rules-state.js";
 import { selection } from "./selection.js";
 import {
   done,

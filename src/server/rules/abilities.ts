@@ -1,10 +1,9 @@
 import {
-  runtimeKeywords,
   type AppliedChange,
   type RuntimeKeyword,
-} from "../../shared/rules.js";
+  runtimeKeywords,
+} from "../../shared/rules-state.js";
 import {
-  turnSteps,
   type Ability,
   type Condition,
   type ContinuousChange,
@@ -18,8 +17,9 @@ import {
   type StaticGrant,
   type TargetClause,
   type Trigger,
+  turnSteps,
   type Value,
-} from "../../shared/rules-v2.js";
+} from "../../shared/card-dsl.js";
 
 // Readers over Core abilities (dsl-redesign.md §4): what the engine asks of
 // an ability, answered from the compiler's output. The runtime supports the

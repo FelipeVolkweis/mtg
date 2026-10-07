@@ -1,14 +1,10 @@
 import { useLayoutEffect, useState } from "react";
 import { cardArtwork } from "./rules-presentation";
 import { RulesBoard, type BoardSelection } from "./RulesBoard";
-import type {
-  MatchAction,
-  MatchView,
-  PromptKind,
-  RoomView,
-} from "../shared/model";
+import type { MatchAction } from "../shared/rules-state";
+import type { MatchView, PromptKind, RoomView } from "../shared/model";
 import { phaseSteps } from "../shared/model";
-import { manaTypes } from "../shared/rules";
+import { manaTypes } from "../shared/card-dsl";
 import type { Send } from "./Lobby";
 
 function CardChoices({

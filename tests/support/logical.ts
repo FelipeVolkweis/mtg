@@ -1,4 +1,4 @@
-import type { MatchState } from "../../src/shared/model";
+import type { MatchState } from "../../src/shared/rules-state";
 
 /**
  * What players can tell about a Match, without generated identifiers: two

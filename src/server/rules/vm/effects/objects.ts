@@ -1,4 +1,4 @@
-import type { PlayerRef, Selector } from "../../../../shared/rules-v2.js";
+import type { PlayerRef, Selector } from "../../../../shared/card-dsl.js";
 import { gameObject } from "../../../match/game-objects.js";
 import { tokenCharacteristics } from "../../../match/tokens.js";
 import { selection } from "./selection.js";

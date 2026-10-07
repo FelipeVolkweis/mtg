@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readCatalog } from "../../../src/server/catalog/catalog-files";
 import { deriveFields, manaValueOf } from "../../../src/server/catalog/derive";
-import type { CardForm } from "../../../src/shared/rules-v2";
+import type { CardForm } from "../../../src/shared/card-dsl";
 
 // Derived fields must reproduce what the catalog stores today before the
 // stored copies are deleted (card-model-refactor.md §7).

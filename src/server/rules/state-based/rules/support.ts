@@ -1,4 +1,4 @@
-import type { GameObject } from "../../../../shared/model.js";
+import type { GameObject } from "../../../../shared/rules-state.js";
 import type { RulesQuery } from "../../context.js";
 
 /** The permanents on the Battlefield. */

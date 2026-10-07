@@ -1,11 +1,12 @@
 import { attackTax } from "../rules/abilities.js";
 import { randomUUID } from "node:crypto";
-import type { GameObject, MatchAction } from "../../shared/model.js";
 import type {
   DamageAssignment,
   DamageChoice,
+  GameObject,
+  MatchAction,
   SelectionOption,
-} from "../../shared/rules.js";
+} from "../../shared/rules-state.js";
 import { manaCost } from "./mana.js";
 import { payMana } from "../rules/costs/cost-runtime.js";
 import { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";

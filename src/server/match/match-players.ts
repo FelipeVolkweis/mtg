@@ -1,4 +1,4 @@
-import type { MatchState } from "../../shared/model.js";
+import type { MatchState } from "../../shared/rules-state.js";
 
 // A solo controller owns required choices for the practice seat. Spectators
 // never acquire a player identity through delegation.

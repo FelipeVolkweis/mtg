@@ -1,17 +1,16 @@
+import type { CardDefinition, Catalog } from "../../shared/model.js";
 import type {
-  CardDefinition,
-  Catalog,
   Characteristics,
-  GameObject,
-  MatchState,
+  Predicate,
   ZoneKind,
-  ZoneState,
-} from "../../shared/model.js";
+} from "../../shared/card-dsl.js";
 import type {
   DamageAssignment,
+  GameObject,
   LastKnownInformation,
-} from "../../shared/rules.js";
-import type { Predicate } from "../../shared/rules-v2.js";
+  MatchState,
+  ZoneState,
+} from "../../shared/rules-state.js";
 
 // The rules context (rules-engine-refactor.md §6): a read-only query view and
 // a mutator. A subsystem that only reads takes a RulesQuery; one that changes

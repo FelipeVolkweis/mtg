@@ -1,36 +1,20 @@
 import { z } from "zod";
-import type { RulesState } from "./rules.js";
-import type { Ability, CardForm } from "./rules-v2.js";
+import type { Ability, CardForm, Characteristics } from "./card-dsl.js";
+import {
+  type Counter,
+  type DamageChoice,
+  type GameObject,
+  type ManaPool,
+  type MatchAction,
+  matchActionSchema,
+  type MatchState,
+  type RulesState,
+  type SelectionOption,
+  type ZoneState,
+} from "./rules-state.js";
 
 export const id = z.uuid();
-const text = z.string().max(8000);
 export const integer = z.string().regex(/^-?\d+$/, "Use an integer");
-export const characteristicSchema = z
-  .object({
-    name: z.string().min(1).max(200),
-    manaCost: z.string().max(200).optional(),
-    colors: z
-      .array(z.enum(["W", "U", "B", "R", "G"]))
-      .max(5)
-      .default([]),
-    colorIndicator: z
-      .array(z.enum(["W", "U", "B", "R", "G"]))
-      .max(5)
-      .optional(),
-    typeLine: z.string().max(400).default(""),
-    manaValue: z.number().nonnegative().optional(),
-    supertypes: z.array(z.string()).optional(),
-    types: z.array(z.string()).optional(),
-    subtypes: z.array(z.string()).optional(),
-    keywords: z.array(z.string()).optional(),
-    rulesText: text.default(""),
-    power: z.string().max(100).optional(),
-    toughness: z.string().max(100).optional(),
-    loyalty: z.string().max(100).optional(),
-    defense: z.string().max(100).optional(),
-  })
-  .strict();
-export type Characteristics = z.infer<typeof characteristicSchema>;
 /**
  * A Card Definition as the engine uses it. The file stores only the imported
  * facts and the authored abilities (card-model-refactor.md §3); the reader
@@ -168,116 +152,6 @@ export const phaseSteps = [
   ["Ending", "End"],
   ["Ending", "Cleanup"],
 ] as const;
-export const statusSchema = z
-  .object({
-    tapped: z.boolean(),
-  })
-  .strict();
-/**
- * What was chosen while a spell or ability was proposed (CR 601.2b–h,
- * card-model-refactor.md §4.2). It stays with a permanent spell onto the
- * Battlefield, because a permanent can ask how it was cast.
- */
-export interface ProposalRecord {
-  /** Spells only: the Zone the card was cast from. */
-  sourceZone?: ZoneKind;
-  /** X and other chosen values. */
-  variables: Record<string, number>;
-  /** DSL version 2 mode ids. */
-  modes: string[];
-  /** Paid optional cost ids, such as "kicker". */
-  optionalCosts: string[];
-  alternativeCost?: string;
-  manaSpent: import("./rules.js").ManaType[];
-}
-export interface ObjectLink {
-  label: string;
-  objectIds: string[];
-  abilityId?: string;
-}
-export interface Counter {
-  kind: string;
-  quantity: string;
-}
-export interface MatchPlayer {
-  id: string;
-  participantId: string;
-  name: string;
-  seat: number;
-  life: string;
-  mulliganCount: number;
-  outcome: "playing" | "won" | "lost";
-  counters: Counter[];
-}
-export const zoneKinds = [
-  "library",
-  "hand",
-  "graveyard",
-  "battlefield",
-  "stack",
-  "exile",
-  "command",
-] as const;
-export type ZoneKind = (typeof zoneKinds)[number];
-export interface ZoneState {
-  id: string;
-  kind: ZoneKind;
-  name: string;
-  ownerId?: string;
-  visibility: "public" | "private";
-  objectIds: string[];
-}
-export interface CardInstance {
-  id: string;
-  definitionId: string;
-  printingId: string;
-  ownerId: string;
-  commander?: boolean;
-}
-export const objectKinds = ["card", "token", "ability"] as const;
-export interface GameObject {
-  id: string;
-  kind: (typeof objectKinds)[number];
-  zoneId: string;
-  cardInstanceIds: string[];
-  controllerId: string;
-  characteristics: Characteristics;
-  components: Characteristics[];
-  artwork: string[];
-  currentFace: number;
-  status: z.infer<typeof statusSchema>;
-  counters: Counter[];
-  attachmentTo: string | null;
-  links: ObjectLink[];
-  proposal: ProposalRecord | null;
-  sourceObjectId?: string;
-  sourceAbilityId?: string;
-  resolution?: {
-    sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
-    ability: Ability;
-    event?: import("./rules.js").SemanticEvent;
-    targetIds: string[];
-    color?: import("./rules.js").ManaType;
-  };
-  ownerId: string;
-}
-export interface MatchState {
-  id: string;
-  rules: RulesState;
-  revision: number;
-  players: MatchPlayer[];
-  instances: Record<string, CardInstance>;
-  objects: Record<string, GameObject>;
-  zones: ZoneState[];
-  turn: {
-    activePlayerId: string;
-    number: number;
-    stepIndex: number;
-    order: string[];
-  };
-  outcome: "ongoing" | "complete" | "draw";
-  priority?: { playerId: string; passedPlayerIds: string[] };
-}
 export interface RematchProposal {
   id: string;
   startingLife: string;
@@ -353,12 +227,12 @@ export interface ProcedurePrompt {
   title: string;
   context?: string;
   targets: PromptTargets[];
-  options: Record<string, import("./rules.js").SelectionOption>;
+  options: Record<string, SelectionOption>;
   /** Selections saved with the procedure (a resumed payment keeps them). */
   selections: Record<string, string[]>;
   /** The locked total cost while the procedure waits for payment. */
-  lockedCost?: import("./rules.js").ManaPool & { generic: number };
-  damageChoices?: import("./rules.js").DamageChoice[];
+  lockedCost?: ManaPool & { generic: number };
+  damageChoices?: DamageChoice[];
   /** A UI abort is offered (before a proposal's cost is locked). */
   canAbort: boolean;
   /** Reversing an unpayable proposal is offered (after its cost is locked). */
@@ -399,53 +273,6 @@ export interface RoomView {
   match?: MatchView;
   rematch?: RematchProposal;
 }
-export const matchActionSchema = z.discriminatedUnion("type", [
-  z.object({ type: z.literal("pass-priority") }).strict(),
-  z.object({ type: z.literal("play-land"), objectId: id }).strict(),
-  z.object({ type: z.literal("cast-spell"), objectId: id }).strict(),
-  z
-    .object({
-      type: z.literal("activate-ability"),
-      objectId: id,
-      abilityId: z.string().min(1).max(200),
-      color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),
-    })
-    .strict(),
-  z
-    .object({
-      type: z.literal("rules-input"),
-      procedureId: id,
-      damageAssignments: z
-        .array(
-          z
-            .object({
-              sourceId: id,
-              recipientId: id,
-              amount: z.number().int().nonnegative().max(1000000),
-            })
-            .strict(),
-        )
-        .max(100)
-        .optional(),
-      targetIds: z.array(id).max(100).optional(),
-      selections: z.record(z.string(), z.array(id).max(100)).optional(),
-      color: z.enum(["W", "U", "B", "R", "G", "C"]).optional(),
-      variables: z
-        .record(z.string(), z.number().int().nonnegative().max(1000))
-        .optional(),
-      confirm: z.boolean().optional(),
-    })
-    .strict(),
-  z.object({ type: z.literal("cancel-procedure"), procedureId: id }).strict(),
-  // Reverses a cast or activation whose locked total cost can't be paid
-  // (rules-engine-refactor.md §16).
-  z.object({ type: z.literal("reverse-proposal"), procedureId: id }).strict(),
-  z
-    .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
-    .strict(),
-  z.object({ type: z.literal("mulligan"), playerId: id }).strict(),
-]);
-export type MatchAction = z.infer<typeof matchActionSchema>;
 export const roomCommandSchema = z.discriminatedUnion("type", [
   z
     .object({

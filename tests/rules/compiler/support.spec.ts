@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { compileCard } from "../../../src/server/rules/compiler";
 import { readRegistries } from "../../../src/server/rules/registries";
 import { checkSupport } from "../../../src/server/rules/support";
-import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
+import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 
 // The runtime support check (dsl-redesign.md §9): the engine runs the Core
 // AST the compiler emits, and constructs it can't run yet fail with an error

@@ -1,4 +1,4 @@
-import type { MatchAction } from "../../../shared/model.js";
+import type { MatchAction } from "../../../shared/rules-state.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { budget } from "../loop-budget.js";
 import { LoopDetector } from "../mandatory-loop.js";

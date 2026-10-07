@@ -981,52 +981,6 @@ test("solo full mono-U practice resumes, delegates opponent choices and replaces
   }
 });
 
-test("a stored legacy manual Match ends on load and its Room returns to the lobby with Decklists kept", async ({
-  browser,
-}) => {
-  const { Pool } = await import("pg");
-  const {
-    pages: [alice, bob],
-    contexts,
-    invitation,
-  } = await preparedRulesTable(browser);
-  const pool = new Pool({
-    connectionString:
-      process.env.TEST_DATABASE_URL ??
-      "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",
-  });
-  try {
-    const invite = invitation.split("/").pop()!;
-    const before = await snapshot(alice);
-    const document = (
-      await pool.query<{ document: Record<string, any> }>(
-        "SELECT document FROM rooms WHERE invite = $1",
-        [invite],
-      )
-    ).rows[0].document;
-    // A version 5 document holding a manual Match, as legacy Rooms stored it.
-    document.snapshotVersion = 5;
-    document.match.mode = "manual";
-    delete document.match.rules;
-    document.revision++;
-    await pool.query("UPDATE rooms SET document = $2 WHERE invite = $1", [
-      invite,
-      JSON.stringify(document),
-    ]);
-    await alice.reload();
-    await bob.reload();
-    const after = await snapshot(alice);
-    expect(after.match).toBeUndefined();
-    expect(after.selectedDeck).toEqual(before.selectedDeck);
-    await expect(
-      alice.getByRole("button", { name: "Pass Priority", exact: true }),
-    ).toHaveCount(0);
-  } finally {
-    await pool.end();
-    await Promise.all(contexts.map((c) => c.close()));
-  }
-});
-
 test("a spell being cast shows on the Stack for both players and its locked payment can only be completed or reversed", async ({
   browser,
 }) => {

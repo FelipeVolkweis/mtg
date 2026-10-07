@@ -1,11 +1,10 @@
 import type {
   Catalog,
-  MatchState,
   MatchView,
   ObjectView,
   ProcedurePrompt,
 } from "../../shared/model.js";
-import type { PendingProcedure } from "../../shared/rules.js";
+import type { MatchState, PendingProcedure } from "../../shared/rules-state.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { actingPlayer } from "./match-players.js";

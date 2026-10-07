@@ -1,7 +1,6 @@
 import {
-  abilitySchema,
-  ruleKeywords,
   type Ability,
+  abilitySchema,
   type Comparison,
   type Condition,
   type ContinuousChange,
@@ -17,12 +16,13 @@ import {
   type Predicate,
   type PredicateFields,
   type Replacement,
+  ruleKeywords,
   type Selector,
   type StaticGrant,
   type TargetClause,
   type Trigger,
   type Value,
-} from "../../shared/rules-v2.js";
+} from "../../shared/card-dsl.js";
 import type { Registries } from "./registries.js";
 
 // Rules Compiler: authored AST v2 → Core AST (dsl-redesign.md §7).

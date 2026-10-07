@@ -1,18 +1,51 @@
 import { z } from "zod";
-import { characteristicSchema, zoneKinds } from "./model.js";
 
-// Authored rules AST, version 2 (docs/plans/dsl-redesign.md §4).
+// The card DSL: authored rules AST, version 2 (docs/plans/dsl-redesign.md §4),
+// the card definition file, and the card vocabulary every other shared
+// module builds on (colors, mana types, zone kinds, characteristics). This
+// module imports no other shared module.
 // Types are written out explicitly because the families are mutually
 // recursive; each schema is checked against its type with `satisfies`-style
 // annotations (`z.ZodType<T>`).
-
-export type ZoneKind = (typeof zoneKinds)[number];
-const zone = z.enum(zoneKinds);
 
 export const colors = ["W", "U", "B", "R", "G"] as const;
 export type Color = (typeof colors)[number];
 export const manaTypes = [...colors, "C"] as const;
 export type ManaType = (typeof manaTypes)[number];
+
+export const zoneKinds = [
+  "library",
+  "hand",
+  "graveyard",
+  "battlefield",
+  "stack",
+  "exile",
+  "command",
+] as const;
+export type ZoneKind = (typeof zoneKinds)[number];
+const zone = z.enum(zoneKinds);
+
+/** Card Characteristics (CR 109.3) as a definition and a Game Object hold them. */
+export const characteristicSchema = z
+  .object({
+    name: z.string().min(1).max(200),
+    manaCost: z.string().max(200).optional(),
+    colors: z.array(z.enum(colors)).max(5).default([]),
+    colorIndicator: z.array(z.enum(colors)).max(5).optional(),
+    typeLine: z.string().max(400).default(""),
+    manaValue: z.number().nonnegative().optional(),
+    supertypes: z.array(z.string()).optional(),
+    types: z.array(z.string()).optional(),
+    subtypes: z.array(z.string()).optional(),
+    keywords: z.array(z.string()).optional(),
+    rulesText: z.string().max(8000).default(""),
+    power: z.string().max(100).optional(),
+    toughness: z.string().max(100).optional(),
+    loyalty: z.string().max(100).optional(),
+    defense: z.string().max(100).optional(),
+  })
+  .strict();
+export type Characteristics = z.infer<typeof characteristicSchema>;
 
 export const turnSteps = [
   "untap",

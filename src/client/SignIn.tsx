@@ -2,6 +2,12 @@ import { useState } from "react";
 import type { User } from "../shared/model";
 import { authenticate } from "./api";
 
+/** A text field's value; the sign-in form has no file inputs. */
+function field(data: FormData, name: string) {
+  const value = data.get(name);
+  return typeof value === "string" ? value : "";
+}
+
 /** Signs in to an existing account or creates a new one. */
 export function SignIn({
   onSignedIn,
@@ -18,8 +24,8 @@ export function SignIn({
     try {
       const { user } = await authenticate(
         mode,
-        String(data.get("username")),
-        String(data.get("password")),
+        field(data, "username"),
+        field(data, "password"),
       );
       report("");
       onSignedIn(user);

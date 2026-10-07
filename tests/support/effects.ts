@@ -1,7 +1,6 @@
 import { gameObject } from "../../src/server/match/game-objects";
-import type { GameObject, ZoneKind } from "../../src/shared/model";
-import type { SemanticEvent } from "../../src/shared/rules";
-import type { Effect } from "../../src/shared/rules-v2";
+import type { GameObject, SemanticEvent } from "../../src/shared/rules-state";
+import type { Effect, ZoneKind } from "../../src/shared/card-dsl";
 import { force } from "./force";
 import { triggerGame } from "./rules-game";
 

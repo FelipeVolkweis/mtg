@@ -3,7 +3,7 @@
 
 import { expect, test } from "@playwright/test";
 import { MatchService } from "../../../src/server/match/match.service";
-import type { MatchAction, MatchState } from "../../../src/shared/model";
+import type { MatchAction, MatchState } from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { rulesGame } from "../../support/rules-game";
 import { force } from "../../support/force";

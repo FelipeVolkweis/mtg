@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type {
+  RoomCommand,
   RoomView,
   ServerMessage,
-  RoomCommand,
   User,
 } from "../shared/model";
 import { z } from "zod";

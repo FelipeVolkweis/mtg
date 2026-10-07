@@ -1,12 +1,11 @@
-import type { GameObject, ZoneKind } from "../../../shared/model.js";
 import type {
+  GameObject,
   ManaPool,
-  ManaType,
   RestrictedMana,
   RulesState,
   SelectionOption,
-} from "../../../shared/rules.js";
-import type { Ability } from "../../../shared/rules-v2.js";
+} from "../../../shared/rules-state.js";
+import type { Ability, ManaType, ZoneKind } from "../../../shared/card-dsl.js";
 import {
   costModifiers,
   costsOf,

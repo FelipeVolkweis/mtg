@@ -1,14 +1,17 @@
 import { randomUUID } from "node:crypto";
-import type { GameObject } from "../../../shared/model.js";
-import type { SemanticEvent, WaitingTrigger } from "../../../shared/rules.js";
+import type {
+  GameObject,
+  SemanticEvent,
+  WaitingTrigger,
+} from "../../../shared/rules-state.js";
 import {
-  turnSteps,
   type Ability,
   type ManaTrigger,
   type PlayerRef,
   type Predicate,
   type Trigger,
-} from "../../../shared/rules-v2.js";
+  turnSteps,
+} from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { interveningIf, production, triggerSubject } from "../abilities.js";
 import { Evaluator } from "../vm/evaluate.js";

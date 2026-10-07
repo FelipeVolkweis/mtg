@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import type { MatchState, ZoneState } from "../../shared/model.js";
+import type { MatchState, ZoneState } from "../../shared/rules-state.js";
 
 export class Zone {
   constructor(readonly state: ZoneState) {}
