@@ -19,6 +19,11 @@ import { gameObject } from "./game-objects.js";
 import { CommanderRules, CommanderReplacement } from "./commander-rules.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
+import {
+  budget,
+  RulesLoopError,
+  withActionBudget,
+} from "../rules/loop-budget.js";
 
 export type ExecutionResult =
   | { kind: "accepted"; notice?: string }
@@ -232,6 +237,17 @@ export class MatchService implements GameplayExecutor {
     action: MatchAction,
     catalog: Catalog,
   ): ExecutionResult {
+    return withActionBudget(() =>
+      this.executeBudgeted(match, participant, action, catalog),
+    );
+  }
+
+  private executeBudgeted(
+    match: MatchState,
+    participant: Participant,
+    action: MatchAction,
+    catalog: Catalog,
+  ): ExecutionResult {
     const next = structuredClone(match);
     const replay = next.rules.commanderReplay;
     let actor: Pick<Participant, "id"> = participant;
@@ -260,13 +276,17 @@ export class MatchService implements GameplayExecutor {
       const notice = new RulesEngine(next, catalog).apply(actor, command);
       delete next.rules.commanderReplay;
       const engine = new RulesEngine(next, catalog);
-      while (
+      for (
+        let pass = 1;
         next.rules.practice &&
         !next.rules.pending &&
         next.outcome === "ongoing" &&
-        next.priority?.playerId === next.rules.practice.playerId
-      )
+        next.priority?.playerId === next.rules.practice.playerId;
+        pass++
+      ) {
+        budget("Practice auto-pass", pass, 1000);
         engine.pass(next.rules.practice.playerId);
+      }
       for (const key of Object.keys(match))
         if (!(key in next)) Reflect.deleteProperty(match, key);
       Object.assign(match, next);
@@ -292,6 +312,19 @@ export class MatchService implements GameplayExecutor {
         );
         match.revision++;
         return { kind: "pending", playerId: error.playerId };
+      }
+      if (error instanceof RulesLoopError) {
+        // CR 104.4b: a mandatory loop that never ends draws the game.
+        console.warn(`Match ${match.id} drawn: ${error.message}`);
+        match.outcome = "draw";
+        delete match.priority;
+        delete match.rules.pending;
+        delete match.rules.commanderReplay;
+        match.revision++;
+        return {
+          kind: "accepted",
+          notice: "This action starts an endless loop. The game is a draw.",
+        };
       }
       return {
         kind: "rejected",

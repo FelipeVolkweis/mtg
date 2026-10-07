@@ -16,8 +16,32 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { credentialsSchema } from "../../shared/model.js";
 import { AuthError, UserService } from "./user.service.js";
 
-const clientIp = (request: IncomingMessage) =>
-  request.socket.remoteAddress ?? "unknown";
+// TRUST_PROXY=N trusts N reverse proxy hops: the client is the address the
+// outermost trusted proxy appended to X-Forwarded-For.
+const trustedHops = /^[1-9]\d*$/.test(process.env.TRUST_PROXY ?? "")
+  ? Number(process.env.TRUST_PROXY)
+  : 0;
+// Limiting key for a request: IPv4-mapped IPv6 unwrapped, IPv6 by /64 prefix.
+function clientIp(request: IncomingMessage) {
+  let ip = request.socket.remoteAddress ?? "unknown";
+  const header = request.headers["x-forwarded-for"];
+  if (trustedHops && header) {
+    const hops = (Array.isArray(header) ? header.join(",") : header)
+      .split(",")
+      .map((entry) => entry.trim());
+    if (hops.length >= trustedHops && hops[hops.length - trustedHops])
+      ip = hops[hops.length - trustedHops]!;
+  }
+  ip = ip.replace(/^::ffff:(?=\d+\.\d+\.\d+\.\d+$)/i, "");
+  if (!ip.includes(":")) return ip;
+  const [head = "", tail = ""] = ip.toLowerCase().split("::");
+  const left = head ? head.split(":") : [];
+  const right = tail ? tail.split(":") : [];
+  const groups = ip.includes("::")
+    ? [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill("0"), ...right]
+    : left;
+  return `${groups.slice(0, 4).map((group) => group.replace(/^0+(?=.)/, "")).join(":")}::/64`;
+}
 
 // At most `rateLimit` register and login requests per IP each minute.
 const rateLimit = 20;
