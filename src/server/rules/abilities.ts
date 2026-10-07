@@ -91,9 +91,10 @@ export const activationZone = (ability: Ability) =>
 /** A "dies" trigger: its targets and source are read from the dead object. */
 export const isDiesTrigger = (ability?: Ability) =>
   ability?.kind === "triggered" &&
-  ability.trigger.event === "zone-change" &&
-  ability.trigger.from === "battlefield" &&
-  ability.trigger.to === "graveyard";
+  (ability.trigger.event === "dies" ||
+    (ability.trigger.event === "zone-change" &&
+      ability.trigger.from === "battlefield" &&
+      ability.trigger.to === "graveyard"));
 
 export const interveningIf = (ability?: Ability): Condition | undefined =>
   ability?.kind === "triggered" ? ability.interveningIf : undefined;
@@ -267,103 +268,7 @@ export function staticContinuous(
 // ------------------------------------------------------------- triggers
 
 /** A trigger's subject: "source" means the source on the Battlefield. */
-const subject = (object: Selector | Predicate): Predicate =>
+export const triggerSubject = (object: Selector | Predicate): Predicate =>
   object === "source" || same(object, sourceIs)
     ? { zone: "battlefield", is: "source" }
     : (object as Predicate);
-
-const triggerPlayer = (player: PlayerRef) =>
-  player === "you" ? ("you" as const) : ("opponent" as const);
-
-/** The event a triggered or mana ability waits for, as the engine matches it. */
-export interface TriggerPattern {
-  event:
-    | "enter"
-    | "cast"
-    | "dies"
-    | "state"
-    | "damage"
-    | "attack"
-    | "draw"
-    | "upkeep"
-    | "target"
-    | "mana";
-  filter?: Predicate;
-  player?: "you" | "opponent";
-  ordinal?: number;
-  step?: number;
-  combat?: boolean;
-  recipientKind?: "player" | "object";
-  grouped?: boolean;
-  counter?: string;
-  atLeast?: number;
-}
-
-export function triggerPattern(ability: Ability): TriggerPattern | undefined {
-  if (ability.kind === "mana")
-    return "trigger" in ability.activation
-      ? { event: "mana", filter: ability.activation.trigger.object }
-      : undefined;
-  if (ability.kind !== "triggered") return undefined;
-  return pattern(ability.trigger);
-}
-
-function pattern(trigger: Trigger): TriggerPattern | undefined {
-  switch (trigger.event) {
-    case "zone-change":
-      if (trigger.to === "battlefield" && !trigger.from)
-        return {
-          event: "enter",
-          filter: subject(trigger.object),
-          ...(trigger.during
-            ? { step: turnSteps.indexOf(trigger.during) }
-            : {}),
-        };
-      return { event: "dies", filter: subject(trigger.object) };
-    case "attacks":
-      return { event: "attack", filter: subject(trigger.attacker) };
-    case "cast":
-      return { event: "cast", filter: trigger.spell };
-    case "deals-damage":
-      return {
-        event: "damage",
-        filter: subject(trigger.source),
-        ...(trigger.combat !== undefined ? { combat: trigger.combat } : {}),
-        ...(trigger.to
-          ? { recipientKind: trigger.to as "player" | "object" }
-          : {}),
-        ...(trigger.batch ? { grouped: true } : {}),
-      };
-    case "draws":
-      return {
-        event: "draw",
-        player: triggerPlayer(trigger.player),
-        ...(trigger.nth ? { ordinal: trigger.nth } : {}),
-      };
-    case "step":
-      return {
-        event: "upkeep",
-        ...(trigger.player
-          ? { player: triggerPlayer(trigger.player as PlayerRef) }
-          : {}),
-      };
-    case "becomes-target":
-      return {
-        event: "target",
-        filter: subject(trigger.object),
-        ...(trigger.by ? { player: triggerPlayer(trigger.by) } : {}),
-      };
-    case "state": {
-      const c = trigger.condition as Extract<Condition, { matches: unknown }>;
-      const p = c.matches.predicate as PredicateFields;
-      return {
-        event: "state",
-        filter: { zone: "battlefield", is: "source" },
-        counter: p.counters!.kind,
-        atLeast: (p.counters!.count as { ">=": number })[">="],
-      };
-    }
-    default:
-      return undefined;
-  }
-}

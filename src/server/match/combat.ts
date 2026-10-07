@@ -7,7 +7,7 @@ import type {
   SelectionOption,
 } from "../../shared/rules.js";
 import { manaCost, spendMana } from "./mana.js";
-import { Triggers } from "./triggers.js";
+import { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import { emptyMana, type RulesEngine } from "./rules-engine.js";
 
 // Declarations are turn-based actions. Their choices finish before Priority is offered.
@@ -96,7 +96,7 @@ export class Combat {
     );
     // With no eligible attackers, the empty declaration requires no choice.
     if (!Object.keys(options).length) {
-      e.priority();
+      e.checkpoint();
       return;
     }
     this.prompt("declare-attackers", playerId, options);
@@ -126,7 +126,7 @@ export class Combat {
       combat = e.rules.combat!;
     const playerId = combat.remainingDefenderIds[0];
     if (!playerId) {
-      e.priority();
+      e.checkpoint();
       return;
     }
     const options = Object.fromEntries(
@@ -200,7 +200,7 @@ export class Combat {
       combat.remainingDefenderIds.length
     )
       this.nextBlocker();
-    else e.priority();
+    else e.checkpoint();
   }
   attackCost(selections: Record<string, string[]>, playerId: string) {
     const e = this.engine;
@@ -271,7 +271,7 @@ export class Combat {
         blocked: false,
       });
       if (!e.hasKeyword(attacker, "Vigilance")) attacker.status.tapped = true;
-      new Triggers(e).collect(
+      new EventTriggerObserver(e).collect(
         {
           kind: "attack",
           defenderId: defender.id,
@@ -300,7 +300,7 @@ export class Combat {
     for (const type of payment.spent) e.rules.mana[pending.playerId][type]--;
     this.commitAttackers(pending.selections, pending.playerId);
     delete e.rules.pending;
-    e.priority(pending.playerId);
+    e.checkpoint({ playerId: pending.playerId });
   }
   damageChoices(): DamageChoice[] {
     const e = this.engine;
@@ -382,7 +382,7 @@ export class Combat {
           all.push({ sourceId: id, recipientId: a.objectId, amount: power });
       }
     e.propose({ kind: "damage", assignments: all, combat: true });
-    e.priority();
+    e.checkpoint();
   }
   prune() {
     const e = this.engine,

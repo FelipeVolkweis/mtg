@@ -6,7 +6,7 @@ import type {
 import { moveObject } from "../../match/game-objects.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
-import { Triggers } from "../../match/triggers.js";
+import { EventTriggerObserver } from "../triggers/trigger-runtime.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import type {
   EventResult,
@@ -104,7 +104,7 @@ export class EventRuntime {
     engine.rules.revealedHandIds = engine.rules.revealedHandIds?.filter(
       (revealed) => revealed !== id,
     );
-    new Triggers(engine).collect(
+    new EventTriggerObserver(engine).collect(
       {
         kind: "zone-change",
         sourceId: id,
@@ -137,7 +137,7 @@ export class EventRuntime {
     engine.rules.drawsThisTurn ??= {};
     const ordinal = (engine.rules.drawsThisTurn[playerId] =
       (engine.rules.drawsThisTurn[playerId] ?? 0) + 1);
-    new Triggers(engine).collect(
+    new EventTriggerObserver(engine).collect(
       {
         kind: "draw",
         playerId,
@@ -264,7 +264,7 @@ export class EventRuntime {
         recipientKind: player ? "player" : "object",
         turn: engine.match.turn.number,
       });
-      new Triggers(engine).collect(
+      new EventTriggerObserver(engine).collect(
         {
           kind: "damage",
           sourceId: source.id,

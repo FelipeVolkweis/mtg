@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { GameObject, MatchAction, ZoneState } from "../../shared/model.js";
+import type { GameObject, ZoneState } from "../../shared/model.js";
 import type { PendingProcedure } from "../../shared/rules.js";
 import type { RulesEngine } from "./rules-engine.js";
 
@@ -12,8 +12,8 @@ export class CommanderReplacement extends Error {
   }
 }
 
-// Hand/Library returns replace movement; Graveyard/Exile returns are offered
-// only at the checkpoint after movement and its triggers have occurred.
+// Hand/Library returns replace movement (CR 903.9b); Graveyard/exile returns
+// are a state-based choice (state-based/rules/commander.ts, CR 903.9a).
 export class CommanderRules {
   constructor(readonly engine: RulesEngine) {}
   instance(object: GameObject) {
@@ -59,40 +59,5 @@ export class CommanderRules {
     };
     this.engine.rules.pending = pending;
     delete this.engine.match.priority;
-  }
-  checkpoint() {
-    while (this.engine.rules.commanderReturns?.length) {
-      const id = this.engine.rules.commanderReturns.shift()!;
-      const object = this.engine.match.objects[id];
-      const kind = this.engine.match.zones.find(
-        (z) => z.id === object?.zoneId,
-      )?.kind;
-      if (!object || !kind || !["graveyard", "exile"].includes(kind)) continue;
-      this.prompt(this.engine.owner(object), id);
-      return true;
-    }
-    return false;
-  }
-  answer(action: Extract<MatchAction, { type: "rules-input" }>) {
-    const pending = this.engine.rules.pending!;
-    if (
-      action.confirm === undefined ||
-      action.selections ||
-      action.targetIds ||
-      action.variables
-    )
-      throw new Error("Choose Confirm or Decline.");
-    const cleanup = this.engine.rules.cleanupNeedsPriority !== undefined;
-    if (action.confirm && pending.sourceId) {
-      this.engine.propose({
-        kind: "zone-change",
-        objectId: pending.sourceId,
-        to: this.engine.zone("command"),
-      });
-      if (cleanup) this.engine.rules.cleanupNeedsPriority = true;
-    }
-    delete this.engine.rules.pending;
-    if (cleanup) this.engine.cleanup();
-    else this.engine.priority(this.engine.rules.priorityAfterTriggers);
   }
 }

@@ -29,13 +29,13 @@ export class StackResolutionRuntime {
     const path = this.path(object);
     if (path === "fizzle") {
       engine.toGraveyard(object);
-      engine.priority();
+      engine.checkpoint();
       return;
     }
     delete engine.match.priority;
     if (path === "permanent") {
       this.resolvePermanent(object);
-      engine.priority();
+      engine.checkpoint();
       return;
     }
     this.after(
@@ -127,6 +127,6 @@ export class StackResolutionRuntime {
     delete engine.rules.resolving;
     delete engine.rules.pending;
     engine.toGraveyard(object);
-    engine.priority();
+    engine.checkpoint();
   }
 }

@@ -55,11 +55,18 @@ import { gameObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
-import { Triggers } from "./triggers.js";
 import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
+import {
+  PriorityCheckpoint,
+  type PriorityGrant,
+} from "../rules/priority/priority-checkpoint.js";
+import {
+  EventTriggerObserver,
+  waitTrigger,
+} from "../rules/triggers/trigger-runtime.js";
 
 export const emptyMana = (): ManaPool => ({
   W: 0,
@@ -139,7 +146,7 @@ export class RulesEngine implements RulesMutator {
         delete this.rules.pending;
         if (pending.kind === "attack-payment")
           new Combat(this).beginAttackers();
-        else this.priority(player.id);
+        else this.checkpoint({ playerId: player.id });
       } else
         throw new Error(
           "Complete the current procedure using its latest identifier.",
@@ -201,24 +208,23 @@ export class RulesEngine implements RulesMutator {
     if (this.match.priority?.playerId !== playerId)
       throw new Error("You do not have Priority.");
   }
-  priority(playerId = this.match.turn.activePlayerId) {
-    this.checkpoint();
-    if (this.match.outcome !== "ongoing") return;
-    if (new CommanderRules(this).checkpoint()) {
-      this.rules.priorityAfterTriggers = playerId;
-      return;
-    }
-    new Triggers(this).collectStates();
-    this.rules.priorityAfterTriggers = playerId;
-    new Triggers(this).flush();
+  /**
+   * A player would receive Priority: every grant goes through the Priority
+   * Checkpoint (rules-engine-refactor.md §11).
+   */
+  checkpoint(grant: PriorityGrant = {}) {
+    new PriorityCheckpoint(this).run(grant);
   }
   pass(playerId: string) {
     const priority = this.match.priority!;
     priority.passedPlayerIds.push(playerId);
     if (priority.passedPlayerIds.length < this.match.players.length) {
       const index = this.match.turn.order.indexOf(playerId);
-      priority.playerId =
-        this.match.turn.order[(index + 1) % this.match.turn.order.length];
+      this.checkpoint({
+        playerId:
+          this.match.turn.order[(index + 1) % this.match.turn.order.length],
+        passedPlayerIds: priority.passedPlayerIds,
+      });
       return;
     }
     if (this.zone("stack").objectIds.length) {
@@ -440,7 +446,7 @@ export class RulesEngine implements RulesMutator {
       to: this.zone("battlefield"),
     });
     this.rules.landsPlayed[playerId] = 1;
-    this.priority(playerId);
+    this.checkpoint({ playerId });
   }
   battlefieldSources() {
     return Object.values(this.match.objects).filter(
@@ -448,7 +454,7 @@ export class RulesEngine implements RulesMutator {
     );
   }
   emit(kind: "enter" | "cast", object: GameObject) {
-    new Triggers(this).collect(
+    new EventTriggerObserver(this).collect(
       {
         kind,
         sourceId: object.id,
@@ -505,9 +511,7 @@ export class RulesEngine implements RulesMutator {
     abilityId: string,
     creature?: GameObject,
   ) {
-    this.rules.waitingTriggers ??= [];
-    this.rules.waitingTriggers.push({
-      id: randomUUID(),
+    waitTrigger(this, {
       playerId,
       sourceId: "monarch",
       abilityId,
@@ -711,7 +715,7 @@ export class RulesEngine implements RulesMutator {
           (Array.isArray(produce.colors) ? produce.colors[0] : undefined)) ===
           "C"
       )
-        new Triggers(this).collect(
+        new EventTriggerObserver(this).collect(
           {
             kind: "mana",
             playerId,
@@ -724,7 +728,7 @@ export class RulesEngine implements RulesMutator {
           source,
           this.battlefieldSources(),
         );
-      if (!duringPayment) this.priority(playerId);
+      if (!duringPayment) this.checkpoint({ playerId });
     } else {
       this.rules.pending = procedure;
       if (!target && !chooseX) this.tryComplete(playerId);
@@ -735,8 +739,8 @@ export class RulesEngine implements RulesMutator {
     action: Extract<MatchAction, { type: "rules-input" }>,
   ) {
     const pending = this.rules.pending!;
-    if (pending.kind === "commander-return") {
-      new CommanderRules(this).answer(action);
+    if (pending.stateBasedRule) {
+      new PriorityCheckpoint(this).answerStateBased(action);
       return;
     }
     if (pending.kind === "attack-payment") {
@@ -755,11 +759,11 @@ export class RulesEngine implements RulesMutator {
       return;
     }
     if (pending.kind === "trigger-target") {
-      new Triggers(this).answerTarget(action);
+      new PriorityCheckpoint(this).answerTriggerTarget(action);
       return;
     }
     if (pending.kind === "trigger-order") {
-      new Triggers(this).answer(action);
+      new PriorityCheckpoint(this).answerTriggerOrder(action);
       return;
     }
     if (pending.kind === "resolve") {
@@ -911,14 +915,14 @@ export class RulesEngine implements RulesMutator {
     const stacked = this.object(this.zone("stack").objectIds.at(-1)!);
     this.targeted(stacked);
     delete this.rules.pending;
-    this.priority(playerId);
+    this.checkpoint({ playerId });
     return true;
   }
   targeted(stack: GameObject) {
     for (const id of stack.resolution?.targetIds ?? []) {
       const target = this.match.objects[id];
       if (target?.zoneId !== this.zone("battlefield").id) continue;
-      new Triggers(this).collect(
+      new EventTriggerObserver(this).collect(
         {
           kind: "target",
           playerId: stack.controllerId,
@@ -1242,7 +1246,7 @@ export class RulesEngine implements RulesMutator {
     this.match.turn.stepIndex++;
     if (this.match.turn.stepIndex === 1) {
       for (const source of this.battlefieldSources())
-        new Triggers(this).collect(
+        new EventTriggerObserver(this).collect(
           {
             kind: "upkeep",
             playerId: this.match.turn.activePlayerId,
@@ -1287,7 +1291,7 @@ export class RulesEngine implements RulesMutator {
     }
     if (this.match.turn.stepIndex === 2 && this.match.turn.number !== 1)
       this.draw(this.match.turn.activePlayerId, 1);
-    this.priority();
+    this.checkpoint();
   }
   cleanup() {
     const playerId = this.match.turn.activePlayerId;
@@ -1310,18 +1314,7 @@ export class RulesEngine implements RulesMutator {
     // CR 514: after discarding, damage and end-of-turn changes end together.
     this.rules.markedDamage = {};
     this.rules.temporaryEffects = [];
-    const changed = this.checkpoint();
-    if (this.match.outcome !== "ongoing") return;
-    // Persist cleanup progress through commander choices; declining a return
-    // alone does not create an exceptional cleanup Priority opportunity.
-    this.rules.cleanupNeedsPriority ||= changed;
-    if (new CommanderRules(this).checkpoint()) return;
-    new Triggers(this).collectStates();
-    const needsPriority =
-      this.rules.cleanupNeedsPriority || this.rules.waitingTriggers?.length;
-    delete this.rules.cleanupNeedsPriority;
-    if (needsPriority) this.priority();
-    else this.nextTurn();
+    this.checkpoint({ cleanup: true });
   }
   nextTurn() {
     const turn = this.match.turn;
@@ -1331,109 +1324,5 @@ export class RulesEngine implements RulesMutator {
         (turn.order.indexOf(turn.activePlayerId) + 1) % turn.order.length
       ];
     this.beginTurn();
-  }
-  checkpoint() {
-    let performed = false;
-    let changed: boolean;
-    do {
-      changed = false;
-      for (const equipment of this.battlefieldSources()) {
-        const aura = this.effective(equipment).subtypes?.includes("Aura");
-        if (
-          !aura &&
-          (!equipment.attachmentTo ||
-            !this.effective(equipment).subtypes?.includes("Equipment"))
-        )
-          continue;
-        const recipient = equipment.attachmentTo
-          ? this.match.objects[equipment.attachmentTo]
-          : undefined;
-        if (
-          !recipient ||
-          recipient.zoneId !== this.zone("battlefield").id ||
-          !this.effective(recipient).types?.includes("Creature") ||
-          this.effective(equipment).types?.includes("Creature")
-        ) {
-          if (aura) this.toGraveyard(equipment);
-          else equipment.attachmentTo = null;
-          changed = true;
-          performed = true;
-        }
-      }
-      const dying = this.battlefieldSources().filter((object) => {
-        const effective = this.effective(object);
-        return (
-          effective.types?.includes("Creature") &&
-          /^-?\d+$/.test(effective.toughness ?? "") &&
-          (BigInt(effective.toughness!) <= 0n ||
-            (!this.hasKeyword(object, "Indestructible") &&
-              BigInt(this.rules.markedDamage?.[object.id] ?? 0) >=
-                BigInt(effective.toughness!)))
-        );
-      });
-      // Determine the whole set before moving anything: these deaths are simultaneous.
-      const sources = structuredClone(this.battlefieldSources());
-      const before = new Map(
-        dying.map((object) => [object.id, this.effective(object)]),
-      );
-      for (const object of dying) {
-        this.propose({
-          kind: "zone-change",
-          objectId: object.id,
-          to: this.zone("graveyard", object.ownerId),
-          simultaneous: { sources, before: before.get(object.id) },
-        });
-        changed = true;
-        performed = true;
-      }
-      for (const token of Object.values(this.match.objects).filter(
-        (o) => o.kind === "token" && o.zoneId !== this.zone("battlefield").id,
-      ))
-        // CR 704.5d: a token outside the Battlefield ceases to exist.
-        this.propose({ kind: "cease", objectId: token.id });
-    } while (changed);
-    new Combat(this).prune();
-    this.rules.continuousEffects = new CharacteristicsCalculator(
-      this.match,
-      this.catalog,
-    ).active();
-    for (const object of this.battlefieldSources()) {
-      const plus = object.counters.find((c) => c.kind === "+1/+1");
-      const minus = object.counters.find((c) => c.kind === "-1/-1");
-      if (plus && minus) {
-        performed = true;
-        const common =
-          BigInt(plus.quantity) < BigInt(minus.quantity)
-            ? BigInt(plus.quantity)
-            : BigInt(minus.quantity);
-        plus.quantity = (BigInt(plus.quantity) - common).toString();
-        minus.quantity = (BigInt(minus.quantity) - common).toString();
-        object.counters = object.counters.filter((c) => c.quantity !== "0");
-      }
-    }
-    for (const player of this.match.players)
-      if (
-        BigInt(player.life) <= 0n ||
-        this.rules.failedDrawPlayerIds?.includes(player.id) ||
-        Object.values(this.rules.commanderDamage?.[player.id] ?? {}).some(
-          (amount) => amount >= 21,
-        )
-      )
-        player.outcome = "lost";
-    this.rules.failedDrawPlayerIds = [];
-    const alive = this.match.players.filter((p) => p.outcome === "playing");
-    if (alive.length < 2) {
-      delete this.match.priority;
-      delete this.rules.pending;
-      delete this.rules.resolving;
-      delete this.rules.waitingTriggers;
-      delete this.rules.triggerPlacement;
-      delete this.rules.cleanupNeedsPriority;
-      if (alive.length) {
-        alive[0].outcome = "won";
-        this.match.outcome = "complete";
-      } else this.match.outcome = "draw";
-    }
-    return performed;
   }
 }

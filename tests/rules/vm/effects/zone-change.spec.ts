@@ -11,6 +11,8 @@ test("move sends every matching object to its owner's Zone as one set", async ()
   const game = await effectGame();
   const attacker = game.seed("Silver Myr", "battlefield", 1);
   const blocker = game.seed("Silver Myr", "battlefield", 0);
+  // Only the active player's creatures attack (CR 506.4).
+  force.activePlayer(game.match, game.player(1));
   force.rules(game.match, {
     combat: {
       attackers: [

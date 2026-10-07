@@ -7,7 +7,7 @@ import {
 } from "./lift-v1-effects.js";
 
 /** The Room document shape this server writes (CM §5). */
-export const currentSnapshotVersion = 4;
+export const currentSnapshotVersion = 5;
 
 type Document = Record<string, unknown>;
 
@@ -171,6 +171,41 @@ function upgradeResolutionToVersion4(rules: Document) {
 }
 
 /**
+ * Version 5 (roadmap issue 9): a suspended Priority Checkpoint keeps its
+ * progress in `rules.checkpoint`. Version 4's cleanup marker becomes a cleanup
+ * checkpoint, the Priority player kept for after triggers becomes its grant,
+ * and a Graveyard or exile commander return is tagged as the state-based
+ * choice it is. A trigger or commander choice with neither was waiting to
+ * grant the active player Priority.
+ */
+function upgradeMatchToVersion5(match: Document) {
+  const rules = match.rules as Document | undefined;
+  if (!rules) return;
+  const pending = rules.pending as Document | undefined;
+  if (rules.cleanupNeedsPriority !== undefined)
+    rules.checkpoint = {
+      cleanup: { performed: rules.cleanupNeedsPriority === true },
+    };
+  else if (typeof rules.priorityAfterTriggers === "string")
+    rules.checkpoint = { playerId: rules.priorityAfterTriggers };
+  else if (
+    ["trigger-order", "trigger-target", "commander-return"].includes(
+      pending?.kind as string,
+    ) &&
+    !rules.commanderReplay
+  )
+    rules.checkpoint = {};
+  delete rules.cleanupNeedsPriority;
+  delete rules.priorityAfterTriggers;
+  if (
+    pending?.kind === "commander-return" &&
+    pending.sourceId &&
+    !rules.commanderReplay
+  )
+    pending.stateBasedRule = "commander-return";
+}
+
+/**
  * Brings a stored Room document up to the current snapshot version. Pure: it
  * returns the upgraded document and never touches storage. Version 1 handling
  * can be deleted once every version 1 Room has expired (ROOM_EXPIRY_DAYS after
@@ -186,6 +221,7 @@ export function upgradeRoom(stored: RoomState): RoomState {
   if (version < 2 && room.match) upgradeMatchToVersion2(room.match as Document);
   if (version < 3 && room.match) upgradeMatchToVersion3(room.match as Document);
   if (version < 4 && room.match) upgradeMatchToVersion4(room.match as Document);
+  if (version < 5 && room.match) upgradeMatchToVersion5(room.match as Document);
   room.snapshotVersion = currentSnapshotVersion;
   return stored;
 }
