@@ -3,109 +3,22 @@ import { randomUUID } from "node:crypto";
 import { MatchService } from "../src/server/match/match.service";
 import { matchView } from "../src/server/match/match-view";
 import "./support/round-trip";
+import {
+  commanderFixture,
+  emptyCatalog,
+  emptyRoom,
+  rulesGame,
+  triggerGame,
+} from "./support/rules-game";
+import { force } from "./support/force";
+import { readCatalog } from "../src/server/catalog/catalog-files";
+import { gameObject, moveObject } from "../src/server/match/game-objects";
 import type {
   Catalog,
   MatchState,
   Participant,
   RoomState,
 } from "../src/shared/model";
-
-function emptyRoom(): RoomState {
-  const participant: Participant = {
-    id: randomUUID(),
-    name: "Alice",
-    credentialHash: "",
-    ready: true,
-    selectedDecklistId: randomUUID(),
-    decklists: [],
-  };
-  participant.decklists.push({
-    id: participant.selectedDecklistId!,
-    name: "Empty",
-    text: "",
-    entries: [],
-  });
-  return {
-    id: randomUUID(),
-    invite: "",
-    revision: 0,
-    lastActivity: 0,
-    participants: [participant],
-  };
-}
-const emptyCatalog: Catalog = {
-  definitions: {},
-  printings: {},
-  names: {},
-  importedSets: [],
-};
-
-function commanderFixture() {
-  const catalog = structuredClone(emptyCatalog);
-  const room = emptyRoom();
-  room.participants.push({
-    ...structuredClone(room.participants[0]),
-    id: randomUUID(),
-    name: "Bob",
-  });
-  const island = randomUUID(),
-    commander = randomUUID();
-  for (const [id, name, types, supertypes, subtypes] of [
-    [island, "Island", ["Land"], ["Basic"], ["Island"]],
-    [commander, "Supported Commander", ["Creature"], ["Legendary"], ["Wizard"]],
-  ] as [string, string, string[], string[], string[]][]) {
-    const printingId = randomUUID();
-    catalog.definitions[id] = {
-      id,
-      canonicalName: name,
-      defaultPrintingId: printingId,
-      form: "normal",
-      colorIdentity: ["U"],
-      components: [
-        {
-          name,
-          typeLine: [...supertypes, ...types].join(" "),
-          types,
-          supertypes,
-          subtypes,
-          colors: [],
-          rulesText: "",
-          manaCost: "{U}",
-          power: "2",
-          toughness: "2",
-        },
-      ],
-      oracleText: "",
-      keywords: [],
-      manaValue: 1,
-      automationStatus: "implemented",
-      abilities: [],
-    };
-    catalog.printings[printingId] = {
-      id: printingId,
-      definitionId: id,
-      setCode: "tst",
-      collectorNumber: "1",
-      artwork: [],
-    };
-  }
-  for (const p of room.participants) {
-    p.selectedCommanderId = commander;
-    p.decklists[0].entries = [
-      {
-        definitionId: commander,
-        printingId: catalog.definitions[commander].defaultPrintingId,
-        quantity: 1,
-      },
-      {
-        definitionId: island,
-        printingId: catalog.definitions[island].defaultPrintingId,
-        quantity: 99,
-      },
-    ];
-  }
-  return { room, catalog, commander, island };
-}
 
 test("Commander setup designates commanders before private opening draws and enforces construction and support", () => {
   const service = new MatchService();
@@ -223,14 +136,7 @@ test("lands and simple spells use selected mana sources and retain casting ident
       o.zoneId === match.zones.find((z) => z.kind === "command")!.id,
   )!;
   // This fixture begins with a simple permanent in Hand; Commander casting is ticket 28.
-  const handState = match.zones.find((z) => z.id === hand.id)!;
-  const commandZone = match.zones.find((z) => z.kind === "command")!;
-  commandZone.objectIds.splice(
-    commandZone.objectIds.indexOf(commanderObject.id),
-    1,
-  );
-  handState.objectIds.push(commanderObject.id);
-  commanderObject.zoneId = handState.id;
+  force.move(match, commanderObject, "hand", match.players[0].id);
   const instanceId = commanderObject.cardInstanceIds[0];
   expect(
     command(0, { type: "cast-spell", objectId: commanderObject.id }).kind,
@@ -249,74 +155,13 @@ test("lands and simple spells use selected mana sources and retain casting ident
   expect(permanent.casting?.manaSpent).toEqual(["U"]);
 });
 
-import { readCatalog } from "../src/server/catalog/catalog-files";
-import { gameObject, moveObject } from "../src/server/match/game-objects";
-
-async function rulesGame() {
-  const service = new MatchService();
-  const fixture = commanderFixture();
-  // Release definitions supply the actual authored behavior; these isolated fixtures
-  // bypass Decklist composition only when building the starting scenario.
-  const release = structuredClone(await readCatalog("catalog"));
-  const catalog: Catalog = {
-    ...fixture.catalog,
-    definitions: { ...release.definitions, ...fixture.catalog.definitions },
-    printings: { ...release.printings, ...fixture.catalog.printings },
-  };
-  const match = service.createCommander(
-    fixture.room,
-    catalog,
-    fixture.room.participants[0].id,
-  );
-  const command = (
-    seat: number,
-    action: import("../src/shared/model").MatchAction,
-  ) => service.execute(match, fixture.room.participants[seat], action, catalog);
-  for (const seat of [0, 1])
-    command(seat, { type: "keep-hand", bottomIds: [] });
-  for (let step = 0; step < 2; step++) {
-    command(0, { type: "pass-priority" });
-    command(1, { type: "pass-priority" });
-  }
-  function seed(name: string, kind: "hand" | "battlefield", seat = 0) {
-    const definition = Object.values(catalog.definitions).find(
-      (card) => card.canonicalName === name,
-    )!;
-    const player = match.players[seat];
-    const zone = match.zones.find(
-      (zone) =>
-        zone.kind === kind &&
-        (kind === "battlefield" || zone.ownerId === player.id),
-    )!;
-    const instanceId = randomUUID();
-    match.instances[instanceId] = {
-      id: instanceId,
-      ownerId: player.id,
-      definitionId: definition.id,
-      printingId: definition.defaultPrintingId,
-    };
-    const object = gameObject(
-      "card",
-      zone.id,
-      player.id,
-      definition.components[0],
-    );
-    object.cardInstanceIds = [instanceId];
-    match.objects[object.id] = object;
-    zone.objectIds.push(object.id);
-    match.rules!.controlledSinceTurn[object.id] = 0;
-    return object;
-  }
-  return { service, catalog, room: fixture.room, match, command, seed };
-}
-
 test("a casting payment window resumes with chosen sources and spends colored mana before colorless", async () => {
   const game = await rulesGame();
   const { match, command, seed, catalog, room } = game;
   const ring = seed("Sol Ring", "battlefield"),
     spell = seed("Hedron Archive", "hand");
   const playerId = match.players[0].id;
-  match.rules!.mana[playerId] = { W: 1, U: 2, B: 0, R: 0, G: 0, C: 0 };
+  force.mana(match, playerId, { W: 1, U: 2, B: 0, R: 0, G: 0, C: 0 });
   expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
     "pending",
   );
@@ -365,15 +210,15 @@ test("Counterspell and Negate select spells rather than ability objects and reso
   const { match, command, seed, room } = await rulesGame();
   const permanent = seed("Sol Ring", "hand"),
     negate = seed("Negate", "hand", 1);
-  match.rules!.mana[match.players[0].id].C = 1;
-  match.rules!.mana[match.players[1].id] = {
+  force.mana(match, match.players[0].id, { C: 1 });
+  force.mana(match, match.players[1].id, {
     W: 0,
     U: 2,
     B: 0,
     R: 0,
     G: 0,
     C: 1,
-  };
+  });
   expect(command(0, { type: "cast-spell", objectId: permanent.id }).kind).toBe(
     "accepted",
   );
@@ -414,7 +259,7 @@ test("Counterspell and Negate select spells rather than ability objects and reso
 test("paid draw abilities outlive sacrificed sources and cycling discards from Hand", async () => {
   const { match, command, seed, room } = await rulesGame();
   const stone = seed("Mind Stone", "battlefield");
-  match.rules!.mana[match.players[0].id].C = 1;
+  force.mana(match, match.players[0].id, { C: 1 });
   expect(
     command(0, {
       type: "activate-ability",
@@ -437,7 +282,7 @@ test("paid draw abilities outlive sacrificed sources and cycling discards from H
     )!.count,
   ).toBe(before + 1);
   const sandbar = seed("Lonely Sandbar", "hand");
-  match.rules!.mana[match.players[0].id].U = 1;
+  force.mana(match, match.players[0].id, { U: 1 });
   expect(
     command(0, {
       type: "activate-ability",
@@ -460,12 +305,9 @@ test("mana costs reserve specific colors and use deterministic ties while failed
   const negate = seed("Negate", "hand"),
     target = seed("Sol Ring", "hand", 1);
   // The initial scenario includes a spell already announced by the other player.
-  const targetZone = match.zones.find((z) => z.id === target.zoneId)!;
-  targetZone.objectIds.splice(targetZone.objectIds.indexOf(target.id), 1);
-  target.zoneId = match.zones.find((z) => z.kind === "stack")!.id;
-  match.zones.find((z) => z.kind === "stack")!.objectIds.push(target.id);
+  force.move(match, target, "stack");
   const pool = { W: 2, U: 1, B: 2, R: 0, G: 0, C: 9 };
-  match.rules!.mana[match.players[0].id] = pool;
+  force.mana(match, match.players[0].id, pool);
   command(0, { type: "cast-spell", objectId: negate.id });
   const pendingId = match.rules!.pending!.id;
   expect(
@@ -489,14 +331,14 @@ test("mana costs reserve specific colors and use deterministic ties while failed
     ];
   expect(spell.casting?.manaSpent).toEqual(["U", "W"]);
   const stone = seed("Mind Stone", "battlefield");
-  match.rules!.mana[match.players[0].id] = {
+  force.mana(match, match.players[0].id, {
     W: 0,
     U: 0,
     B: 0,
     R: 0,
     G: 0,
     C: 0,
-  };
+  });
   expect(
     command(0, {
       type: "activate-ability",
@@ -519,7 +361,7 @@ test("mana costs reserve specific colors and use deterministic ties while failed
 test("creature tap symbols require control since the player's turn, while selected-object tap costs do not", async () => {
   const { match, command, seed, catalog } = await rulesGame();
   const myr = seed("Silver Myr", "battlefield");
-  match.rules!.controlledSinceTurn[myr.id] = match.turn.number;
+  force.controlledSince(match, myr, match.turn.number);
   expect(
     command(0, {
       type: "activate-ability",
@@ -587,7 +429,7 @@ test("War Room and Arcane Signet use recorded commander colors after its object 
   );
   const war = seed("War Room", "battlefield"),
     signet = seed("Arcane Signet", "battlefield");
-  match.rules!.mana[playerId].C = 3;
+  force.mana(match, playerId, { C: 3 });
   expect(
     command(0, {
       type: "activate-ability",
@@ -624,13 +466,9 @@ test("counterspells revalidate targets, reject creature targets for Negate, and 
     const creature = seed("Silver Myr", "hand", 1),
       negate = seed("Negate", "hand"),
       counter = seed("Counterspell", "hand");
-    match.rules!.mana[match.players[0].id].U = 4;
-    const hand = match.zones.find((z) => z.id === creature.zoneId)!;
-    hand.objectIds.splice(hand.objectIds.indexOf(creature.id), 1);
-    const stack = match.zones.find((z) => z.kind === "stack")!;
-    creature.zoneId = stack.id;
-    stack.objectIds.push(creature.id);
-    creature.cannotBeCountered = uncounterable;
+    force.mana(match, match.players[0].id, { U: 4 });
+    force.move(match, creature, "stack");
+    force.uncounterable(creature, uncounterable);
     expect(command(0, { type: "cast-spell", objectId: negate.id }).kind).toBe(
       "rejected",
     );
@@ -701,7 +539,7 @@ test("turn transitions expire mana, untap only the active player's permanents an
   const { match, command, seed, room } = await rulesGame();
   const land = seed("Sol Ring", "battlefield");
   land.status.tapped = true;
-  match.rules!.mana[match.players[0].id].C = 5;
+  force.mana(match, match.players[0].id, { C: 5 });
   // Eight starting cards require exactly one selected discard in cleanup.
   seed("Mind Stone", "hand");
   while (!match.rules!.pending && match.turn.number === 1) {
@@ -799,7 +637,7 @@ test("both cycling lands enter tapped, and Remote Isle and Hedron Archive resolv
       (zone) => zone.kind === "hand" && zone.ownerId === match.players[0].id,
     )!;
     const before = hand.objectIds.length;
-    match.rules!.mana[match.players[0].id].C = generic;
+    force.mana(match, match.players[0].id, { C: generic });
     expect(
       command(0, { type: "activate-ability", objectId: source.id, abilityId })
         .kind,
@@ -816,12 +654,8 @@ test("a resolving counterspell does nothing when its target has become illegal",
   const { match, command, seed } = await rulesGame();
   const target = seed("Sol Ring", "hand", 1),
     counter = seed("Counterspell", "hand");
-  const oldHand = match.zones.find((zone) => zone.id === target.zoneId)!;
-  oldHand.objectIds.splice(oldHand.objectIds.indexOf(target.id), 1);
-  const stack = match.zones.find((zone) => zone.kind === "stack")!;
-  target.zoneId = stack.id;
-  stack.objectIds.push(target.id);
-  match.rules!.mana[match.players[0].id].U = 2;
+  force.move(match, target, "stack");
+  force.mana(match, match.players[0].id, { U: 2 });
   command(0, { type: "cast-spell", objectId: counter.id });
   command(0, {
     type: "rules-input",
@@ -829,13 +663,7 @@ test("a resolving counterspell does nothing when its target has become illegal",
     targetIds: [target.id],
   });
   // The resolution fixture has another effect remove the selected spell first.
-  const currentStack = match.zones.find((zone) => zone.kind === "stack")!;
-  currentStack.objectIds.splice(currentStack.objectIds.indexOf(target.id), 1);
-  const grave = match.zones.find(
-    (zone) => zone.kind === "graveyard" && zone.ownerId === match.players[1].id,
-  )!;
-  match.objects[target.id].zoneId = grave.id;
-  grave.objectIds.push(target.id);
+  force.move(match, match.objects[target.id], "graveyard", match.players[1].id);
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
   expect(
@@ -855,15 +683,17 @@ test("restricted mana remains unspent for an ineligible spell and retains its re
     artifact = seed("Sol Ring", "hand");
   const pool = match.rules!.mana[match.players[0].id];
   pool.C = 2;
-  match.rules!.restrictedMana = {
-    [match.players[0].id]: [
-      {
-        type: "C",
-        amount: 2,
-        restriction: { use: "cast", spellTypes: ["Enchantment"] },
-      },
-    ],
-  };
+  force.rules(match, {
+    restrictedMana: {
+      [match.players[0].id]: [
+        {
+          type: "C",
+          amount: 2,
+          restriction: { use: "cast", spellTypes: ["Enchantment"] },
+        },
+      ],
+    },
+  });
   expect(command(0, { type: "cast-spell", objectId: creature.id }).kind).toBe(
     "pending",
   );
@@ -908,7 +738,7 @@ test("a pending activated procedure resumes without sacrificing twice", async ()
   const recovered: import("../src/shared/model").MatchState = JSON.parse(
     JSON.stringify(match),
   );
-  recovered.rules!.mana[recovered.players[0].id].C = 2;
+  force.mana(recovered, recovered.players[0].id, { C: 2 });
   expect(
     service.execute(
       recovered,
@@ -1005,9 +835,8 @@ test("Counterspell cannot select an Ability Game Object on the Stack", async () 
     colors: [],
     rulesText: "",
   });
-  match.objects[ability.id] = ability;
-  stack.objectIds.push(ability.id);
-  match.rules!.mana[match.players[0].id].U = 2;
+  force.addObject(match, ability);
+  force.mana(match, match.players[0].id, { U: 2 });
   expect(command(0, { type: "cast-spell", objectId: counter.id }).kind).toBe(
     "rejected",
   );
@@ -1023,7 +852,7 @@ test("Thirst for Knowledge draws before offering private discard alternatives an
   const spell = seed("Thirst for Knowledge", "hand");
   const artifact = seed("Mind Stone", "hand");
   const player = match.players[0].id;
-  match.rules!.mana[player].U = 3;
+  force.mana(match, player, { U: 3 });
   const view = () => matchView(match, room.participants[0].id, catalog);
   const library = () =>
     view().zones.find((z) => z.kind === "library" && z.ownerId === player)!
@@ -1085,7 +914,7 @@ test("Pull from Tomorrow locks chosen X before mana payment, draws X, and allows
   const { match, command, seed, catalog, room } = await rulesGame();
   const player = match.players[0].id;
   const spell = seed("Pull from Tomorrow", "hand");
-  match.rules!.mana[player].U = 4;
+  force.mana(match, player, { U: 4 });
   const view = () => matchView(match, room.participants[0].id, catalog);
   const hand = () =>
     view().zones.find((z) => z.kind === "hand" && z.ownerId === player)!;
@@ -1174,19 +1003,10 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
   test(`${name} completes partial draws and discards before checking a failed draw`, async () => {
     const { match, command, seed, catalog, room } = await rulesGame();
     const player = match.players[0].id;
-    const hand = match.zones.find(
-      (z) => z.kind === "hand" && z.ownerId === player,
-    )!;
-    const library = match.zones.find(
-      (z) => z.kind === "library" && z.ownerId === player,
-    )!;
-    for (const id of [...hand.objectIds, ...library.objectIds.slice(1)]) {
-      delete match.objects[id];
-    }
-    hand.objectIds = [];
-    library.objectIds = library.objectIds.slice(0, 1);
+    force.clearZone(match, "hand", player);
+    force.clearZone(match, "library", player, 1);
     const spell = seed(name, "hand");
-    match.rules!.mana[player].U = 5;
+    force.mana(match, player, { U: 5 });
     expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
       name === "Pull from Tomorrow" ? "pending" : "accepted",
     );
@@ -1239,13 +1059,9 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
 test("zero X with an empty Hand skips the impossible discard without attempting a draw", async () => {
   const { match, command, seed, catalog, room } = await rulesGame();
   const player = match.players[0].id;
-  const hand = match.zones.find(
-    (z) => z.kind === "hand" && z.ownerId === player,
-  )!;
-  for (const id of hand.objectIds) delete match.objects[id];
-  hand.objectIds = [];
+  force.clearZone(match, "hand", player);
   const spell = seed("Pull from Tomorrow", "hand");
-  match.rules!.mana[player].U = 2;
+  force.mana(match, player, { U: 2 });
   command(0, { type: "cast-spell", objectId: spell.id });
   command(0, {
     type: "rules-input",
@@ -1295,7 +1111,7 @@ test("nested sequences bind results, take conditions, and rotate choice identifi
     ],
   };
   const player = match.players[0].id;
-  match.rules!.mana[player].U = 3;
+  force.mana(match, player, { U: 3 });
   command(0, { type: "cast-spell", objectId: spell.id });
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
@@ -1380,7 +1196,7 @@ test("Commander setup accepts validated ordered cards and rejects unknown result
 test("Wellspring entry triggers draw privately after the permanent resolves", async () => {
   const { match, command, seed, room, catalog } = await rulesGame();
   const spell = seed("Ichor Wellspring", "hand");
-  match.rules!.mana[match.players[0].id].C = 2;
+  force.mana(match, match.players[0].id, { C: 2 });
   const view = () => matchView(match, room.participants[0].id, catalog);
   const handCount = () =>
     view().zones.find(
@@ -1411,7 +1227,7 @@ test("artifact cast triggers keep their chosen Stack order across reconnects and
   seed("Sai, Master Thopterist", "battlefield");
   seed("Vedalken Archmage", "battlefield");
   const spell = seed("Sol Ring", "hand");
-  match.rules!.mana[match.players[0].id].C = 1;
+  force.mana(match, match.players[0].id, { C: 1 });
   expect(command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
     "pending",
   );
@@ -1484,7 +1300,7 @@ test("Wellspring sacrificed during Sai payment triggers above the paid ability a
   const sai = seed("Sai, Master Thopterist", "battlefield"),
     well = seed("Ichor Wellspring", "battlefield"),
     stone = seed("Mind Stone", "battlefield");
-  match.rules!.mana[match.players[0].id].U = 2;
+  force.mana(match, match.players[0].id, { U: 2 });
   expect(
     command(0, {
       type: "activate-ability",
@@ -1713,7 +1529,7 @@ test("removing a continuous source updates recipients and captured abilities sur
     ring = seed("Sol Ring", "battlefield");
   const view = () => matchView(match, room.participants[0].id, catalog);
   expect(view().objects[overseer.id].characteristics.power).toBe("2");
-  match.rules!.mana[match.players[0].id].U = 2;
+  force.mana(match, match.players[0].id, { U: 2 });
   command(0, { type: "activate-ability", objectId: sai.id, abilityId: "draw" });
   command(0, {
     type: "rules-input",
@@ -1724,7 +1540,7 @@ test("removing a continuous source updates recipients and captured abilities sur
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
   const foundry = seed("Foundry of the Consuls", "battlefield");
-  match.rules!.mana[match.players[0].id].C = 5;
+  force.mana(match, match.players[0].id, { C: 5 });
   expect(
     command(0, {
       type: "activate-ability",
@@ -1778,14 +1594,14 @@ test("Myr token descriptors and state-based checks wait until the whole resoluti
       },
     },
   ];
-  match.rules!.mana[match.players[0].id] = {
+  force.mana(match, match.players[0].id, {
     W: 0,
     U: 1,
     B: 0,
     R: 0,
     G: 0,
     C: 4,
-  };
+  });
   command(0, { type: "cast-spell", objectId: spell.id });
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
@@ -1843,8 +1659,8 @@ test("simultaneous triggers use active-player then nonactive-player order and st
       },
     },
   ];
-  match.rules!.mana[match.players[0].id].U = 1;
-  match.rules!.mana[match.players[0].id].C = 4;
+  force.mana(match, match.players[0].id, { U: 1 });
+  force.mana(match, match.players[0].id, { C: 4 });
   command(0, { type: "cast-spell", objectId: spell.id });
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
@@ -1894,8 +1710,8 @@ test("creatures with zero toughness die at checkpoints and hidden characteristic
       },
     },
   ];
-  match.rules!.mana[match.players[0].id].U = 1;
-  match.rules!.mana[match.players[0].id].C = 4;
+  force.mana(match, match.players[0].id, { U: 1 });
+  force.mana(match, match.players[0].id, { C: 4 });
   command(0, { type: "cast-spell", objectId: spell.id });
   command(0, { type: "pass-priority" });
   command(1, { type: "pass-priority" });
@@ -1999,7 +1815,7 @@ test("triggers caused by mana payment wait until casting completes or is cancell
 test("Tome's fourth page triggers exile above its independent scry, with private resumable inspection", async () => {
   const game = await rulesGame();
   const tome = game.seed("Mazemind Tome", "battlefield");
-  tome.counters = [{ kind: "page", quantity: "3" }];
+  force.counters(tome, [{ kind: "page", quantity: "3" }]);
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   expect(
@@ -2050,7 +1866,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
   const before = view().zones.find(
     (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
   )!.count;
-  game.match.rules!.mana[game.match.players[0].id].U = 1;
+  force.mana(game.match, game.match.players[0].id, { U: 1 });
   expect(
     game.command(0, {
       type: "activate-ability",
@@ -2107,7 +1923,7 @@ test("Disk destroys its union simultaneously, including itself, while captured d
   const spring = game.seed("Ichor Wellspring", "battlefield");
   const retriever = game.seed("Myr Retriever", "battlefield");
   game.seed("Island", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 1;
+  force.mana(game.match, game.match.players[0].id, { C: 1 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(
@@ -2159,7 +1975,7 @@ test("Nettlecyst creates and equips its Germ before checking toughness, then equ
   const game = await rulesGame();
   const equipment = game.seed("Nettlecyst", "hand");
   const spring = game.seed("Ichor Wellspring", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 10;
+  force.mana(game.match, game.match.players[0].id, { C: 10 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(
@@ -2239,7 +2055,7 @@ test("Duplicant optionally exiles a nontoken creature and follows only its linke
     target: { zone: "exile", kind: "card" },
     effects: [{ kind: "move", subject: "target", destination: "graveyard" }],
   };
-  game.match.rules!.mana[game.match.players[0].id].U = 8;
+  force.mana(game.match, game.match.players[0].id, { U: 8 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(
@@ -2305,7 +2121,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
     )!;
     const effect = transmuterCard.abilities[0].rules!.effects[0];
     if (effect.kind === "move") effect.filter = { zone: "hand", owner: "you" };
-    game.match.rules!.mana[game.match.players[0].id].U = 1;
+    force.mana(game.match, game.match.players[0].id, { U: 1 });
     const view = () =>
       matchView(game.match, game.room.participants[0].id, game.catalog);
     game.command(0, {
@@ -2338,7 +2154,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
 test("Tome cannot gain life when its exile fails and does not duplicate a pending state trigger", async () => {
   const game = await rulesGame();
   const tome = game.seed("Mazemind Tome", "battlefield");
-  tome.counters = [{ kind: "page", quantity: "3" }];
+  force.counters(tome, [{ kind: "page", quantity: "3" }]);
   const bomb = game.seed("Aether Spellbomb", "battlefield");
   // The scenario bounce filter includes artifacts to remove Tome in response through the command seam.
   const definition = Object.values(game.catalog.definitions).find(
@@ -2349,7 +2165,7 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
     types: ["Artifact"],
   };
   const player = game.match.players[0];
-  game.match.rules!.mana[player.id] = { W: 0, U: 3, B: 0, R: 0, G: 0, C: 0 };
+  force.mana(game.match, player.id, { W: 0, U: 3, B: 0, R: 0, G: 0, C: 0 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   game.command(0, {
@@ -2388,7 +2204,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
   const game = await rulesGame();
   const bomb = game.seed("Aether Spellbomb", "battlefield");
   const stolen = game.seed("Silver Myr", "battlefield", 1);
-  stolen.controllerId = game.match.players[0].id;
+  force.controller(stolen, game.match.players[0].id);
   const own = game.seed("Mind Stone", "battlefield");
   const other = game.seed("Sol Ring", "battlefield", 1);
   const ruin = game.seed("Buried Ruin", "battlefield");
@@ -2406,14 +2222,14 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
       (z) => z.kind === "graveyard" && z.ownerId === game.match.players[1].id,
     )!,
   );
-  game.match.rules!.mana[game.match.players[0].id] = {
+  force.mana(game.match, game.match.players[0].id, {
     W: 0,
     U: 1,
     B: 0,
     R: 0,
     G: 0,
     C: 2,
-  };
+  });
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   game.command(0, {
@@ -2473,7 +2289,7 @@ test("All Is Dust collects each player's colored permanents before simultaneous 
   const opponent = game.seed("Master Transmuter", "battlefield", 1);
   opponent.characteristics.keywords = ["Indestructible"];
   const artifact = game.seed("Ichor Wellspring", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 7;
+  force.mana(game.match, game.match.players[0].id, { C: 7 });
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   game.command(0, { type: "cast-spell", objectId: dust.id });
@@ -2519,7 +2335,7 @@ test("Meteor Golem chooses only opponents' nonlands and Lantern exiles opponents
   const enemy = game.seed("Mind Stone", "battlefield", 1);
   const land = game.seed("Island", "battlefield", 1);
   const lantern = game.seed("Soul-Guide Lantern", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 7;
+  force.mana(game.match, game.match.players[0].id, { C: 7 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   game.command(0, { type: "cast-spell", objectId: golem.id });
@@ -2588,7 +2404,7 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
           subtypes: ["Book"],
         };
     }
-    game.match.rules!.mana[game.match.players[0].id].U = 1;
+    force.mana(game.match, game.match.players[0].id, { U: 1 });
     const view = () =>
       matchView(game.match, game.room.participants[0].id, game.catalog);
     game.command(0, {
@@ -2635,14 +2451,14 @@ for (const decline of [true, false]) {
     const duplicant = game.seed("Duplicant", "hand");
     const target = game.seed("Silver Myr", "battlefield");
     const bomb = game.seed("Aether Spellbomb", "battlefield");
-    game.match.rules!.mana[game.match.players[0].id] = {
+    force.mana(game.match, game.match.players[0].id, {
       W: 0,
       U: 7,
       B: 0,
       R: 0,
       G: 0,
       C: 0,
-    };
+    });
     const view = () =>
       matchView(game.match, game.room.participants[0].id, game.catalog);
     game.command(0, { type: "cast-spell", objectId: duplicant.id });
@@ -2699,15 +2515,15 @@ test("Equipment counts an artifact enchantment once and detaches when its recipi
   both.characteristics.types = ["Artifact", "Enchantment"];
   const nettle = game.seed("Nettlecyst", "battlefield");
   const bomb = game.seed("Aether Spellbomb", "battlefield");
-  nettle.attachmentTo = creature.id;
-  game.match.rules!.mana[game.match.players[0].id] = {
+  force.attach(nettle, creature);
+  force.mana(game.match, game.match.players[0].id, {
     W: 0,
     U: 4,
     B: 0,
     R: 0,
     G: 0,
     C: 0,
-  };
+  });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(view().objects[creature.id].characteristics).toMatchObject({
@@ -2751,7 +2567,7 @@ test("Duplicant's new entry has no link to cards exiled during its previous life
   const duplicant = game.seed("Duplicant", "hand");
   const victim = game.seed("Silver Myr", "battlefield", 1);
   const bomb = game.seed("Aether Spellbomb", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].U = 13;
+  force.mana(game.match, game.match.players[0].id, { U: 13 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   const resolve = () => {
@@ -2885,8 +2701,8 @@ test("returning Equipment as a cost removes its bonus immediately and a pending 
   Object.values(game.catalog.definitions).find(
     (c) => c.canonicalName === "Aether Spellbomb",
   )!.abilities[0].rules!.target = { zone: "battlefield", types: ["Artifact"] };
-  nettle.attachmentTo = creature.id;
-  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  force.attach(nettle, creature);
+  force.mana(game.match, game.match.players[0].id, { U: 2 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(view().objects[creature.id].characteristics.power).toBe("5");
@@ -2966,8 +2782,8 @@ test("source grants enforce opponent hexproof and artifact flash through current
       },
     });
   const bomb = seed("Aether Spellbomb", "battlefield");
-  match.turn.stepIndex = 4;
-  match.rules!.mana[match.players[0].id].U = 2;
+  force.step(match, "begin-combat");
+  force.mana(match, match.players[0].id, { U: 2 });
   const view = () => matchView(match, room.participants[0].id, catalog);
   expect(view().actions!.some((a) => a.label === "Cast Sol Ring")).toBe(true);
   expect(command(0, { type: "cast-spell", objectId: ring.id }).kind).toBe(
@@ -3145,8 +2961,8 @@ test("crew taps newly controlled creatures for effective power and animation exp
   const vehicle = game.seed("Cultivator's Caravan", "battlefield");
   const myr = game.seed("Silver Myr", "battlefield");
   const chief = game.seed("Chief of the Foundry", "battlefield");
-  game.match.rules!.controlledSinceTurn[myr.id] = 1;
-  myr.counters = [{ kind: "+1/+1", quantity: "1" }];
+  force.controlledSince(game.match, myr, 1);
+  force.counters(myr, [{ kind: "+1/+1", quantity: "1" }]);
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   expect(
@@ -3193,7 +3009,7 @@ test("crew taps newly controlled creatures for effective power and animation exp
   expect(view().objects[vehicle.id].characteristics.subtypes).toEqual([
     "Vehicle",
   ]);
-  game.match.turn.stepIndex = 10; // Begin immediately before cleanup in this initial timing scenario.
+  force.step(game.match, "end"); // Begin immediately before cleanup in this initial timing scenario.
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   expect(view().objects[vehicle.id].characteristics.types).toEqual([
@@ -3210,7 +3026,7 @@ test("Propaganda payment is optional for required attackers and Graaz composes t
   const graaz = game.seed("Graaz, Unstoppable Juggernaut", "battlefield");
   const jug = game.seed("Darksteel Juggernaut", "battlefield");
   const chief = game.seed("Chief of the Foundry", "battlefield");
-  jug.counters = [{ kind: "+1/+1", quantity: "2" }];
+  force.counters(jug, [{ kind: "+1/+1", quantity: "2" }]);
   game.seed("Propaganda", "battlefield", 1);
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
@@ -3339,7 +3155,7 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
       },
     },
   ];
-  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  force.mana(game.match, game.match.players[0].id, { U: 2 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   game.command(0, { type: "cast-spell", objectId: spell.id });
@@ -3357,7 +3173,7 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
     amount: 5,
     combat: false,
   });
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   expect(view().rules!.markedDamage).toEqual({});
@@ -3425,7 +3241,7 @@ test("an attacker stays blocked after its blocker leaves during the response win
     procedureId: view(1).rules!.pending!.id,
     selections: { [blocker.id]: [creature.id] },
   });
-  game.match.rules!.mana[game.match.players[0].id].U = 1;
+  force.mana(game.match, game.match.players[0].id, { U: 1 });
   game.command(0, {
     type: "activate-ability",
     objectId: bomb.id,
@@ -3464,18 +3280,20 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
       trigger: { event: "dies", filter: { zone: "battlefield", self: "only" } },
     },
   });
-  game.match.rules!.temporaryEffects = [
-    {
-      sourceId: creature.id,
-      abilityId: "bonus",
-      playerId: game.match.players[0].id,
-      filter: { zone: "battlefield", self: "only" },
-      changes: [{ kind: "add-stats", power: 0, toughness: 2 }],
-      applicability: "until-end-of-turn",
-    },
-  ];
-  game.match.rules!.markedDamage = { [creature.id]: 1 };
-  game.match.turn.stepIndex = 10;
+  force.rules(game.match, {
+    temporaryEffects: [
+      {
+        sourceId: creature.id,
+        abilityId: "bonus",
+        playerId: game.match.players[0].id,
+        filter: { zone: "battlefield", self: "only" },
+        changes: [{ kind: "add-stats", power: 0, toughness: 2 }],
+        applicability: "until-end-of-turn",
+      },
+    ],
+  });
+  force.rules(game.match, { markedDamage: { [creature.id]: 1 } });
+  force.step(game.match, "end");
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   const pass = () => {
@@ -3636,9 +3454,9 @@ test("hexproof gained in response invalidates an opponent target while preservin
   ];
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
-  game.match.rules!.mana[game.match.players[0].id].U = 1;
-  game.match.rules!.mana[game.match.players[1].id].U = 1;
-  game.match.rules!.mana[game.match.players[1].id].C = 3;
+  force.mana(game.match, game.match.players[0].id, { U: 1 });
+  force.mana(game.match, game.match.players[1].id, { U: 1 });
+  force.mana(game.match, game.match.players[1].id, { C: 3 });
   game.command(0, {
     type: "activate-ability",
     objectId: bomb.id,
@@ -3672,7 +3490,7 @@ test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches w
   const game = await rulesGame();
   const vehicle = game.seed("Cultivator's Caravan", "battlefield");
   const myr = game.seed("Silver Myr", "battlefield");
-  myr.counters = [{ kind: "+1/+1", quantity: "2" }];
+  force.counters(myr, [{ kind: "+1/+1", quantity: "2" }]);
   const nettle = game.seed("Nettlecyst", "battlefield");
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
@@ -3691,7 +3509,7 @@ test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches w
     selections: { "0": [myr.id] },
   });
   pass();
-  game.match.rules!.mana[game.match.players[0].id].C = 2;
+  force.mana(game.match, game.match.players[0].id, { C: 2 });
   game.command(0, {
     type: "activate-ability",
     objectId: nettle.id,
@@ -3706,7 +3524,7 @@ test("Equipment attaches to a crewed Vehicle, composes its bonus, and detaches w
   pass();
   expect(view().objects[nettle.id].attachmentTo).toBe(vehicle.id);
   expect(view().objects[vehicle.id].characteristics.power).toBe("8");
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   pass();
   expect(view().objects[nettle.id].attachmentTo).toBeNull();
   expect(view().objects[vehicle.id].characteristics.types).toEqual([
@@ -3753,7 +3571,7 @@ test("damage attribution expires at the next turn while surviving the current tu
 test("Battlesphere creates Myr and binds an optional attack payment across recovery", async () => {
   const game = await rulesGame();
   const sphere = game.seed("Myr Battlesphere", "hand");
-  game.match.rules!.mana[game.match.players[0].id].C = 7;
+  force.mana(game.match, game.match.players[0].id, { C: 7 });
   const view = () =>
     matchView(game.match, game.room.participants[0].id, game.catalog);
   const pass = () => {
@@ -3774,7 +3592,7 @@ test("Battlesphere creates Myr and binds an optional attack payment across recov
   const attacker = Object.values(game.match.objects).find(
     (o) => o.characteristics.name === "Myr Battlesphere",
   )!;
-  game.match.rules!.controlledSinceTurn[attacker.id] = 0;
+  force.controlledSince(game.match, attacker, 0);
   pass();
   pass();
   const declare = view().rules!.pending!;
@@ -3817,15 +3635,15 @@ test("Omnitool privately inspects a short Library and reveals only its selected 
   const game = await rulesGame();
   const creature = game.seed("Silver Myr", "battlefield");
   const tool = game.seed("Adaptive Omnitool", "battlefield");
-  tool.attachmentTo = creature.id;
+  force.attach(tool, creature);
   const artifact = game.seed("Mind Stone", "hand");
   const library = game.match.zones.find(
     (z) => z.kind === "library" && z.ownerId === game.match.players[0].id,
   )!;
-  const hand = game.match.zones.find((z) => z.id === artifact.zoneId)!;
-  hand.objectIds.splice(hand.objectIds.indexOf(artifact.id), 1);
-  artifact.zoneId = library.id;
-  library.objectIds = [artifact.id, ...library.objectIds.slice(0, 2)];
+  force.zoneContents(game.match, "library", game.match.players[0].id, [
+    artifact,
+    ...library.objectIds.slice(0, 2).map((id) => game.match.objects[id]),
+  ]);
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   for (let i = 0; i < 2; i++) {
@@ -3919,7 +3737,7 @@ test("individual and grouped artifact combat triggers differ and Hellkite uses c
       (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
     )!.count,
   ).toBe(handBefore + 3);
-  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  force.mana(game.match, game.match.players[0].id, { U: 2 });
   expect(
     game.command(0, {
       type: "activate-ability",
@@ -3956,7 +3774,7 @@ test("draw ordinals, live Hand size and optional effect payment resume without d
   game.seed("Scrawling Crawler", "battlefield", 1);
   game.seed("Mind's Eye", "battlefield", 1);
   const archive = game.seed("Hedron Archive", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 2;
+  force.mana(game.match, game.match.players[0].id, { C: 2 });
   const view = (seat = 0) =>
     matchView(game.match, game.room.participants[seat].id, game.catalog);
   const pass = () => {
@@ -3997,7 +3815,7 @@ test("draw ordinals, live Hand size and optional effect payment resume without d
   expect(pay.kind).toBe("resolve");
   const recovered = JSON.parse(JSON.stringify(game.match));
   // Recover the persisted choice and the already-present mana pool.
-  recovered.rules.mana[game.match.players[1].id].U = 1;
+  force.mana(recovered, game.match.players[1].id, { U: 1 });
   expect(
     game.service.execute(
       recovered,
@@ -4041,7 +3859,7 @@ test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants
     "Hexproof",
   );
   // Start just before the next upkeep, exercising the ordinary turn commands.
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   game.seed("Thought Vessel", "battlefield", 1);
   const pass = () => {
     const id = game.match.priority!.playerId;
@@ -4058,7 +3876,7 @@ test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants
   )!.count;
   // Respond with a higher-valued artifact; the intervening condition must fail.
   const archive = game.seed("Hedron Archive", "hand", 1);
-  game.match.rules!.mana[game.match.players[1].id].C = 4;
+  force.mana(game.match, game.match.players[1].id, { C: 4 });
   game.seed("Shimmer Myr", "battlefield", 1);
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "cast-spell", objectId: archive.id });
@@ -4094,32 +3912,6 @@ test("Padeem honors tied artifact maxima and rechecks upkeep while Dragon grants
   ).toBe(before + 1);
 });
 
-async function triggerGame() {
-  const game = await rulesGame();
-  const view = (seat = 0) =>
-    matchView(game.match, game.room.participants[seat].id, game.catalog);
-  const pass = () => {
-    const seat = game.match.players.findIndex(
-      (p) => p.id === game.match.priority!.playerId,
-    );
-    for (let i = 0; i < 2; i++)
-      expect(["accepted", "pending"]).toContain(
-        game.command((seat + i) % 2, { type: "pass-priority" }).kind,
-      );
-  };
-  const answer = (selections: Record<string, string[]>, seat = 0) =>
-    game.command(seat, {
-      type: "rules-input",
-      procedureId: view(seat).rules!.pending!.id,
-      selections,
-    });
-  const handCount = (seat = 0) =>
-    view(seat).zones.find(
-      (z) => z.kind === "hand" && z.ownerId === game.match.players[seat].id,
-    )!.count;
-  return { ...game, view, pass, answer, handCount };
-}
-
 for (const count of [0, 1, 3]) {
   test(`Battlesphere can tap ${count} Myr and its bound bonus expires during cleanup`, async () => {
     const game = await triggerGame();
@@ -4143,7 +3935,7 @@ for (const count of [0, 1, 3]) {
       String(4 + count),
     );
     expect(game.view().players[1].life).toBe(String(40 - count));
-    game.match.turn.stepIndex = 10;
+    force.step(game.match, "end");
     game.pass();
     expect(game.view().objects[sphere.id].characteristics.power).toBe("4");
   });
@@ -4153,11 +3945,12 @@ for (const selection of ["decline", "no-artifact", "empty"] as const) {
   test(`Omnitool handles ${selection} without exposing the inspected Library`, async () => {
     const game = await triggerGame();
     const myr = game.seed("Silver Myr", "battlefield");
-    game.seed("Adaptive Omnitool", "battlefield").attachmentTo = myr.id;
+    force.attach(game.seed("Adaptive Omnitool", "battlefield"), myr);
     const library = game.match.zones.find(
       (z) => z.kind === "library" && z.ownerId === game.match.players[0].id,
     )!;
-    if (selection === "empty") library.objectIds = [];
+    if (selection === "empty")
+      force.clearZone(game.match, "library", game.match.players[0].id);
     const initial = [...library.objectIds];
     const count = game.handCount();
     game.pass();
@@ -4198,15 +3991,15 @@ test("Signpost redirects an existing attack before Battlesphere reads its defend
   const myr = game.seed("Silver Myr", "battlefield");
   const walker = game.seed("Mind Stone", "battlefield", 1);
   walker.characteristics.types = ["Planeswalker"];
-  walker.counters = [{ kind: "loyalty", quantity: "8" }];
+  force.counters(walker, [{ kind: "loyalty", quantity: "8" }]);
   const ownWalker = game.seed("Mind Stone", "battlefield");
   ownWalker.characteristics.types = ["Planeswalker"];
-  ownWalker.counters = [{ kind: "loyalty", quantity: "8" }];
+  force.counters(ownWalker, [{ kind: "loyalty", quantity: "8" }]);
   const sign = game.seed("Misleading Signpost", "hand", 1);
   game.pass();
   game.pass();
   game.answer({ [sphere.id]: [game.match.players[1].id] });
-  game.match.rules!.mana[game.match.players[1].id].U = 3;
+  force.mana(game.match, game.match.players[1].id, { U: 3 });
   game.command(0, { type: "pass-priority" });
   expect(game.command(1, { type: "cast-spell", objectId: sign.id }).kind).toBe(
     "accepted",
@@ -4241,7 +4034,7 @@ test("Skysovereign's entry and attack damage use opponent targets and stay separ
   const sky = game.seed("Skysovereign, Consul Flagship", "hand");
   const victim = game.seed("Steel Hellkite", "battlefield", 1);
   const pilot = game.seed("Steel Hellkite", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].C = 5;
+  force.mana(game.match, game.match.players[0].id, { C: 5 });
   game.command(0, { type: "cast-spell", objectId: sky.id });
   game.pass();
   let pending = game.view().rules!.pending!;
@@ -4257,7 +4050,7 @@ test("Skysovereign's entry and attack damage use opponent targets and stay separ
   const vehicle = Object.values(game.view().objects).find(
     (o) => o.characteristics.name === "Skysovereign, Consul Flagship",
   )!;
-  game.match.rules!.controlledSinceTurn[vehicle.id] = 0;
+  force.controlledSince(game.match, vehicle, 0);
   game.command(0, {
     type: "activate-ability",
     objectId: vehicle.id,
@@ -4286,7 +4079,7 @@ test("Mind's Eye accepts mana sources during its private effect payment and can 
     game.seed("Mind's Eye", "battlefield", 1);
     const ring = game.seed("Sol Ring", "battlefield", 1);
     const stone = game.seed("Mind Stone", "battlefield");
-    game.match.rules!.mana[game.match.players[0].id].U = 1;
+    force.mana(game.match, game.match.players[0].id, { U: 1 });
     game.command(0, {
       type: "activate-ability",
       objectId: stone.id,
@@ -4333,7 +4126,7 @@ test("Scrawling upkeep draws for each player, Fabricator resets ordinals, and Ve
   game.seed("Thought Vessel", "battlefield", 1);
   game.seed("Thopter Fabricator", "battlefield", 1);
   const archive = game.seed("Hedron Archive", "battlefield");
-  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  force.mana(game.match, game.match.players[0].id, { U: 2 });
   game.command(0, {
     type: "activate-ability",
     objectId: archive.id,
@@ -4347,7 +4140,7 @@ test("Scrawling upkeep draws for each player, Fabricator resets ordinals, and Ve
   expect(game.handCount()).toBe(9);
   expect(game.view().players[0].life).toBe("38");
   expect(game.view().rules!.damageEvents ?? []).toHaveLength(0);
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   game.pass();
   expect(game.match.turn.stepIndex).toBe(1);
   expect(game.match.turn.activePlayerId).toBe(game.match.players[1].id);
@@ -4392,8 +4185,11 @@ test("Psychosis survives temporarily empty Hand inside a resolving draw sequence
   const hand = game.match.zones.find(
     (z) => z.kind === "hand" && z.ownerId === game.match.players[0].id,
   )!;
-  hand.objectIds = hand.objectIds.slice(0, 7).concat(spell.id);
-  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  force.zoneContents(game.match, "hand", game.match.players[0].id, [
+    ...hand.objectIds.slice(0, 7).map((id) => game.match.objects[id]),
+    spell,
+  ]);
+  force.mana(game.match, game.match.players[0].id, { U: 3 });
   game.command(0, { type: "cast-spell", objectId: spell.id });
   game.pass();
   expect(
@@ -4417,7 +4213,7 @@ for (const artifacts of ["none", "ties", "smaller"] as const) {
         "battlefield",
       );
     }
-    game.match.turn.stepIndex = 10;
+    force.step(game.match, "end");
     game.pass();
     expect(game.view().zones.find((z) => z.kind === "stack")!.count).toBe(
       artifacts === "ties" ? 1 : 0,
@@ -4438,12 +4234,12 @@ test("Spy Network rechecks its artifact condition and Shimmer Dragon loses hexpr
     game.seed("Mind Stone", "battlefield", 1),
   );
   const transmuter = game.seed("Master Transmuter", "battlefield", 1);
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   game.pass();
   expect(game.view().objects[dragon.id].characteristics.keywords).toContain(
     "Hexproof",
   );
-  game.match.rules!.mana[game.match.players[1].id].U = 1;
+  force.mana(game.match, game.match.players[1].id, { U: 1 });
   game.command(1, {
     type: "activate-ability",
     objectId: transmuter.id,
@@ -4454,7 +4250,7 @@ test("Spy Network rechecks its artifact condition and Shimmer Dragon loses hexpr
   game.answer({ select: [] }, 1);
   // Remove the four remaining artifacts through paid draw abilities, retaining the upkeep trigger.
   for (const artifact of artifacts) {
-    game.match.rules!.mana[game.match.players[1].id].U = 1;
+    force.mana(game.match, game.match.players[1].id, { U: 1 });
     game.command(1, {
       type: "activate-ability",
       objectId: artifact.id,
@@ -4493,7 +4289,7 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   expect(order.selectionOptions.order.objectIds).toHaveLength(3);
   game.answer({ order: order.selectionOptions.order.objectIds });
   for (let i = 0; i < 3; i++) game.pass();
-  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  force.mana(game.match, game.match.players[0].id, { U: 3 });
   game.command(0, {
     type: "activate-ability",
     objectId: hellkite.id,
@@ -4529,7 +4325,7 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
     (o) => o.characteristics.name === "Steel Hellkite",
   )!;
   expect(fresh.id).not.toBe(hellkite.id);
-  game.match.rules!.mana[game.match.players[0].id].U = 2;
+  force.mana(game.match, game.match.players[0].id, { U: 2 });
   expect(
     game.command(0, {
       type: "activate-ability",
@@ -4590,7 +4386,7 @@ test("Hellkite's power bonus expires and once-per-turn use clears on the next tu
       abilityId: "destroy-damaged",
     }).kind,
   ).toBe("rejected");
-  game.match.turn.stepIndex = 10;
+  force.step(game.match, "end");
   game.pass();
   expect(game.view().objects[hellkite.id].characteristics.power).toBe("5");
   game.command(1, { type: "pass-priority" });
@@ -4609,13 +4405,13 @@ test("Battlesphere retains its selected bonus when the attacked planeswalker lea
   const myr = game.seed("Silver Myr", "battlefield");
   const walker = game.seed("Mind Stone", "battlefield", 1);
   walker.characteristics.types = ["Planeswalker"];
-  walker.counters = [{ kind: "loyalty", quantity: "8" }];
+  force.counters(walker, [{ kind: "loyalty", quantity: "8" }]);
   game.seed("Shimmer Myr", "battlefield");
   const golem = game.seed("Meteor Golem", "hand");
   game.pass();
   game.pass();
   game.answer({ [sphere.id]: [walker.id] });
-  game.match.rules!.mana[game.match.players[0].id].U = 7;
+  force.mana(game.match, game.match.players[0].id, { U: 7 });
   game.command(0, { type: "cast-spell", objectId: golem.id });
   game.pass();
   game.command(0, {
@@ -4635,7 +4431,7 @@ test("Battlesphere retains its selected bonus when the attacked planeswalker lea
 test("Signpost outside declare attackers has no redirection trigger and retains its blue mana ability", async () => {
   const game = await triggerGame();
   const sign = game.seed("Misleading Signpost", "hand");
-  game.match.rules!.mana[game.match.players[0].id].U = 3;
+  force.mana(game.match, game.match.players[0].id, { U: 3 });
   game.command(0, { type: "cast-spell", objectId: sign.id });
   game.pass();
   expect(game.view().rules!.pending).toBeUndefined();
@@ -4660,7 +4456,7 @@ test("improvise taps explicit artifacts without producing mana and Cannoneer ent
     g.seed("Mind Stone", "battlefield"),
   );
   const p = g.match.players[0].id;
-  g.match.rules!.mana[p].U = 1;
+  force.mana(g.match, p, { U: 1 });
   expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
     "pending",
   );
@@ -4700,8 +4496,8 @@ for (const pay of [false, true])
     const g = await triggerGame();
     const kappa = g.seed("Kappa Cannoneer", "battlefield", 1);
     const spell = g.seed("Aether Spellbomb", "battlefield");
-    g.match.rules!.mana[g.match.players[0].id].U = 1;
-    g.match.rules!.mana[g.match.players[0].id].C = 4;
+    force.mana(g.match, g.match.players[0].id, { U: 1 });
+    force.mana(g.match, g.match.players[0].id, { C: 4 });
     expect(
       g.command(0, {
         type: "activate-ability",
@@ -4764,7 +4560,7 @@ test("Commander casts retain designation, tax is locked, and graveyard return re
   const commander = Object.values(g.view().objects).find((o) =>
     o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
   )!;
-  g.match.rules!.mana[p].U = 5;
+  force.mana(g.match, p, { U: 5 });
   expect(
     g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
   ).toBe("accepted");
@@ -4773,7 +4569,7 @@ test("Commander casts retain designation, tax is locked, and graveyard return re
     o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
   )!;
   const disk = g.seed("Nevinyrral's Disk", "battlefield");
-  g.match.rules!.mana[p].C = 1;
+  force.mana(g.match, p, { C: 1 });
   expect(
     g.command(0, {
       type: "activate-ability",
@@ -4797,7 +4593,7 @@ test("Commander casts retain designation, tax is locked, and graveyard return re
   expect(returned.zoneId).toBe(
     g.view().zones.find((z) => z.kind === "command")!.id,
   );
-  g.match.rules!.mana[p].U = 0;
+  force.mana(g.match, p, { U: 0 });
   expect(g.command(0, { type: "cast-spell", objectId: returned.id }).kind).toBe(
     "pending",
   );
@@ -4809,7 +4605,7 @@ test("Favor attaches before its entry trigger, taps the creature and crowns the 
   const g = await triggerGame();
   const creature = g.seed("Silver Myr", "battlefield", 1);
   const favor = g.seed("Fall from Favor", "hand");
-  g.match.rules!.mana[g.match.players[0].id].U = 3;
+  force.mana(g.match, g.match.players[0].id, { U: 3 });
   expect(g.command(0, { type: "cast-spell", objectId: favor.id }).kind).toBe(
     "pending",
   );
@@ -4857,8 +4653,8 @@ test("Launch Mishap counters a creature spell and creates its Thopter through th
   const g = await triggerGame();
   const creature = g.seed("Silver Myr", "hand");
   const mishap = g.seed("Launch Mishap", "hand", 1);
-  g.match.rules!.mana[g.match.players[0].id].C = 2;
-  g.match.rules!.mana[g.match.players[1].id].U = 3;
+  force.mana(g.match, g.match.players[0].id, { C: 2 });
+  force.mana(g.match, g.match.players[1].id, { U: 3 });
   expect(g.command(0, { type: "cast-spell", objectId: creature.id }).kind).toBe(
     "accepted",
   );
@@ -4886,7 +4682,7 @@ test("Launch Mishap counters a creature spell and creates its Thopter through th
 test("Whirler Rogue creates two Thopters and taps selected artifacts to make a creature unblockable", async () => {
   const g = await triggerGame();
   const rogue = g.seed("Whirler Rogue", "hand");
-  g.match.rules!.mana[g.match.players[0].id].U = 4;
+  force.mana(g.match, g.match.players[0].id, { U: 4 });
   expect(g.command(0, { type: "cast-spell", objectId: rogue.id }).kind).toBe(
     "accepted",
   );
@@ -4925,19 +4721,21 @@ test("Aetherize returns all attacking creatures to their owners without moving b
   const attacker = g.seed("Silver Myr", "battlefield");
   const blocker = g.seed("Silver Myr", "battlefield", 1);
   const bounce = g.seed("Aetherize", "hand");
-  g.match.rules!.mana[g.match.players[0].id].U = 4;
-  g.match.rules!.combat = {
-    attackers: [
-      {
-        objectId: attacker.id,
-        defenderId: g.match.players[1].id,
-        defendingPlayerId: g.match.players[1].id,
-        blockerIds: [blocker.id],
-        blocked: true,
-      },
-    ],
-    remainingDefenderIds: [],
-  };
+  force.mana(g.match, g.match.players[0].id, { U: 4 });
+  force.rules(g.match, {
+    combat: {
+      attackers: [
+        {
+          objectId: attacker.id,
+          defenderId: g.match.players[1].id,
+          defendingPlayerId: g.match.players[1].id,
+          blockerIds: [blocker.id],
+          blocked: true,
+        },
+      ],
+      remainingDefenderIds: [],
+    },
+  });
   expect(g.command(0, { type: "cast-spell", objectId: bounce.id }).kind).toBe(
     "accepted",
   );
@@ -5009,7 +4807,7 @@ for (const returnToCommand of [true, false])
     const commander = Object.values(g.view().objects).find((o) =>
       o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
     )!;
-    g.match.rules!.mana[p].U = 1;
+    force.mana(g.match, p, { U: 1 });
     expect(
       g.command(0, { type: "cast-spell", objectId: commander.id }).kind,
     ).toBe("accepted");
@@ -5018,7 +4816,7 @@ for (const returnToCommand of [true, false])
       o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
     )!;
     const bomb = g.seed("Aether Spellbomb", "battlefield");
-    g.match.rules!.mana[p].U = 1;
+    force.mana(g.match, p, { U: 1 });
     expect(
       g.command(0, {
         type: "activate-ability",
@@ -5082,8 +4880,8 @@ for (const name of ["Thought Monitor", "Memory Guardian", "Broodstar"])
     for (let i = 0; i < 7; i++) g.seed("Mind Stone", "battlefield");
     const p = g.match.players[0].id;
     const before = g.handCount();
-    g.match.rules!.mana[p].U = name === "Broodstar" ? 2 : 1;
-    if (name === "Broodstar") g.match.rules!.mana[p].C = 1;
+    force.mana(g.match, p, { U: name === "Broodstar" ? 2 : 1 });
+    if (name === "Broodstar") force.mana(g.match, p, { C: 1 });
     expect(g.command(0, { type: "cast-spell", objectId: spell.id }).kind).toBe(
       "accepted",
     );
@@ -5109,7 +4907,7 @@ test("improvise composes discounts and rejects tapped or duplicate artifacts ato
   tapped.status.tapped = true;
   const myr = g.seed("Silver Myr", "battlefield");
   const stone = g.seed("Mind Stone", "battlefield");
-  g.match.rules!.mana[g.match.players[0].id].U = 1;
+  force.mana(g.match, g.match.players[0].id, { U: 1 });
   expect(g.command(0, { type: "cast-spell", objectId: kappa.id }).kind).toBe(
     "pending",
   );
@@ -5138,11 +4936,13 @@ for (const commander of [false, true])
     const p = g.match.players[0].id,
       opponent = g.match.players[1].id;
     if (commander) {
-      g.match.instances[attacker.cardInstanceIds[0]].commander = true;
-      g.match.rules!.commanderDamage = {
-        [opponent]: { [attacker.cardInstanceIds[0]]: 20 },
-      };
-    } else g.match.rules!.monarchId = opponent;
+      force.commander(g.match, attacker.cardInstanceIds[0]);
+      force.rules(g.match, {
+        commanderDamage: {
+          [opponent]: { [attacker.cardInstanceIds[0]]: 20 },
+        },
+      });
+    } else force.rules(g.match, { monarchId: opponent });
     g.pass();
     g.pass();
     expect(g.answer({ [attacker.id]: [opponent] }).kind).toBe("accepted");
@@ -5161,8 +4961,8 @@ for (const commander of [false, true])
 
 test("the monarch end-step draw is stacked and privately increases only that player's Hand", async () => {
   const g = await triggerGame();
-  g.match.rules!.monarchId = g.match.players[0].id;
-  g.match.turn.stepIndex = 9;
+  force.rules(g.match, { monarchId: g.match.players[0].id });
+  force.step(g.match, "postcombat-main");
   const before = g.handCount();
   g.pass();
   expect(g.handCount()).toBe(before);
@@ -5183,9 +4983,9 @@ for (const monarch of [0, 1])
     const g = await triggerGame();
     const creature = g.seed("Silver Myr", "battlefield", 1);
     creature.status.tapped = true;
-    g.seed("Fall from Favor", "battlefield").attachmentTo = creature.id;
-    g.match.rules!.monarchId = g.match.players[monarch].id;
-    g.match.turn.stepIndex = 11;
+    force.attach(g.seed("Fall from Favor", "battlefield"), creature);
+    force.rules(g.match, { monarchId: g.match.players[monarch].id });
+    force.step(g.match, "cleanup");
     g.pass();
     expect(g.view().objects[creature.id].status.tapped).toBe(monarch !== 1);
   });
@@ -5193,18 +4993,18 @@ for (const monarch of [0, 1])
 test("a commander destroyed in the second player's Graveyard offers that owner's return choice", async () => {
   const g = await triggerGame();
   const p = g.match.players[1].id;
-  g.match.turn.activePlayerId = p;
-  g.match.priority = { playerId: p, passedPlayerIds: [] };
+  force.activePlayer(g.match, p);
+  force.priority(g.match, p);
   const commander = Object.values(g.view(1).objects).find((o) =>
     o.cardInstanceIds?.includes(g.match.rules!.commanders[p].instanceId),
   )!;
-  g.match.rules!.mana[p].U = 1;
+  force.mana(g.match, p, { U: 1 });
   expect(
     g.command(1, { type: "cast-spell", objectId: commander.id }).kind,
   ).toBe("accepted");
   g.pass();
   const disk = g.seed("Nevinyrral's Disk", "battlefield", 1);
-  g.match.rules!.mana[p].C = 1;
+  force.mana(g.match, p, { C: 1 });
   expect(
     g.command(1, {
       type: "activate-ability",
@@ -5274,7 +5074,7 @@ test("the monarch controls its transfer trigger above the attacker's Research Th
   const attacker = g.seed("Silver Myr", "battlefield");
   const p = g.match.players[0].id,
     opponent = g.match.players[1].id;
-  g.match.rules!.monarchId = opponent;
+  force.rules(g.match, { monarchId: opponent });
   g.pass();
   g.pass();
   expect(g.answer({ [attacker.id]: [opponent] }).kind).toBe("accepted");
@@ -5296,14 +5096,16 @@ test("the monarch controls its transfer trigger above the attacker's Research Th
 test("solo controller answers the practice opponent's required sacrifice while spectators have no choice access", async () => {
   const g = await triggerGame();
   const practiceId = g.match.players[1].id;
-  g.match.rules!.practice = {
-    playerId: practiceId,
-    controllerParticipantId: g.room.participants[0].id,
-  };
+  force.rules(g.match, {
+    practice: {
+      playerId: practiceId,
+      controllerParticipantId: g.room.participants[0].id,
+    },
+  });
   g.match.players[1].participantId = randomUUID();
   const padeem = g.seed("Padeem, Consul of Innovation", "battlefield", 1);
   const dust = g.seed("All Is Dust", "hand");
-  g.match.rules!.mana[g.match.players[0].id].C = 7;
+  force.mana(g.match, g.match.players[0].id, { C: 7 });
   expect(g.command(0, { type: "cast-spell", objectId: dust.id }).kind).toBe(
     "accepted",
   );
@@ -5341,10 +5143,10 @@ test("commander tax and artifact reducers compose before the locked Command Zone
   const g = await triggerGame();
   const graaz = g.seed("Graaz, Unstoppable Juggernaut", "hand");
   const instance = graaz.cardInstanceIds[0];
-  g.match.instances[instance].commander = true;
+  force.commander(g.match, instance);
   const commandZone = g.match.zones.find((z) => z.kind === "command")!;
   const commander = moveObject(g.match, graaz.id, commandZone);
-  g.match.rules!.commanderCasts = { [instance]: 1 };
+  force.rules(g.match, { commanderCasts: { [instance]: 1 } });
   g.seed("Foundry Inspector", "battlefield");
   g.seed("Etherium Sculptor", "battlefield");
   expect(
@@ -5358,8 +5160,8 @@ test("ward outlives its removed source and counters the captured responsible abi
   const kappa = g.seed("Kappa Cannoneer", "battlefield", 1);
   const bomb = g.seed("Aether Spellbomb", "battlefield");
   const ownBomb = g.seed("Aether Spellbomb", "battlefield", 1);
-  g.match.rules!.mana[g.match.players[0].id].U = 1;
-  g.match.rules!.mana[g.match.players[1].id].U = 1;
+  force.mana(g.match, g.match.players[0].id, { U: 1 });
+  force.mana(g.match, g.match.players[1].id, { U: 1 });
   g.command(0, {
     type: "activate-ability",
     objectId: bomb.id,
@@ -5408,7 +5210,7 @@ test("multiple ward triggers use their controller's ordering and independently p
     id: "second-ward",
   });
   const bomb = g.seed("Aether Spellbomb", "battlefield");
-  g.match.rules!.mana[g.match.players[0].id].U = 1;
+  force.mana(g.match, g.match.players[0].id, { U: 1 });
   g.command(0, {
     type: "activate-ability",
     objectId: bomb.id,
@@ -5441,11 +5243,11 @@ test("Favor goes to its owner's Graveyard when its enchanted creature leaves whi
   const g = await triggerGame();
   const creature = g.seed("Silver Myr", "battlefield", 1);
   const favor = g.seed("Fall from Favor", "battlefield");
-  favor.attachmentTo = creature.id;
+  force.attach(favor, creature);
   const p = g.match.players[0].id;
-  g.match.rules!.monarchId = p;
+  force.rules(g.match, { monarchId: p });
   const bomb = g.seed("Aether Spellbomb", "battlefield");
-  g.match.rules!.mana[p].U = 1;
+  force.mana(g.match, p, { U: 1 });
   g.command(0, {
     type: "activate-ability",
     objectId: bomb.id,
@@ -5493,9 +5295,20 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
     room.participants[0].id,
   );
   const player = match.players[0];
-  match.rules!.setup.keptPlayerIds = match.players.map((seat) => seat.id);
-  match.priority = { playerId: player.id, passedPlayerIds: [] };
-  match.rules!.commanders[player.id].colorIdentity = ["U", "R"];
+  force.rules(match, {
+    setup: {
+      ...match.rules!.setup,
+      keptPlayerIds: match.players.map((seat) => seat.id),
+    },
+    commanders: {
+      ...match.rules!.commanders,
+      [player.id]: {
+        ...match.rules!.commanders[player.id],
+        colorIdentity: ["U", "R"],
+      },
+    },
+  });
+  force.priority(match, player.id);
   const battlefield = match.zones.find((zone) => zone.kind === "battlefield")!;
   const objects = new Map<string, string>();
   for (const name of [
@@ -5505,23 +5318,7 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
   ]) {
     const definition = implemented.find((card) => card.canonicalName === name)!;
     catalog.definitions[definition.id] = definition;
-    const instanceId = randomUUID();
-    match.instances[instanceId] = {
-      id: instanceId,
-      ownerId: player.id,
-      definitionId: definition.id,
-      printingId: definition.defaultPrintingId,
-    };
-    const object = gameObject(
-      "card",
-      battlefield.id,
-      player.id,
-      definition.components[0],
-    );
-    object.cardInstanceIds = [instanceId];
-    match.objects[object.id] = object;
-    battlefield.objectIds.push(object.id);
-    match.rules!.controlledSinceTurn[object.id] = 0;
+    const object = force.card(match, definition, "battlefield", player.id);
     objects.set(name, object.id);
   }
   const actions = new RulesEngine(match, catalog).actions(player.id);
@@ -5560,7 +5357,7 @@ for (const defenderKind of [
         : undefined;
     if (walker) {
       walker.characteristics.types = ["Planeswalker"];
-      walker.counters = [{ kind: "loyalty", quantity: "8" }];
+      force.counters(walker, [{ kind: "loyalty", quantity: "8" }]);
     }
     g.pass();
     g.pass();
@@ -5574,7 +5371,7 @@ for (const defenderKind of [
     if (defenderKind === "redirected-planeswalker") {
       const signpost = g.seed("Misleading Signpost", "hand", 1);
       expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
-      g.match.rules!.mana[g.match.players[1].id].U = 3;
+      force.mana(g.match, g.match.players[1].id, { U: 3 });
       expect(
         g.command(1, { type: "cast-spell", objectId: signpost.id }).kind,
       ).toBe("accepted");
@@ -5590,7 +5387,7 @@ for (const defenderKind of [
       expect(g.answer({ select: [walker!.id] }, 1).kind).toBe("accepted");
     }
     expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
-    g.match.rules!.mana[g.match.players[1].id].U = 1;
+    force.mana(g.match, g.match.players[1].id, { U: 1 });
     expect(
       g.command(1, {
         type: "activate-ability",
@@ -5647,7 +5444,7 @@ for (const legacySnapshot of [false, true])
     g.seed("Shimmer Myr", "battlefield", 1);
     const golem = g.seed("Meteor Golem", "hand", 1);
     expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
-    g.match.rules!.mana[g.match.players[1].id].U = 7;
+    force.mana(g.match, g.match.players[1].id, { U: 7 });
     expect(g.command(1, { type: "cast-spell", objectId: golem.id }).kind).toBe(
       "accepted",
     );
@@ -5667,7 +5464,9 @@ for (const legacySnapshot of [false, true])
     expect(g.view(0).rules).not.toHaveProperty("triggerPlacement");
     const recovered: MatchState = JSON.parse(JSON.stringify(g.match));
     if (legacySnapshot) {
-      recovered.rules!.waitingTriggers = recovered.rules!.triggerPlacement;
+      force.rules(recovered, {
+        waitingTriggers: recovered.rules!.triggerPlacement,
+      });
       delete recovered.rules!.triggerPlacement;
     }
     const command = (
@@ -5727,7 +5526,7 @@ for (const returnToCommand of [true, false])
     )!;
     const stone = g.seed("Mind Stone", "battlefield", 1);
     stone.status.tapped = true;
-    g.match.turn.stepIndex = 10;
+    force.step(g.match, "end");
     g.pass();
     expect(g.view().rules!.pending!.kind).toBe("cleanup");
     expect(g.answer({ discard: [discarded.id] }).kind).toBe("pending");
