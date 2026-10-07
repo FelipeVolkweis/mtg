@@ -321,25 +321,35 @@ export interface SelectionOption {
 export type JsonValue =
   string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
+/** A typed binding value (rules-engine-refactor.md §32). */
+export type RuntimeValue =
+  | { kind: "number"; value: number }
+  | { kind: "objects"; ids: string[] }
+  | { kind: "player"; id: string };
+
+/** One program the Rule VM runs: its instructions and program counter. */
+export interface ExecutionFrame {
+  instructions: Effect[];
+  /** The next instruction, or the waiting one while suspended. */
+  pc: number;
+  /** Bindings visible only inside this frame. */
+  locals?: Record<string, RuntimeValue>;
+}
+
 /**
- * A resolving spell or ability. The queue holds Core AST effects; each
- * completed instruction is removed before a choice is exposed, so a restored
- * Match resumes at the waiting instruction (rules-engine-refactor.md §34).
+ * A resolving spell or ability's Rule VM state (rules-engine-refactor.md §32).
+ * A suspended instruction keeps its frame's program counter, so a restored
+ * Match answers it without running anything again.
  */
-export interface ResolutionProgress {
-  sourceId: string;
-  playerId: string;
-  remaining: Effect[];
-  /** Number and flag bindings, and the chosen X. */
-  bindings: Record<string, number>;
-  /** Object-set bindings: Game Object ids. */
-  objects?: Record<string, string[]>;
-  /** Player bindings (`for-each-player` binds `player`). */
-  players?: Record<string, string>;
+export interface RuleExecution {
+  stackObjectId: string;
+  controllerId: string;
+  frames: ExecutionFrame[];
+  bindings: Record<string, RuntimeValue>;
+  /** The waiting instruction's handler state, while suspended. */
+  waiting?: { state: JsonValue };
   /** Library cards the waiting chooser looks at privately (shown in their view). */
   inspectedIds?: string[];
-  /** The instruction waiting for a player's answer, with its handler's state. */
-  waiting?: { effect: Effect; state: JsonValue };
 }
 export interface CombatAttacker {
   objectId: string;
@@ -399,7 +409,7 @@ export interface RulesState {
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
   pending?: PendingProcedure;
-  resolving?: ResolutionProgress;
+  resolving?: RuleExecution;
   mana: Record<string, ManaPool>;
   restrictedMana?: Record<string, RestrictedMana[]>;
   failedDrawPlayerIds?: string[];

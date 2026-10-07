@@ -301,3 +301,63 @@ test("created tokens become the binding a lifted attach reads", () => {
     { kind: "attach", object: "source", to: { binding: "created" } },
   ]);
 });
+
+// Snapshot version 4 runs resolutions in the Rule VM: a version 3 queue
+// becomes one frame with the waiting instruction at its program counter.
+test("a version 3 resolution becomes a Rule VM execution waiting at pc 0", () => {
+  const discard = { kind: "discard", count: 1 };
+  const draw = { kind: "draw", count: 1 };
+  const room = upgradeRoom({
+    snapshotVersion: 3,
+    match: {
+      rules: {
+        resolving: {
+          sourceId: "s",
+          playerId: "p",
+          remaining: [draw],
+          bindings: { X: 2 },
+          objects: { created: ["t"] },
+          players: { player: "q" },
+          inspectedIds: ["a"],
+          waiting: { effect: discard, state: { inspected: ["a"] } },
+        },
+      },
+    },
+  } as unknown as RoomState);
+  expect(room.snapshotVersion).toBe(4);
+  expect(room.match!.rules!.resolving).toEqual({
+    stackObjectId: "s",
+    controllerId: "p",
+    frames: [{ instructions: [discard, draw], pc: 0 }],
+    bindings: {
+      X: { kind: "number", value: 2 },
+      created: { kind: "objects", ids: ["t"] },
+      player: { kind: "player", id: "q" },
+    },
+    waiting: { state: { inspected: ["a"] } },
+    inspectedIds: ["a"],
+  });
+});
+
+test("a version 3 resolution with nothing waiting runs its queue from the start", () => {
+  const draw = { kind: "draw", count: 1 };
+  const room = upgradeRoom({
+    snapshotVersion: 3,
+    match: {
+      rules: {
+        resolving: {
+          sourceId: "s",
+          playerId: "p",
+          remaining: [draw],
+          bindings: {},
+        },
+      },
+    },
+  } as unknown as RoomState);
+  expect(room.match!.rules!.resolving).toEqual({
+    stackObjectId: "s",
+    controllerId: "p",
+    frames: [{ instructions: [draw], pc: 0 }],
+    bindings: {},
+  });
+});

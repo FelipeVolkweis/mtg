@@ -2,7 +2,7 @@ import type { RoomState } from "../../shared/model.js";
 import { liftAbility, liftResolution } from "./lift-v1-effects.js";
 
 /** The Room document shape this server writes (CM §5). */
-export const currentSnapshotVersion = 3;
+export const currentSnapshotVersion = 4;
 
 type Document = Record<string, unknown>;
 
@@ -71,6 +71,50 @@ function upgradeMatchToVersion3(match: Document) {
 }
 
 /**
+ * Version 4 runs resolutions in the Rule VM (roadmap issue 8): the version 3
+ * queue becomes one frame. Version 3 removed each instruction before running
+ * it and kept a waiting one aside, so the waiting instruction goes first, at
+ * the program counter, and the rest follow; nothing runs again. The untyped
+ * binding maps become typed bindings.
+ */
+function upgradeMatchToVersion4(match: Document) {
+  const rules = match.rules as Document | undefined;
+  const progress = rules?.resolving as Document | undefined;
+  if (!rules || !progress) return;
+  const waiting = progress.waiting as
+    { effect: unknown; state: unknown } | undefined;
+  const bindings: Record<string, unknown> = {};
+  for (const [name, value] of Object.entries(
+    (progress.bindings ?? {}) as Record<string, number>,
+  ))
+    bindings[name] = { kind: "number", value };
+  for (const [name, ids] of Object.entries(
+    (progress.objects ?? {}) as Record<string, string[]>,
+  ))
+    bindings[name] = { kind: "objects", ids };
+  for (const [name, id] of Object.entries(
+    (progress.players ?? {}) as Record<string, string>,
+  ))
+    bindings[name] = { kind: "player", id };
+  rules.resolving = {
+    stackObjectId: progress.sourceId,
+    controllerId: progress.playerId,
+    frames: [
+      {
+        instructions: [
+          ...(waiting ? [waiting.effect] : []),
+          ...((progress.remaining ?? []) as unknown[]),
+        ],
+        pc: 0,
+      },
+    ],
+    bindings,
+    ...(waiting ? { waiting: { state: waiting.state } } : {}),
+    ...(progress.inspectedIds ? { inspectedIds: progress.inspectedIds } : {}),
+  };
+}
+
+/**
  * Brings a stored Room document up to the current snapshot version. Pure: it
  * returns the upgraded document and never touches storage. Version 1 handling
  * can be deleted once every version 1 Room has expired (ROOM_EXPIRY_DAYS after
@@ -85,6 +129,7 @@ export function upgradeRoom(stored: RoomState): RoomState {
     );
   if (version < 2 && room.match) upgradeMatchToVersion2(room.match as Document);
   if (version < 3 && room.match) upgradeMatchToVersion3(room.match as Document);
+  if (version < 4 && room.match) upgradeMatchToVersion4(room.match as Document);
   room.snapshotVersion = currentSnapshotVersion;
   return stored;
 }

@@ -28,6 +28,7 @@ import type {
 } from "../rules/context.js";
 import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
+import { scopeBindings } from "../rules/vm/rule-vm.js";
 import { gameObject } from "./game-objects.js";
 import { manaCost, spendMana } from "./mana.js";
 import { Library } from "./zones.js";
@@ -36,7 +37,7 @@ import { Triggers } from "./triggers.js";
 import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
-import { Resolution } from "./resolution.js";
+import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
 
 export const emptyMana = (): ManaPool => ({
   W: 0,
@@ -465,7 +466,7 @@ export class RulesEngine implements RulesMutator {
           filter.manaValue,
           playerId,
           sourceId,
-          this.rules.resolving?.bindings,
+          this.resolvingNumbers(),
         )
     )
       return false;
@@ -488,6 +489,11 @@ export class RulesEngine implements RulesMutator {
       playerId,
       sourceId,
     );
+  }
+  /** The resolving program's number bindings (a filter's mana value reads X). */
+  private resolvingNumbers() {
+    const execution = this.rules.resolving;
+    return execution ? scopeBindings(execution).bindings : undefined;
   }
   effective(object: GameObject) {
     return new CharacteristicsCalculator(this.match, this.catalog).effective(
@@ -800,7 +806,7 @@ export class RulesEngine implements RulesMutator {
       return;
     }
     if (pending.kind === "resolve") {
-      new Resolution(this).answer(action);
+      new StackResolutionRuntime(this).answer(action);
       return;
     }
     if (pending.stage === "variable") {
@@ -1246,54 +1252,7 @@ export class RulesEngine implements RulesMutator {
       });
   }
   resolve() {
-    const stack = this.zone("stack"),
-      object = this.object(stack.objectIds.at(-1)!);
-    const resolution = object.resolution;
-    const valid =
-      (!resolution?.ability.intervening ||
-        this.conditionSatisfied(
-          resolution.ability.intervening,
-          object.controllerId,
-          object.sourceObjectId ?? object.id,
-        )) &&
-      (!resolution?.ability.target ||
-        resolution.targetIds.some(
-          (id) =>
-            this.match.objects[id] &&
-            this.targetEligible(
-              this.match.objects[id],
-              resolution.ability.target!,
-              object.controllerId,
-              resolution.ability.trigger?.event === "dies"
-                ? resolution.event?.affectedId
-                : (object.sourceObjectId ?? object.id),
-            ),
-        ));
-    if (valid && resolution) {
-      delete this.match.priority;
-      new Resolution(this).start(object);
-      return;
-    }
-    this.finishResolution(object, valid);
-    this.priority();
-  }
-  finishResolution(object: GameObject, valid: boolean) {
-    if (
-      object.kind === "card" &&
-      valid &&
-      !object.characteristics.types?.some(
-        (type) => type === "Instant" || type === "Sorcery",
-      )
-    ) {
-      const targets = object.resolution?.targetIds ?? [];
-      const fresh = this.propose({
-        kind: "zone-change",
-        objectId: object.id,
-        to: this.zone("battlefield"),
-      }).object!;
-      if (this.definition(fresh)?.abilities.some((a) => a.rules?.aura))
-        fresh.attachmentTo = targets[0];
-    } else this.toGraveyard(object);
+    new StackResolutionRuntime(this).resolve();
   }
   /** Draws one card at a time (CR 121.2); stops at an empty Library. */
   draw(playerId: string, count: number) {
