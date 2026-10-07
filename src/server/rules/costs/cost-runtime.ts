@@ -97,6 +97,17 @@ export function baseCost(
   return manaCost(symbols(proposal).filter((symbol) => symbol !== "{X}"));
 }
 
+/** The printed cost with each {X} at its chosen value, before adjustments. */
+export function chosenCost(
+  proposal: Pick<CostProposal, "use" | "source" | "ability" | "variables">,
+): ManaCost {
+  const cost = baseCost(proposal);
+  const x = proposal.variables?.X ?? 0;
+  cost.generic +=
+    symbols(proposal).filter((symbol) => symbol === "{X}").length * x;
+  return cost;
+}
+
 /**
  * The total cost (CR 601.2f): the printed cost with X, then increases and
  * reductions; generic mana can't go below zero.
@@ -105,10 +116,7 @@ export function determineCost(
   engine: RulesEngine,
   proposal: CostProposal,
 ): ManaCost {
-  const cost = baseCost(proposal);
-  const x = proposal.variables?.X ?? 0;
-  cost.generic +=
-    symbols(proposal).filter((symbol) => symbol === "{X}").length * x;
+  const cost = chosenCost(proposal);
   for (const adjust of adjustments) cost.generic += adjust(engine, proposal);
   cost.generic = Math.max(0, cost.generic);
   return cost;

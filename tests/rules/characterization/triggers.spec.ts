@@ -7,9 +7,9 @@
 // | artifact cast triggers keep their chosen Stack order across reconnects and tokens have no Card Instance | Preserve |
 // | Wellspring sacrificed during Sai payment triggers above the paid ability and both draw independently | Preserve |
 // | simultaneous triggers use active-player then nonactive-player order and state-based deaths retain both sources | Preserve |
-// | triggers caused by mana payment wait until casting completes or is cancelled | Change | cancels with `cancel-procedure`; recheck in issue 10 against RE §16 (abort only before cost lock)
+// | triggers caused by mana payment wait until casting completes; a reversed cast discards them with the mana ability | Change | issue 10: the spell is on the Stack while it is paid for (TP §11); after cost lock the way out is `reverse-proposal`, which rolls back the mana abilities too (RE §16)
 // | Tome's fourth page triggers exile above its independent scry, with private resumable inspection | Preserve |
-// | Tome cannot gain life when its exile fails and does not duplicate a pending state trigger | Preserve |
+// | Tome cannot gain life when its exile fails and does not duplicate a pending state trigger | Change | issue 10: an activated ability is on the Stack while its target is chosen (CR 602.2a)
 // | draw ordinals, live Hand size and optional effect payment resume without duplicating draws | Preserve |
 // | Mind's Eye accepts mana sources during its private effect payment and can decline without spending | Move | asserts internal procedure stage names (TP §7)
 // | Scrawling upkeep draws for each player, Fabricator resets ordinals, and Vessel removes cleanup's discard | Preserve |
@@ -234,8 +234,8 @@ test("simultaneous triggers use active-player then nonactive-player order and st
   ).toBe(before + 1);
 });
 
-test("triggers caused by mana payment wait until casting completes or is cancelled", async () => {
-  for (const cancel of [true, false]) {
+test("triggers caused by mana payment wait until casting completes; a reversed cast discards them with the mana ability", async () => {
+  for (const reverse of [true, false]) {
     const { match, command, seed, room, catalog } = await rulesGame();
     const well = seed("Ichor Wellspring", "battlefield"),
       spell = seed("Hedron Archive", "hand");
@@ -262,21 +262,32 @@ test("triggers caused by mana payment wait until casting completes or is cancell
         abilityId: "sacrifice-mana",
       }).kind,
     ).toBe("pending");
-    expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
+    // Only the spell being cast is on the Stack; the trigger waits.
+    expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
     expect(
       command(
         0,
-        cancel
-          ? { type: "cancel-procedure", procedureId: pendingId }
+        reverse
+          ? { type: "reverse-proposal", procedureId: pendingId }
           : { type: "rules-input", procedureId: pendingId, confirm: true },
       ).kind,
     ).toBe("accepted");
     const stack = view().zones.find((z) => z.kind === "stack")!;
-    expect(stack.count).toBe(cancel ? 1 : 2);
-    expect(view().objects[stack.objectIds!.at(-1)!].characteristics.name).toBe(
-      "Ichor Wellspring: graveyard",
-    );
-    expect(view().rules!.mana[match.players[0].id].C).toBe(cancel ? 4 : 0);
+    if (reverse) {
+      // The mana ability is reversed with the cast (RE §16).
+      expect(stack.count).toBe(0);
+      expect(match.objects[well.id].zoneId).toBe(
+        match.zones.find((z) => z.kind === "battlefield")!.id,
+      );
+      expect(match.objects[spell.id]).toBeDefined();
+      expect(view().rules!.mana[match.players[0].id].C).toBe(0);
+    } else {
+      expect(stack.count).toBe(2);
+      expect(
+        view().objects[stack.objectIds!.at(-1)!].characteristics.name,
+      ).toBe("Ichor Wellspring: graveyard");
+      expect(view().rules!.mana[match.players[0].id].C).toBe(0);
+    }
   }
 });
 
@@ -352,7 +363,8 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
     objectId: bomb.id,
     abilityId: "bounce",
   });
-  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(2);
+  // The ability is on the Stack while its target is chosen (CR 602.2a).
+  expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(3);
   game.command(0, {
     type: "rules-input",
     procedureId: view().rules!.pending!.id,

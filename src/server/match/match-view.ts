@@ -124,12 +124,18 @@ export function matchView(
             pending && pending.playerId === choicePlayerId
               ? {
                   ...pending,
+                  // The rollback snapshot is server-only (it holds hidden Zones).
+                  proposal: pending.proposal && {
+                    ...pending.proposal,
+                    base: undefined as never,
+                  },
                   legalTargetIds:
                     targetFilter(pending.ability) && engine
                       ? engine.legalTargets(
                           choicePlayerId!,
                           targetFilter(pending.ability)!,
                           engine.targetSource(pending),
+                          pending.proposal?.stackObjectId,
                         )
                       : [],
                   selectionOptions: engine

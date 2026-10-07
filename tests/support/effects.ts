@@ -49,7 +49,12 @@ export async function effectGame() {
     );
     if (options.source) ability.sourceObjectId = options.source.id;
     if (options.x !== undefined)
-      ability.variables = [{ name: "X", value: String(options.x) }];
+      ability.proposal = {
+        variables: { X: options.x },
+        modes: [],
+        optionalCosts: [],
+        manaSpent: [],
+      };
     ability.resolution = {
       ability: {
         id: "test",

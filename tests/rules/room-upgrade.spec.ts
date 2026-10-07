@@ -61,7 +61,23 @@ const removedObjectFields = [
 
 for (const name of fixtures)
   test(`version 1 ${name} room upgrades to the current shape`, async () => {
-    const { original, room, match } = await load(name);
+    const { original, room, match: upgraded } = await load(name);
+    // A cast in progress becomes a Stack proposal (version 6, tested
+    // below); its rollback snapshot is the upgraded Match before that move.
+    const proposal = upgraded.rules.pending?.proposal;
+    const match = proposal
+      ? {
+          ...proposal.base,
+          rules: {
+            ...proposal.base.rules,
+            pending: {
+              ...upgraded.rules.pending!,
+              sourceId: original.match.rules.pending.sourceId,
+              proposal: undefined,
+            },
+          },
+        }
+      : upgraded;
     expect(original.snapshotVersion).toBeUndefined();
     expect(room.snapshotVersion).toBe(currentSnapshotVersion);
     for (const field of removedMatchFields)
@@ -88,7 +104,11 @@ for (const name of fixtures)
     } = original.match.rules;
     expect(rules).toEqual(storedRules);
     expect(!!resolving).toBe(!!stored);
-    const { ability: _ability, ...procedure } = pending ?? {};
+    const {
+      ability: _ability,
+      proposal: _proposal,
+      ...procedure
+    } = pending ?? {};
     const { ability: _stored, ...storedProcedure } = storedPending ?? {};
     expect(procedure).toEqual(storedProcedure);
     if (pending?.ability) expect(pending.ability).toHaveProperty("kind");
@@ -108,6 +128,26 @@ test("version 1 tokens keep their creator as owner and cards take their Card Ins
   const card = Object.values(match.objects).find((o) => o.kind === "card")!;
   expect(original.match.objects[card.id].ownerId).toBeUndefined();
   expect(card.ownerId).toBe(match.instances[card.cardInstanceIds[0]].ownerId);
+});
+
+test("an upgraded mid-casting room is a locked Stack proposal that rolls back to the stored Match", async () => {
+  const { original, match, command } = await load("mid-casting");
+  const pending = match.rules.pending!;
+  const card = original.match.objects[original.match.rules.pending.sourceId];
+  const stack = match.zones.find((z) => z.kind === "stack")!;
+  expect(stack.objectIds).toEqual([pending.proposal!.stackObjectId]);
+  expect(pending.sourceId).toBe(pending.proposal!.stackObjectId);
+  expect(pending.proposal!.locked).toBe(true);
+  expect(match.objects[stack.objectIds[0]].proposal).toMatchObject({
+    sourceZone: "hand",
+  });
+  expect(match.objects[card.id]).toBeUndefined();
+  expect(
+    command(0, { type: "reverse-proposal", procedureId: pending.id }).kind,
+  ).toBe("accepted");
+  expect(match.rules.pending).toBeUndefined();
+  expect(match.zones.find((z) => z.kind === "stack")!.objectIds).toEqual([]);
+  expect(match.objects[card.id].zoneId).toBe(card.zoneId);
 });
 
 test("an upgraded mid-casting room completes its payment", async () => {
@@ -666,4 +706,60 @@ test("a version 4 room offering a Graveyard commander return answers it as a sta
   ).toBeGreaterThan(0);
   expect(match.priority).toBeDefined();
   expect(match.rules).not.toHaveProperty("checkpoint");
+});
+
+test("a version 5 activation in progress becomes a Stack proposal and completes its payment", async () => {
+  const g = await triggerGame();
+  const stone = g.seed("Mind Stone", "battlefield");
+  const playerId = g.match.players[0].id;
+  const stored = JSON.parse(JSON.stringify(g.match)) as Record<string, any>;
+  stored.mode = "rules";
+  for (const object of Object.values(stored.objects) as Record<string, any>[]) {
+    delete object.proposal;
+    object.variables = [];
+    object.casting = null;
+  }
+  const draw = g.catalog.definitions[
+    g.match.instances[stone.cardInstanceIds[0]].definitionId
+  ].abilities.find((a) => a.id === "draw")!;
+  stored.rules.pending = {
+    id: "8d7e6f5a-4b3c-4d2e-9f1a-0b1c2d3e4f5a",
+    playerId,
+    kind: "activate",
+    stage: "payment",
+    sourceId: stone.id,
+    abilityId: "draw",
+    ability: draw,
+    targetIds: [],
+    selections: {},
+    totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 1 },
+  };
+  const room = upgradeRoom({
+    snapshotVersion: 5,
+    match: stored,
+  } as unknown as RoomState);
+  const match = room.match!;
+  const pending = match.rules.pending!;
+  const stack = match.zones.find((z) => z.kind === "stack")!.objectIds;
+  expect(stack).toEqual([pending.proposal!.stackObjectId]);
+  expect(match.objects[stack[0]]).toMatchObject({
+    kind: "ability",
+    sourceObjectId: stone.id,
+    sourceAbilityId: "draw",
+  });
+  expect(pending.proposal!.locked).toBe(true);
+  expect(
+    pending.proposal!.base.zones.find((z) => z.kind === "stack")!.objectIds,
+  ).toEqual([]);
+  force.mana(match, playerId, { C: 1 });
+  expect(
+    g.service.execute(
+      match,
+      g.room.participants[0],
+      { type: "rules-input", procedureId: pending.id, confirm: true },
+      g.catalog,
+    ).kind,
+  ).toBe("accepted");
+  expect(match.objects[stack[0]].resolution?.ability.id).toBe("draw");
+  expect(match.objects[stone.id]).toBeUndefined();
 });

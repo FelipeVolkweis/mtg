@@ -76,7 +76,7 @@ export function cardPiles(
               counters: [...object.counters].sort((a, b) =>
                 a.kind.localeCompare(b.kind),
               ),
-              variables: object.variables,
+              variables: object.proposal?.variables,
               face: object.currentFace,
               links: object.links,
               damage: match.rules.markedDamage?.[object.id] ?? 0,

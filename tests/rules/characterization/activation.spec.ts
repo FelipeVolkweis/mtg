@@ -188,7 +188,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
   )!;
   expect(fresh.id).not.toBe(returned.id);
   expect(fresh.cardInstanceIds).toEqual(spring.cardInstanceIds);
-  expect(fresh.casting).toBeNull();
+  expect(fresh.proposal).toBeNull();
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });

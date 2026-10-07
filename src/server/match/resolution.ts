@@ -34,12 +34,7 @@ export class Resolution {
       object.id,
       object.controllerId,
       instructions,
-      Object.fromEntries(
-        object.variables.map((variable) => [
-          variable.name,
-          Number(variable.value),
-        ]),
-      ),
+      { ...object.proposal?.variables },
     );
     return this.vm().run();
   }

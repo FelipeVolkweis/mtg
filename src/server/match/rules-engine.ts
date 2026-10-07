@@ -57,6 +57,7 @@ import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
+import { StackProposalProcedure } from "../rules/proposals/stack-proposal.js";
 import {
   costOptions,
   determineCost,
@@ -82,12 +83,13 @@ export const emptyMana = (): ManaPool => ({
 });
 
 export class RulesEngine implements RulesMutator {
-  readonly rules;
   constructor(
     readonly match: MatchState,
     readonly catalog: Catalog,
-  ) {
-    this.rules = match.rules;
+  ) {}
+  /** The rules state; a rolled-back proposal replaces it, so it's read live. */
+  get rules() {
+    return this.match.rules;
   }
   /** The read-only rules context (rules-engine-refactor.md §6). */
   get query(): RulesQuery {
@@ -137,6 +139,18 @@ export class RulesEngine implements RulesMutator {
       else if (
         action.type === "cancel-procedure" &&
         action.procedureId === pending.id &&
+        pending.proposal
+      )
+        new StackProposalProcedure(this).cancel();
+      else if (
+        action.type === "reverse-proposal" &&
+        action.procedureId === pending.id &&
+        pending.proposal
+      )
+        new StackProposalProcedure(this).reverse();
+      else if (
+        action.type === "cancel-procedure" &&
+        action.procedureId === pending.id &&
         pending.kind !== "commander-return" &&
         pending.kind !== "cleanup" &&
         pending.kind !== "resolve" &&
@@ -160,7 +174,7 @@ export class RulesEngine implements RulesMutator {
       else if (action.type === "play-land")
         this.playLand(player.id, action.objectId);
       else if (action.type === "cast-spell")
-        this.cast(player.id, action.objectId);
+        new StackProposalProcedure(this).cast(player.id, action.objectId);
       else if (action.type === "activate-ability")
         this.activate(player.id, action);
       else throw new Error("Use a legal rules action.");
@@ -346,14 +360,15 @@ export class RulesEngine implements RulesMutator {
   }
   /** What the Cost Runtime determines and pays for a cast or activation. */
   costProposal(pending: PendingProcedure): CostProposal {
-    const source = this.object(pending.sourceId!);
+    const record =
+      this.match.objects[pending.proposal?.stackObjectId ?? ""]?.proposal;
     return {
       use: pending.kind === "cast" ? "cast" : "activate",
       playerId: pending.playerId,
-      source,
+      source: this.object(pending.sourceId!),
       ability: pending.ability!,
-      variables: pending.variables,
-      sourceZone: this.match.zones.find((z) => z.id === source.zoneId)?.kind,
+      variables: record?.variables,
+      sourceZone: record?.sourceZone,
     };
   }
   object(id: string) {
@@ -538,10 +553,18 @@ export class RulesEngine implements RulesMutator {
       ? object!.resolution!.event?.affectedId
       : (object?.sourceObjectId ?? pending.sourceId);
   }
-  legalTargets(playerId: string, filter: Predicate, sourceId?: string) {
+  /** Objects a filter can target; `selfId` (the targeting spell or ability) can't target itself. */
+  legalTargets(
+    playerId: string,
+    filter: Predicate,
+    sourceId?: string,
+    selfId?: string,
+  ) {
     return Object.values(this.match.objects)
-      .filter((object) =>
-        this.targetEligible(object, filter, playerId, sourceId),
+      .filter(
+        (object) =>
+          object.id !== selfId &&
+          this.targetEligible(object, filter, playerId, sourceId),
       )
       .map((object) => object.id);
   }
@@ -569,60 +592,6 @@ export class RulesEngine implements RulesMutator {
           });
     }
     return abilities;
-  }
-  cast(playerId: string, id: string) {
-    const source = this.object(id);
-    if (
-      (source.zoneId !== this.zone("hand", playerId).id &&
-        !(
-          source.zoneId === this.zone("command").id &&
-          source.controllerId === playerId &&
-          new CommanderRules(this).instance(source)
-        )) ||
-      source.characteristics.types?.includes("Land")
-    )
-      throw new Error("Choose a spell from your Hand.");
-    if (!this.canCastTiming(source, playerId))
-      throw new Error(
-        "This spell requires your main phase and an empty Stack.",
-      );
-    const spellAbilities =
-      this.definition(source)?.abilities.filter(
-        (ability) => ability.kind === "spell",
-      ) ?? [];
-    if (spellAbilities.length > 1)
-      throw new Error("This spell composition is not yet supported.");
-    // A permanent spell has no spell ability; an Aura spell targets what it
-    // can enchant (CR 303.4a).
-    const aura = enchantFilter(this.definition(source)?.abilities ?? []);
-    const ability: Ability = spellAbilities[0] ?? {
-      id: "cast",
-      kind: "spell",
-      ...(aura ? { targets: [{ id: "target-0", filter: aura }] } : {}),
-    };
-    const target = targetFilter(ability);
-    const chooseX = choosesX(ability);
-    const symbols: string[] =
-      source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
-    if (!source.characteristics.manaCost && !symbols.length)
-      throw new Error("A spell without a mana cost cannot be cast normally.");
-    this.rules.pending = {
-      id: randomUUID(),
-      playerId,
-      kind: "cast",
-      stage: chooseX ? "variable" : target ? "targets" : "payment",
-      sourceId: id,
-      ability: structuredClone(ability),
-      targetIds: [],
-      selections: {},
-      totalCost: manaCost(symbols.filter((symbol) => symbol !== "{X}")),
-    };
-    if (target && !this.legalTargets(playerId, target).length)
-      throw new Error("No legal targets are available.");
-    if (symbols.includes("{X}") && !chooseX)
-      throw new Error("Variable mana costs require an authored chosen value.");
-    if (!chooseX && !target) this.lockCost(this.rules.pending);
-    if (!target && !chooseX) this.tryComplete(playerId);
   }
   canActivateFromZone(source: GameObject, playerId: string, ability: Ability) {
     const kind = activationZone(ability);
@@ -664,24 +633,33 @@ export class RulesEngine implements RulesMutator {
       throw new Error("No legal targets are available.");
     if (duringPayment && !isManaAbility(ability))
       throw new Error("Only mana abilities may be used in the payment window.");
-    const chooseX = choosesX(ability);
-    const costs = costsOf(ability);
-    const procedure: PendingProcedure = {
-      id: randomUUID(),
-      playerId,
-      kind: "activate",
-      stage: chooseX ? "variable" : target ? "targets" : "payment",
-      sourceId: source.id,
-      abilityId: authored.id,
-      ability,
-      targetIds: [],
-      selections: {},
-      color: action.color,
-      totalCost: manaCost(manaSymbols(costs).filter((s) => s !== "{X}")),
-    };
-    if (!target && !chooseX) this.lockCost(procedure);
     const produce = production(ability);
-    if (produce) {
+    if (!produce) {
+      new StackProposalProcedure(this).activate(
+        playerId,
+        source,
+        ability,
+        action.color,
+      );
+      return;
+    }
+    {
+      // A mana ability doesn't use the Stack (CR 605.3).
+      const costs = costsOf(ability);
+      const procedure: PendingProcedure = {
+        id: randomUUID(),
+        playerId,
+        kind: "activate",
+        stage: "payment",
+        sourceId: source.id,
+        abilityId: authored.id,
+        ability,
+        targetIds: [],
+        selections: {},
+        color: action.color,
+        totalCost: { ...emptyMana(), generic: 0 },
+      };
+      this.lockCost(procedure);
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
         throw new Error("The mana ability's complete costs cannot be paid.");
@@ -706,9 +684,6 @@ export class RulesEngine implements RulesMutator {
           this.battlefieldSources(),
         );
       if (!duringPayment) this.checkpoint({ playerId });
-    } else {
-      this.rules.pending = procedure;
-      if (!target && !chooseX) this.tryComplete(playerId);
     }
   }
   input(
@@ -747,29 +722,8 @@ export class RulesEngine implements RulesMutator {
       new StackResolutionRuntime(this).answer(action);
       return;
     }
-    if (pending.stage === "variable") {
-      const value = action.variables?.X;
-      if (
-        value === undefined ||
-        !Number.isSafeInteger(value) ||
-        value < 0 ||
-        value > 1000 ||
-        Object.keys(action.variables ?? {}).some((key) => key !== "X")
-      )
-        throw new Error("Choose a nonnegative integer for X, at most 1000.");
-      pending.variables = { X: value };
-      const symbols =
-        pending.kind === "activate"
-          ? manaSymbols(costsOf(pending.ability))
-          : (this.object(pending.sourceId!).characteristics.manaCost?.match(
-              /\{[^{}]+\}/g,
-            ) ?? []);
-      pending.totalCost.generic +=
-        symbols.filter((symbol) => symbol === "{X}").length * value;
-      const target = targetFilter(pending.ability);
-      if (!target) this.lockCost(pending);
-      pending.stage = target ? "targets" : "payment";
-      pending.id = randomUUID();
+    if (pending.proposal) {
+      new StackProposalProcedure(this).input(action);
       return;
     }
     if (action.variables)
@@ -793,107 +747,9 @@ export class RulesEngine implements RulesMutator {
       this.cleanup();
       return;
     }
-    if (action.color) pending.color = action.color;
-    if (action.selections) pending.selections = action.selections;
-    if (pending.stage === "targets") {
-      const targets = action.targetIds ?? [];
-      if (
-        targets.length !== 1 ||
-        !this.legalTargets(
-          playerId,
-          targetFilter(pending.ability)!,
-          this.targetSource(pending),
-        ).includes(targets[0])
-      )
-        throw new Error("Choose one legal target.");
-      pending.targetIds = targets;
-      this.lockCost(pending);
-      pending.stage = "payment";
-    }
-    if (
-      action.confirm !== false &&
-      !this.tryComplete(playerId) &&
-      action.confirm === true
-    )
-      throw new Error("The complete costs cannot be paid yet.");
-  }
-  tryComplete(playerId: string) {
-    const pending = this.rules.pending!;
-    const beforePayment = this.object(pending.sourceId!);
-    const sourceSnapshot = {
-      characteristics: this.effective(beforePayment),
-      ownerId: this.owner(beforePayment),
-    };
-    if (!this.pay(pending)) return false;
-    const source = pending.sourceId!;
-    if (pending.kind === "cast") {
-      const object = this.object(source);
-      const sourceZoneId = object.zoneId;
-      if (sourceZoneId === this.zone("command").id) {
-        this.rules.commanderCasts ??= {};
-        const instance = new CommanderRules(this).instance(object)!;
-        this.rules.commanderCasts[instance] =
-          (this.rules.commanderCasts[instance] ?? 0) + 1;
-      }
-      const spell = this.propose({
-        kind: "zone-change",
-        objectId: source,
-        to: this.zone("stack"),
-        cause: "cast",
-      }).object!;
-      spell.resolution = {
-        ability: pending.ability!,
-        targetIds: pending.targetIds,
-      };
-      spell.variables = Object.entries(pending.variables ?? {}).map(
-        ([name, value]) => ({ name, value: String(value) }),
-      );
-      spell.casting = {
-        ...(pending.variables?.X !== undefined
-          ? { chosenX: String(pending.variables.X) }
-          : {}),
-        sourceZoneId,
-        modes: [],
-        components: [0],
-        additionalCosts: [],
-        manaSpent: this.lastManaSpent,
-      };
-      this.emit("cast", spell);
-    } else {
-      if (oncePerTurn(pending.ability)) {
-        this.rules.activationUsage ??= {};
-        this.rules.activationUsage[`${source}:${pending.abilityId}`] = 1;
-      }
-      const object = gameObject(
-        "ability",
-        this.zone("stack").id,
-        playerId,
-        playerId,
-        {
-          name: `${this.lastSourceName}: ${pending.abilityId}`,
-          colors: [],
-          typeLine: "Ability",
-          rulesText: "",
-        },
-      );
-      object.variables = Object.entries(pending.variables ?? {}).map(
-        ([name, value]) => ({ name, value: String(value) }),
-      );
-      object.sourceObjectId = source;
-      object.sourceAbilityId = pending.abilityId;
-      object.resolution = {
-        sourceSnapshot,
-        ability: pending.ability!,
-        targetIds: pending.targetIds,
-        color: pending.color,
-      };
-      this.propose({ kind: "create", object, zone: this.zone("stack") });
-    }
-    const stacked = this.object(this.zone("stack").objectIds.at(-1)!);
-    this.targeted(stacked);
-    delete this.rules.pending;
-    this.checkpoint({ playerId });
-    return true;
+    throw new Error(
+      "Complete the current procedure using its latest identifier.",
+    );
   }
   targeted(stack: GameObject) {
     for (const id of stack.resolution?.targetIds ?? []) {
@@ -917,14 +773,9 @@ export class RulesEngine implements RulesMutator {
   }
   /** Determines and locks the total cost (CR 601.2f–g). */
   lockCost(pending: PendingProcedure) {
-    const proposal = this.costProposal(pending);
-    // A spell's cost reductions see it as a spell on the Stack.
-    if (proposal.use === "cast")
-      proposal.source = { ...proposal.source, zoneId: this.zone("stack").id };
-    pending.totalCost = determineCost(this, proposal);
+    pending.totalCost = determineCost(this, this.costProposal(pending));
   }
   lastManaSpent: ManaType[] = [];
-  lastSourceName = "";
   /** Pays the locked total cost through the Cost Runtime; false until it can. */
   pay(pending: PendingProcedure) {
     const produce = production(pending.ability);
@@ -944,7 +795,6 @@ export class RulesEngine implements RulesMutator {
       selections: pending.selections,
     });
     if (!spent) return false;
-    this.lastSourceName = proposal.source.characteristics.name;
     this.lastManaSpent = spent;
     return true;
   }

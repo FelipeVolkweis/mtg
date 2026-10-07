@@ -1,4 +1,13 @@
-import type { RoomState } from "../../shared/model.js";
+import type {
+  GameObject,
+  MatchState,
+  ProposalRecord,
+  RoomState,
+  ZoneKind,
+  ZoneState,
+} from "../../shared/model.js";
+import type { ManaType, PendingProcedure } from "../../shared/rules.js";
+import { gameObject, moveObject } from "../match/game-objects.js";
 import {
   liftAbility,
   liftContinuousEffect,
@@ -205,10 +214,110 @@ function upgradeMatchToVersion5(match: Document) {
     pending.stateBasedRule = "commander-return";
 }
 
+/** Version 5 chosen values and casting record become a Proposal Record. */
+function proposalRecord(object: Document, zones: ZoneState[]) {
+  const casting = object.casting as Document | null | undefined;
+  const variables = (object.variables ?? []) as {
+    name: string;
+    value: string;
+  }[];
+  delete object.casting;
+  delete object.variables;
+  if (!casting && !variables.length) return null;
+  const sourceZone = zones.find((z) => z.id === casting?.sourceZoneId)?.kind;
+  const record: ProposalRecord = {
+    ...(sourceZone ? { sourceZone } : {}),
+    variables: Object.fromEntries(
+      variables.map((v) => [v.name, Number(v.value)]),
+    ),
+    modes: (casting?.modes as string[] | undefined) ?? [],
+    optionalCosts: [],
+    manaSpent: (casting?.manaSpent as ManaType[] | undefined) ?? [],
+  };
+  return record;
+}
+
 /**
- * Version 6 (roadmap issue 11): legacy manual Matches are retired. A stored
- * manual Match ends and its Room returns to the lobby, keeping each
- * participant's Decklists; an automated Match drops its mode marker.
+ * A version 5 cast or activation in progress kept the card where it was and
+ * nothing on the Stack. It becomes a Stack proposal (roadmap issue 10): the
+ * stored Match, without the pending procedure, is its rollback snapshot, and
+ * the spell moves to the Stack (or the ability is created there) as it would
+ * have at the start of the proposal.
+ */
+function upgradeProposal(match: MatchState) {
+  const rules = match.rules;
+  const replay = rules.commanderReplay;
+  const proposing = (p?: PendingProcedure) =>
+    (p?.kind === "cast" || p?.kind === "activate") && !p.proposal;
+  // A commander replacement prompt interrupted a command made during the
+  // proposal. Restore the Match from before that command; its player
+  // repeats it.
+  if (replay && proposing(replay.previousPending)) {
+    rules.pending = replay.previousPending;
+    if (replay.previousPriority) match.priority = replay.previousPriority;
+    else delete match.priority;
+    delete rules.commanderReplay;
+  }
+  const pending = rules.pending;
+  if (!pending || !proposing(pending)) return;
+  const legacy = pending as PendingProcedure & {
+    variables?: Record<string, number>;
+  };
+  const variables = { ...legacy.variables };
+  delete legacy.variables;
+  const stack = match.zones?.find((z) => z.kind === "stack");
+  const source = match.objects?.[pending.sourceId!];
+  if (!stack || !source) return;
+  const base = structuredClone(match);
+  delete base.rules.pending;
+  const record = (sourceZone?: ZoneKind): ProposalRecord => ({
+    ...(sourceZone ? { sourceZone } : {}),
+    variables,
+    modes: [],
+    optionalCosts: [],
+    manaSpent: [],
+  });
+  let stacked: GameObject;
+  if (pending.kind === "cast") {
+    const from = match.zones.find((z) => z.id === source.zoneId)!.kind;
+    stacked = moveObject(match, source.id, stack);
+    stacked.proposal = record(from);
+    rules.revealedHandIds = rules.revealedHandIds?.filter(
+      (id) => id !== source.id,
+    );
+    pending.sourceId = stacked.id;
+  } else {
+    stacked = gameObject(
+      "ability",
+      stack.id,
+      pending.playerId,
+      pending.playerId,
+      {
+        name: `${source.characteristics.name}: ${pending.abilityId}`,
+        colors: [],
+        typeLine: "Ability",
+        rulesText: "",
+      },
+    );
+    stacked.sourceObjectId = source.id;
+    stacked.sourceAbilityId = pending.abilityId;
+    stacked.proposal = record();
+    match.objects[stacked.id] = stacked;
+    stack.objectIds.push(stacked.id);
+  }
+  pending.proposal = {
+    stackObjectId: stacked.id,
+    locked: pending.stage === "payment",
+    base,
+  };
+}
+
+/**
+ * Version 6 (roadmap issues 10 and 11). Legacy manual Matches are retired: a
+ * stored manual Match ends and its Room returns to the lobby, keeping each
+ * participant's Decklists. An automated Match drops its mode marker, its
+ * objects' chosen values and casting records become Proposal Records, and a
+ * cast or activation in progress becomes a Stack proposal.
  */
 function upgradeRoomToVersion6(room: Document) {
   const match = room.match as Document | undefined;
@@ -221,6 +330,12 @@ function upgradeRoomToVersion6(room: Document) {
     return;
   }
   delete match.mode;
+  const zones = (match.zones ?? []) as ZoneState[];
+  for (const object of Object.values(
+    (match.objects ?? {}) as Record<string, Document>,
+  ))
+    object.proposal = proposalRecord(object, zones);
+  upgradeProposal(match as unknown as MatchState);
 }
 
 /**

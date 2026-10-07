@@ -496,7 +496,7 @@ for (const name of ["Lonely Sandbar", "Remote Isle", "Nevinyrral's Disk"]) {
       (o) => o.characteristics.name === name,
     )!;
     expect(entered.status.tapped).toBe(true);
-    expect(entered.casting).toBeNull();
+    expect(entered.proposal).toBeNull();
   });
 }
 

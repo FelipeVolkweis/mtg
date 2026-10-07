@@ -113,23 +113,22 @@ export const statusSchema = z
     tapped: z.boolean(),
   })
   .strict();
-export const castingSchema = z
-  .object({
-    sourceZoneId: id,
-    chosenX: integer.optional(),
-    modes: z.array(text).max(30).default([]),
-    components: z.array(z.number().int().nonnegative()).max(20).default([]),
-    alternativeCost: text.optional(),
-    additionalCosts: z.array(text).max(30).default([]),
-    manaSpent: z
-      .array(z.enum(["W", "U", "B", "R", "G", "C"]))
-      .max(1000)
-      .default([]),
-  })
-  .strict();
-export interface ChosenVariable {
-  name: string;
-  value: string;
+/**
+ * What was chosen while a spell or ability was proposed (CR 601.2b–h,
+ * card-model-refactor.md §4.2). It stays with a permanent spell onto the
+ * Battlefield, because a permanent can ask how it was cast.
+ */
+export interface ProposalRecord {
+  /** Spells only: the Zone the card was cast from. */
+  sourceZone?: ZoneKind;
+  /** X and other chosen values. */
+  variables: Record<string, number>;
+  /** DSL version 2 mode ids. */
+  modes: string[];
+  /** Paid optional cost ids, such as "kicker". */
+  optionalCosts: string[];
+  alternativeCost?: string;
+  manaSpent: import("./rules.js").ManaType[];
 }
 export interface ObjectLink {
   label: string;
@@ -188,10 +187,9 @@ export interface GameObject {
   currentFace: number;
   status: z.infer<typeof statusSchema>;
   counters: Counter[];
-  variables: ChosenVariable[];
   attachmentTo: string | null;
   links: ObjectLink[];
-  casting: z.infer<typeof castingSchema> | null;
+  proposal: ProposalRecord | null;
   sourceObjectId?: string;
   sourceAbilityId?: string;
   resolution?: {
@@ -341,6 +339,9 @@ export const matchActionSchema = z.discriminatedUnion("type", [
     })
     .strict(),
   z.object({ type: z.literal("cancel-procedure"), procedureId: id }).strict(),
+  // Reverses a cast or activation whose locked total cost can't be paid
+  // (rules-engine-refactor.md §16).
+  z.object({ type: z.literal("reverse-proposal"), procedureId: id }).strict(),
   z
     .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })
     .strict(),
