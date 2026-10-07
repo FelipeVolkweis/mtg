@@ -58,7 +58,7 @@ Manual Matches are legacy: `match.service.ts:272` rejects them and requires repl
 | `status.flipped` | none | client |
 | `status.phasedOut` | none | 5 checks in engine and combat, client |
 | `GameObject.copiableValuesId`, `MatchState.copiableValues` | none (no copy effect exists; Duplicant uses linked characteristics) | view |
-| `GameObject.cannotBeCountered` | only a test (`tests/rules.spec.ts:632`) | counter resolution |
+| `GameObject.cannotBeCountered` | only a test, through `force.uncounterable` (`tests/rules/characterization/resolution.spec.ts`) | counter resolution |
 | object kinds `dungeon`, `plane`, `phenomenon`, `conspiracy`, `attraction`, `contraption` | none | — |
 | zone kinds `supplementary`, `special` | none | — |
 
@@ -150,7 +150,8 @@ Each field listed in §2.2 as having no writer is removed from `src/shared/model
 
 - `MatchState.mode`. `MatchState.rules` becomes required, and the `match.rules &&` guards go away.
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
-- `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`, `cannotBeCountered`.
+- `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
+- `GameObject.cannotBeCountered`, later: counter resolution reads it until DSL v2 provides a "can't be countered" grant, so it is removed together with the counter effect handler (roadmap issue 7).
 - `status.flipped` and `status.phasedOut`, leaving `status.tapped`. Keep `status` as an object so later statuses don't change the shape again.
 - `MatchState.diceRolls`, `openingHandActions`, `stickerSheets`, `copiableValues`, `layout`, and the `position` match action.
 - Object kinds other than `card`, `token` and `ability`. Zone kinds `supplementary` and `special`.
@@ -238,7 +239,7 @@ Added to the test plan (rules-test-plan.md, M1 Phase 2):
 - **Import ownership:** re-importing a set leaves `authored` byte-identical.
 - **Snapshot upgrade:** fixtures of version 1 rooms (mid-casting, mid-resolution, with tokens and stack abilities) upgrade to valid version 2 rooms, and the characterization scenarios continue from them.
 - **Owner:** every object created by setup, casting, token creation, triggers and zone changes has `ownerId` set. No fallback chain remains (lint-style grep test or code review).
-- `cannotBeCountered`: the test at `tests/rules.spec.ts:632` uses a `force` helper until DSL v2 provides a "can't be countered" grant, then a real card definition.
+- `cannotBeCountered`: its one test already uses `force.uncounterable` (issue #65). When the field is removed (roadmap issue 7), the test switches to a card definition with a DSL v2 "can't be countered" grant.
 
 ---
 
@@ -252,7 +253,7 @@ Every current field, and what happens to it.
 
 **`Characteristics`:** all kept except `typeLine` (derived).
 
-**`GameObject`:** `id`, `kind` (narrowed), `zoneId`, `cardInstanceIds`, `controllerId`, `characteristics`, `components`, `artwork`, `currentFace`, `status` (tapped only), `counters`, `attachmentTo`, `links`, `sourceObjectId`, `sourceAbilityId`, `resolution` kept · `ownerId` required · `variables` + `casting` become the proposal record · `designations`, `faceDown`, `protectorId`, `choices`, `copiableValuesId`, `stickerPlacements`, `meldParts`, `cannotBeCountered` removed.
+**`GameObject`:** `id`, `kind` (narrowed), `zoneId`, `cardInstanceIds`, `controllerId`, `characteristics`, `components`, `artwork`, `currentFace`, `status` (tapped only), `counters`, `attachmentTo`, `links`, `sourceObjectId`, `sourceAbilityId`, `resolution` kept · `ownerId` required · `variables` + `casting` become the proposal record · `designations`, `faceDown`, `protectorId`, `choices`, `copiableValuesId`, `stickerPlacements`, `meldParts` removed · `cannotBeCountered` removed with the counter effect handler (roadmap issue 7).
 
 **`MatchState`:** `id`, `revision`, `players`, `instances`, `objects`, `zones`, `turn`, `outcome`, `priority` kept · `rules` required · `mode`, `layout`, `openingHandActions`, `copiableValues`, `diceRolls`, `stickerSheets` removed.
 

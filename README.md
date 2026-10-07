@@ -57,11 +57,13 @@ A new Match replaces the active one only after every current human Match Player 
 ## Checks
 
 ```sh
-npm run typecheck
+npm run gates
 npx playwright install chromium
-npx playwright test tests/rules.spec.ts tests/rules-ui.spec.ts
+npx playwright test tests/rules-ui.spec.ts
 npm test
 ```
+
+`npm run gates` runs the typecheck and the in-memory rules suites (`tests/rules/**`), once normally and once saving and restoring the Match around every command. It needs no browser or database.
 
 Tests use the real browser, NestJS transport, importer CLI, and PostgreSQL. They create a temporary catalog root and dedicated databases ending in `_test`, seeded from a local provider fixture. They do not call live Scryfall, edit the reviewed catalog, or use the development Room database. Set `TEST_DATABASE_URL` to a dedicated test database on a role allowed to create the additional recovery and expiry test databases. Restart and expiry checks use isolated application processes. `npm test` builds production assets before starting the acceptance server.
 

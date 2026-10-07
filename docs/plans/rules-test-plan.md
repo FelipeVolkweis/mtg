@@ -567,33 +567,14 @@ catalog definitions
 
 This is useful but strongly couples tests to MatchState structure.
 
-Introduce a reusable Scenario Builder.
+**As built (issue #65).** The Scenario Builder is the shared fixture module `tests/support/rules-game.ts`, not a fluent `scenario()` API:
 
-Example:
+- `rulesGame()` starts a two-player Commander Match from the released catalog, with both opening hands kept and the active player holding Priority in the first main phase. It returns `{ service, catalog, room, match, command, seed }`.
+- `seed(name, zone, seat)` puts a named card into a Hand or onto the Battlefield (it calls `force.card`).
+- `triggerGame()` adds `view`, `pass`, `answer` and `handCount` helpers on top of `rulesGame()`.
+- `commanderFixture()`, `emptyRoom()` and `emptyCatalog` build Rooms and Catalogs for setup tests.
 
-```ts
-const game = await scenario()
-  .withPlayers("Alice", "Bob")
-  .atStep("precombat-main")
-  .withPriority("Alice")
-  .withPermanent(
-    "Alice",
-    "Sai, Master Thopterist",
-  )
-  .withPermanent(
-    "Alice",
-    "Mind Stone",
-  )
-  .withCardInHand(
-    "Alice",
-    "Thoughtcast",
-  )
-  .withMana(
-    "Alice",
-    { U: 1, C: 2 },
-  )
-  .build();
-```
+Every characterization test already used `rulesGame()`, so promoting it kept the test diff small. A fluent builder can be layered on top later if setup code grows again.
 
 The Scenario Builder SHOULD operate at semantic game-state level rather than exposing storage details.
 
@@ -603,21 +584,20 @@ The Scenario Builder SHOULD operate at semantic game-state level rather than exp
 
 Some rules tests need to construct states that would be tedious or impossible to reach through normal commands.
 
-Support explicit low-level helpers:
+**As built (issue #65):** `tests/support/force.ts` exports a `force` object of free functions that take the Match (or the object) as their first argument, so they work on any Match value, including restored copies:
 
-```ts
-game.force.stackSpell(...);
+| Helper | Sets |
+|---|---|
+| `force.mana(match, playerId, pool)` | merges amounts into a mana pool |
+| `force.step(match, step)` | the turn step, by name (`"cleanup"`, `"declare-attackers"`, …) |
+| `force.activePlayer`, `force.priority` | the active player and Priority |
+| `force.card(match, definition, zone, playerId)` | a new Card Instance and Game Object in a Zone |
+| `force.move`, `force.zoneContents`, `force.clearZone`, `force.addObject` | Zone membership, keeping object identity |
+| `force.counters`, `force.attach`, `force.controller`, `force.uncounterable` | object state |
+| `force.controlledSince`, `force.commander` | continuous control and commander designation |
+| `force.rules(match, patch)` | one-off rules-state fields (monarch, marked damage, temporary effects, combat, …) |
 
-game.force.markDamage(...);
-
-game.force.turnStep(...);
-
-game.force.temporaryEffect(...);
-
-game.force.triggerBatch(...);
-
-game.force.mana(...);
-```
+`tests/rules/scenario.spec.ts` tests each helper. The characterization suite contains no direct writes to `match.objects`, `match.zones`, `match.rules` or `turn.stepIndex`.
 
 Using `force` in the name communicates:
 
