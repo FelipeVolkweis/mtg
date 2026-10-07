@@ -80,22 +80,17 @@ The characterization suite protects against accidental regressions while interna
 
 `tests/rules.spec.ts` already runs in memory: it constructs `MatchService` directly and uses no database. It still runs under Playwright, though, and `playwright.config.ts` starts a `webServer` that builds the app and connects to Postgres before any test runs.
 
-Before adding subsystem tests, give the rules suites a runner without that web server:
-
-- either a separate Playwright project with no `webServer` and no `globalSetup`;
-- or vitest for `tests/rules/**` and Playwright only for browser and recovery tests.
-
-The choice is an implementation detail. The requirement is that rules tests run in seconds without Postgres, so that per-subsystem tests are cheap to write and run.
+The rules suites run with `npm run test:rules`: a separate Playwright config (`playwright.rules.config.ts`) with no `webServer` and no `globalSetup`. It keeps the existing `@playwright/test` API, so no test changes were needed. The rules suite runs in about 10 seconds without Postgres. It also picks up `tests/rules/**/*.spec.ts`, where the split suite and subsystem tests go.
 
 ## 3.2 Round-trip mode
 
-Add a test mode in which every `MatchService.execute()` call serializes the authoritative state, restores it and continues from the restored copy. Run the characterization suite in this mode in CI.
+`npm run test:rules:round-trip` sets `ROUND_TRIP=1`. `tests/support/round-trip.ts` then wraps `MatchService.execute()`: before and after every command it checks that the Match is JSON-safe (no `Map`, `Set`, `Date`, class instances, `BigInt`, functions, non-finite numbers or `undefined` array items) and replaces it with a JSON round trip of itself, as the Room store does. `tests/rules-round-trip.spec.ts` tests the check and proves the hook is active. Both modes are part of `npm run gates`.
 
 This covers most of the persistence matrix (§31) automatically: any pending procedure, resolution or trigger batch that holds non-serializable data, or behaves differently after a restore, fails an existing test. The explicit persistence tests in §31 remain for interruption points the suite doesn't reach.
 
 ## 3.3 Current coupling
 
-Measured in `tests/rules.spec.ts` (117 tests) at the time of writing:
+Measured in `tests/rules.spec.ts` (161 tests, counting parameterized cases) at the time of writing:
 
 | Coupling | Count | Impact |
 |---|---|---|

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
 import { MatchService } from "../src/server/match/match.service";
 import { matchView } from "../src/server/match/match-view";
+import "./support/round-trip";
 import type {
   Catalog,
   MatchState,

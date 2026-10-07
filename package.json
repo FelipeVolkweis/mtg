@@ -10,6 +10,9 @@
     "start": "node dist/server/main.js",
     "typecheck": "tsc --noEmit -p tsconfig.server.json && tsc --noEmit -p tsconfig.client.json && tsc --noEmit -p tsconfig.tests.json",
     "test": "playwright test",
+    "test:rules": "playwright test --config playwright.rules.config.ts",
+    "test:rules:round-trip": "ROUND_TRIP=1 playwright test --config playwright.rules.config.ts",
+    "gates": "npm run typecheck && npm run test:rules && npm run test:rules:round-trip",
     "catalog:import": "tsx --tsconfig tsconfig.server.json src/server/catalog/import-cli.ts",
     "format": "prettier --write src tests playwright.config.ts vite.config.ts tsconfig*.json package.json"
   },
