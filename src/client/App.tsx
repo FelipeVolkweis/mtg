@@ -5,11 +5,30 @@ import type {
   RoomCommand,
   User,
 } from "../shared/model";
+import { z } from "zod";
 import { request, signOut, useDecks } from "./api";
 import { SignIn } from "./SignIn";
 import { DeckCatalog } from "./DeckCatalog";
 import { Lobby } from "./Lobby";
 import { RulesTabletop } from "./RulesTabletop";
+
+// Only the envelope is checked; the payload is trusted to match its event.
+const serverEnvelope = z.object({
+  event: z.enum(["view", "rejected", "closed", "pong"]),
+  data: z.unknown(),
+});
+
+function parseServerMessage(raw: unknown): ServerMessage | undefined {
+  try {
+    if (typeof raw !== "string") throw new Error("non-text frame");
+    const parsed = serverEnvelope.safeParse(JSON.parse(raw));
+    if (parsed.success) return parsed.data as ServerMessage;
+    throw parsed.error;
+  } catch (error) {
+    console.warn("Ignoring malformed server message", error);
+    return undefined;
+  }
+}
 
 export function App() {
   const invite = location.pathname.match(/^\/room\/([a-f0-9]{48})$/)?.[1];
@@ -61,7 +80,10 @@ export function App() {
         );
       };
       ws.onmessage = (event) => {
-        const message: ServerMessage = JSON.parse(event.data);
+        // A superseded socket's late messages belong to an earlier Room.
+        if (ws !== socket.current) return;
+        const message = parseServerMessage(event.data);
+        if (!message) return;
         if (message.event === "view") {
           setView((current) =>
             !current ||
@@ -101,6 +123,7 @@ export function App() {
         }
       };
       ws.onclose = () => {
+        if (ws !== socket.current) return;
         clearInterval(heartbeat);
         setConnection("Reconnecting");
         pending.current = undefined;
@@ -113,7 +136,9 @@ export function App() {
       stopped = true;
       clearTimeout(reconnect);
       clearInterval(heartbeat);
-      socket.current?.close();
+      const ws = socket.current;
+      socket.current = null;
+      ws?.close();
     };
   }, [joined]);
   function send(command: RoomCommand) {

@@ -19,6 +19,8 @@ import { gameObject } from "./game-objects.js";
 import { CommanderRules, CommanderReplacement } from "./commander-rules.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
+import { budget, RulesLoopError } from "../rules/loop-budget.js";
+import { MandatoryLoop } from "../rules/mandatory-loop.js";
 
 export type ExecutionResult =
   | { kind: "accepted"; notice?: string }
@@ -260,13 +262,17 @@ export class MatchService implements GameplayExecutor {
       const notice = new RulesEngine(next, catalog).apply(actor, command);
       delete next.rules.commanderReplay;
       const engine = new RulesEngine(next, catalog);
-      while (
+      for (
+        let pass = 1;
         next.rules.practice &&
         !next.rules.pending &&
         next.outcome === "ongoing" &&
-        next.priority?.playerId === next.rules.practice.playerId
-      )
+        next.priority?.playerId === next.rules.practice.playerId;
+        pass++
+      ) {
+        budget("Practice auto-pass", pass, 1000);
         engine.pass(next.rules.practice.playerId);
+      }
       for (const key of Object.keys(match))
         if (!(key in next)) Reflect.deleteProperty(match, key);
       Object.assign(match, next);
@@ -292,6 +298,23 @@ export class MatchService implements GameplayExecutor {
         );
         match.revision++;
         return { kind: "pending", playerId: error.playerId };
+      }
+      if (error instanceof MandatoryLoop) {
+        // CR 104.4b: a mandatory loop that never ends draws the game.
+        console.warn(`Match ${match.id} drawn: ${error.message}`);
+        match.outcome = "draw";
+        delete match.priority;
+        delete match.rules.pending;
+        delete match.rules.commanderReplay;
+        match.revision++;
+        return {
+          kind: "accepted",
+          notice: "This action starts an endless loop. The game is a draw.",
+        };
+      }
+      if (error instanceof RulesLoopError) {
+        console.error(`Match ${match.id}: ${error.message}`);
+        return { kind: "rejected", message: "The rules engine could not finish this action." };
       }
       return {
         kind: "rejected",

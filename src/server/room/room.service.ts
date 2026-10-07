@@ -320,8 +320,16 @@ export class RoomService implements OnModuleInit {
     }
   }
   async view(invite: string, userId: string): Promise<RoomView> {
+    return (await this.viewer(invite))(userId);
+  }
+  /** Loads the Room once; the result projects each user's own view of it. */
+  async viewer(invite: string): Promise<(userId: string) => RoomView> {
     const room = await this.load(invite, this.database.pool, false);
-    return this.toView(room, this.authorize(room, userId), await readCatalog());
+    const catalog = await readCatalog();
+    return (userId) => {
+      const own = structuredClone(room);
+      return this.toView(own, this.authorize(own, userId), catalog);
+    };
   }
   toView(
     room: RoomState,

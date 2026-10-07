@@ -2,12 +2,19 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { Pool, PoolClient } from "pg";
 import type { RoomState } from "../../shared/model.js";
 
+function databaseUrl() {
+  if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
+  if (process.env.NODE_ENV === "production")
+    throw new Error("DATABASE_URL must be set in production.");
+  return "postgres://mtg:mtg-local@localhost:5432/mtg";
+}
+
 @Injectable()
 export class Database implements OnModuleInit, OnModuleDestroy {
-  readonly pool = new Pool({
-    connectionString:
-      process.env.DATABASE_URL ?? "postgres://mtg:mtg-local@localhost:5432/mtg",
-  });
+  readonly pool = new Pool({ connectionString: databaseUrl() }).on(
+    "error",
+    (error) => console.error("Database pool error", error),
+  );
 
   async onModuleInit() {
     await this.pool.query(`

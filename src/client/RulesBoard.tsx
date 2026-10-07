@@ -101,10 +101,13 @@ function beside(rect: DOMRect, width: number, height: number): CSSProperties {
 function CombatLines({
   root,
   anchors,
+  observer: observing,
   links,
 }: {
   root: RefObject<HTMLDivElement | null>;
   anchors: RefObject<Map<string, HTMLElement>>;
+  // Anchors mounted after this effect runs observe themselves through this.
+  observer: RefObject<ResizeObserver | null>;
   links: BoardSelection["links"];
 }) {
   const [lines, setLines] = useState<
@@ -148,14 +151,16 @@ function CombatLines({
     const observer = new ResizeObserver(update);
     if (root.current) observer.observe(root.current);
     for (const node of anchors.current.values()) observer.observe(node);
+    observing.current = observer;
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
     return () => {
       observer.disconnect();
+      if (observing.current === observer) observing.current = null;
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [links, root, anchors]);
+  }, [links, root, anchors, observing]);
   return (
     <svg className="combat-lines" aria-hidden="true">
       <defs>
@@ -199,6 +204,7 @@ export function RulesBoard({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const anchors = useRef(new Map<string, HTMLElement>());
+  const lineObserver = useRef<ResizeObserver | null>(null);
   const [menu, setMenu] = useState<{
     id: string;
     rect: DOMRect;
@@ -387,6 +393,7 @@ export function RulesBoard({
       if (node) anchors.current.set(id, node);
       else anchors.current.delete(id);
     }
+    if (node) lineObserver.current?.observe(node);
   };
   function card(object: ObjectView, pile?: ObjectView[], stackIndex?: number) {
     const folded = pile && pile.length > 1;
@@ -855,7 +862,12 @@ export function RulesBoard({
         {children}
         {controls}
       </div>
-      <CombatLines root={root} anchors={anchors} links={selection.links} />
+      <CombatLines
+        root={root}
+        anchors={anchors}
+        observer={lineObserver}
+        links={selection.links}
+      />
       {drawer && drawerZone && (
         <aside
           className="rules-zone-drawer"
