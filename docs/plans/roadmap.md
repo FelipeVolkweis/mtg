@@ -57,7 +57,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 1. Fast test loop
 
 - **Issue:** #64
-
 - **Depends:** none
 - **Read:** TP §3.1, §3.2
 - **Scope:** test configuration, `package.json` scripts, a harness around `MatchService.execute`
@@ -70,7 +69,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 2. Scenario builder and characterization split
 
 - **Issue:** #65
-
 - **Depends:** 1
 - **Read:** TP §3.3, §15, §16, §34, §38, §4
 - **Scope:** `tests/support/`, `tests/rules.spec.ts` → `tests/rules/characterization/*.spec.ts`
@@ -84,7 +82,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 3. Runtime model cleanup
 
 - **Issue:** #66
-
 - **Depends:** 1
 - **Read:** CM §2.2, §4, §5, §7, §8; ADR-0018
 - **Scope:** `src/shared/model.ts`, `game-objects.ts`, `match-view.ts`, `object-visibility.ts`, `combat.ts`, `characteristics.ts`, `room.service.ts`, the client readers of removed fields
@@ -98,7 +95,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 4. DSL v2 schema, registries and compiler
 
 - **Issue:** #67
-
 - **Depends:** 1
 - **Read:** DSL §3, §4, §7, §4.11; RE §19–21; TP §17
 - **Scope:** a new v2 schema module beside `src/shared/rules.ts`, `catalog/tokens/`, the counter registry, a new compiler module. No consumers yet.
@@ -111,7 +107,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 5. Migration toolchain · human review
 
 - **Issue:** #68
-
 - **Depends:** 4
 - **Read:** DSL §6, §8, §9; CM §3.3, §6, §7; TP §17
 - **Scope:** `tests/fixtures/dsl-expressiveness/`, the derivation function in `src/server/catalog/`, the migration script, the down-compiler (Core AST → current runtime shapes). No catalog file is written.
@@ -125,7 +120,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 6. Catalog flip and version 1 removal · human review
 
 - **Issue:** #69
-
 - **Depends:** 2, 3, 5
 - **Read:** CM §3, §3.4, §6; DSL §2.2, §9
 - **Scope:** `catalog/definitions/`, `catalog-files.ts`, `catalog.service.ts`, the catalog loading path, inline test definitions, `src/shared/rules.ts`, `docs/rules-engine.md`
@@ -140,7 +134,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 7. Event seam and effect handlers
 
 - **Issue:** #70
-
 - **Depends:** 6
 - **Read:** RE §6, §34, §40, §41, §56; TP §19
 - **Scope:** `RulesQuery` and `RulesMutator`, `propose` as a pass-through, the effect handler registry, `resolution.ts`
@@ -152,7 +145,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 8. Rule VM and Stack Resolution Runtime
 
 - **Issue:** #71
-
 - **Depends:** 7
 - **Read:** RE §28–33; TP §18, §22
 - **Scope:** `vm/`, `ResolutionProgress`, the resolution envelope, the permanent-spell path
@@ -165,7 +157,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 9. Automatic rules
 
 - **Issue:** #72
-
 - **Depends:** 8
 - **Read:** RE §11, §43–48; TP §23, §24, §26
 - **Scope:** `PriorityCheckpoint`, the State-Based Rule registry, `triggers.ts`
@@ -177,7 +168,6 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
 ### 10. Proposals · human review
 
 - **Issue:** #73
-
 - **Depends:** 9
 - **Read:** RE §12–16, §35–39, §57 ("Client and projection impact"); CM §4.2 (Proposal Record); TP §11–14, §20, §21, §31–33
 - **Scope:** cost handlers, `pay()` and `lockCost()`, `match-view.ts` prompts, the client prompt UI, `StackProposalProcedure`, `RulesEngine.apply()` and `input()`
