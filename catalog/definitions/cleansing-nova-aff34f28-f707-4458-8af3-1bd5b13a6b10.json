@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "aff34f28-f707-4458-8af3-1bd5b13a6b10",
-  "canonicalName": "Cleansing Nova",
-  "defaultPrintingId": "7b46929d-f63c-4026-8223-e2a4a159e017",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Cleansing Nova",
-      "manaCost": "{3}{W}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Sorcery",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Sorcery"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Choose one —\n• Destroy all creatures.\n• Destroy all artifacts and enchantments."
-    }
-  ],
-  "oracleText": "Choose one —\n• Destroy all creatures.\n• Destroy all artifacts and enchantments.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Cleansing Nova",
+        "manaCost": "{3}{W}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Sorcery"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Choose one —\n• Destroy all creatures.\n• Destroy all artifacts and enchantments."
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "7b46929d-f63c-4026-8223-e2a4a159e017"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

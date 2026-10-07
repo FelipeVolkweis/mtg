@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "d481630c-83c4-47d2-a770-db331154d2b9",
-  "canonicalName": "Skyraker Giant",
-  "defaultPrintingId": "5e3fbafb-e915-43eb-8a68-245840ba73ff",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Skyraker Giant",
-      "manaCost": "{2}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Giant",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Giant"
-      ],
-      "keywords": [
-        "Reach"
-      ],
-      "rulesText": "Reach (This creature can block creatures with flying.)",
-      "power": "4",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Reach (This creature can block creatures with flying.)",
-  "keywords": [
-    "Reach"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Skyraker Giant",
+        "manaCost": "{2}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Giant"
+        ],
+        "keywords": [
+          "Reach"
+        ],
+        "rulesText": "Reach (This creature can block creatures with flying.)",
+        "power": "4",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "5e3fbafb-e915-43eb-8a68-245840ba73ff"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Effect } from "./rules-v2.js";
 
 export const manaTypes = ["W", "U", "B", "R", "G", "C"] as const;
 export type ManaType = (typeof manaTypes)[number];
@@ -163,196 +164,6 @@ export interface ActiveContinuousEffect {
   applicability:
     "source-on-battlefield" | "characteristic-defining" | "until-end-of-turn";
 }
-const discardSchema = z
-  .object({
-    kind: z.literal("discard"),
-    count: valueSchema,
-    types: z.array(z.string().min(1)).min(1).optional(),
-    bind: z.string().min(1).optional(),
-  })
-  .strict();
-const movementSchema = z
-  .object({
-    kind: z.enum(["move", "destroy", "exile", "sacrifice"]),
-    subject: z.enum(["source", "target", "set", "choice"]),
-    filter: objectFilterSchema.optional(),
-    destination: z
-      .enum(["hand", "battlefield", "graveyard", "exile"])
-      .optional(),
-    optional: z.boolean().optional(),
-    eachPlayer: z.boolean().optional(),
-    link: z.string().min(1).optional(),
-    bind: z.string().min(1).optional(),
-  })
-  .strict();
-export type MovementEffect = z.infer<typeof movementSchema>;
-const inspectSchema = z
-  .object({
-    kind: z.literal("inspect"),
-    count: z.number().int().positive().max(100),
-    select: objectFilterSchema.optional(),
-    randomBottom: z.boolean().optional(),
-    revealSelected: z.boolean().optional(),
-  })
-  .strict();
-export type InspectEffect = z.infer<typeof inspectSchema>;
-const primitiveEffectSchema = z.discriminatedUnion("kind", [
-  z
-    .object({
-      kind: z.literal("damage"),
-      amount: valueSchema,
-      recipient: z.literal("defender").optional(),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("tap-choice"),
-      filter: objectFilterSchema,
-      bind: z.string().min(1),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("pay-mana"),
-      symbols: z.array(z.string().regex(/^\{(?:[WUBRGC]|\d+)\}$/)),
-      bind: z.string().min(1),
-      player: z.literal("event-player").optional(),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("become-monarch"),
-      player: z.literal("event-controller").optional(),
-    })
-    .strict(),
-  z.object({ kind: z.literal("tap-attached") }).strict(),
-  z.object({ kind: z.literal("counter-event") }).strict(),
-  z.object({ kind: z.literal("redirect-attack") }).strict(),
-  z
-    .object({
-      kind: z.literal("lose-life"),
-      amount: valueSchema,
-      player: z.enum(["you", "opponents", "event-player"]),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("animate-source"),
-      recipient: z.literal("target").optional(),
-      changes: z.array(continuousChangeSchema).min(1).max(20),
-    })
-    .strict(),
-  movementSchema,
-  inspectSchema,
-  z
-    .object({
-      kind: z.literal("gain-life"),
-      amount: z.number().int().positive(),
-    })
-    .strict(),
-  z
-    .object({ kind: z.literal("attach"), to: z.enum(["target", "created"]) })
-    .strict(),
-  discardSchema,
-  z
-    .object({
-      kind: z.literal("add-counters"),
-      filter: objectFilterSchema,
-      counter: z.enum(["+1/+1", "-1/-1"]),
-      count: z.number().int().min(1).max(100),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("create-token"),
-      token: z.enum(["thopter", "myr", "germ"]),
-      count: z.number().int().min(1).max(100),
-    })
-    .strict(),
-  z
-    .object({
-      kind: z.literal("draw"),
-      count: valueSchema,
-      bind: z.string().min(1).optional(),
-      player: z.enum(["you", "each"]).optional(),
-    })
-    .strict(),
-  z.object({ kind: z.literal("counter-target") }).strict(),
-  z
-    .object({
-      kind: z.literal("add-mana"),
-      quantity: z.number().int().min(1).max(1000),
-      colors: z.union([
-        z.array(z.enum(manaTypes)).min(1).max(6),
-        z.literal("commander-colors"),
-      ]),
-      restriction: manaRestrictionSchema.optional(),
-    })
-    .strict(),
-  z.object({ kind: z.literal("enter-tapped") }).strict(),
-]);
-export type DiscardEffect = z.infer<typeof discardSchema>;
-export type RulesEffect =
-  | z.infer<typeof primitiveEffectSchema>
-  | { kind: "sequence"; effects: RulesEffect[] }
-  | {
-      kind: "if";
-      condition: { binding: string; atLeast: number };
-      then: RulesEffect[];
-      otherwise: RulesEffect[];
-    }
-  | {
-      kind: "alternative";
-      options: {
-        id: string;
-        label: string;
-        requireComplete?: boolean;
-        effect: DiscardEffect;
-      }[];
-    };
-export const rulesEffectSchema: z.ZodType<RulesEffect> = z.lazy(() =>
-  z.union([
-    primitiveEffectSchema,
-    z
-      .object({
-        kind: z.literal("sequence"),
-        effects: z.array(rulesEffectSchema).max(100),
-      })
-      .strict(),
-    z
-      .object({
-        kind: z.literal("if"),
-        condition: z
-          .object({
-            binding: z.string().min(1),
-            atLeast: z.number().int().nonnegative().max(1000),
-          })
-          .strict(),
-        then: z.array(rulesEffectSchema).max(100),
-        otherwise: z.array(rulesEffectSchema).max(100),
-      })
-      .strict(),
-    z
-      .object({
-        kind: z.literal("alternative"),
-        options: z
-          .array(
-            z
-              .object({
-                id: z.string().min(1),
-                label: z.string().min(1),
-                requireComplete: z.boolean().optional(),
-                effect: discardSchema,
-              })
-              .strict(),
-          )
-          .min(2)
-          .max(10),
-      })
-      .strict(),
-  ]),
-);
-
 export const conditionSchema = z
   .object({
     value: valueSchema,
@@ -361,6 +172,26 @@ export const conditionSchema = z
   })
   .strict();
 
+/** What a mana ability adds (DSL v2 `produce`, lowered). */
+export const manaProductionSchema = z
+  .object({
+    quantity: z.number().int().min(1).max(1000),
+    colors: z.union([
+      z.array(z.enum(manaTypes)).min(1).max(6),
+      z.literal("commander-colors"),
+    ]),
+    restriction: manaRestrictionSchema.optional(),
+  })
+  .strict();
+export type ManaProduction = z.infer<typeof manaProductionSchema>;
+
+/**
+ * The runtime ability the engine executes, as the down-compiler emits it
+ * (dsl-redesign.md §9 step 3). The Rules Compiler validates authored
+ * abilities; this schema only checks the shape and fills defaults. `effects`
+ * are Core AST effects, run by the effect handlers (rules-engine-refactor.md
+ * §34); the compiler has validated them, so they are not parsed again here.
+ */
 export const rulesAbilitySchema = z
   .object({
     improvise: z.boolean().optional(),
@@ -380,7 +211,13 @@ export const rulesAbilitySchema = z
     timing: z.literal("sorcery").optional(),
     chosenVariables: z.array(z.literal("X")).max(1).optional(),
     costs: z.array(rulesCostSchema).max(100).default([]),
-    effects: z.array(rulesEffectSchema).max(100).default([]),
+    effects: z
+      .array(z.custom<Effect>((value) => typeof value === "object"))
+      .max(100)
+      .default([]),
+    produce: manaProductionSchema.optional(),
+    entersTapped: z.boolean().optional(),
+    cantBeCountered: z.boolean().optional(),
     costModifiers: z
       .array(
         z
@@ -439,167 +276,7 @@ export const rulesAbilitySchema = z
       .optional(),
     manaAbility: z.boolean().optional(),
   })
-  .strict()
-  .superRefine((ability, ctx) => {
-    const invalid = (message: string) =>
-      ctx.addIssue({ code: "custom", message });
-    const checkValue = (value: RulesValue, available: Set<string>) => {
-      if (typeof value === "number") return;
-      if ("binding" in value && !available.has(value.binding))
-        invalid("Unknown quantity binding.");
-      if ("sum" in value)
-        for (const term of value.sum) checkValue(term, available);
-    };
-    const checkFilter = (
-      filter: ObjectFilter | undefined,
-      available: Set<string>,
-    ) => {
-      if (filter?.manaValue !== undefined)
-        checkValue(filter.manaValue, available);
-    };
-    const check = (effects: RulesEffect[], available: Set<string>) => {
-      for (const effect of effects) {
-        if ("filter" in effect) checkFilter(effect.filter, available);
-        if (effect.kind === "lose-life") checkValue(effect.amount, available);
-        if (effect.kind === "redirect-attack" && !ability.target?.attacking)
-          invalid("Redirection requires an attacking target.");
-        if (effect.kind === "sequence") check(effect.effects, available);
-        else if (effect.kind === "if") {
-          if (!available.has(effect.condition.binding))
-            invalid("Unknown condition binding.");
-          check(effect.then, new Set(available));
-          check(effect.otherwise, new Set(available));
-        } else if (effect.kind === "alternative") {
-          if (
-            new Set(effect.options.map((o) => o.id)).size !==
-            effect.options.length
-          )
-            invalid("Alternative identifiers must be unique.");
-          for (const option of effect.options)
-            check([option.effect], new Set(available));
-        } else if (effect.kind === "draw" || effect.kind === "discard") {
-          checkValue(effect.count, available);
-          if (effect.bind) {
-            if (available.has(effect.bind))
-              invalid("Result bindings must be unique.");
-            available.add(effect.bind);
-          }
-        } else if (effect.kind === "animate-source") {
-          for (const change of effect.changes)
-            if (
-              change.kind === "add-stats" ||
-              change.kind === "set-stats" ||
-              change.kind === "define-stats"
-            ) {
-              checkValue(change.power, available);
-              checkValue(change.toughness, available);
-            }
-        } else if ("bind" in effect && effect.bind) {
-          if (available.has(effect.bind))
-            invalid("Result bindings must be unique.");
-          available.add(effect.bind);
-        } else if (effect.kind === "damage") {
-          checkValue(effect.amount, available);
-          if (!ability.target && effect.recipient !== "defender")
-            invalid("Damage effects require a target declaration.");
-        } else if (effect.kind === "counter-target" && !ability.target)
-          invalid("Counter effects require a target declaration.");
-      }
-    };
-    if (
-      ability.trigger?.event === "state" &&
-      (!ability.trigger.counter ||
-        !ability.trigger.atLeast ||
-        ability.trigger.filter?.self !== "only")
-    )
-      invalid("State triggers require a source counter threshold.");
-    const validateMovements = (effects: RulesEffect[]) => {
-      for (const effect of effects) {
-        if (effect.kind === "sequence") validateMovements(effect.effects);
-        else if (effect.kind === "if") {
-          validateMovements(effect.then);
-          validateMovements(effect.otherwise);
-        } else if ("subject" in effect) {
-          if (effect.kind === "move" && !effect.destination)
-            invalid("Movement requires a destination.");
-          if (
-            (effect.subject === "set" || effect.subject === "choice") &&
-            !effect.filter
-          )
-            invalid("Object selection requires a filter.");
-          if (effect.subject === "target" && !ability.target)
-            invalid("Targeted movement requires a target declaration.");
-          if (
-            effect.eachPlayer &&
-            (effect.kind !== "sacrifice" || effect.subject !== "set")
-          )
-            invalid("Each-player selections require a sacrifice set.");
-          if (effect.link && effect.kind !== "exile")
-            invalid("Exile links require an exile operation.");
-        }
-      }
-    };
-    validateMovements(ability.effects);
-    if (
-      ability.costs.some(
-        (c) => c.kind === "mana" && c.symbols.includes("{X}"),
-      ) &&
-      !ability.chosenVariables?.includes("X")
-    )
-      invalid("Variable mana costs require a chosen X.");
-    if (
-      ability.trigger &&
-      !ability.trigger.filter &&
-      !["draw", "upkeep"].includes(ability.trigger.event)
-    )
-      invalid("Object events require an object filter.");
-    if (ability.trigger?.grouped && ability.trigger.event !== "damage")
-      invalid("Grouped triggers require damage events.");
-    const available = new Set(ability.chosenVariables ?? []);
-    checkFilter(ability.target, available);
-    checkFilter(ability.trigger?.filter, available);
-    if (ability.intervening) {
-      checkValue(ability.intervening.value, available);
-      checkValue(ability.intervening.atLeast, available);
-    }
-    check(ability.effects, new Set(available));
-    for (const modifier of ability.costModifiers ?? [])
-      checkValue(modifier.amount, available);
-    for (const change of ability.continuous?.changes ?? []) {
-      if (
-        change.kind === "define-stats" ||
-        change.kind === "set-stats" ||
-        change.kind === "add-stats"
-      ) {
-        checkValue(change.power, available);
-        checkValue(change.toughness, available);
-      }
-    }
-    if (
-      ability.continuous?.characteristicDefining &&
-      (ability.continuous.filter.self !== "only" ||
-        ability.continuous.changes.some((c) => c.kind !== "define-stats"))
-    )
-      invalid("Characteristic definitions must define only their own stats.");
-
-    if (
-      ability.manaAbility &&
-      (ability.target ||
-        ability.effects.some((effect) => effect.kind !== "add-mana"))
-    )
-      ctx.addIssue({
-        code: "custom",
-        message: "Mana abilities must only produce mana and cannot target.",
-      });
-    if (
-      ability.effects.some((effect) => effect.kind === "counter-target") &&
-      !ability.target
-    )
-      ctx.addIssue({
-        code: "custom",
-        message: "Counter effects require a target declaration.",
-      });
-  });
+  .strict();
 export type RulesAbility = z.infer<typeof rulesAbilitySchema>;
 export type RulesCost = z.infer<typeof rulesCostSchema>;
 export interface PendingProcedure {
@@ -640,21 +317,29 @@ export interface SelectionOption {
   types?: string[];
   labels?: Record<string, string>;
 }
+/** A JSON value: handler state that survives persistence. */
+export type JsonValue =
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+/**
+ * A resolving spell or ability. The queue holds Core AST effects; each
+ * completed instruction is removed before a choice is exposed, so a restored
+ * Match resumes at the waiting instruction (rules-engine-refactor.md §34).
+ */
 export interface ResolutionProgress {
   sourceId: string;
   playerId: string;
-  remaining: RulesEffect[];
+  remaining: Effect[];
+  /** Number and flag bindings, and the chosen X. */
   bindings: Record<string, number>;
-  choices?: Record<string, DiscardEffect>;
-  choiceEffect?: MovementEffect | InspectEffect;
-  actionChoice?: Extract<
-    RulesEffect,
-    { kind: "tap-choice" | "pay-mana" | "redirect-attack" }
-  >;
+  /** Object-set bindings: Game Object ids. */
+  objects?: Record<string, string[]>;
+  /** Player bindings (`for-each-player` binds `player`). */
+  players?: Record<string, string>;
+  /** Library cards the waiting chooser looks at privately (shown in their view). */
   inspectedIds?: string[];
-  createdIds?: string[];
-  selectionPlayers?: string[];
-  simultaneousIds?: string[];
+  /** The instruction waiting for a player's answer, with its handler's state. */
+  waiting?: { effect: Effect; state: JsonValue };
 }
 export interface CombatAttacker {
   objectId: string;
@@ -752,6 +437,22 @@ export interface SemanticEvent {
   to?: import("./model.js").ZoneKind;
   before?: import("./model.js").Characteristics;
   after: import("./model.js").Characteristics;
+  /** Zone changes: the object as it last existed (rules-engine-refactor.md §56). */
+  lastKnown?: LastKnownInformation;
+}
+/**
+ * A Game Object as it last existed in its previous Zone: what bindings,
+ * leave-the-battlefield triggers and moved damage sources read (CR 608.2h).
+ */
+export interface LastKnownInformation {
+  objectId: string;
+  zoneId: string;
+  controllerId: string;
+  ownerId: string;
+  characteristics: import("./model.js").Characteristics;
+  counters: import("./model.js").Counter[];
+  attachmentTo: string | null;
+  tapped: boolean;
 }
 export interface WaitingTrigger {
   sourceSnapshot?: {

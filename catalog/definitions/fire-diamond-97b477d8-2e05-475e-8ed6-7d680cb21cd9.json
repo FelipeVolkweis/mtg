@@ -1,30 +1,30 @@
 {
+  "catalogVersion": 2,
   "id": "97b477d8-2e05-475e-8ed6-7d680cb21cd9",
-  "canonicalName": "Fire Diamond",
-  "defaultPrintingId": "340770d5-20de-4bd4-85f1-ab7341f3f5a0",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Fire Diamond",
-      "manaCost": "{2}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "This artifact enters tapped.\n{T}: Add {R}."
-    }
-  ],
-  "oracleText": "This artifact enters tapped.\n{T}: Add {R}.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Fire Diamond",
+        "manaCost": "{2}",
+        "colors": [],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "This artifact enters tapped.\n{T}: Add {R}."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "340770d5-20de-4bd4-85f1-ab7341f3f5a0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

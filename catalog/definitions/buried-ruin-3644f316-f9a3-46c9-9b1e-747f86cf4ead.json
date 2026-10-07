@@ -1,60 +1,51 @@
 {
+  "catalogVersion": 2,
   "id": "3644f316-f9a3-46c9-9b1e-747f86cf4ead",
-  "canonicalName": "Buried Ruin",
-  "defaultPrintingId": "1e57d7ee-78d8-4e02-b3a8-a4b16ec0cdaf",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Buried Ruin",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Buried Ruin",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "quantity": 1,
-            "colors": [
-              "C"
-            ]
-          }
-        ],
-        "manaAbility": true
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "1e57d7ee-78d8-4e02-b3a8-a4b16ec0cdaf"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
       },
-      "description": "{T}: Add {C}."
-    },
-    {
-      "id": "retrieve",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "retrieve",
+        "description": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -69,23 +60,27 @@
             "kind": "sacrifice-source"
           }
         ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "graveyard",
+              "object": "card",
+              "type": [
+                "Artifact"
+              ],
+              "owner": "you"
+            }
+          }
+        ],
         "effects": [
           {
             "kind": "move",
-            "subject": "target",
-            "destination": "hand"
+            "objects": "target",
+            "to": "hand"
           }
-        ],
-        "target": {
-          "zone": "graveyard",
-          "types": [
-            "Artifact"
-          ],
-          "kind": "card",
-          "owner": "you"
-        }
-      },
-      "description": "{2}, {T}, Sacrifice this land: Return target artifact card from your graveyard to your hand."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

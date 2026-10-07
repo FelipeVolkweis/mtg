@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "cae60cf8-cd64-4595-a4dd-946694cf2bb1",
-  "canonicalName": "Felidar Cub",
-  "defaultPrintingId": "0d61d50b-7ab6-45a9-b207-31d87aa2e555",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Felidar Cub",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Cat Beast",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Cat",
-        "Beast"
-      ],
-      "keywords": [],
-      "rulesText": "Sacrifice this creature: Destroy target enchantment.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Sacrifice this creature: Destroy target enchantment.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Felidar Cub",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Beast"
+        ],
+        "keywords": [],
+        "rulesText": "Sacrifice this creature: Destroy target enchantment.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "0d61d50b-7ab6-45a9-b207-31d87aa2e555"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

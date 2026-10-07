@@ -1,44 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "9e43805d-3576-47d4-9331-524869ab99d0",
-  "canonicalName": "Flamewake Phoenix",
-  "defaultPrintingId": "a94f008e-48a0-406b-83fa-99cd396831f8",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Flamewake Phoenix",
-      "manaCost": "{1}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Phoenix",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Phoenix"
-      ],
-      "keywords": [
-        "Flying",
-        "Ferocious",
-        "Haste"
-      ],
-      "rulesText": "Flying, haste\nThis creature attacks each combat if able.\nFerocious — At the beginning of combat on your turn, if you control a creature with power 4 or greater, you may pay {R}. If you do, return this card from your graveyard to the battlefield.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Flying, haste\nThis creature attacks each combat if able.\nFerocious — At the beginning of combat on your turn, if you control a creature with power 4 or greater, you may pay {R}. If you do, return this card from your graveyard to the battlefield.",
-  "keywords": [
-    "Flying",
-    "Ferocious",
-    "Haste"
-  ],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Flamewake Phoenix",
+        "manaCost": "{1}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Phoenix"
+        ],
+        "keywords": [
+          "Flying",
+          "Ferocious",
+          "Haste"
+        ],
+        "rulesText": "Flying, haste\nThis creature attacks each combat if able.\nFerocious — At the beginning of combat on your turn, if you control a creature with power 4 or greater, you may pay {R}. If you do, return this card from your graveyard to the battlefield.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "a94f008e-48a0-406b-83fa-99cd396831f8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

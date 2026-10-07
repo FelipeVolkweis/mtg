@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "d812fc6d-b96d-4986-b171-9f3feee603dc",
-  "canonicalName": "Hinterland Sanctifier",
-  "defaultPrintingId": "632df69e-6377-43d0-bba5-65518a320aa5",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Hinterland Sanctifier",
-      "manaCost": "{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Rabbit Cleric",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Rabbit",
-        "Cleric"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever another creature you control enters, you gain 1 life.",
-      "power": "1",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever another creature you control enters, you gain 1 life.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hinterland Sanctifier",
+        "manaCost": "{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Rabbit",
+          "Cleric"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever another creature you control enters, you gain 1 life.",
+        "power": "1",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "632df69e-6377-43d0-bba5-65518a320aa5"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

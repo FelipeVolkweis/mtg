@@ -1,33 +1,33 @@
 {
+  "catalogVersion": 2,
   "id": "ad1712d8-809f-410c-8b91-ffe6fb8a69a1",
-  "canonicalName": "Azorius Guildgate",
-  "defaultPrintingId": "f98a7264-0a83-42c8-a94d-05ad4c234242",
-  "form": "normal",
-  "colorIdentity": [
-    "U",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Azorius Guildgate",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land — Gate",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Gate"
-      ],
-      "keywords": [],
-      "rulesText": "This land enters tapped.\n{T}: Add {W} or {U}."
-    }
-  ],
-  "oracleText": "This land enters tapped.\n{T}: Add {W} or {U}.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Azorius Guildgate",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Gate"
+        ],
+        "keywords": [],
+        "rulesText": "This land enters tapped.\n{T}: Add {W} or {U}."
+      }
+    ],
+    "colorIdentity": [
+      "U",
+      "W"
+    ],
+    "defaultPrintingId": "f98a7264-0a83-42c8-a94d-05ad4c234242"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

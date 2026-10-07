@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "651c967c-8f71-4eb5-b22f-545e55ea050e",
-  "canonicalName": "Carnelian Orb of Dragonkind",
-  "defaultPrintingId": "46027bce-64d4-4fbc-bdf7-643d2a65d9dc",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Carnelian Orb of Dragonkind",
-      "manaCost": "{2}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Artifact",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {R}. If that mana is spent on a Dragon creature spell, it gains haste until end of turn."
-    }
-  ],
-  "oracleText": "{T}: Add {R}. If that mana is spent on a Dragon creature spell, it gains haste until end of turn.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Carnelian Orb of Dragonkind",
+        "manaCost": "{2}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {R}. If that mana is spent on a Dragon creature spell, it gains haste until end of turn."
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "46027bce-64d4-4fbc-bdf7-643d2a65d9dc"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

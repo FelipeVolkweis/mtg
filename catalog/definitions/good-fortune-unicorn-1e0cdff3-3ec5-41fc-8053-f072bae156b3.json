@@ -1,38 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "1e0cdff3-3ec5-41fc-8053-f072bae156b3",
-  "canonicalName": "Good-Fortune Unicorn",
-  "defaultPrintingId": "eabbe163-2b15-42e3-89ce-7363e6250d3a",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Good-Fortune Unicorn",
-      "manaCost": "{1}{G}{W}",
-      "colors": [
-        "G",
-        "W"
-      ],
-      "typeLine": "Creature — Unicorn",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Unicorn"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever another creature you control enters, put a +1/+1 counter on that creature.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever another creature you control enters, put a +1/+1 counter on that creature.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Good-Fortune Unicorn",
+        "manaCost": "{1}{G}{W}",
+        "colors": [
+          "G",
+          "W"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Unicorn"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever another creature you control enters, put a +1/+1 counter on that creature.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "W"
+    ],
+    "defaultPrintingId": "eabbe163-2b15-42e3-89ce-7363e6250d3a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

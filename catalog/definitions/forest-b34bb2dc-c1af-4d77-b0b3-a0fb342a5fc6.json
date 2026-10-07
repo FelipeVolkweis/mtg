@@ -1,34 +1,34 @@
 {
+  "catalogVersion": 2,
   "id": "b34bb2dc-c1af-4d77-b0b3-a0fb342a5fc6",
-  "canonicalName": "Forest",
-  "defaultPrintingId": "d232fcc2-12f6-401a-b1aa-ddff11cb9378",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Forest",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Basic Land — Forest",
-      "manaValue": 0,
-      "supertypes": [
-        "Basic"
-      ],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [
-        "Forest"
-      ],
-      "keywords": [],
-      "rulesText": "({T}: Add {G}.)"
-    }
-  ],
-  "oracleText": "({T}: Add {G}.)",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Forest",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [
+          "Basic"
+        ],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [
+          "Forest"
+        ],
+        "keywords": [],
+        "rulesText": "({T}: Add {G}.)"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "d232fcc2-12f6-401a-b1aa-ddff11cb9378"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

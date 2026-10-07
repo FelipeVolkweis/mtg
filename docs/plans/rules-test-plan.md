@@ -593,7 +593,7 @@ Some rules tests need to construct states that would be tedious or impossible to
 | `force.activePlayer`, `force.priority` | the active player and Priority |
 | `force.card(match, definition, zone, playerId)` | a new Card Instance and Game Object in a Zone |
 | `force.move`, `force.zoneContents`, `force.clearZone`, `force.addObject` | Zone membership, keeping object identity |
-| `force.counters`, `force.attach`, `force.controller`, `force.uncounterable` | object state |
+| `force.counters`, `force.attach`, `force.controller` | object state |
 | `force.controlledSince`, `force.commander` | continuous control and commander designation |
 | `force.rules(match, patch)` | one-off rules-state fields (monarch, marked damage, temporary effects, combat, …) |
 

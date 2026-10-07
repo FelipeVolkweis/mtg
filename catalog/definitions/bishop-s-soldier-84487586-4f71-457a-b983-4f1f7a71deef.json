@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "84487586-4f71-457a-b983-4f1f7a71deef",
-  "canonicalName": "Bishop's Soldier",
-  "defaultPrintingId": "16dfd7b3-6d01-4e98-aec3-b27e8e2444e8",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Bishop's Soldier",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Vampire Soldier",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Soldier"
-      ],
-      "keywords": [
-        "Lifelink"
-      ],
-      "rulesText": "Lifelink (Damage dealt by this creature also causes you to gain that much life.)",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Lifelink (Damage dealt by this creature also causes you to gain that much life.)",
-  "keywords": [
-    "Lifelink"
-  ],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bishop's Soldier",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Soldier"
+        ],
+        "keywords": [
+          "Lifelink"
+        ],
+        "rulesText": "Lifelink (Damage dealt by this creature also causes you to gain that much life.)",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "16dfd7b3-6d01-4e98-aec3-b27e8e2444e8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

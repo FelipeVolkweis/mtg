@@ -1,60 +1,51 @@
 {
+  "catalogVersion": 2,
   "id": "32263baa-d3f0-463f-92b3-4e9938476add",
-  "canonicalName": "Hedron Archive",
-  "defaultPrintingId": "068a365c-157c-4af4-9b17-4854d696c19d",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Hedron Archive",
-      "manaCost": "{4}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}{C}.\n{2}, {T}, Sacrifice this artifact: Draw two cards."
-    }
-  ],
-  "oracleText": "{T}: Add {C}{C}.\n{2}, {T}, Sacrifice this artifact: Draw two cards.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "mana",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [
-          {
-            "kind": "tap-source"
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hedron Archive",
+        "manaCost": "{4}",
+        "colors": [],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Artifact"
         ],
-        "effects": [
-          {
-            "kind": "add-mana",
-            "colors": [
-              "C"
-            ],
-            "quantity": 2
-          }
-        ],
-        "manaAbility": true
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}{C}.\n{2}, {T}, Sacrifice this artifact: Draw two cards."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "068a365c-157c-4af4-9b17-4854d696c19d"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}{C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 2,
+          "colors": [
+            "C"
+          ]
+        }
       },
-      "description": "{T}: Add {C}{C}."
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{2}, {T}, Sacrifice this artifact: Draw two cards.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -75,8 +66,7 @@
             "count": 2
           }
         ]
-      },
-      "description": "{2}, {T}, Sacrifice this artifact: Draw two cards."
-    }
-  ]
+      }
+    ]
+  }
 }

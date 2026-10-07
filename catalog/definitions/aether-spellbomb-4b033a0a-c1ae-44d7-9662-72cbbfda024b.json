@@ -1,38 +1,35 @@
 {
+  "catalogVersion": 2,
   "id": "4b033a0a-c1ae-44d7-9662-72cbbfda024b",
-  "canonicalName": "Aether Spellbomb",
-  "defaultPrintingId": "05647867-77a0-4f1c-afb9-6054f1f65f5f",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Aether Spellbomb",
-      "manaCost": "{1}",
-      "colors": [],
-      "typeLine": "Artifact",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Artifact"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.\n{1}, Sacrifice this artifact: Draw a card."
-    }
-  ],
-  "oracleText": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.\n{1}, Sacrifice this artifact: Draw a card.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "bounce",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Aether Spellbomb",
+        "manaCost": "{1}",
+        "colors": [],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Artifact"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.\n{1}, Sacrifice this artifact: Draw a card."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "05647867-77a0-4f1c-afb9-6054f1f65f5f"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "bounce",
+        "description": "{U}, Sacrifice this artifact: Return target creature to its owner's hand.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -44,28 +41,29 @@
             "kind": "sacrifice-source"
           }
         ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
+            }
+          }
+        ],
         "effects": [
           {
             "kind": "move",
-            "subject": "target",
-            "destination": "hand"
+            "objects": "target",
+            "to": "hand"
           }
-        ],
-        "target": {
-          "zone": "battlefield",
-          "types": [
-            "Creature"
-          ]
-        }
+        ]
       },
-      "description": "{U}, Sacrifice this artifact: Return target creature to its owner's hand."
-    },
-    {
-      "id": "draw",
-      "kind": "activated",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
+      {
+        "id": "draw",
+        "description": "{1}, Sacrifice this artifact: Draw a card.",
+        "kind": "activated",
         "costs": [
           {
             "kind": "mana",
@@ -83,8 +81,7 @@
             "count": 1
           }
         ]
-      },
-      "description": "{1}, Sacrifice this artifact: Draw a card."
-    }
-  ]
+      }
+    ]
+  }
 }

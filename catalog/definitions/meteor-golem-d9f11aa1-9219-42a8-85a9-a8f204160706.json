@@ -1,64 +1,69 @@
 {
+  "catalogVersion": 2,
   "id": "d9f11aa1-9219-42a8-85a9-a8f204160706",
-  "canonicalName": "Meteor Golem",
-  "defaultPrintingId": "9e72f3f6-7420-4d5c-bddb-7ea972adce81",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Meteor Golem",
-      "manaCost": "{7}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Golem",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Golem"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, destroy target nonland permanent an opponent controls.",
-      "power": "3",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "When this creature enters, destroy target nonland permanent an opponent controls.",
-  "keywords": [],
-  "manaValue": 7,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "destroy",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Meteor Golem",
+        "manaCost": "{7}",
+        "colors": [],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Golem"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, destroy target nonland permanent an opponent controls.",
+        "power": "3",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "9e72f3f6-7420-4d5c-bddb-7ea972adce81"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "destroy",
+        "description": "When this creature enters, destroy target nonland permanent an opponent controls.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "and": [
+                {
+                  "zone": "battlefield",
+                  "controller": "opponents"
+                },
+                {
+                  "not": {
+                    "type": [
+                      "Land"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
         "effects": [
           {
             "kind": "destroy",
-            "subject": "target"
+            "objects": "target"
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        },
-        "target": {
-          "zone": "battlefield",
-          "controller": "opponent",
-          "excludeTypes": [
-            "Land"
-          ]
-        }
-      },
-      "description": "When this creature enters, destroy target nonland permanent an opponent controls."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

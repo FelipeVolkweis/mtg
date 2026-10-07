@@ -28,13 +28,23 @@ export interface Registries {
   counters: Record<string, unknown>;
 }
 
-/** Reads `catalog/tokens/<id>.json` files; the file name must match the id. */
+/**
+ * Reads `catalog/tokens/<id>.json` files; the file name must match the id. A
+ * catalog without a tokens directory has no tokens.
+ */
 export async function readTokens(
   root: string,
 ): Promise<Record<string, TokenDefinition>> {
   const tokens: Record<string, TokenDefinition> = {};
   const directory = join(root, "tokens");
-  for (const file of (await readdir(directory)).sort()) {
+  let files: string[];
+  try {
+    files = await readdir(directory);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return tokens;
+    throw error;
+  }
+  for (const file of files.sort()) {
     if (!file.endsWith(".json")) continue;
     const token = tokenDefinitionSchema.parse(
       JSON.parse(await readFile(join(directory, file), "utf8")),

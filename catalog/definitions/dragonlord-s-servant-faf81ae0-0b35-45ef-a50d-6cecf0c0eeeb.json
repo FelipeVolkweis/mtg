@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "faf81ae0-0b35-45ef-a50d-6cecf0c0eeeb",
-  "canonicalName": "Dragonlord's Servant",
-  "defaultPrintingId": "a59f9425-6426-4a35-9eed-eaa59c0622a0",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Dragonlord's Servant",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Goblin Shaman",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Goblin",
-        "Shaman"
-      ],
-      "keywords": [],
-      "rulesText": "Dragon spells you cast cost {1} less to cast.",
-      "power": "1",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Dragon spells you cast cost {1} less to cast.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dragonlord's Servant",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Goblin",
+          "Shaman"
+        ],
+        "keywords": [],
+        "rulesText": "Dragon spells you cast cost {1} less to cast.",
+        "power": "1",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "a59f9425-6426-4a35-9eed-eaa59c0622a0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

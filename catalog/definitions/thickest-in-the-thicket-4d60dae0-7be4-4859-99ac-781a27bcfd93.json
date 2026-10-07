@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "4d60dae0-7be4-4859-99ac-781a27bcfd93",
-  "canonicalName": "Thickest in the Thicket",
-  "defaultPrintingId": "2534da93-ef25-4020-bea5-d3f75bfc44f8",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Thickest in the Thicket",
-      "manaCost": "{3}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "When this enchantment enters, put X +1/+1 counters on target creature, where X is that creature's power.\nAt the beginning of your end step, draw two cards if you control the creature with the greatest power or tied for the greatest power."
-    }
-  ],
-  "oracleText": "When this enchantment enters, put X +1/+1 counters on target creature, where X is that creature's power.\nAt the beginning of your end step, draw two cards if you control the creature with the greatest power or tied for the greatest power.",
-  "keywords": [],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thickest in the Thicket",
+        "manaCost": "{3}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "When this enchantment enters, put X +1/+1 counters on target creature, where X is that creature's power.\nAt the beginning of your end step, draw two cards if you control the creature with the greatest power or tied for the greatest power."
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "2534da93-ef25-4020-bea5-d3f75bfc44f8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

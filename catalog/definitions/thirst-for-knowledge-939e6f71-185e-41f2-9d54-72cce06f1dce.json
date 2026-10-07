@@ -1,74 +1,86 @@
 {
+  "catalogVersion": 2,
   "id": "939e6f71-185e-41f2-9d54-72cce06f1dce",
-  "canonicalName": "Thirst for Knowledge",
-  "defaultPrintingId": "f784f025-2798-4112-9768-39c8e3572b25",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Thirst for Knowledge",
-      "manaCost": "{2}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Draw three cards. Then discard two cards unless you discard an artifact card."
-    }
-  ],
-  "oracleText": "Draw three cards. Then discard two cards unless you discard an artifact card.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "spell",
-      "kind": "spell",
-      "origin": "printed",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Thirst for Knowledge",
+        "manaCost": "{2}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Draw three cards. Then discard two cards unless you discard an artifact card."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "f784f025-2798-4112-9768-39c8e3572b25"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "spell",
+        "description": "Draw three cards. Then discard two cards unless you discard an artifact card.",
+        "kind": "spell",
         "effects": [
           {
+            "bind": "drawn",
             "kind": "draw",
-            "count": 3,
-            "bind": "drawn"
+            "count": 3
           },
           {
-            "kind": "alternative",
+            "kind": "choose-one",
             "options": [
               {
                 "id": "artifact",
                 "label": "Discard one artifact card",
-                "effect": {
-                  "kind": "discard",
-                  "count": 1,
-                  "types": [
-                    "Artifact"
-                  ]
+                "available": {
+                  "exists": {
+                    "all": {
+                      "zone": "hand",
+                      "type": [
+                        "Artifact"
+                      ],
+                      "owner": "you"
+                    }
+                  }
                 },
-                "requireComplete": true
+                "effects": [
+                  {
+                    "kind": "discard",
+                    "count": 1,
+                    "filter": {
+                      "type": [
+                        "Artifact"
+                      ]
+                    }
+                  }
+                ]
               },
               {
                 "id": "cards",
                 "label": "Discard two cards",
-                "effect": {
-                  "kind": "discard",
-                  "count": 2
-                }
+                "effects": [
+                  {
+                    "kind": "discard",
+                    "count": 2
+                  }
+                ]
               }
             ]
           }
         ]
-      },
-      "description": "Draw three cards. Then discard two cards unless you discard an artifact card."
-    }
-  ]
+      }
+    ]
+  }
 }

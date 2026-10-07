@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "0dc158ba-7ec8-4558-91f5-0a87ef8380d4",
-  "canonicalName": "High-Society Hunter",
-  "defaultPrintingId": "51da4a4b-ea12-4169-a7cf-eb4427f13e84",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "High-Society Hunter",
-      "manaCost": "{3}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Noble",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Noble"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever this creature attacks, you may sacrifice another creature. If you do, put a +1/+1 counter on this creature.\nWhenever another nontoken creature dies, draw a card.",
-      "power": "5",
-      "toughness": "3"
-    }
-  ],
-  "oracleText": "Flying\nWhenever this creature attacks, you may sacrifice another creature. If you do, put a +1/+1 counter on this creature.\nWhenever another nontoken creature dies, draw a card.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "High-Society Hunter",
+        "manaCost": "{3}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Noble"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever this creature attacks, you may sacrifice another creature. If you do, put a +1/+1 counter on this creature.\nWhenever another nontoken creature dies, draw a card.",
+        "power": "5",
+        "toughness": "3"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "51da4a4b-ea12-4169-a7cf-eb4427f13e84"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

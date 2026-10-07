@@ -1,41 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "41699d92-c209-4fcb-bbd6-685b3437d0c2",
-  "canonicalName": "Gorehorn Raider",
-  "defaultPrintingId": "78ce6c40-3452-4aa0-a45b-dbfd70f8d220",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Gorehorn Raider",
-      "manaCost": "{4}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Minotaur Pirate",
-      "manaValue": 5,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Minotaur",
-        "Pirate"
-      ],
-      "keywords": [
-        "Raid"
-      ],
-      "rulesText": "Raid — When this creature enters, if you attacked this turn, this creature deals 2 damage to any target.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Raid — When this creature enters, if you attacked this turn, this creature deals 2 damage to any target.",
-  "keywords": [
-    "Raid"
-  ],
-  "manaValue": 5,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Gorehorn Raider",
+        "manaCost": "{4}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 5,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Minotaur",
+          "Pirate"
+        ],
+        "keywords": [
+          "Raid"
+        ],
+        "rulesText": "Raid — When this creature enters, if you attacked this turn, this creature deals 2 damage to any target.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "78ce6c40-3452-4aa0-a45b-dbfd70f8d220"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

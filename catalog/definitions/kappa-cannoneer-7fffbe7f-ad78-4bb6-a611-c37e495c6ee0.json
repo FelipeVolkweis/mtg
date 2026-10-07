@@ -1,140 +1,97 @@
 {
+  "catalogVersion": 2,
   "id": "7fffbe7f-ad78-4bb6-a611-c37e495c6ee0",
-  "canonicalName": "Kappa Cannoneer",
-  "defaultPrintingId": "d644be98-83df-4546-a448-247f40299993",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Kappa Cannoneer",
-      "manaCost": "{5}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Artifact Creature \u2014 Turtle Warrior",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Turtle",
-        "Warrior"
-      ],
-      "keywords": [
-        "Improvise",
-        "Ward"
-      ],
-      "rulesText": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nWard {4}\nWhenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
-      "power": "4",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nWard {4}\nWhenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
-  "keywords": [
-    "Improvise",
-    "Ward"
-  ],
-  "manaValue": 6,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "improvise",
-      "kind": "static",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [],
-        "improvise": true
-      },
-      "keyword": "Improvise",
-      "description": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)"
-    },
-    {
-      "id": "ward",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
-        "effects": [
-          {
-            "kind": "pay-mana",
-            "symbols": [
-              "{4}"
-            ],
-            "bind": "paid",
-            "player": "event-player"
-          },
-          {
-            "kind": "if",
-            "condition": {
-              "binding": "paid",
-              "atLeast": 1
-            },
-            "then": [],
-            "otherwise": [
-              {
-                "kind": "counter-event"
-              }
-            ]
-          }
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kappa Cannoneer",
+        "manaCost": "{5}{U}",
+        "colors": [
+          "U"
         ],
-        "trigger": {
-          "event": "target",
-          "player": "opponent",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Turtle",
+          "Warrior"
+        ],
+        "keywords": [
+          "Improvise",
+          "Ward"
+        ],
+        "rulesText": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)\nWard {4}\nWhenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
+        "power": "4",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "d644be98-83df-4546-a448-247f40299993"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "improvise",
+        "description": "Improvise (Your artifacts can help cast this spell. Each artifact you tap after you're done activating mana abilities pays for {1}.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "improvise"
         }
       },
-      "keyword": "Ward",
-      "description": "Ward {4}"
-    },
-    {
-      "id": "artifact-entry",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "ward",
+        "description": "Ward {4}",
+        "kind": "keyword",
+        "keyword": {
+          "name": "ward",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{4}"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "artifact-entry",
+        "description": "Whenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": {
+            "zone": "battlefield",
+            "type": [
+              "Artifact"
+            ],
+            "controller": "you"
+          }
+        },
         "effects": [
           {
             "kind": "add-counters",
-            "filter": {
-              "zone": "battlefield",
-              "self": "only"
-            },
+            "objects": "source",
             "counter": "+1/+1",
             "count": 1
           },
           {
-            "kind": "animate-source",
-            "changes": [
-              {
-                "kind": "grant-keyword",
-                "keyword": "Unblockable"
-              }
-            ]
+            "kind": "apply-grant",
+            "grant": {
+              "kind": "block-restriction",
+              "objects": "source"
+            },
+            "duration": "end-of-turn"
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "controller": "you",
-            "types": [
-              "Artifact"
-            ]
-          }
-        }
-      },
-      "description": "Whenever this creature or another artifact you control enters, put a +1/+1 counter on this creature. It can't be blocked this turn."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

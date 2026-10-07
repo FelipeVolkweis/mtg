@@ -125,15 +125,15 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       ),
     );
     expect(island).toMatchObject({
+      catalogVersion: 2,
       id: "20000000-0000-4000-8000-000000000001",
-      canonicalName: "Island",
-      automationStatus: "unimplemented",
-      abilities: [],
+      authored: { automationStatus: "unimplemented", abilities: [] },
     });
-    expect(island).toMatchObject({
+    expect(island.imported).toMatchObject({
       defaultPrintingId: fixtureCards[0].id,
       components: [
         {
+          name: "Island",
           supertypes: ["Basic"],
           types: ["Land"],
           subtypes: ["Island"],
@@ -141,6 +141,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         },
       ],
     });
+    expect(island.imported.components[0]).not.toHaveProperty("typeLine");
     const printed = JSON.parse(
       await readFile(
         join(catalogRoot, "printings", `${fixtureCards[1].id}.json`),
@@ -167,7 +168,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         "utf8",
       ),
     );
-    expect(delver).toMatchObject({
+    expect(delver.imported).toMatchObject({
       form: "transform",
       components: [
         {
@@ -178,8 +179,8 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         { name: "Insectile Aberration", keywords: ["Flying"] },
       ],
     });
-    expect(delver.components[0].keywords).toEqual([]);
-    expect(delver.components[0]).not.toHaveProperty("manaValue");
+    expect(delver.imported.components[0].keywords).toEqual([]);
+    expect(delver.imported.components[0]).not.toHaveProperty("manaValue");
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
       `shared-name-${fixtureCards[4].oracle_id}.json`,
     );
@@ -219,25 +220,20 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       `shared-name-${fixtureCards[4].oracle_id}.json`,
     );
     const authored = JSON.parse(await readFile(file, "utf8"));
-    authored.automationStatus = "implemented";
-    authored.abilities = [
-      {
-        id: "ward-blight",
-        kind: "triggered",
-        origin: "printed",
-        applicableZone: "battlefield",
-        keyword: "Ward",
-        trigger: { kind: "event", condition: { primitive: "becomes-target" } },
-        costs: [
-          {
-            kind: "primitive",
-            primitive: "blight",
-            parameters: { amount: { kind: "integer", value: 2 } },
+    // A reviewer's authored section; the fixture's ward pays {2}.
+    authored.authored = {
+      automationStatus: "implemented",
+      abilities: [
+        {
+          id: "ward",
+          kind: "keyword",
+          keyword: {
+            name: "ward",
+            costs: [{ kind: "mana", symbols: ["{2}"] }],
           },
-        ],
-        effects: [{ primitive: "counter-spell" }],
-      },
-    ];
+        },
+      ],
+    };
     await writeFile(file, `${JSON.stringify(authored, null, 2)}\n`);
     const unfinishedFile = join(
       catalogRoot,
@@ -245,14 +241,8 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       `shared-name-${fixtureCards[5].oracle_id}.json`,
     );
     const unfinished = JSON.parse(await readFile(unfinishedFile, "utf8"));
-    unfinished.abilities = [
-      {
-        id: "haste",
-        kind: "static",
-        origin: "printed",
-        keyword: "Haste",
-        effects: [{ primitive: "grant-haste" }],
-      },
+    unfinished.authored.abilities = [
+      { id: "haste", kind: "keyword", keyword: "haste" },
     ];
     await writeFile(unfinishedFile, `${JSON.stringify(unfinished, null, 2)}\n`);
     const authoredBefore = await readFile(file, "utf8");
@@ -262,22 +252,20 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     };
     await importSet();
     const refreshed = JSON.parse(await readFile(file, "utf8"));
-    expect(refreshed).toMatchObject({
-      oracleText: "Ward—Blight 2. Updated wording.",
-      automationStatus: "implemented",
-      abilities: authored.abilities,
+    expect(refreshed.authored).toEqual(authored.authored);
+    expect(refreshed.imported).toMatchObject({
       components: [
         {
+          rulesText: "Ward—Blight 2. Updated wording.",
           supertypes: ["Legendary"],
           types: ["Creature"],
           subtypes: ["Human", "Wizard"],
         },
       ],
     });
-    expect(JSON.parse(await readFile(unfinishedFile, "utf8"))).toMatchObject({
-      automationStatus: "unimplemented",
-      abilities: unfinished.abilities,
-    });
+    expect(JSON.parse(await readFile(unfinishedFile, "utf8")).authored).toEqual(
+      unfinished.authored,
+    );
     expect(
       await (
         await request.get(
@@ -411,8 +399,8 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       ),
     ).toMatchObject({
       id: mappedOracle,
-      form: "reversible_card",
-      automationStatus: "unimplemented",
+      imported: { form: "reversible_card" },
+      authored: { automationStatus: "unimplemented" },
     });
     cards[4].name = "Æther // Shared Card";
     await importSet();
@@ -432,7 +420,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       ),
     ).toMatchObject({
       id: fixtureCards[4].oracle_id,
-      abilities: authored.abilities,
+      authored: authored.authored,
     });
   } finally {
     await context.close();

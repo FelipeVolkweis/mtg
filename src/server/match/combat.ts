@@ -379,7 +379,7 @@ export class Combat {
         if (power)
           all.push({ sourceId: id, recipientId: a.objectId, amount: power });
       }
-    e.damage(all, true);
+    e.propose({ kind: "damage", assignments: all, combat: true });
     e.priority();
   }
   prune() {

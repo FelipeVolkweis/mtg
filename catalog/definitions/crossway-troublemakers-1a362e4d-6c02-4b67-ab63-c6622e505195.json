@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "1a362e4d-6c02-4b67-ab63-c6622e505195",
-  "canonicalName": "Crossway Troublemakers",
-  "defaultPrintingId": "03a5e19c-4cb8-4bd7-923c-4db747dc6ca3",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Crossway Troublemakers",
-      "manaCost": "{5}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire"
-      ],
-      "keywords": [],
-      "rulesText": "Attacking Vampires you control have deathtouch and lifelink. (Any amount of damage they deal to a creature is enough to destroy it. Damage dealt by those creatures also causes their controller to gain that much life.)\nWhenever a Vampire you control dies, you may pay 2 life. If you do, draw a card.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Attacking Vampires you control have deathtouch and lifelink. (Any amount of damage they deal to a creature is enough to destroy it. Damage dealt by those creatures also causes their controller to gain that much life.)\nWhenever a Vampire you control dies, you may pay 2 life. If you do, draw a card.",
-  "keywords": [],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Crossway Troublemakers",
+        "manaCost": "{5}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire"
+        ],
+        "keywords": [],
+        "rulesText": "Attacking Vampires you control have deathtouch and lifelink. (Any amount of damage they deal to a creature is enough to destroy it. Damage dealt by those creatures also causes their controller to gain that much life.)\nWhenever a Vampire you control dies, you may pay 2 life. If you do, draw a card.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "03a5e19c-4cb8-4bd7-923c-4db747dc6ca3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

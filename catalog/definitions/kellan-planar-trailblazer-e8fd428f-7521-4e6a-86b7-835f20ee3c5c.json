@@ -1,40 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "e8fd428f-7521-4e6a-86b7-835f20ee3c5c",
-  "canonicalName": "Kellan, Planar Trailblazer",
-  "defaultPrintingId": "f46a9329-7b91-441d-8653-50c1152c9120",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Kellan, Planar Trailblazer",
-      "manaCost": "{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Legendary Creature — Human Faerie Scout",
-      "manaValue": 1,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Faerie",
-        "Scout"
-      ],
-      "keywords": [],
-      "rulesText": "{1}{R}: If Kellan is a Scout, it becomes a Human Faerie Detective and gains \"Whenever Kellan deals combat damage to a player, exile the top card of your library. You may play that card this turn.\"\n{2}{R}: If Kellan is a Detective, it becomes a 3/2 Human Faerie Rogue and gains double strike.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "{1}{R}: If Kellan is a Scout, it becomes a Human Faerie Detective and gains \"Whenever Kellan deals combat damage to a player, exile the top card of your library. You may play that card this turn.\"\n{2}{R}: If Kellan is a Detective, it becomes a 3/2 Human Faerie Rogue and gains double strike.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kellan, Planar Trailblazer",
+        "manaCost": "{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 1,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Faerie",
+          "Scout"
+        ],
+        "keywords": [],
+        "rulesText": "{1}{R}: If Kellan is a Scout, it becomes a Human Faerie Detective and gains \"Whenever Kellan deals combat damage to a player, exile the top card of your library. You may play that card this turn.\"\n{2}{R}: If Kellan is a Detective, it becomes a 3/2 Human Faerie Rogue and gains double strike.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "f46a9329-7b91-441d-8653-50c1152c9120"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "d4f28a4b-d821-4132-bdec-4c528318f8e2",
-  "canonicalName": "Hellkite Charger",
-  "defaultPrintingId": "bb1ff4b2-c1ec-4df6-ab3c-998ece572e5b",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Hellkite Charger",
-      "manaCost": "{4}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Dragon",
-      "manaValue": 6,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying",
-        "Haste"
-      ],
-      "rulesText": "Flying, haste\nWhenever this creature attacks, you may pay {5}{R}{R}. If you do, untap all attacking creatures and after this phase, there is an additional combat phase.",
-      "power": "5",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Flying, haste\nWhenever this creature attacks, you may pay {5}{R}{R}. If you do, untap all attacking creatures and after this phase, there is an additional combat phase.",
-  "keywords": [
-    "Flying",
-    "Haste"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hellkite Charger",
+        "manaCost": "{4}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 6,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying",
+          "Haste"
+        ],
+        "rulesText": "Flying, haste\nWhenever this creature attacks, you may pay {5}{R}{R}. If you do, untap all attacking creatures and after this phase, there is an additional combat phase.",
+        "power": "5",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "bb1ff4b2-c1ec-4df6-ab3c-998ece572e5b"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

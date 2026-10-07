@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "df366871-8ed7-4183-8b0c-414ca361a711",
-  "canonicalName": "Kargan Dragonrider",
-  "defaultPrintingId": "7023129c-09f5-49cf-ae32-b9bd30e0ff63",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Kargan Dragonrider",
-      "manaCost": "{1}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Human Warrior",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Warrior"
-      ],
-      "keywords": [],
-      "rulesText": "As long as you control a Dragon, this creature has flying.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "As long as you control a Dragon, this creature has flying.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Kargan Dragonrider",
+        "manaCost": "{1}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Warrior"
+        ],
+        "keywords": [],
+        "rulesText": "As long as you control a Dragon, this creature has flying.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "7023129c-09f5-49cf-ae32-b9bd30e0ff63"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

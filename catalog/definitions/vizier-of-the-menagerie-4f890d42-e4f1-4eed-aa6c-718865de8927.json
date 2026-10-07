@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "4f890d42-e4f1-4eed-aa6c-718865de8927",
-  "canonicalName": "Vizier of the Menagerie",
-  "defaultPrintingId": "14ab742a-89dc-4c01-99e3-21fc609128f2",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Vizier of the Menagerie",
-      "manaCost": "{3}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Snake Cleric",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Snake",
-        "Cleric"
-      ],
-      "keywords": [],
-      "rulesText": "You may look at the top card of your library any time.\nYou may cast creature spells from the top of your library.\nYou can spend mana of any type to cast creature spells.",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "You may look at the top card of your library any time.\nYou may cast creature spells from the top of your library.\nYou can spend mana of any type to cast creature spells.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vizier of the Menagerie",
+        "manaCost": "{3}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Snake",
+          "Cleric"
+        ],
+        "keywords": [],
+        "rulesText": "You may look at the top card of your library any time.\nYou may cast creature spells from the top of your library.\nYou can spend mana of any type to cast creature spells.",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "14ab742a-89dc-4c01-99e3-21fc609128f2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

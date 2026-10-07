@@ -1,0 +1,111 @@
+{
+  "catalogVersion": 2,
+  "id": "07a0cba9-8768-4fd9-a3d5-b0f83b4bf8e8",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Chaos Warp",
+        "manaCost": "{2}{R}",
+        "colors": ["R"],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "The owner of target permanent shuffles it into their library, then reveals the top card of their library. If it's a permanent card, they put it onto the battlefield."
+      }
+    ],
+    "colorIdentity": ["R"],
+    "defaultPrintingId": "7bd1cdd2-9f55-49ee-9787-131f353e3ad0"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "warp",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "permanent",
+            "filter": {
+              "zone": "battlefield",
+              "object": "permanent"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "move",
+            "objects": {
+              "target": "permanent"
+            },
+            "to": "library"
+          },
+          {
+            "kind": "shuffle",
+            "player": {
+              "ownerOf": {
+                "target": "permanent"
+              }
+            }
+          },
+          {
+            "kind": "library-sequence",
+            "bind": "revealed",
+            "player": {
+              "ownerOf": {
+                "target": "permanent"
+              }
+            },
+            "count": 1,
+            "operation": "reveal",
+            "rest": {
+              "to": {
+                "zone": "library",
+                "position": "top"
+              },
+              "order": "keep"
+            }
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "matches": {
+                "selector": {
+                  "binding": "revealed"
+                },
+                "predicate": {
+                  "type": [
+                    "Artifact",
+                    "Creature",
+                    "Enchantment",
+                    "Land",
+                    "Planeswalker",
+                    "Battle"
+                  ]
+                }
+              }
+            },
+            "then": [
+              {
+                "kind": "move",
+                "objects": {
+                  "binding": "revealed"
+                },
+                "to": {
+                  "zone": "battlefield",
+                  "controller": {
+                    "ownerOf": {
+                      "target": "permanent"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

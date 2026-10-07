@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "09ff28b1-b6c9-48e6-b12e-2f0e644f709f",
-  "canonicalName": "Gravecrawler",
-  "defaultPrintingId": "7625fff5-9080-4590-be75-14df86d5ba3c",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Gravecrawler",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Zombie",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Zombie"
-      ],
-      "keywords": [],
-      "rulesText": "This creature can't block.\nYou may cast this card from your graveyard as long as you control a Zombie.",
-      "power": "2",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "This creature can't block.\nYou may cast this card from your graveyard as long as you control a Zombie.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Gravecrawler",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Zombie"
+        ],
+        "keywords": [],
+        "rulesText": "This creature can't block.\nYou may cast this card from your graveyard as long as you control a Zombie.",
+        "power": "2",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "7625fff5-9080-4590-be75-14df86d5ba3c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

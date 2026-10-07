@@ -1,45 +1,43 @@
 {
+  "catalogVersion": 2,
   "id": "9dd674a7-becf-4106-b53f-bca88426d92d",
-  "canonicalName": "Zimone, Paradox Sculptor",
-  "defaultPrintingId": "20ccbfdd-ddae-440c-9bc0-38b15a56fdd1",
-  "form": "normal",
-  "colorIdentity": [
-    "G",
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Zimone, Paradox Sculptor",
-      "manaCost": "{2}{G}{U}",
-      "colors": [
-        "G",
-        "U"
-      ],
-      "typeLine": "Legendary Creature — Human Wizard",
-      "manaValue": 4,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Wizard"
-      ],
-      "keywords": [
-        "Double"
-      ],
-      "rulesText": "At the beginning of combat on your turn, put a +1/+1 counter on each of up to two target creatures you control.\n{G}{U}, {T}: Double the number of each kind of counter on up to two target creatures and/or artifacts you control.",
-      "power": "1",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "At the beginning of combat on your turn, put a +1/+1 counter on each of up to two target creatures you control.\n{G}{U}, {T}: Double the number of each kind of counter on up to two target creatures and/or artifacts you control.",
-  "keywords": [
-    "Double"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Zimone, Paradox Sculptor",
+        "manaCost": "{2}{G}{U}",
+        "colors": [
+          "G",
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Wizard"
+        ],
+        "keywords": [
+          "Double"
+        ],
+        "rulesText": "At the beginning of combat on your turn, put a +1/+1 counter on each of up to two target creatures you control.\n{G}{U}, {T}: Double the number of each kind of counter on up to two target creatures and/or artifacts you control.",
+        "power": "1",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "G",
+      "U"
+    ],
+    "defaultPrintingId": "20ccbfdd-ddae-440c-9bc0-38b15a56fdd1"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

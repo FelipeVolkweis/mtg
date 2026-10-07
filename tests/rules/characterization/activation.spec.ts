@@ -291,11 +291,12 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
         (c) => c.canonicalName === "Master Transmuter",
       )!;
       const effect = card.abilities[0].rules!.effects[0];
-      if (effect.kind === "move")
-        effect.filter = {
-          zone: "hand",
-          types: ["Artifact"],
-          subtypes: ["Book"],
+      if (effect.kind === "may" && effect.effects[0].kind === "move")
+        effect.effects[0].objects = {
+          choose: {
+            from: { zone: "hand", type: ["Artifact"], subtype: ["Book"] },
+            count: 1,
+          },
         };
     }
     force.mana(game.match, game.match.players[0].id, { U: 1 });

@@ -1,42 +1,39 @@
 {
+  "catalogVersion": 2,
   "id": "058062c7-071b-4b14-903d-ae8d2876b37f",
-  "canonicalName": "Minion of the Mighty",
-  "defaultPrintingId": "acf3b01f-6c67-4396-82ff-f3f416aea7c7",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Minion of the Mighty",
-      "manaCost": "{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Creature — Kobold",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Kobold"
-      ],
-      "keywords": [
-        "Pack tactics",
-        "Menace"
-      ],
-      "rulesText": "Menace\nPack tactics — Whenever this creature attacks, if you attacked with creatures with total power 6 or greater this combat, you may put a Dragon creature card from your hand onto the battlefield tapped and attacking.",
-      "power": "0",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Menace\nPack tactics — Whenever this creature attacks, if you attacked with creatures with total power 6 or greater this combat, you may put a Dragon creature card from your hand onto the battlefield tapped and attacking.",
-  "keywords": [
-    "Pack tactics",
-    "Menace"
-  ],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Minion of the Mighty",
+        "manaCost": "{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Kobold"
+        ],
+        "keywords": [
+          "Pack tactics",
+          "Menace"
+        ],
+        "rulesText": "Menace\nPack tactics — Whenever this creature attacks, if you attacked with creatures with total power 6 or greater this combat, you may put a Dragon creature card from your hand onto the battlefield tapped and attacking.",
+        "power": "0",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "acf3b01f-6c67-4396-82ff-f3f416aea7c7"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "3d4a7dd3-9258-4bd1-adc4-08f0205e196a",
-  "canonicalName": "Dwynen's Elite",
-  "defaultPrintingId": "89d94c28-ea2e-4a3d-935f-6b2d9f2efc7a",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Dwynen's Elite",
-      "manaCost": "{1}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Elf Warrior",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Elf",
-        "Warrior"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, if you control another Elf, create a 1/1 green Elf Warrior creature token.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature enters, if you control another Elf, create a 1/1 green Elf Warrior creature token.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Dwynen's Elite",
+        "manaCost": "{1}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Elf",
+          "Warrior"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, if you control another Elf, create a 1/1 green Elf Warrior creature token.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "89d94c28-ea2e-4a3d-935f-6b2d9f2efc7a"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

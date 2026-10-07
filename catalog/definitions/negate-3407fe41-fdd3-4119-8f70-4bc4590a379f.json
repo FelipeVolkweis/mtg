@@ -1,55 +1,64 @@
 {
+  "catalogVersion": 2,
   "id": "3407fe41-fdd3-4119-8f70-4bc4590a379f",
-  "canonicalName": "Negate",
-  "defaultPrintingId": "40b33b38-8591-4e0c-8f3a-0249da977821",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Negate",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Counter target noncreature spell."
-    }
-  ],
-  "oracleText": "Counter target noncreature spell.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "counter",
-      "kind": "spell",
-      "origin": "printed",
-      "applicableZone": "stack",
-      "rules": {
-        "costs": [],
-        "effects": [
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Negate",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Counter target noncreature spell."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "40b33b38-8591-4e0c-8f3a-0249da977821"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "counter",
+        "description": "Counter target noncreature spell.",
+        "kind": "spell",
+        "targets": [
           {
-            "kind": "counter-target"
+            "id": "target-0",
+            "filter": {
+              "and": [
+                {
+                  "zone": "stack",
+                  "object": "spell"
+                },
+                {
+                  "not": {
+                    "type": [
+                      "Creature"
+                    ]
+                  }
+                }
+              ]
+            }
           }
         ],
-        "target": {
-          "zone": "stack",
-          "kind": "spell",
-          "excludeTypes": [
-            "Creature"
-          ]
-        }
-      },
-      "description": "Counter target noncreature spell."
-    }
-  ]
+        "effects": [
+          {
+            "kind": "counter",
+            "objects": "target"
+          }
+        ]
+      }
+    ]
+  }
 }

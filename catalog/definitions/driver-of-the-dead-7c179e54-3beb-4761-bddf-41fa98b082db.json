@@ -1,36 +1,36 @@
 {
+  "catalogVersion": 2,
   "id": "7c179e54-3beb-4761-bddf-41fa98b082db",
-  "canonicalName": "Driver of the Dead",
-  "defaultPrintingId": "4443696a-0b9a-4081-91aa-800b5c4065d2",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Driver of the Dead",
-      "manaCost": "{3}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature dies, return target creature card with mana value 2 or less from your graveyard to the battlefield.",
-      "power": "3",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "When this creature dies, return target creature card with mana value 2 or less from your graveyard to the battlefield.",
-  "keywords": [],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Driver of the Dead",
+        "manaCost": "{3}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature dies, return target creature card with mana value 2 or less from your graveyard to the battlefield.",
+        "power": "3",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "4443696a-0b9a-4081-91aa-800b5c4065d2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

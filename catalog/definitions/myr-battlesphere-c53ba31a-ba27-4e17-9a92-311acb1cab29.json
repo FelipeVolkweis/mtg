@@ -1,109 +1,108 @@
 {
+  "catalogVersion": 2,
   "id": "c53ba31a-ba27-4e17-9a92-311acb1cab29",
-  "canonicalName": "Myr Battlesphere",
-  "defaultPrintingId": "7d2ca7dc-a999-4708-aeec-9f8e0f0db1e5",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Myr Battlesphere",
-      "manaCost": "{7}",
-      "colors": [],
-      "typeLine": "Artifact Creature \u2014 Myr Construct",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Artifact",
-        "Creature"
-      ],
-      "subtypes": [
-        "Myr",
-        "Construct"
-      ],
-      "keywords": [],
-      "rulesText": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.\nWhenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
-      "power": "4",
-      "toughness": "7"
-    }
-  ],
-  "oracleText": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.\nWhenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
-  "keywords": [],
-  "manaValue": 7,
-  "automationStatus": "implemented",
-  "abilities": [
-    {
-      "id": "entry-myr",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Myr Battlesphere",
+        "manaCost": "{7}",
+        "colors": [],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Artifact",
+          "Creature"
+        ],
+        "subtypes": [
+          "Myr",
+          "Construct"
+        ],
+        "keywords": [],
+        "rulesText": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.\nWhenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
+        "power": "4",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "7d2ca7dc-a999-4708-aeec-9f8e0f0db1e5"
+  },
+  "authored": {
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "entry-myr",
+        "description": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
         "effects": [
           {
             "kind": "create-token",
-            "token": "myr",
+            "token": "myr-1-1",
             "count": 4
           }
-        ],
-        "trigger": {
-          "event": "enter",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
+        ]
       },
-      "description": "When this creature enters, create four 1/1 colorless Myr artifact creature tokens."
-    },
-    {
-      "id": "attack-payment",
-      "kind": "triggered",
-      "origin": "printed",
-      "applicableZone": "battlefield",
-      "rules": {
-        "costs": [],
+      {
+        "id": "attack-payment",
+        "description": "Whenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
         "effects": [
           {
-            "kind": "tap-choice",
-            "filter": {
-              "zone": "battlefield",
-              "controller": "you",
-              "subtypes": [
-                "Myr"
-              ],
-              "untapped": true
-            },
-            "bind": "tapped"
+            "bind": "tapped",
+            "kind": "tap",
+            "objects": {
+              "choose": {
+                "from": {
+                  "zone": "battlefield",
+                  "subtype": [
+                    "Myr"
+                  ],
+                  "controller": "you",
+                  "status": "untapped"
+                },
+                "count": {
+                  "min": 0
+                }
+              }
+            }
           },
           {
-            "kind": "animate-source",
+            "kind": "apply-continuous",
+            "objects": "source",
             "changes": [
               {
                 "kind": "add-stats",
                 "power": {
-                  "binding": "tapped"
+                  "count": {
+                    "binding": "tapped"
+                  }
                 },
                 "toughness": 0
               }
-            ]
+            ],
+            "duration": "end-of-turn"
           },
           {
             "kind": "damage",
             "amount": {
-              "binding": "tapped"
+              "count": {
+                "binding": "tapped"
+              }
             },
-            "recipient": "defender"
+            "to": {
+              "attackedBy": "source"
+            }
           }
-        ],
-        "trigger": {
-          "event": "attack",
-          "filter": {
-            "zone": "battlefield",
-            "self": "only"
-          }
-        }
-      },
-      "description": "Whenever this creature attacks, you may tap X untapped Myr you control. If you do, this creature gets +X/+0 until end of turn and deals X damage to the player or planeswalker it's attacking."
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

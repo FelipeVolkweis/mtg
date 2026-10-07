@@ -1,28 +1,28 @@
 {
+  "catalogVersion": 2,
   "id": "f33ce38a-34ec-4b65-a0fc-160484a02007",
-  "canonicalName": "Bonders' Enclave",
-  "defaultPrintingId": "7cfeb33d-65c7-4aa2-a1d8-964e6cd73b82",
-  "form": "normal",
-  "colorIdentity": [],
-  "components": [
-    {
-      "name": "Bonders' Enclave",
-      "manaCost": "",
-      "colors": [],
-      "typeLine": "Land",
-      "manaValue": 0,
-      "supertypes": [],
-      "types": [
-        "Land"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{T}: Add {C}.\n{3}, {T}: Draw a card. Activate only if you control a creature with power 4 or greater."
-    }
-  ],
-  "oracleText": "{T}: Add {C}.\n{3}, {T}: Draw a card. Activate only if you control a creature with power 4 or greater.",
-  "keywords": [],
-  "manaValue": 0,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Bonders' Enclave",
+        "manaCost": "",
+        "colors": [],
+        "manaValue": 0,
+        "supertypes": [],
+        "types": [
+          "Land"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{T}: Add {C}.\n{3}, {T}: Draw a card. Activate only if you control a creature with power 4 or greater."
+      }
+    ],
+    "colorIdentity": [],
+    "defaultPrintingId": "7cfeb33d-65c7-4aa2-a1d8-964e6cd73b82"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

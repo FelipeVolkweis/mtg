@@ -1,43 +1,41 @@
 {
+  "catalogVersion": 2,
   "id": "95be5f72-1f81-4ec6-9bd9-f0b07bfc874b",
-  "canonicalName": "Surrak and Goreclaw",
-  "defaultPrintingId": "22f0a911-5a48-4da4-bb02-950babaead2c",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Surrak and Goreclaw",
-      "manaCost": "{4}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Legendary Creature — Human Bear",
-      "manaValue": 6,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Human",
-        "Bear"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample\nOther creatures you control have trample.\nWhenever another nontoken creature you control enters, put a +1/+1 counter on it. It gains haste until end of turn.",
-      "power": "6",
-      "toughness": "5"
-    }
-  ],
-  "oracleText": "Trample\nOther creatures you control have trample.\nWhenever another nontoken creature you control enters, put a +1/+1 counter on it. It gains haste until end of turn.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 6,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Surrak and Goreclaw",
+        "manaCost": "{4}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 6,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Human",
+          "Bear"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample\nOther creatures you control have trample.\nWhenever another nontoken creature you control enters, put a +1/+1 counter on it. It gains haste until end of turn.",
+        "power": "6",
+        "toughness": "5"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "22f0a911-5a48-4da4-bb02-950babaead2c"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

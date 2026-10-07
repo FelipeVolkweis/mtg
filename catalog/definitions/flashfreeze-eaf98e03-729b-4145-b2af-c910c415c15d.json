@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "eaf98e03-729b-4145-b2af-c910c415c15d",
-  "canonicalName": "Flashfreeze",
-  "defaultPrintingId": "91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Flashfreeze",
-      "manaCost": "{1}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Counter target red or green spell."
-    }
-  ],
-  "oracleText": "Counter target red or green spell.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Flashfreeze",
+        "manaCost": "{1}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Counter target red or green spell."
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "91e37a7e-6093-4ef5-b6e4-4aa800ddfc1b"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

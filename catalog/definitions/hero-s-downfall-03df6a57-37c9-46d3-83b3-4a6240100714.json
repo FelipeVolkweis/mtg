@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "03df6a57-37c9-46d3-83b3-4a6240100714",
-  "canonicalName": "Hero's Downfall",
-  "defaultPrintingId": "ad2c01d9-8f54-46c0-9dc9-d4d4764ce1c9",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Hero's Downfall",
-      "manaCost": "{1}{B}{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Instant",
-      "manaValue": 3,
-      "supertypes": [],
-      "types": [
-        "Instant"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "Destroy target creature or planeswalker."
-    }
-  ],
-  "oracleText": "Destroy target creature or planeswalker.",
-  "keywords": [],
-  "manaValue": 3,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Hero's Downfall",
+        "manaCost": "{1}{B}{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 3,
+        "supertypes": [],
+        "types": [
+          "Instant"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "Destroy target creature or planeswalker."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "ad2c01d9-8f54-46c0-9dc9-d4d4764ce1c9"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

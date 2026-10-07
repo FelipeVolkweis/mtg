@@ -1,43 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "ef8fab12-d7d2-4c21-8b8c-41627048ac8b",
-  "canonicalName": "Lightshell Duo",
-  "defaultPrintingId": "bb75315c-ea8f-4eb0-899e-c73ef75fc396",
-  "form": "normal",
-  "colorIdentity": [
-    "U"
-  ],
-  "components": [
-    {
-      "name": "Lightshell Duo",
-      "manaCost": "{3}{U}",
-      "colors": [
-        "U"
-      ],
-      "typeLine": "Creature — Rat Otter",
-      "manaValue": 4,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Rat",
-        "Otter"
-      ],
-      "keywords": [
-        "Surveil",
-        "Prowess"
-      ],
-      "rulesText": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhen this creature enters, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)",
-      "power": "3",
-      "toughness": "4"
-    }
-  ],
-  "oracleText": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhen this creature enters, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)",
-  "keywords": [
-    "Surveil",
-    "Prowess"
-  ],
-  "manaValue": 4,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Lightshell Duo",
+        "manaCost": "{3}{U}",
+        "colors": [
+          "U"
+        ],
+        "manaValue": 4,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Rat",
+          "Otter"
+        ],
+        "keywords": [
+          "Surveil",
+          "Prowess"
+        ],
+        "rulesText": "Prowess (Whenever you cast a noncreature spell, this creature gets +1/+1 until end of turn.)\nWhen this creature enters, surveil 2. (Look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.)",
+        "power": "3",
+        "toughness": "4"
+      }
+    ],
+    "colorIdentity": [
+      "U"
+    ],
+    "defaultPrintingId": "bb75315c-ea8f-4eb0-899e-c73ef75fc396"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

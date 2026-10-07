@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "f916f689-a314-4952-8107-41c4c2f2e811",
-  "canonicalName": "Pulse Tracker",
-  "defaultPrintingId": "7bc1441e-7d75-4a74-8733-19077dfa69b2",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Pulse Tracker",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Creature — Vampire Rogue",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Vampire",
-        "Rogue"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever this creature attacks, each opponent loses 1 life.",
-      "power": "1",
-      "toughness": "1"
-    }
-  ],
-  "oracleText": "Whenever this creature attacks, each opponent loses 1 life.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Pulse Tracker",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Vampire",
+          "Rogue"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever this creature attacks, each opponent loses 1 life.",
+        "power": "1",
+        "toughness": "1"
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "7bc1441e-7d75-4a74-8733-19077dfa69b2"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

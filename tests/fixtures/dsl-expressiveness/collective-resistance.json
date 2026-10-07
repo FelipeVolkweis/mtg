@@ -1,0 +1,126 @@
+{
+  "catalogVersion": 2,
+  "id": "bffdfe7b-f17a-41b6-a460-80280fe497d4",
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Collective Resistance",
+        "manaCost": "{1}{G}",
+        "colors": ["G"],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": ["Instant"],
+        "subtypes": [],
+        "keywords": ["Escalate"],
+        "rulesText": "Escalate {G} (Pay this cost for each mode chosen beyond the first.)\nChoose one or more —\n• Destroy target artifact.\n• Destroy target enchantment.\n• Target creature gains hexproof and indestructible until end of turn."
+      }
+    ],
+    "colorIdentity": ["G"],
+    "defaultPrintingId": "1fa97b3c-7780-4f53-9b74-20e7f8e41602"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": [
+      {
+        "id": "escalate",
+        "kind": "keyword",
+        "keyword": {
+          "name": "escalate",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": ["{G}"]
+            }
+          ]
+        }
+      },
+      {
+        "id": "modes",
+        "kind": "spell",
+        "modes": {
+          "choose": {
+            "min": 1,
+            "max": 3
+          },
+          "options": [
+            {
+              "id": "artifact",
+              "label": "Destroy target artifact.",
+              "targets": [
+                {
+                  "id": "artifact",
+                  "filter": {
+                    "zone": "battlefield",
+                    "type": "Artifact"
+                  }
+                }
+              ],
+              "effects": [
+                {
+                  "kind": "destroy",
+                  "objects": {
+                    "target": "artifact"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "enchantment",
+              "label": "Destroy target enchantment.",
+              "targets": [
+                {
+                  "id": "enchantment",
+                  "filter": {
+                    "zone": "battlefield",
+                    "type": "Enchantment"
+                  }
+                }
+              ],
+              "effects": [
+                {
+                  "kind": "destroy",
+                  "objects": {
+                    "target": "enchantment"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "protect",
+              "label": "Target creature gains hexproof and indestructible until end of turn.",
+              "targets": [
+                {
+                  "id": "creature",
+                  "filter": {
+                    "zone": "battlefield",
+                    "type": "Creature"
+                  }
+                }
+              ],
+              "effects": [
+                {
+                  "kind": "apply-continuous",
+                  "objects": {
+                    "target": "creature"
+                  },
+                  "duration": "end-of-turn",
+                  "changes": [
+                    {
+                      "kind": "grant-keyword",
+                      "keyword": "hexproof"
+                    },
+                    {
+                      "kind": "grant-keyword",
+                      "keyword": "indestructible"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

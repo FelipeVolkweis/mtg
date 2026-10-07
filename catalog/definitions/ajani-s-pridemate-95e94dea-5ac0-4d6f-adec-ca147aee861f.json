@@ -1,37 +1,37 @@
 {
+  "catalogVersion": 2,
   "id": "95e94dea-5ac0-4d6f-adec-ca147aee861f",
-  "canonicalName": "Ajani's Pridemate",
-  "defaultPrintingId": "222c1a68-e34c-4103-b1be-17d4ceaef6ce",
-  "form": "normal",
-  "colorIdentity": [
-    "W"
-  ],
-  "components": [
-    {
-      "name": "Ajani's Pridemate",
-      "manaCost": "{1}{W}",
-      "colors": [
-        "W"
-      ],
-      "typeLine": "Creature — Cat Soldier",
-      "manaValue": 2,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Cat",
-        "Soldier"
-      ],
-      "keywords": [],
-      "rulesText": "Whenever you gain life, put a +1/+1 counter on this creature.",
-      "power": "2",
-      "toughness": "2"
-    }
-  ],
-  "oracleText": "Whenever you gain life, put a +1/+1 counter on this creature.",
-  "keywords": [],
-  "manaValue": 2,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Ajani's Pridemate",
+        "manaCost": "{1}{W}",
+        "colors": [
+          "W"
+        ],
+        "manaValue": 2,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Cat",
+          "Soldier"
+        ],
+        "keywords": [],
+        "rulesText": "Whenever you gain life, put a +1/+1 counter on this creature.",
+        "power": "2",
+        "toughness": "2"
+      }
+    ],
+    "colorIdentity": [
+      "W"
+    ],
+    "defaultPrintingId": "222c1a68-e34c-4103-b1be-17d4ceaef6ce"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

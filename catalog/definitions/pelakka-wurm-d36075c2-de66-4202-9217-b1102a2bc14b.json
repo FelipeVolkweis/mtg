@@ -1,40 +1,38 @@
 {
+  "catalogVersion": 2,
   "id": "d36075c2-de66-4202-9217-b1102a2bc14b",
-  "canonicalName": "Pelakka Wurm",
-  "defaultPrintingId": "304c635c-de4d-46ee-8ab0-e5c4d55b61b3",
-  "form": "normal",
-  "colorIdentity": [
-    "G"
-  ],
-  "components": [
-    {
-      "name": "Pelakka Wurm",
-      "manaCost": "{4}{G}{G}{G}",
-      "colors": [
-        "G"
-      ],
-      "typeLine": "Creature — Wurm",
-      "manaValue": 7,
-      "supertypes": [],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Wurm"
-      ],
-      "keywords": [
-        "Trample"
-      ],
-      "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhen this creature enters, you gain 7 life.\nWhen this creature dies, draw a card.",
-      "power": "7",
-      "toughness": "7"
-    }
-  ],
-  "oracleText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhen this creature enters, you gain 7 life.\nWhen this creature dies, draw a card.",
-  "keywords": [
-    "Trample"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Pelakka Wurm",
+        "manaCost": "{4}{G}{G}{G}",
+        "colors": [
+          "G"
+        ],
+        "manaValue": 7,
+        "supertypes": [],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Wurm"
+        ],
+        "keywords": [
+          "Trample"
+        ],
+        "rulesText": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)\nWhen this creature enters, you gain 7 life.\nWhen this creature dies, draw a card.",
+        "power": "7",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [
+      "G"
+    ],
+    "defaultPrintingId": "304c635c-de4d-46ee-8ab0-e5c4d55b61b3"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

@@ -1,42 +1,40 @@
 {
+  "catalogVersion": 2,
   "id": "060deaff-44d6-4f03-9568-bcb7add80255",
-  "canonicalName": "Drakuseth, Maw of Flames",
-  "defaultPrintingId": "7ab6f53d-a4de-4afa-8cc6-ca8b5438cff8",
-  "form": "normal",
-  "colorIdentity": [
-    "R"
-  ],
-  "components": [
-    {
-      "name": "Drakuseth, Maw of Flames",
-      "manaCost": "{4}{R}{R}{R}",
-      "colors": [
-        "R"
-      ],
-      "typeLine": "Legendary Creature — Dragon",
-      "manaValue": 7,
-      "supertypes": [
-        "Legendary"
-      ],
-      "types": [
-        "Creature"
-      ],
-      "subtypes": [
-        "Dragon"
-      ],
-      "keywords": [
-        "Flying"
-      ],
-      "rulesText": "Flying\nWhenever Drakuseth attacks, Drakuseth deals 4 damage to any target and 3 damage to each of up to two other targets.",
-      "power": "7",
-      "toughness": "7"
-    }
-  ],
-  "oracleText": "Flying\nWhenever Drakuseth attacks, Drakuseth deals 4 damage to any target and 3 damage to each of up to two other targets.",
-  "keywords": [
-    "Flying"
-  ],
-  "manaValue": 7,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Drakuseth, Maw of Flames",
+        "manaCost": "{4}{R}{R}{R}",
+        "colors": [
+          "R"
+        ],
+        "manaValue": 7,
+        "supertypes": [
+          "Legendary"
+        ],
+        "types": [
+          "Creature"
+        ],
+        "subtypes": [
+          "Dragon"
+        ],
+        "keywords": [
+          "Flying"
+        ],
+        "rulesText": "Flying\nWhenever Drakuseth attacks, Drakuseth deals 4 damage to any target and 3 damage to each of up to two other targets.",
+        "power": "7",
+        "toughness": "7"
+      }
+    ],
+    "colorIdentity": [
+      "R"
+    ],
+    "defaultPrintingId": "7ab6f53d-a4de-4afa-8cc6-ca8b5438cff8"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

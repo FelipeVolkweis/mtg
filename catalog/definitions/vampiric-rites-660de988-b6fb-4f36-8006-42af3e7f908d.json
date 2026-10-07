@@ -1,32 +1,32 @@
 {
+  "catalogVersion": 2,
   "id": "660de988-b6fb-4f36-8006-42af3e7f908d",
-  "canonicalName": "Vampiric Rites",
-  "defaultPrintingId": "9ae0b1e0-a481-4a98-b67b-0cf8bac53fdd",
-  "form": "normal",
-  "colorIdentity": [
-    "B"
-  ],
-  "components": [
-    {
-      "name": "Vampiric Rites",
-      "manaCost": "{B}",
-      "colors": [
-        "B"
-      ],
-      "typeLine": "Enchantment",
-      "manaValue": 1,
-      "supertypes": [],
-      "types": [
-        "Enchantment"
-      ],
-      "subtypes": [],
-      "keywords": [],
-      "rulesText": "{1}{B}, Sacrifice a creature: You gain 1 life and draw a card."
-    }
-  ],
-  "oracleText": "{1}{B}, Sacrifice a creature: You gain 1 life and draw a card.",
-  "keywords": [],
-  "manaValue": 1,
-  "automationStatus": "unimplemented",
-  "abilities": []
+  "imported": {
+    "form": "normal",
+    "components": [
+      {
+        "name": "Vampiric Rites",
+        "manaCost": "{B}",
+        "colors": [
+          "B"
+        ],
+        "manaValue": 1,
+        "supertypes": [],
+        "types": [
+          "Enchantment"
+        ],
+        "subtypes": [],
+        "keywords": [],
+        "rulesText": "{1}{B}, Sacrifice a creature: You gain 1 life and draw a card."
+      }
+    ],
+    "colorIdentity": [
+      "B"
+    ],
+    "defaultPrintingId": "9ae0b1e0-a481-4a98-b67b-0cf8bac53fdd"
+  },
+  "authored": {
+    "automationStatus": "unimplemented",
+    "abilities": []
+  }
 }

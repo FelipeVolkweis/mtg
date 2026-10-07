@@ -560,6 +560,27 @@ test("scry becomes a Library sequence", () => {
   });
 });
 
+test("a cost modifier for this spell reads X when the mana cost has {X} (CR 601.2b, 601.2f)", () => {
+  const discount = (applies: unknown) => ({
+    id: "discount",
+    kind: "static",
+    grants: [
+      {
+        kind: "cost-modifier",
+        applies,
+        reduce: { sum: [1, { variable: "X" }] },
+      },
+    ],
+  });
+  expect(errors([discount("this")], "{X}{U}{U}")).toEqual([]);
+  expect(errors([discount("this")])).toEqual([
+    "{ variable: X } needs {X} in a cost or mana cost.",
+  ]);
+  expect(
+    errors([discount({ spells: { type: "Instant" } })], "{X}{U}{U}"),
+  ).toEqual(["{ variable: X } needs {X} in a cost or mana cost."]);
+});
+
 // ------------------------------------------------------ keyword expansion
 
 test("affinity becomes a this-spell cost reduction counting your matching permanents", () => {
