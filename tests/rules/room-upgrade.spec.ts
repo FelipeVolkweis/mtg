@@ -71,11 +71,20 @@ for (const name of fixtures)
       expect(object.ownerId).toBe(expected);
     }
     // Everything else is untouched; version 3 lifts an in-flight resolution
-    // to Core AST effects (tested below).
-    const { resolving, ...rules } = match.rules!;
-    const { resolving: stored, ...storedRules } = original.match.rules;
+    // to Core AST effects and version 4 lifts stored abilities to Core
+    // abilities (tested below).
+    const { resolving, pending, ...rules } = match.rules!;
+    const {
+      resolving: stored,
+      pending: storedPending,
+      ...storedRules
+    } = original.match.rules;
     expect(rules).toEqual(storedRules);
     expect(!!resolving).toBe(!!stored);
+    const { ability: _ability, ...procedure } = pending ?? {};
+    const { ability: _stored, ...storedProcedure } = storedPending ?? {};
+    expect(procedure).toEqual(storedProcedure);
+    if (pending?.ability) expect(pending.ability).toHaveProperty("kind");
     expect(match.zones).toEqual(original.match.zones);
     expect(match.instances).toEqual(original.match.instances);
     expect(room.participants).toEqual(original.participants);
@@ -360,4 +369,142 @@ test("a version 3 resolution with nothing waiting runs its queue from the start"
     frames: [{ instructions: [draw], pc: 0 }],
     bindings: {},
   });
+});
+
+// Snapshot version 4 also lifts the rest of a stored runtime ability, so the
+// engine reads Core abilities everywhere.
+test("stored version 3 abilities and continuous effects become Core", () => {
+  const filter = { zone: "battlefield", types: ["Creature"] };
+  const room = upgradeRoom({
+    snapshotVersion: 3,
+    match: {
+      objects: {
+        spell: {
+          kind: "card",
+          resolution: {
+            ability: { costs: [], effects: [], target: filter },
+            targetIds: ["c"],
+          },
+        },
+        trigger: {
+          kind: "ability",
+          sourceAbilityId: "upkeep-thopter",
+          resolution: {
+            ability: {
+              costs: [],
+              effects: [{ kind: "draw", count: 1 }],
+              trigger: { event: "upkeep", player: "you" },
+              intervening: {
+                value: { count: { zone: "battlefield", types: ["Artifact"] } },
+                atLeast: 1,
+              },
+            },
+            targetIds: [],
+          },
+        },
+      },
+      rules: {
+        pending: {
+          kind: "activate",
+          abilityId: "crew",
+          sourceId: "v",
+          ability: {
+            costs: [
+              {
+                kind: "crew",
+                power: 3,
+                filter: { zone: "battlefield", types: ["Creature"] },
+              },
+              { kind: "life", amount: "commander-colors" },
+            ],
+            effects: [],
+            oncePerTurn: true,
+          },
+        },
+        waitingTriggers: [
+          {
+            abilityId: "death",
+            ability: {
+              costs: [],
+              effects: [],
+              trigger: {
+                event: "dies",
+                filter: { zone: "battlefield", self: "only" },
+              },
+            },
+          },
+        ],
+        temporaryEffects: [
+          {
+            sourceId: "c",
+            filter: { zone: "battlefield", self: "only" },
+            changes: [
+              { kind: "set-stats", power: 1, toughness: 1 },
+              { kind: "grant-keyword", keyword: "Flying" },
+            ],
+          },
+        ],
+      },
+    },
+  } as unknown as RoomState);
+  const match = room.match!;
+  expect(match.objects.spell.resolution!.ability).toEqual({
+    id: "cast",
+    kind: "spell",
+    targets: [
+      { id: "target-0", filter: { zone: "battlefield", type: ["Creature"] } },
+    ],
+    effects: [],
+  });
+  expect(match.objects.trigger.resolution!.ability).toEqual({
+    id: "upkeep-thopter",
+    kind: "triggered",
+    trigger: { event: "step", step: "upkeep", player: "you" },
+    interveningIf: {
+      compare: [
+        { count: { all: { zone: "battlefield", type: ["Artifact"] } } },
+        ">=",
+        1,
+      ],
+    },
+    effects: [{ kind: "draw", count: 1 }],
+  });
+  expect(match.rules!.pending!.ability).toEqual({
+    id: "crew",
+    kind: "activated",
+    costs: [
+      {
+        kind: "tap-total-power",
+        power: 3,
+        filter: {
+          zone: "battlefield",
+          type: ["Creature"],
+          status: "untapped",
+        },
+      },
+      { kind: "life", amount: { commanderColors: "you" } },
+    ],
+    limit: { perTurn: 1 },
+    effects: [],
+  });
+  expect(match.rules!.waitingTriggers![0].ability).toMatchObject({
+    id: "death",
+    kind: "triggered",
+    trigger: {
+      event: "zone-change",
+      object: { is: "source" },
+      from: "battlefield",
+      to: "graveyard",
+    },
+  });
+  expect(match.rules!.temporaryEffects).toEqual([
+    {
+      sourceId: "c",
+      objects: { all: { zone: "battlefield", is: "source" } },
+      changes: [
+        { kind: "set-base-stats", power: 1, toughness: 1 },
+        { kind: "grant-keyword", keyword: "Flying" },
+      ],
+    },
+  ]);
 });

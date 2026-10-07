@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { RulesAbility, RulesState } from "./rules.js";
+import type { RulesState } from "./rules.js";
 import type { Ability, CardForm } from "./rules-v2.js";
 
 export const id = z.uuid();
@@ -35,7 +35,7 @@ export type Characteristics = z.infer<typeof characteristicSchema>;
  * A Card Definition as the engine uses it. The file stores only the imported
  * facts and the authored abilities (card-model-refactor.md §3); the reader
  * derives the name, mana value, keywords, Oracle text and type lines, and
- * down-compiles the authored abilities into `abilities`.
+ * compiles the authored abilities into the Core `abilities` the engine runs.
  */
 export interface CardDefinition {
   id: string;
@@ -48,18 +48,13 @@ export interface CardDefinition {
   keywords: string[];
   manaValue: number;
   automationStatus: "unimplemented" | "implemented";
-  /** The runtime shapes the engine executes (down-compiled). */
-  abilities: CardAbility[];
+  /**
+   * The Core abilities the engine executes (the compiler's output); empty for
+   * an unimplemented card the runtime can't run.
+   */
+  abilities: Ability[];
   /** The DSL version 2 abilities, as authored in the file. */
   authoredAbilities: Ability[];
-}
-export interface CardAbility {
-  id: string;
-  description?: string;
-  kind: "static" | "triggered" | "activated" | "spell";
-  origin: "printed" | "granted";
-  applicableZone?: ZoneKind;
-  rules?: RulesAbility;
 }
 export interface CardPrinting {
   id: string;
@@ -201,7 +196,7 @@ export interface GameObject {
   sourceAbilityId?: string;
   resolution?: {
     sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
-    ability: RulesAbility;
+    ability: Ability;
     event?: import("./rules.js").SemanticEvent;
     targetIds: string[];
     color?: import("./rules.js").ManaType;

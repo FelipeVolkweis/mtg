@@ -1,11 +1,15 @@
 import type {
+  Ability,
   Condition,
   ContinuousChange,
+  Cost,
   Effect,
+  ManaProduction,
   Layer,
   Predicate,
   PredicateFields,
   Selector,
+  Trigger,
   Value,
 } from "../../shared/rules-v2.js";
 
@@ -570,4 +574,234 @@ export function liftResolution(progress: Doc) {
     "simultaneousIds",
   ])
     delete progress[field];
+}
+
+// Snapshot version 4 (roadmap issue 8): the engine runs Core abilities, so
+// the rest of a stored runtime ability is lifted too: its target, trigger,
+// intervening-if, costs and mana production; and continuous effects in force
+// match Core selectors.
+
+const source: Predicate = { is: "source" };
+
+/** A version 1 trigger subject; the source on the Battlefield is `source`. */
+const subject = (filter: V1Filter | undefined): Predicate =>
+  !filter || sourceOnly(filter) ? source : predicate(filter);
+
+const triggerPlayer = (player: unknown) =>
+  player === "you" ? ("you" as const) : ("opponents" as const);
+
+const steps = [
+  "untap",
+  "upkeep",
+  "draw",
+  "precombat-main",
+  "begin-combat",
+  "declare-attackers",
+  "declare-blockers",
+  "combat-damage",
+  "end-combat",
+  "postcombat-main",
+  "end",
+  "cleanup",
+] as const;
+
+function trigger(t: Doc): Trigger {
+  const filter = t.filter as V1Filter | undefined;
+  switch (t.event) {
+    case "enter":
+      return {
+        event: "zone-change",
+        object: subject(filter),
+        to: "battlefield",
+        ...(t.step !== undefined ? { during: steps[t.step as number] } : {}),
+      };
+    case "dies":
+      return {
+        event: "zone-change",
+        object: subject(filter),
+        from: "battlefield",
+        to: "graveyard",
+      };
+    case "attack":
+      return { event: "attacks", attacker: subject(filter) };
+    case "cast":
+      return { event: "cast", spell: predicate(filter!) };
+    case "damage":
+      return {
+        event: "deals-damage",
+        source: subject(filter),
+        ...(t.recipientKind ? { to: t.recipientKind as "player" } : {}),
+        ...(t.combat !== undefined ? { combat: t.combat as boolean } : {}),
+        ...(t.grouped ? { batch: "one-or-more" as const } : {}),
+      };
+    case "draw":
+      return {
+        event: "draws",
+        player: triggerPlayer(t.player),
+        ...(t.ordinal ? { nth: t.ordinal as number } : {}),
+      };
+    case "upkeep":
+      return {
+        event: "step",
+        step: "upkeep",
+        ...(t.player ? { player: triggerPlayer(t.player) } : {}),
+      };
+    case "target":
+      return {
+        event: "becomes-target",
+        object: subject(filter),
+        ...(t.player ? { by: triggerPlayer(t.player) } : {}),
+      };
+    default:
+      return {
+        event: "state",
+        condition: {
+          matches: {
+            selector: "source",
+            predicate: {
+              counters: {
+                kind: t.counter as string,
+                count: { ">=": t.atLeast as number },
+              },
+            },
+          },
+        },
+      };
+  }
+}
+
+function intervening(c: Doc): Condition {
+  const compare: Condition = {
+    compare: [value(c.value as V1Value), ">=", value(c.atLeast as V1Value)],
+  };
+  return c.requireObjects
+    ? {
+        and: [
+          compare,
+          { exists: { all: predicate(c.requireObjects as V1Filter) } },
+        ],
+      }
+    : compare;
+}
+
+function cost(c: Doc): Cost {
+  switch (c.kind) {
+    case "life":
+      return {
+        kind: "life",
+        amount:
+          c.amount === "commander-colors"
+            ? { commanderColors: "you" }
+            : (c.amount as number),
+      };
+    case "counter-source":
+      return {
+        kind: "counter-source",
+        counter: c.counter as string,
+        count: c.count as number,
+        operation: "put",
+      };
+    case "crew":
+      return {
+        kind: "tap-total-power",
+        power: c.power as number,
+        filter: predicate({ ...(c.filter as V1Filter), untapped: true }),
+      };
+    case "tap":
+    case "sacrifice":
+    case "discard":
+    case "return":
+      return {
+        kind: c.kind,
+        count: c.count as number,
+        filter: predicate(c.filter as V1Filter),
+      };
+    default:
+      return c as Cost;
+  }
+}
+
+function produce(p: Doc): ManaProduction {
+  return {
+    ...(p as unknown as ManaProduction),
+    colors:
+      p.colors === "commander-colors"
+        ? { commanderColors: "you" }
+        : (p.colors as ManaProduction["colors"]),
+  };
+}
+
+/**
+ * A stored version 1 runtime ability as the Core ability the engine runs:
+ * a spell being cast or resolving, an activated or mana ability, or a
+ * triggered ability. Its effects were lifted by snapshot version 3.
+ */
+export function liftRuntimeAbility(
+  a: Doc,
+  kind: "spell" | "activated" | "triggered",
+  id: string,
+): Ability {
+  const effects = (a.effects ?? []) as Effect[];
+  const targets = a.target
+    ? [{ id: "target-0", filter: predicate(a.target as V1Filter) }]
+    : undefined;
+  const costs = ((a.costs ?? []) as Doc[]).map(cost);
+  if (a.manaAbility || a.produce)
+    return {
+      id,
+      kind: "mana",
+      activation:
+        (a.trigger as Doc | undefined)?.event === "mana"
+          ? {
+              trigger: {
+                event: "tapped-for-mana",
+                object: predicate((a.trigger as Doc).filter as V1Filter),
+              },
+            }
+          : { costs },
+      produce: produce(a.produce as Doc),
+    };
+  if (kind === "triggered" || a.trigger)
+    return {
+      id,
+      kind: "triggered",
+      trigger: a.trigger
+        ? trigger(a.trigger as Doc)
+        : // The monarch's end step draw stored no trigger (CR 724.2).
+          { event: "step", step: "end", player: "you" },
+      ...(a.intervening
+        ? { interveningIf: intervening(a.intervening as Doc) }
+        : {}),
+      ...(targets ? { targets } : {}),
+      effects,
+    };
+  if (kind === "spell")
+    return {
+      id,
+      kind: "spell",
+      ...(targets ? { targets } : {}),
+      effects,
+    };
+  return {
+    id,
+    kind: "activated",
+    costs,
+    ...(a.timing ? { timing: "sorcery" as const } : {}),
+    ...(a.oncePerTurn ? { limit: { perTurn: 1 } } : {}),
+    ...(targets ? { targets } : {}),
+    effects,
+  };
+}
+
+/** A stored continuous effect in force, matching a Core selector. */
+export function liftContinuousEffect(effect: Doc) {
+  if (!effect.filter) return;
+  const filter = effect.filter as V1Filter;
+  effect.objects = { all: predicate(filter) };
+  delete effect.filter;
+  effect.changes = ((effect.changes ?? []) as Doc[]).map((c) => {
+    if (c.kind === "grant-keyword") return c;
+    const { layer: _layer, ...rest } = untagged(c);
+    return rest;
+  });
 }

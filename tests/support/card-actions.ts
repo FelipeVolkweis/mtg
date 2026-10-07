@@ -35,12 +35,12 @@ export async function cardAction(page: Page, label: string) {
   );
   const ability = definition?.abilities.find((ability) =>
     identifier.startsWith("add ")
-      ? ability.rules?.manaAbility
+      ? ability.kind === "mana"
       : ability.id === identifier,
   );
-  const mana = ability?.rules?.produce;
+  const mana = ability?.kind === "mana" ? ability.produce : undefined;
   const chooseColor =
-    !!mana && (mana.colors === "commander-colors" || mana.colors.length > 1);
+    !!mana && (!Array.isArray(mana.colors) || mana.colors.length > 1);
   const description = ability?.description
     ? `${ability.description}${chooseColor ? ` Choose {${identifier.split(" ").at(-1)}}.` : ""}`
     : label;

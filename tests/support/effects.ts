@@ -51,7 +51,12 @@ export async function effectGame() {
     if (options.x !== undefined)
       ability.variables = [{ name: "X", value: String(options.x) }];
     ability.resolution = {
-      ability: { costs: [], effects: structuredClone(effects) },
+      ability: {
+        id: "test",
+        kind: "activated",
+        costs: [],
+        effects: structuredClone(effects),
+      },
       targetIds: options.targetIds ?? [],
       ...(options.event ? { event: options.event } : {}),
     };

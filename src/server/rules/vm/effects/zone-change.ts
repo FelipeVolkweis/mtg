@@ -1,3 +1,4 @@
+import { cantBeCountered } from "../../abilities.js";
 import type {
   Choice,
   Selector,
@@ -171,12 +172,7 @@ export const counter: EffectHandler<"counter"> = {
     for (const id of ctx.eval.objects(effect.objects)) {
       const object = query.match.objects[id];
       if (!object || object.zoneId !== stack.id) continue;
-      if (
-        query
-          .definition(object)
-          ?.abilities.some((ability) => ability.rules?.cantBeCountered)
-      )
-        continue;
+      if (cantBeCountered(query.definition(object)?.abilities ?? [])) continue;
       if (object.kind === "ability")
         ctx.propose({ kind: "cease", objectId: id });
       else

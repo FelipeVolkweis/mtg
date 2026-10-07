@@ -1,5 +1,10 @@
 import type { RoomState } from "../../shared/model.js";
-import { liftAbility, liftResolution } from "./lift-v1-effects.js";
+import {
+  liftAbility,
+  liftContinuousEffect,
+  liftResolution,
+  liftRuntimeAbility,
+} from "./lift-v1-effects.js";
 
 /** The Room document shape this server writes (CM §5). */
 export const currentSnapshotVersion = 4;
@@ -71,16 +76,67 @@ function upgradeMatchToVersion3(match: Document) {
 }
 
 /**
- * Version 4 runs resolutions in the Rule VM (roadmap issue 8): the version 3
- * queue becomes one frame. Version 3 removed each instruction before running
- * it and kept a waiting one aside, so the waiting instruction goes first, at
- * the program counter, and the rest follow; nothing runs again. The untyped
- * binding maps become typed bindings.
+ * Version 4 (roadmap issue 8): the engine runs Core abilities, and
+ * resolutions run in the Rule VM. Stored runtime abilities and continuous
+ * effects in force are lifted to Core; an in-flight resolution becomes an
+ * execution.
  */
 function upgradeMatchToVersion4(match: Document) {
+  const objects = (match.objects ?? {}) as Record<string, Document>;
+  for (const object of Object.values(objects)) {
+    const resolution = object.resolution as Document | undefined;
+    if (!resolution?.ability) continue;
+    resolution.ability = liftRuntimeAbility(
+      resolution.ability as Document,
+      object.kind === "card" ? "spell" : "activated",
+      (object.sourceAbilityId as string | undefined) ?? "cast",
+    );
+  }
   const rules = match.rules as Document | undefined;
-  const progress = rules?.resolving as Document | undefined;
-  if (!rules || !progress) return;
+  if (!rules) return;
+  const kinds = {
+    cast: "spell",
+    activate: "activated",
+    "trigger-target": "triggered",
+  } as const;
+  for (const pending of [
+    rules.pending,
+    (rules.commanderReplay as Document | undefined)?.previousPending,
+  ] as (Document | undefined)[]) {
+    if (!pending?.ability) continue;
+    const kind = kinds[pending.kind as keyof typeof kinds] ?? "activated";
+    const stacked = objects[pending.sourceId as string];
+    pending.ability = liftRuntimeAbility(
+      pending.ability as Document,
+      kind,
+      (pending.abilityId as string | undefined) ??
+        (kind === "triggered"
+          ? ((stacked?.sourceAbilityId as string | undefined) ?? "trigger")
+          : "cast"),
+    );
+  }
+  for (const list of [rules.waitingTriggers, rules.triggerPlacement])
+    for (const trigger of (list ?? []) as Document[])
+      trigger.ability = liftRuntimeAbility(
+        trigger.ability as Document,
+        "triggered",
+        trigger.abilityId as string,
+      );
+  for (const list of [rules.temporaryEffects, rules.continuousEffects])
+    for (const effect of (list ?? []) as Document[])
+      liftContinuousEffect(effect);
+  upgradeResolutionToVersion4(rules);
+}
+
+/**
+ * The version 3 queue becomes one frame. Version 3 removed each instruction
+ * before running it and kept a waiting one aside, so the waiting instruction
+ * goes first, at the program counter, and the rest follow; nothing runs
+ * again. The untyped binding maps become typed bindings.
+ */
+function upgradeResolutionToVersion4(rules: Document) {
+  const progress = rules.resolving as Document | undefined;
+  if (!progress) return;
   const waiting = progress.waiting as
     { effect: unknown; state: unknown } | undefined;
   const bindings: Record<string, unknown> = {};

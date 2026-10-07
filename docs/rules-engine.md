@@ -15,17 +15,20 @@ and [ADR-0016](adr/0016-rules-automated-commander-and-practice.md).
 
 ## Boundaries
 
-| Area | Responsibility |
-| --- | --- |
-| [MatchService](../src/server/match/match.service.ts) | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results. |
-| [RulesEngine](../src/server/match/rules-engine.ts) | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints. |
-| [Card DSL v2](../src/shared/rules-v2.ts) | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords. |
-| [Rules Compiler](../src/server/rules/compiler.ts) and [down-compiler](../src/server/rules/down-compiler.ts) | Validate and desugar authored abilities into the Core AST. The down-compiler lowers targets, triggers, costs and static abilities into the runtime shapes the engine executes today; effects stay Core AST. |
-| [Rules context](../src/server/rules/context.ts) and [event runtime](../src/server/rules/events/event-runtime.ts) | `RulesQuery` (read-only view) and `RulesMutator.propose`: every zone change, draw, damage event, life change and object creation is proposed, applied and reported to trigger observation. |
-| [Effect handlers](../src/server/rules/vm/effects/registry.ts) | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions, or suspends for a choice; it also reports at load time what it can't run. |
-| [Shared rules model](../src/shared/rules.ts) | Defines the runtime ability shape the down-compiler emits, pending procedures, and persisted rules state. |
-| [Match view](../src/server/match/match-view.ts) | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see. |
-| [Commander support gate](../src/server/match/commander.ts) | Validates Commander Decklist rules and checks that each Card Definition has implemented, schema-valid, supported behavior. |
+| Area                                                                                                             | Responsibility                                                                                                                                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [MatchService](../src/server/match/match.service.ts)                                                             | Validates Commander setup, creates initial Match state, and executes gameplay commands on a clone. It publishes the clone for accepted commands and returns accepted, pending, or rejected results.                                   |
+| [RulesEngine](../src/server/match/rules-engine.ts)                                                               | Validates and applies gameplay actions, produces legal actions, manages Priority and the Stack, and advances turn procedures and checkpoints.                                                                                         |
+| [Card DSL v2](../src/shared/rules-v2.ts)                                                                         | Defines the version 2 definition file (`imported` and `authored` sections) and the Zod schemas for authored abilities: selectors, predicates, values, targets, effects, costs, triggers, grants and keywords.                         |
+| [Rules Compiler](../src/server/rules/compiler.ts) and [support check](../src/server/rules/support.ts)            | The compiler validates and desugars authored abilities into the Core AST the engine runs. The support check names any Core construct the current runtime can't run.                                                                   |
+| [Ability readers](../src/server/rules/abilities.ts)                                                              | Answer what the engine asks of a Core ability: its target clause, costs, mana production, trigger pattern, intervening-if, keywords, static grants and continuous effects.                                                            |
+| [Rules context](../src/server/rules/context.ts) and [event runtime](../src/server/rules/events/event-runtime.ts) | `RulesQuery` (read-only view) and `RulesMutator.propose`: every zone change, draw, damage event, life change and object creation is proposed, applied and reported to trigger observation.                                            |
+| [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts)                                        | The resolution envelope for the top Stack object: intervening-if, target revalidation, then the permanent-spell path or the Rule VM, then Stack cleanup.                                                                              |
+| [Rule VM](../src/server/rules/vm/rule-vm.ts)                                                                     | Runs a resolving instruction program: frames with program counters and typed bindings, persisted in `rules.resolving`, suspending for choices and resuming without replay.                                                            |
+| [Effect handlers](../src/server/rules/vm/effects/registry.ts)                                                    | One handler per Core effect kind, dispatched through a registry. Each handler runs its instruction, hands back nested instructions (run in a new VM frame), or suspends for a choice; it also reports at load time what it can't run. |
+| [Shared rules model](../src/shared/rules.ts)                                                                     | Defines pending procedures, the Rule VM's execution state, continuous effects in force, and persisted rules state.                                                                                                                    |
+| [Match view](../src/server/match/match-view.ts)                                                                  | Builds each participant's projection of Match state, including visible objects, legal actions, and any choice details that participant may see.                                                                                       |
+| [Commander support gate](../src/server/match/commander.ts)                                                       | Validates Commander Decklist rules and checks that each Card Definition has implemented, supported behavior.                                                                                                                          |
 
 Room code owns transport, participant authorization, revision checks, and
 database persistence. `MatchService.execute` receives a participant and action
@@ -55,28 +58,27 @@ four steps:
    references (targets, bindings, X, links, tokens, counters), expands macro
    keywords and tags layers. An authoring error fails the load with the card
    name and the path.
-4. Down-compile the Core AST into `CardAbility.rules`, the shapes the engine
-   executes. Effects pass through as Core AST once the effect handler
-   registry confirms it can run each one. An implemented card that uses a
-   construct the current runtime can't run fails the load; an unimplemented
-   one loads without runtime abilities.
+4. Check the Core AST against the runtime
+   ([support.ts](../src/server/rules/support.ts)). The engine runs the
+   compiler's Core abilities directly (`CardDefinition.abilities`); the
+   effect handler registry confirms it can run each effect. An implemented
+   card that uses a construct the current runtime can't run fails the load;
+   an unimplemented one loads without runtime abilities.
 
 The catalog gate (`tests/rules/compiler/catalog-gate.spec.ts`) compiles every
-definition and down-compiles every implemented one. Publishing writes each
-definition back as its version 2 file, so reading and republishing the catalog
-reproduces it byte for byte. The down-compiler is temporary: the effect
-handlers already read the Core AST, and the rule VM (roadmap issue 8) will
-replace the rest.
+definition and runs the support check on every implemented one. Publishing
+writes each definition back as its version 2 file, so reading and republishing
+the catalog reproduces it byte for byte.
 
 Commander setup calls `automationEligible` for every card in the selected
 Decklist. It requires an implemented Card Definition, a supported card form,
-valid runtime rules for each ability, and an authored implementation for each
+supported effects in each ability, and an authored implementation for each
 keyword. A keyword or Oracle Text alone does not make a behavior executable. Unsupported cards are reported during setup rather than
 being silently accepted with partial behavior.
 
 This is a curated rules implementation, not a complete Comprehensive Rules
-engine. New card support requires both an authored composition that compiles,
-down-compiles and passes the support checks, and engine code that performs its
+engine. New card support requires both an authored composition that compiles and
+passes the support checks, and engine code that performs its
 costs, choices, events, and effects correctly.
 
 ## Command and resolution flow
@@ -99,16 +101,23 @@ costs, choices, events, and effects correctly.
    Player activate mana abilities explicitly, and then places a spell or
    Ability Game Object on the Stack. Casting Records, chosen values, targets,
    and captured ability data are stored with the relevant Game Object.
-5. After all Match Players pass Priority, the top Stack object resolves.
-   [Resolution](../src/server/match/resolution.ts) runs its Core AST
-   instructions in order, dispatching each through the effect handler
-   registry. Handlers evaluate selectors, predicates, values and conditions
-   with the [evaluator](../src/server/rules/vm/evaluate.ts), change the game
-   only through `propose` (or object state such as tapping and counters), and
-   name results as number or object-set bindings. A handler can suspend for a
-   private selection or payment; its instruction and state persist in
-   `resolving.waiting`, and the answer resumes it. The Match does not receive
-   Priority in the middle of that resolution.
+5. After all Match Players pass Priority, the top Stack object resolves
+   through the [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts).
+   A triggered ability's intervening-if is checked again and targets are
+   revalidated; an object whose condition is false or whose targets are all
+   illegal leaves the Stack without effect. A permanent spell enters the
+   Battlefield (an Aura attaches to its target) without an effect program.
+   An instant, sorcery or ability runs its Core AST instructions in the
+   [Rule VM](../src/server/rules/vm/rule-vm.ts), dispatching each through the
+   effect handler registry. Handlers evaluate selectors, predicates, values
+   and conditions with the [evaluator](../src/server/rules/vm/evaluate.ts),
+   change the game only through `propose` (or object state such as tapping
+   and counters), and name results as typed number or object-set bindings.
+   Nested instructions run in a new frame. A handler can suspend for a
+   private selection or payment: its frame's program counter stays on it and
+   its state persists in `resolving.waiting`, so the answer resumes it and
+   nothing before it runs again. The Match does not receive Priority in the
+   middle of that resolution.
 6. Zone changes, attacks, draws, damage, and other modeled events are collected
    by the [trigger system](../src/server/match/triggers.ts). At checkpoints the
    engine applies state-based changes, gathers waiting triggers, asks for

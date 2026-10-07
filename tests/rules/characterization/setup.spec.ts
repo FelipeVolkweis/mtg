@@ -11,7 +11,7 @@
 // | newly completed protection, flying, Vehicle and requirement definitions pass normal Commander setup | Preserve |
 // | the complete mono-U pool resolves to 100 cards and 67 supported definitions in mirror and practice setup | Preserve |
 // | Commander setup rejects a card without its authored {keyword} ability (parameterized) | Preserve | was "an empty authored {keyword} envelope"; version 2 has no empty envelope, so the keyword's ability is removed instead (roadmap issue 6)
-// | implemented catalog abilities retain exact rules descriptions and expose readable activation choices | Preserve |
+// | implemented catalog abilities retain exact rules descriptions and expose readable activation choices | Change | the engine runs Core abilities (roadmap issue 8): a cost modifier for the card's own ability is no longer folded away, and its text lives in the modified ability (Tamiyo's Logbook)
 
 import { expect, test } from "@playwright/test";
 import { randomUUID } from "node:crypto";
@@ -332,8 +332,21 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
     (card) => card.automationStatus === "implemented",
   );
   expect(implemented.length).toBeGreaterThan(0);
+  // A cost modifier for the card's own ability has no text of its own: the
+  // modified ability's description holds it (Tamiyo's Logbook).
+  const ownCostModifier = (
+    ability: (typeof implemented)[number]["abilities"][number],
+  ) =>
+    ability.kind === "static" &&
+    ability.grants.every(
+      (g) =>
+        g.kind === "cost-modifier" &&
+        typeof g.applies === "object" &&
+        "abilitiesOf" in g.applies,
+    );
   for (const card of implemented) {
     for (const ability of card.abilities) {
+      if (ownCostModifier(ability)) continue;
       expect(
         ability.description,
         `${card.canonicalName}: ${ability.id}`,

@@ -1,6 +1,13 @@
 import type { GameObject, MatchAction } from "../../../shared/model.js";
 import { Resolution } from "../../match/resolution.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
+import {
+  effectsOf,
+  enchantFilter,
+  interveningIf,
+  isDiesTrigger,
+  targetFilter,
+} from "../abilities.js";
 import type { VMResult } from "../vm/rule-vm.js";
 
 // Stack Resolution Runtime (rules-engine-refactor.md §28–30): the CR 608
@@ -34,7 +41,7 @@ export class StackResolutionRuntime {
     this.after(
       new Resolution(engine).start(
         object,
-        object.resolution?.ability.effects ?? [],
+        effectsOf(object.resolution?.ability),
       ),
     );
   }
@@ -58,11 +65,11 @@ export class StackResolutionRuntime {
 
   /** CR 603.4: a triggered ability's intervening-if is checked again. */
   interveningHolds(object: GameObject) {
-    const ability = object.resolution?.ability;
+    const condition = interveningIf(object.resolution?.ability);
     return (
-      !ability?.intervening ||
+      !condition ||
       this.engine.conditionSatisfied(
-        ability.intervening,
+        condition,
         object.controllerId,
         object.sourceObjectId ?? object.id,
       )
@@ -73,12 +80,11 @@ export class StackResolutionRuntime {
   someTargetLegal(object: GameObject) {
     const engine = this.engine;
     const resolution = object.resolution;
-    const filter = resolution?.ability.target;
+    const filter = targetFilter(resolution?.ability);
     if (!resolution || !filter) return true;
-    const sourceId =
-      resolution.ability.trigger?.event === "dies"
-        ? resolution.event?.affectedId
-        : (object.sourceObjectId ?? object.id);
+    const sourceId = isDiesTrigger(resolution.ability)
+      ? resolution.event?.affectedId
+      : (object.sourceObjectId ?? object.id);
     return resolution.targetIds.some(
       (id) =>
         engine.match.objects[id] &&
@@ -109,7 +115,7 @@ export class StackResolutionRuntime {
       objectId: object.id,
       to: engine.zone("battlefield"),
     }).object!;
-    if (engine.definition(permanent)?.abilities.some((a) => a.rules?.aura))
+    if (enchantFilter(engine.definition(permanent)?.abilities ?? []))
       permanent.attachmentTo = targets[0];
   }
 

@@ -80,7 +80,7 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
         sourceId: creature.id,
         abilityId: "bonus",
         playerId: game.match.players[0].id,
-        filter: { zone: "battlefield", self: "only" },
+        objects: { all: { zone: "battlefield", is: "source" } },
         changes: [{ kind: "add-stats", power: 0, toughness: 2 }],
         applicability: "until-end-of-turn",
       },

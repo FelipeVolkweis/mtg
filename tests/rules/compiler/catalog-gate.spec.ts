@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { readdirSync, readFileSync } from "node:fs";
 import { compileCard } from "../../../src/server/rules/compiler";
-import { downCompile } from "../../../src/server/rules/down-compiler";
 import { readRegistries } from "../../../src/server/rules/registries";
+import { checkSupport } from "../../../src/server/rules/support";
 import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
 
 // The catalog gate (roadmap issues 4 and 6): every version 2 definition, in
 // the catalog and in tests/fixtures/dsl-v2, parses and compiles, and every
-// implemented catalog definition down-compiles to the runtime the engine
-// executes today.
+// implemented catalog definition passes the runtime support check: the engine
+// can run its Core AST.
 
 test("the token registry loads from the catalog", async () => {
   const { tokens } = await readRegistries("catalog");
@@ -55,8 +55,9 @@ test("every catalog definition compiles, and every implemented one is executable
     }
     if (card.data.authored.automationStatus !== "implemented") continue;
     implemented++;
-    const down = downCompile(compiled.abilities);
-    if (!down.ok) failures.push(`${path}: ${JSON.stringify(down.errors)}`);
+    const support = checkSupport(compiled.abilities);
+    if (!support.ok)
+      failures.push(`${path}: ${JSON.stringify(support.errors)}`);
   }
   expect(failures).toEqual([]);
   expect(implemented).toBe(67);

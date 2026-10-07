@@ -4,7 +4,7 @@ import { gameObject } from "../../../src/server/match/game-objects";
 import { RulesEngine } from "../../../src/server/match/rules-engine";
 import { StackResolutionRuntime } from "../../../src/server/rules/stack/stack-resolution";
 import type { GameObject } from "../../../src/shared/model";
-import type { RulesAbility } from "../../../src/shared/rules";
+import type { Ability } from "../../../src/shared/rules-v2";
 import { author } from "../../support/authored";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";
@@ -15,31 +15,40 @@ import { force } from "../../support/force";
 
 type Game = Awaited<ReturnType<typeof effectGame>>;
 
-/** A runtime ability: one creature target and an optional intervening-if. */
-function ability(options: {
-  target?: boolean;
-  atLeast?: number;
-}): RulesAbility {
-  return {
-    costs: [],
-    effects: [{ kind: "gain-life", amount: 1 }],
+/** An ability: one creature target and an optional intervening-if. */
+function ability(options: { target?: boolean; atLeast?: number }): Ability {
+  const body = {
     ...(options.target
-      ? { target: { zone: "battlefield", types: ["Creature"] } }
-      : {}),
-    ...(options.atLeast !== undefined
       ? {
-          trigger: { event: "upkeep" },
-          intervening: {
-            value: { count: { zone: "battlefield", types: ["Artifact"] } },
-            atLeast: options.atLeast,
-          },
+          targets: [
+            {
+              id: "target-0",
+              filter: { zone: "battlefield" as const, type: ["Creature"] },
+            },
+          ],
         }
       : {}),
+    effects: [{ kind: "gain-life" as const, amount: 1 }],
+  };
+  if (options.atLeast === undefined)
+    return { id: "test", kind: "activated", costs: [], ...body };
+  return {
+    id: "test",
+    kind: "triggered",
+    trigger: { event: "step", step: "upkeep" },
+    interveningIf: {
+      compare: [
+        { count: { all: { zone: "battlefield", type: ["Artifact"] } } },
+        ">=",
+        options.atLeast,
+      ],
+    },
+    ...body,
   };
 }
 
 /** An ability Game Object waiting on the Stack. */
-function stacked(game: Game, rules: RulesAbility, targetIds: string[] = []) {
+function stacked(game: Game, rules: Ability, targetIds: string[] = []) {
   const object = gameObject(
     "ability",
     game.zone("stack").id,
@@ -98,8 +107,9 @@ test("a permanent spell takes the permanent path; instants and sorceries run pro
   const negate = game.seed("Negate", "hand");
   force.move(game.match, ring, "stack");
   force.move(game.match, negate, "stack");
-  ring.resolution = { ability: { costs: [], effects: [] }, targetIds: [] };
-  negate.resolution = { ability: { costs: [], effects: [] }, targetIds: [] };
+  const cast: Ability = { id: "cast", kind: "spell" };
+  ring.resolution = { ability: cast, targetIds: [] };
+  negate.resolution = { ability: cast, targetIds: [] };
   expect(path(game, game.match.objects[ring.id])).toBe("permanent");
   expect(path(game, game.match.objects[negate.id])).toBe("program");
 });

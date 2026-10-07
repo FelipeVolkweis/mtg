@@ -4,6 +4,7 @@ import type {
   LastKnownInformation,
 } from "../../../shared/rules.js";
 import { moveObject } from "../../match/game-objects.js";
+import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import { Triggers } from "../../match/triggers.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
@@ -89,9 +90,9 @@ export class EventRuntime {
     }
     if (to.kind === "battlefield") {
       const fresh = moveObject(engine.match, id, to, index);
-      fresh.status.tapped = !!engine
-        .definition(fresh)
-        ?.abilities.some((ability) => ability.rules?.entersTapped);
+      fresh.status.tapped = entersTapped(
+        engine.definition(fresh)?.abilities ?? [],
+      );
       engine.emit("enter", fresh);
       return { object: fresh, lastKnown };
     }

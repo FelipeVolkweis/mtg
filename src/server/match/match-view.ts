@@ -1,3 +1,4 @@
+import { targetFilter } from "../rules/abilities.js";
 import type {
   Catalog,
   MatchState,
@@ -129,10 +130,10 @@ export function matchView(
                   ? {
                       ...pending,
                       legalTargetIds:
-                        pending.ability?.target && engine
+                        targetFilter(pending.ability) && engine
                           ? engine.legalTargets(
                               choicePlayerId!,
-                              pending.ability.target,
+                              targetFilter(pending.ability)!,
                               engine.targetSource(pending),
                             )
                           : [],

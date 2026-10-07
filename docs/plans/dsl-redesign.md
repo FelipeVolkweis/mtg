@@ -902,6 +902,8 @@ Acceptance: every card in the table is written out in version 2 in `tests/fixtur
 
 **As built (roadmap issue 6):** the script rewrote the 783 files once and was then deleted with the version 1 schema and loader; it remains in the history of issue 5's branch. The engine loads the catalog through compiler → down-compiler (`definitionFromFile` in `src/server/catalog/catalog-files.ts`). Before the rewrite, the version 1 runtime abilities of the implemented cards were captured in `tests/fixtures/golden/v1-runtime-abilities.json`; the golden test now compares the loaded catalog against that fixture. The `superRefine` of the runtime ability schema is gone (the compiler validates authored abilities); the runtime schema itself goes with the down-compiler in issue 8. Inline test definitions are authored in version 2 through `tests/support/authored.ts`.
 
+**As built (roadmap issue 8):** the down-compiler, the runtime ability schema (`RulesAbility`, `ObjectFilter`, `RulesValue`, `RulesCost`) and the golden test are gone. The engine runs the compiler's Core abilities (`CardDefinition.abilities`), reading them through `src/server/rules/abilities.ts`. The down-compiler's rejections live on as the runtime support check (`src/server/rules/support.ts`, tested in `tests/rules/compiler/support.spec.ts`), which the catalog loader and the catalog gate run on implemented cards. A static cost modifier for the card's own ability (Tamiyo's Logbook) is no longer folded into that ability; it is read where the cost is locked. Snapshot version 4 lifts the version 1 runtime abilities a stored Room still holds (Stack objects, pending procedures, waiting triggers, continuous effects in force) to Core (`src/server/room/lift-v1-effects.ts`).
+
 ---
 
 # 10. Out of scope
