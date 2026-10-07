@@ -193,7 +193,9 @@ export class RoomGateway
       let view;
       try {
         view = await this.rooms.view(session.invite, session.userId);
-      } catch {}
+      } catch {
+        // The rejection is sent without a view.
+      }
       this.send(client, {
         event: "rejected",
         data: {

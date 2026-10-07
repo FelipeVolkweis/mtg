@@ -10,7 +10,7 @@ export type Game = Awaited<ReturnType<typeof triggerGame>>;
 export interface Reached {
   /** The seat answering the procedure. */
   seat: number;
-  answer(pending: PendingProcedure, game: Game): MatchAction;
+  answer: (pending: PendingProcedure, game: Game) => MatchAction;
   /** A procedure answered on the way here, whose id is now stale. */
   old?: string;
 }

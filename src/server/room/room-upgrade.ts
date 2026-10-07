@@ -17,7 +17,7 @@ const oldestSnapshotVersion = 7;
  */
 export function upgradeRoom(stored: RoomState): RoomState {
   const version = (stored as { snapshotVersion?: unknown }).snapshotVersion;
-  const shown = version === undefined ? "(missing)" : String(version);
+  const shown = version === undefined ? "(missing)" : JSON.stringify(version);
   if (typeof version === "number" && version > currentSnapshotVersion)
     throw new Error(
       `Room snapshot version ${shown} is newer than this server supports (newest is ${currentSnapshotVersion}).`,

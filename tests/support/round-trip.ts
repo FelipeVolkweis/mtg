@@ -52,6 +52,8 @@ function persist(match: MatchState) {
 }
 
 if (roundTripEnabled) {
+  // Called with `.call(this, …)` below, so it keeps its receiver.
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const execute = MatchService.prototype.execute;
   MatchService.prototype.execute = function (match, ...rest) {
     persist(match);

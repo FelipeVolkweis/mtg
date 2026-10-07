@@ -58,6 +58,8 @@ test("a state-based check that never settles draws the game", async () => {
   const game = await effectGame();
   const myr = game.seed("Silver Myr", "battlefield");
   force.counters(myr, [{ kind: "-1/-1", quantity: "1" }]);
+  // Put back on the prototype below; never called unbound.
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const perform = StateBasedRuntime.prototype["perform"];
   // The creature never leaves: every check finds the same action again.
   StateBasedRuntime.prototype["perform"] = () => {};

@@ -180,7 +180,7 @@ export class ScryfallSource {
     const names = await this.fetchNames();
     const cards: SourceCard[] = [];
     let url: string | undefined =
-      `${this.origin}/cards/search?${new URLSearchParams({ q: `set:${setCode} lang:en`, unique: "prints", include_extras: "true", include_variations: "true" })}`;
+      `${this.origin}/cards/search?${new URLSearchParams({ q: `set:${setCode} lang:en`, unique: "prints", include_extras: "true", include_variations: "true" }).toString()}`;
     const seen = new Set<string>();
     while (url) {
       if (seen.has(url)) throw new Error("Repeated catalog page");

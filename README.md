@@ -67,7 +67,7 @@ npx playwright test tests/rules-ui.spec.ts
 npm test
 ```
 
-`npm run gates` runs the typecheck and the in-memory rules suites (`tests/rules/**`), once normally and once saving and restoring the Match around every command. It needs no browser or database.
+`npm run gates` runs the typecheck, the lint and the in-memory rules suites (`tests/rules/**`), once normally and once saving and restoring the Match around every command. It needs no browser or database. `npm run lint` runs typescript-eslint with type information from the separate `tools/lint` package, because typescript-eslint needs the TypeScript 6 compiler API and the project builds with TypeScript 7; it installs that package on first use. The GitHub Actions workflow in `.github/workflows/ci.yml` runs `npm run gates` and `npm test` against a PostgreSQL service on every pull request and on `main`.
 
 Tests use the real browser, NestJS transport, importer CLI, and PostgreSQL. They create a temporary catalog root and dedicated databases ending in `_test`, seeded from a local provider fixture. They do not call live Scryfall, edit the reviewed catalog, or use the development Room database. Set `TEST_DATABASE_URL` to a dedicated test database on a role allowed to create the additional recovery and expiry test databases. Restart and expiry checks use isolated application processes. `npm test` builds production assets before starting the acceptance server.
 
