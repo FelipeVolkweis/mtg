@@ -103,15 +103,7 @@ export class RulesEngine {
         this.cast(player.id, action.objectId);
       else if (action.type === "activate-ability")
         this.activate(player.id, action);
-      else if (action.type === "position") {
-        const object = this.object(action.objectId);
-        if (
-          object.zoneId !== this.zone("battlefield").id ||
-          object.controllerId !== player.id
-        )
-          throw new Error("Choose your Battlefield object.");
-        this.match.layout.positions[object.id] = action.position;
-      } else throw new Error("Use a legal rules action.");
+      else throw new Error("Use a legal rules action.");
     }
     this.match.revision++;
     return undefined;
@@ -414,7 +406,7 @@ export class RulesEngine {
   }
   battlefieldSources() {
     return Object.values(this.match.objects).filter(
-      (o) => o.zoneId === this.zone("battlefield").id && !o.status.phasedOut,
+      (o) => o.zoneId === this.zone("battlefield").id,
     );
   }
   emit(kind: "enter" | "cast", object: GameObject) {
@@ -424,9 +416,7 @@ export class RulesEngine {
         sourceId: object.id,
         affectedId: object.id,
         controllerId: object.controllerId,
-        ownerId:
-          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-          object.controllerId,
+        ownerId: object.ownerId,
         after: this.effective(object),
       },
       object,
@@ -455,9 +445,7 @@ export class RulesEngine {
         sourceId: id,
         affectedId: fresh.id,
         controllerId: object.controllerId,
-        ownerId:
-          this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-          object.controllerId,
+        ownerId: object.ownerId,
         from: from.kind,
         to: destination.kind,
         before,
@@ -931,12 +919,18 @@ export class RulesEngine {
         this.rules.activationUsage ??= {};
         this.rules.activationUsage[`${source}:${pending.abilityId}`] = 1;
       }
-      const object = gameObject("ability", this.zone("stack").id, playerId, {
-        name: `${this.lastSourceName}: ${pending.abilityId}`,
-        colors: [],
-        typeLine: "Ability",
-        rulesText: "",
-      });
+      const object = gameObject(
+        "ability",
+        this.zone("stack").id,
+        playerId,
+        playerId,
+        {
+          name: `${this.lastSourceName}: ${pending.abilityId}`,
+          colors: [],
+          typeLine: "Ability",
+          rulesText: "",
+        },
+      );
       object.variables = Object.entries(pending.variables ?? {}).map(
         ([name, value]) => ({ name, value: String(value) }),
       );
@@ -987,8 +981,7 @@ export class RulesEngine {
         ] ?? 0);
     let reduction = 0;
     for (const source of Object.values(this.match.objects)) {
-      if (source.status.phasedOut || source.controllerId !== pending.playerId)
-        continue;
+      if (source.controllerId !== pending.playerId) continue;
       for (const ability of this.definition(source)?.abilities ?? []) {
         for (const modifier of ability.rules?.costModifiers ?? []) {
           if (modifier.use !== pending.kind) continue;
@@ -1339,9 +1332,9 @@ export class RulesEngine {
             "token",
             this.zone("battlefield").id,
             playerId,
+            playerId,
             tokenCharacteristics[effect.token],
           );
-          token.ownerId = playerId;
           this.rules.resolving?.createdIds?.push(token.id);
           this.match.objects[token.id] = token;
           this.zone("battlefield").objectIds.push(token.id);
@@ -1355,16 +1348,10 @@ export class RulesEngine {
     }
   }
   owner(object: GameObject) {
-    return (
-      this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-      object.ownerId ??
-      object.controllerId
-    );
+    return object.ownerId;
   }
   toGraveyard(object: GameObject) {
-    const ownerId =
-      this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-      object.controllerId;
+    const ownerId = object.ownerId;
     if (object.kind === "ability") {
       this.zone("stack").objectIds.splice(
         this.zone("stack").objectIds.indexOf(object.id),
@@ -1520,8 +1507,7 @@ export class RulesEngine {
           controllerId: source.controllerId,
           ownerId: live
             ? this.owner(source)
-            : (stackSource.resolution?.sourceSnapshot?.ownerId ??
-              source.controllerId),
+            : (stackSource.resolution?.sourceSnapshot ?? source).ownerId,
           after: characteristics,
           damage: {
             ...recorded,
@@ -1732,12 +1718,7 @@ export class RulesEngine {
       for (const object of dying) {
         this.move(
           object.id,
-          this.zone(
-            "graveyard",
-            this.match.instances[object.cardInstanceIds[0]]?.ownerId ??
-              object.ownerId ??
-              object.controllerId,
-          ),
+          this.zone("graveyard", object.ownerId),
           sources,
           before.get(object.id),
         );

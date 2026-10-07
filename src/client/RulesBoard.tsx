@@ -53,8 +53,6 @@ function CardState({
       {c.loyalty !== undefined && <span>Loyalty {c.loyalty}</span>}
       {c.defense !== undefined && <span>Defense {c.defense}</span>}
       {object.status.tapped && <span>Tapped</span>}
-      {object.status.phasedOut && <span>Phased out</span>}
-      {object.status.flipped && <span>Flipped</span>}
       {object.counters.map((counter) => (
         <span key={counter.kind}>
           {counter.quantity} {counter.kind} counters
@@ -78,9 +76,7 @@ function Printing({ object }: { object: ObjectView }) {
       onError={() => setFailed(true)}
     />
   ) : (
-    <span
-      className={`printing-fallback ${object.hidden || object.faceDown ? "concealed-printing" : ""}`}
-    >
+    <span className="printing-fallback">
       <strong>{object.characteristics.name}</strong>
       <span>{object.characteristics.manaCost}</span>
       <span>{object.characteristics.typeLine}</span>

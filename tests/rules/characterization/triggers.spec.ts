@@ -370,7 +370,7 @@ test("Tome cannot gain life when its exile fails and does not duplicate a pendin
   }
   expect(view().players[0].life).toBe("40");
   const returned = Object.values(view().objects).find(
-    (o) => !o.hidden && o.characteristics.name === "Mazemind Tome",
+    (o) => o.characteristics.name === "Mazemind Tome",
   )!;
   expect(returned.counters).toEqual([]);
   expect(returned.zoneId).toBe(

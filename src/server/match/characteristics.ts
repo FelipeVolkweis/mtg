@@ -21,7 +21,6 @@ export function matchesFilter(
   const types = object.characteristics.types ?? [];
   return (
     zone.kind === filter.zone &&
-    !object.status.phasedOut &&
     (zone.visibility !== "private" || zone.ownerId === playerId) &&
     (!filter.controller ||
       (filter.controller === "you"
@@ -29,12 +28,8 @@ export function matchesFilter(
         : object.controllerId !== playerId)) &&
     (!filter.owner ||
       (filter.owner === "you"
-        ? (match.instances[object.cardInstanceIds[0]]?.ownerId ??
-            object.ownerId ??
-            object.controllerId) === playerId
-        : (match.instances[object.cardInstanceIds[0]]?.ownerId ??
-            object.ownerId ??
-            object.controllerId) !== playerId)) &&
+        ? object.ownerId === playerId
+        : object.ownerId !== playerId)) &&
     (!filter.nontoken || object.kind !== "token") &&
     (!filter.colored || !!object.characteristics.colors.length) &&
     (!filter.colorless || !object.characteristics.colors.length) &&
@@ -121,8 +116,7 @@ export class CharacteristicsCalculator {
           ];
         return (card?.abilities ?? []).flatMap((ability) => {
           const effect = ability.rules?.continuous;
-          if (!effect || ability.kind !== "static" || source.status.phasedOut)
-            return [];
+          if (!effect || ability.kind !== "static") return [];
           if (
             !effect.characteristicDefining &&
             this.match.zones.find((z) => z.id === source.zoneId)?.kind !==

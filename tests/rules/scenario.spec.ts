@@ -106,7 +106,7 @@ test("zone helpers clear, order and add objects", async () => {
   expect(card.zoneId).toBe(library().id);
   expect(zoneOf(match, card.id)).toBe(library());
   const stack = match.zones.find((z) => z.kind === "stack")!;
-  const ability = gameObject("ability", stack.id, player, {
+  const ability = gameObject("ability", stack.id, player, player, {
     name: "Test ability",
     typeLine: "Ability",
     colors: [],
