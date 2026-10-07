@@ -7,7 +7,6 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import type { IncomingMessage } from "node:http";
-import type { TLSSocket } from "node:tls";
 import type { User } from "../../shared/model.js";
 import { Database } from "../storage/database.js";
 
@@ -20,7 +19,21 @@ const tokenHash = (token: string) =>
 // scrypt parameters: N = 2^14, r = 8, p = 1, a 64-byte key and 16-byte salt.
 const cost = { N: 16384, r: 8, p: 1 };
 const keyLength = 64;
-function derive(password: string, salt: Buffer, params = cost) {
+// At most two scrypt hashes run at once, so bursts leave libuv's threadpool free.
+let hashing = 0;
+const waiting: (() => void)[] = [];
+async function derive(password: string, salt: Buffer, params = cost) {
+  if (hashing >= 2) await new Promise<void>((resolve) => waiting.push(resolve));
+  else hashing++;
+  try {
+    return await scryptKey(password, salt, params);
+  } finally {
+    const next = waiting.shift();
+    if (next) next();
+    else hashing--;
+  }
+}
+function scryptKey(password: string, salt: Buffer, params: typeof cost) {
   return new Promise<Buffer>((resolve, reject) =>
     scrypt(
       password.normalize("NFKC"),
@@ -50,7 +63,7 @@ export async function verifyPassword(password: string, stored: string) {
 // Compared against when a username is unknown, so both cases take as long.
 const unknownUserHash = hashPassword(randomBytes(16).toString("hex"));
 
-// Failed sign-ins per username; after `maxFailures` it is locked for a while.
+// Failed sign-ins per client IP and username; after `maxFailures` it is locked for a while.
 const maxFailures = 10;
 const lockMs = 15 * 60_000;
 
@@ -61,19 +74,12 @@ export function readCookie(request: IncomingMessage, name: string) {
   }
   return undefined;
 }
-/** HTTPS directly or through a reverse proxy marks the cookie Secure. */
-function secure(request: IncomingMessage) {
-  return (
-    !!(request.socket as TLSSocket).encrypted ||
-    request.headers["x-forwarded-proto"] === "https"
-  );
-}
-function cookie(
-  request: IncomingMessage,
-  value: string,
-  maxAgeSeconds: number,
-) {
-  return `${sessionCookie}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAgeSeconds}; HttpOnly; SameSite=Lax${secure(request) ? "; Secure" : ""}`;
+/** COOKIE_SECURE=1, or production unless COOKIE_SECURE=0, marks the cookie Secure. */
+const secure =
+  process.env.COOKIE_SECURE === "1" ||
+  (process.env.COOKIE_SECURE !== "0" && process.env.NODE_ENV === "production");
+function cookie(value: string, maxAgeSeconds: number) {
+  return `${sessionCookie}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAgeSeconds}; HttpOnly; SameSite=Lax${secure ? "; Secure" : ""}`;
 }
 
 /** Users, their passwords and browser sessions. */
@@ -96,8 +102,9 @@ export class UserService {
     return user;
   }
 
-  async signIn(username: string, password: string): Promise<User> {
-    const key = username.toLowerCase();
+  async signIn(ip: string, username: string, password: string): Promise<User> {
+    const name = username.toLowerCase();
+    const key = `${ip} ${name}`;
     const failure = this.failures.get(key);
     if (failure && Date.now() - failure.since >= lockMs)
       this.failures.delete(key);
@@ -109,7 +116,7 @@ export class UserService {
       password_hash: string;
     }>(
       "SELECT id, username, password_hash FROM users WHERE lower(username) = $1",
-      [key],
+      [name],
     );
     const row = result.rows[0];
     const valid = await verifyPassword(
@@ -118,8 +125,9 @@ export class UserService {
     );
     if (!row || !valid) {
       if (this.failures.size >= 10_000)
-        for (const [name, entry] of this.failures)
-          if (Date.now() - entry.since >= lockMs) this.failures.delete(name);
+        for (const [entryKey, entry] of this.failures)
+          if (Date.now() - entry.since >= lockMs)
+            this.failures.delete(entryKey);
       const current = this.failures.get(key);
       this.failures.set(key, {
         count: (current?.count ?? 0) + 1,
@@ -132,13 +140,13 @@ export class UserService {
   }
 
   /** A new session token and the Set-Cookie header that carries it. */
-  async createSession(request: IncomingMessage, userId: string) {
+  async createSession(userId: string) {
     const token = randomBytes(32).toString("hex");
     await this.database.pool.query(
       "INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, $3)",
       [tokenHash(token), userId, new Date(Date.now() + sessionMs)],
     );
-    return cookie(request, token, sessionMs / 1000);
+    return cookie(token, sessionMs / 1000);
   }
   async endSession(request: IncomingMessage) {
     const token = readCookie(request, sessionCookie);
@@ -147,7 +155,7 @@ export class UserService {
         "DELETE FROM sessions WHERE token_hash = $1",
         [tokenHash(token)],
       );
-    return cookie(request, "", 0);
+    return cookie("", 0);
   }
 
   async user(request: IncomingMessage): Promise<User | undefined> {

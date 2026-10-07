@@ -1,5 +1,6 @@
 import type { MatchAction } from "../../../shared/model.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
+import { budget } from "../loop-budget.js";
 import { StateBasedRuntime } from "../state-based/state-based-runtime.js";
 import { PutTriggeredAbilityOnStackProcedure } from "../triggers/put-triggered-ability.js";
 import { TriggerPlacement } from "../triggers/trigger-placement.js";
@@ -39,7 +40,8 @@ export class PriorityCheckpoint {
   resume() {
     const engine = this.engine;
     const rules = engine.rules;
-    for (;;) {
+    for (let pass = 1; ; pass++) {
+      budget("Priority checkpoint", pass, 1000);
       const state = (rules.checkpoint ??= {});
       const check = new StateBasedRuntime(engine).check();
       if (engine.match.outcome !== "ongoing") return;

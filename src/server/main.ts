@@ -9,4 +9,7 @@ async function main() {
   app.enableShutdownHooks();
   await app.listen(Number(process.env.PORT ?? 3000), "0.0.0.0");
 }
-void main();
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

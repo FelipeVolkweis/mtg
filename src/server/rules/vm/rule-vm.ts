@@ -4,6 +4,7 @@ import type {
   RuntimeValue,
 } from "../../../shared/rules.js";
 import type { Effect } from "../../../shared/rules-v2.js";
+import { budget } from "../loop-budget.js";
 import { answerEffect, executeEffect } from "./effects/registry.js";
 import type {
   EffectContext,
@@ -106,7 +107,8 @@ export class RuleVM {
 
   /** Runs until an instruction suspends or every frame completes. */
   run(): VMResult {
-    for (;;) {
+    for (let step = 1; ; step++) {
+      budget("Rule VM run", step, 100_000);
       const instruction = this.current();
       if (!instruction) return { kind: "complete" };
       if (!this.apply(executeEffect(instruction, this.context())))
@@ -143,11 +145,13 @@ export class RuleVM {
       return false;
     }
     top(execution)!.pc++;
-    if (result.kind === "continue" && result.effects.length)
+    if (result.kind === "continue" && result.effects.length) {
+      budget("Rule VM frame depth", execution.frames.length + 1, 256);
       execution.frames.push({
         instructions: structuredClone(result.effects),
         pc: 0,
       });
+    }
     return true;
   }
 

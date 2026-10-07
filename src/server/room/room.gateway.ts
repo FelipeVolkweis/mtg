@@ -38,6 +38,8 @@ export class RoomGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy
 {
   private readonly sessions = new Map<WebSocket, Connection>();
+  /** Authenticated sockets by Room invite, so a broadcast touches only that Room. */
+  private readonly members = new Map<string, Set<WebSocket>>();
   private readonly users = new Map<WebSocket, Promise<User | undefined>>();
   private shuttingDown = false;
   private readonly authenticationTimers = new Map<
@@ -109,6 +111,9 @@ export class RoomGateway
       clearTimeout(this.authenticationTimers.get(client));
       this.authenticationTimers.delete(client);
       this.sessions.set(client, connection);
+      const members = this.members.get(connection.invite) ?? new Set();
+      members.add(client);
+      this.members.set(connection.invite, members);
       this.rooms.connect(
         connection.invite,
         connection.participantId,
@@ -200,24 +205,29 @@ export class RoomGateway
     }
   }
   async broadcast(invite: string) {
+    const members = this.members.get(invite);
+    if (!members?.size) return;
+    // One load per broadcast; a failure reaches each socket below as before.
+    const viewer = this.rooms.viewer(invite);
+    viewer.catch(() => {});
     await Promise.all(
-      [...this.sessions]
-        .filter(([, session]) => session.invite === invite)
-        .map(async ([client, session]) => {
-          try {
+      [...members].map(async (client) => {
+        const session = this.sessions.get(client);
+        if (!session) return;
+        try {
+          this.send(client, {
+            event: "view",
+            data: { view: (await viewer)(session.userId) },
+          });
+        } catch (error) {
+          if (error instanceof TabletopError)
             this.send(client, {
-              event: "view",
-              data: { view: await this.rooms.view(invite, session.userId) },
+              event: "closed",
+              data: { message: error.message },
             });
-          } catch (error) {
-            if (error instanceof TabletopError)
-              this.send(client, {
-                event: "closed",
-                data: { message: error.message },
-              });
-            client.close();
-          }
-        }),
+          client.close();
+        }
+      }),
     );
   }
   async handleDisconnect(client: WebSocket) {
@@ -227,6 +237,9 @@ export class RoomGateway
     const session = this.sessions.get(client);
     if (!session) return;
     this.sessions.delete(client);
+    const members = this.members.get(session.invite);
+    members?.delete(client);
+    if (members?.size === 0) this.members.delete(session.invite);
     if (this.shuttingDown) return;
     await this.rooms.disconnect(
       session.invite,
@@ -244,11 +257,7 @@ export class RoomGateway
       await this.rooms.purgeExpired();
       await this.accounts.purgeExpiredSessions();
       await Promise.all(
-        [
-          ...new Set(
-            [...this.sessions.values()].map((session) => session.invite),
-          ),
-        ].map((invite) => this.broadcast(invite)),
+        [...this.members.keys()].map((invite) => this.broadcast(invite)),
       );
     } catch (error) {
       console.error("Room expiry failed", error);

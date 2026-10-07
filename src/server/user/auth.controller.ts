@@ -4,6 +4,8 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Inject,
   Post,
   Req,
@@ -13,6 +15,29 @@ import {
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { credentialsSchema } from "../../shared/model.js";
 import { AuthError, UserService } from "./user.service.js";
+
+const clientIp = (request: IncomingMessage) =>
+  request.socket.remoteAddress ?? "unknown";
+
+// At most `rateLimit` register and login requests per IP each minute.
+const rateLimit = 20;
+const rateWindowMs = 60_000;
+const attempts = new Map<string, { count: number; since: number }>();
+function throttle(request: IncomingMessage) {
+  const ip = clientIp(request);
+  const now = Date.now();
+  if (attempts.size >= 10_000)
+    for (const [key, entry] of attempts)
+      if (now - entry.since >= rateWindowMs) attempts.delete(key);
+  const entry = attempts.get(ip);
+  if (!entry || now - entry.since >= rateWindowMs)
+    attempts.set(ip, { count: 1, since: now });
+  else if (++entry.count > rateLimit)
+    throw new HttpException(
+      "Too many requests. Try again in a minute.",
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
+}
 
 @Controller("api/auth")
 export class AuthController {
@@ -26,6 +51,7 @@ export class AuthController {
     @Body() body: unknown,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
+    throttle(request);
     const input = credentialsSchema.safeParse(body);
     if (!input.success)
       throw new BadRequestException(input.error.issues[0].message);
@@ -34,10 +60,7 @@ export class AuthController {
         input.data.username,
         input.data.password,
       );
-      response.setHeader(
-        "Set-Cookie",
-        await this.users.createSession(request, user.id),
-      );
+      response.setHeader("Set-Cookie", await this.users.createSession(user.id));
       return { user };
     } catch (error) {
       if (error instanceof AuthError)
@@ -50,18 +73,17 @@ export class AuthController {
     @Body() body: unknown,
     @Res({ passthrough: true }) response: ServerResponse,
   ) {
+    throttle(request);
     const input = credentialsSchema.safeParse(body);
     if (!input.success)
       throw new UnauthorizedException("Incorrect username or password.");
     try {
       const user = await this.users.signIn(
+        clientIp(request),
         input.data.username,
         input.data.password,
       );
-      response.setHeader(
-        "Set-Cookie",
-        await this.users.createSession(request, user.id),
-      );
+      response.setHeader("Set-Cookie", await this.users.createSession(user.id));
       return { user };
     } catch (error) {
       if (error instanceof AuthError)

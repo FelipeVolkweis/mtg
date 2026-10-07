@@ -24,7 +24,7 @@ export function Lobby({
   const [startingParticipantId, setStartingParticipantId] = useState("");
   const participant = view.participants.find(
     (p) => p.id === view.participantId,
-  )!;
+  );
   useEffect(() => {
     setSelection(view.selectedDeck?.id ?? "");
   }, [view.selectedDeck?.id]);
@@ -34,6 +34,7 @@ export function Lobby({
     send({ type: "ready", deckId: deckId || undefined, ready: false });
   };
   const ready = view.participants.filter((p) => p.ready).length;
+  if (!participant) return null;
   return (
     <section className="lobby">
       <div className="section-heading">
