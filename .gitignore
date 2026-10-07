@@ -4,3 +4,4 @@ test-results/
 playwright-report/
 .env
 .test-data/
+.claude/
