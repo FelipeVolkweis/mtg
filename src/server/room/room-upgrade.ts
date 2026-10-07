@@ -16,7 +16,7 @@ import {
 } from "./lift-v1-effects.js";
 
 /** The Room document shape this server writes (CM §5). */
-export const currentSnapshotVersion = 6;
+export const currentSnapshotVersion = 7;
 
 type Document = Record<string, unknown>;
 
@@ -339,6 +339,22 @@ function upgradeRoomToVersion6(room: Document) {
 }
 
 /**
+ * Version 7 (ADR-0019). Decklists belong to a User's Deck Catalog and Room
+ * Participants are signed-in Users: guest credentials, Room-owned Decklists
+ * and commander selections are dropped. A guest participant has no User, so
+ * the server deletes Rooms stored before this version at startup.
+ */
+function upgradeRoomToVersion7(room: Document) {
+  for (const participant of (room.participants ?? []) as Document[]) {
+    delete participant.credentialHash;
+    delete participant.decklists;
+    delete participant.selectedDecklistId;
+    delete participant.selectedCommanderId;
+    participant.ready = false;
+  }
+}
+
+/**
  * Brings a stored Room document up to the current snapshot version. Pure: it
  * returns the upgraded document and never touches storage. Version 1 handling
  * can be deleted once every version 1 Room has expired (ROOM_EXPIRY_DAYS after
@@ -356,6 +372,7 @@ export function upgradeRoom(stored: RoomState): RoomState {
   if (version < 4 && room.match) upgradeMatchToVersion4(room.match as Document);
   if (version < 5 && room.match) upgradeMatchToVersion5(room.match as Document);
   if (version < 6) upgradeRoomToVersion6(room);
+  if (version < 7) upgradeRoomToVersion7(room);
   room.snapshotVersion = currentSnapshotVersion;
   return stored;
 }

@@ -16,18 +16,17 @@ import type {
 export function emptyRoom(): RoomState {
   const participant: Participant = {
     id: randomUUID(),
+    userId: randomUUID(),
     name: "Alice",
-    credentialHash: "",
     ready: true,
-    selectedDecklistId: randomUUID(),
-    decklists: [],
+    deck: {
+      id: randomUUID(),
+      name: "Empty",
+      format: "commander",
+      text: "",
+      entries: [],
+    },
   };
-  participant.decklists.push({
-    id: participant.selectedDecklistId!,
-    name: "Empty",
-    text: "",
-    entries: [],
-  });
   return {
     snapshotVersion: 3,
     id: randomUUID(),
@@ -95,8 +94,8 @@ export function commanderFixture() {
     };
   }
   for (const p of room.participants) {
-    p.selectedCommanderId = commander;
-    p.decklists[0].entries = [
+    p.deck!.commanderId = commander;
+    p.deck!.entries = [
       {
         definitionId: commander,
         printingId: catalog.definitions[commander].defaultPrintingId,

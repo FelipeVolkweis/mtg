@@ -1017,7 +1017,7 @@ test("a stored legacy manual Match ends on load and its Room returns to the lobb
     await bob.reload();
     const after = await snapshot(alice);
     expect(after.match).toBeUndefined();
-    expect(after.decklists).toEqual(before.decklists);
+    expect(after.selectedDeck).toEqual(before.selectedDeck);
     await expect(
       alice.getByRole("button", { name: "Pass Priority", exact: true }),
     ).toHaveCount(0);

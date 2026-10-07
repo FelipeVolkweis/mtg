@@ -2,23 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import type {
   RoomView,
   ServerMessage,
-  Session,
   RoomCommand,
+  User,
 } from "../shared/model";
+import { request, signOut, useDecks } from "./api";
+import { SignIn } from "./SignIn";
+import { DeckCatalog } from "./DeckCatalog";
 import { Lobby } from "./Lobby";
 import { RulesTabletop } from "./RulesTabletop";
 
 export function App() {
   const invite = location.pathname.match(/^\/room\/([a-f0-9]{48})$/)?.[1];
-  const [session, setSession] = useState<Session | null>(() => {
-    if (!invite) return null;
-    try {
-      const credential = localStorage.getItem(`mtg:${invite}`);
-      return credential ? { invite, credential } : null;
-    } catch {
-      return null;
-    }
-  });
+  const decksPage = location.pathname === "/decks";
+  const [user, setUser] = useState<User | null>();
+  const [joined, setJoined] = useState<string>();
   const [view, setView] = useState<RoomView>();
   const [error, setError] = useState("");
   const [connection, setConnection] = useState("Connecting");
@@ -26,8 +23,24 @@ export function App() {
   const [notice, setNotice] = useState("");
   const pending = useRef<string | undefined>(undefined);
   const socket = useRef<WebSocket | null>(null);
+  const decks = useDecks(setError, !!user);
   useEffect(() => {
-    if (!session) return;
+    request<{ user: User | null }>("/api/auth/me")
+      .then((me) => setUser(me.user))
+      .catch(() => {
+        setUser(null);
+        setError("The server is unavailable. Reload to try again.");
+      });
+  }, []);
+  // Opening an invitation link while signed in takes a seat in the Room.
+  useEffect(() => {
+    if (!invite || !user) return;
+    request<{ invite: string }>(`/api/rooms/${invite}/join`, "POST")
+      .then(() => setJoined(invite))
+      .catch((error: Error) => setError(error.message));
+  }, [invite, user?.id]);
+  useEffect(() => {
+    if (!joined) return;
     let stopped = false;
     let reconnect: ReturnType<typeof setTimeout>;
     let heartbeat: ReturnType<typeof setInterval>;
@@ -37,7 +50,9 @@ export function App() {
       );
       socket.current = ws;
       ws.onopen = () => {
-        ws.send(JSON.stringify({ event: "authenticate", data: session }));
+        ws.send(
+          JSON.stringify({ event: "authenticate", data: { invite: joined } }),
+        );
         heartbeat = setInterval(
           () =>
             ws.readyState === WebSocket.OPEN &&
@@ -80,7 +95,7 @@ export function App() {
         if (message.event === "closed") {
           setError(message.data.message);
           setView(undefined);
-          setSession(null);
+          setJoined(undefined);
           stopped = true;
           ws.close();
         }
@@ -100,7 +115,7 @@ export function App() {
       clearInterval(heartbeat);
       socket.current?.close();
     };
-  }, [session]);
+  }, [joined]);
   function send(command: RoomCommand) {
     if (socket.current?.readyState !== WebSocket.OPEN || pending.current)
       return;
@@ -114,33 +129,15 @@ export function App() {
       }),
     );
   }
-  async function enter(form: HTMLFormElement) {
-    const name = String(new FormData(form).get("name"));
+  async function createRoom() {
     try {
-      const response = await fetch(
-        invite ? `/api/rooms/${invite}/join` : "/api/rooms",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
-        },
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      const next: Session = data;
-      try {
-        localStorage.setItem(`mtg:${next.invite}`, next.credential);
-      } catch {}
-      if (!invite) {
-        location.href = `/room/${next.invite}`;
-        return;
-      }
-      setSession(next);
-      setError("");
+      const room = await request<{ invite: string }>("/api/rooms", "POST");
+      location.href = `/room/${room.invite}`;
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Unable to join");
+      setError(error instanceof Error ? error.message : "Unable to create");
     }
   }
+  const lobby = <Lobby view={view!} send={send} busy={busy} decks={decks} />;
   return (
     <div className={`app ${view?.match ? "match-app" : ""}`}>
       <header>
@@ -148,6 +145,21 @@ export function App() {
           ◈ Magic Tabletop
         </a>
         <span>{view ? connection : "A place for your next game"}</span>
+        {user && (
+          <nav className="account">
+            <a href="/decks">My decks</a>
+            <span data-testid="signed-in-user">{user.name}</span>
+            <button
+              onClick={() =>
+                void signOut().then(() => {
+                  location.href = "/";
+                })
+              }
+            >
+              Sign out
+            </button>
+          </nav>
+        )}
       </header>
       {error && (
         <div role="alert" className="error">
@@ -162,7 +174,9 @@ export function App() {
           {notice}
         </div>
       )}
-      {!view ? (
+      {user && decksPage ? (
+        <DeckCatalog decks={decks} />
+      ) : !view ? (
         <main className="welcome">
           <p className="eyebrow">BRING YOUR DECK. GATHER YOUR FRIENDS.</p>
           <h1>
@@ -172,31 +186,23 @@ export function App() {
           </h1>
           <p>
             A private tabletop for solo deck testing or two to four players.
-            Play Magic your way, with shared cards and room to make the rules
-            yourselves.
+            Keep your decks in one place and bring them to any Room.
           </p>
-          {session ? (
-            <p role="status">{connection}…</p>
+          {user === undefined ? (
+            <p role="status">Loading…</p>
+          ) : !user ? (
+            <SignIn onSignedIn={setUser} report={setError} />
+          ) : invite ? (
+            <p role="status">{joined ? `${connection}…` : "Joining…"}</p>
           ) : (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                void enter(event.currentTarget);
-              }}
-            >
-              <label>
-                Your name
-                <input
-                  name="name"
-                  required
-                  maxLength={64}
-                  autoComplete="nickname"
-                />
-              </label>
-              <button className="primary">
-                {invite ? "Join Room" : "Create Room"}
+            <div className="button-row">
+              <button className="primary" onClick={() => void createRoom()}>
+                Create Room
               </button>
-            </form>
+              <a className="button" href="/decks">
+                My decks
+              </a>
+            </div>
           )}
         </main>
       ) : view.match ? (
@@ -212,11 +218,11 @@ export function App() {
             <div className="room-connection" role="status">
               {connection}
             </div>
-            <Lobby view={view} send={send} busy={busy} />
+            {lobby}
           </details>
         </>
       ) : (
-        <Lobby view={view} send={send} busy={busy} />
+        lobby
       )}
     </div>
   );

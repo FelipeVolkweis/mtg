@@ -1,28 +1,23 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import {
-  createHash,
-  randomBytes,
-  randomUUID,
-  timingSafeEqual,
-} from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import type {
+  Decklist,
   Participant,
   RoomState,
   RoomView,
   RoomCommand,
+  User,
 } from "../../shared/model.js";
 import { Database } from "../storage/database.js";
-import { CatalogService } from "../catalog/catalog.service.js";
 import { readCatalog } from "../catalog/catalog-files.js";
 import { MatchService } from "../match/match.service.js";
-import { commanderEligible } from "../match/commander.js";
+import { DeckError, DeckService } from "../deck/deck.service.js";
+import { deckIssues } from "../deck/format-rules.js";
 import type { Catalog } from "../../shared/model.js";
 import { matchView } from "../match/match-view.js";
 import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";
 
 export class TabletopError extends Error {}
-export const credentialHash = (credential: string) =>
-  createHash("sha256").update(credential).digest("hex");
 const nameKey = (name: string) => name.normalize("NFKC").trim().toLowerCase();
 
 @Injectable()
@@ -32,94 +27,66 @@ export class RoomService implements OnModuleInit {
 
   constructor(
     @Inject(Database) readonly database: Database,
-    @Inject(CatalogService) private readonly catalog: CatalogService,
     @Inject(MatchService) private readonly matches: MatchService,
+    @Inject(DeckService) private readonly decks: DeckService,
   ) {
     if (!Number.isFinite(this.expiryMs) || this.expiryMs <= 0)
       throw new Error("ROOM_EXPIRY_DAYS must be positive");
   }
   async onModuleInit() {
+    // Rooms from before ADR-0019 seat guests who have no User to sign in as.
+    await this.database.pool.query(
+      `DELETE FROM rooms WHERE COALESCE((document->>'snapshotVersion')::int, 1) < 7`,
+    );
     // A server restart disconnects all players; earlier consent cannot authorize a replacement after recovery.
     await this.database.pool.query(
       `UPDATE rooms SET document = jsonb_set(jsonb_set(document, '{rematch,confirmations}', '[]'::jsonb), '{revision}', to_jsonb((document->>'revision')::bigint + 1)) WHERE document ? 'rematch'`,
     );
   }
 
-  async create(name: string) {
-    const credential = randomBytes(32).toString("hex");
-    const participant = this.participant(name, credential);
+  async create(user: User) {
     const room: RoomState = {
       snapshotVersion: currentSnapshotVersion,
       id: randomUUID(),
       invite: randomBytes(24).toString("hex"),
       revision: 0,
       lastActivity: Date.now(),
-      participants: [participant],
+      participants: [this.participant(user, [])],
     };
     await this.database.pool.query("INSERT INTO rooms VALUES ($1, $2, $3)", [
       room.invite,
       JSON.stringify(room),
       new Date(room.lastActivity),
     ]);
-    return { invite: room.invite, credential };
+    return { invite: room.invite };
   }
 
-  async join(invite: string, name: string, credential?: string) {
+  async join(invite: string, user: User) {
     return this.database.transaction(async (client) => {
       const room = await this.load(invite, client);
-      let participant = credential
-        ? room.participants.find((p) => this.validCredential(p, credential))
-        : undefined;
-      let resultCredential = credential;
-      if (!participant) {
-        participant = room.participants.find(
-          (p) => nameKey(p.name) === nameKey(name),
-        );
-        resultCredential = randomBytes(32).toString("hex");
-        if (participant) {
-          participant.credentialHash = credentialHash(resultCredential);
-          if (room.rematch)
-            room.rematch.confirmations = room.rematch.confirmations.filter(
-              (id) => id !== participant!.id,
-            );
-        } else {
-          if (room.participants.length >= 4)
-            throw new TabletopError(
-              "This Room has no open seats. Use an existing participant name to recover your seat.",
-            );
-          participant = this.participant(name, resultCredential);
-          room.participants.push(participant);
-        }
+      if (!room.participants.some((p) => p.userId === user.id)) {
+        if (room.participants.length >= 4)
+          throw new TabletopError("This Room has no open seats.");
+        room.participants.push(this.participant(user, room.participants));
+        this.touch(room);
+        await this.database.saveRoom(client, room);
       }
-      this.touch(room);
-      await this.database.saveRoom(client, room);
-      return { invite, credential: resultCredential! };
+      return { invite };
     });
   }
 
-  private participant(name: string, credential: string): Participant {
-    return {
-      id: randomUUID(),
-      name: name.trim().normalize("NFKC"),
-      credentialHash: credentialHash(credential),
-      decklists: [],
-      ready: false,
-    };
+  /** A new Room Participant, named after the User and unique in the Room. */
+  private participant(user: User, others: Participant[]): Participant {
+    const base = user.name.trim().normalize("NFKC");
+    let name = base;
+    for (let n = 2; others.some((p) => nameKey(p.name) === nameKey(name)); n++)
+      name = `${base} (${n})`;
+    return { id: randomUUID(), userId: user.id, name, ready: false };
   }
-  private validCredential(participant: Participant, credential: string) {
-    return timingSafeEqual(
-      Buffer.from(participant.credentialHash, "hex"),
-      Buffer.from(credentialHash(credential), "hex"),
-    );
-  }
-  authorize(room: RoomState, credential: string) {
-    const participant = room.participants.find((p) =>
-      this.validCredential(p, credential),
-    );
+  authorize(room: RoomState, userId: string) {
+    const participant = room.participants.find((p) => p.userId === userId);
     if (!participant)
-      throw new TabletopError(
-        "Your guest credential is no longer valid. Rejoin using your Room name.",
-      );
+      throw new TabletopError("Join this Room from its invitation link.");
     return participant;
   }
   async load(
@@ -140,95 +107,52 @@ export class RoomService implements OnModuleInit {
     room.lastActivity = Date.now();
     room.revision++;
   }
+  /** A copy of the participant's Deck from their Deck Catalog. */
+  private async deck(participant: Participant, deckId: string) {
+    try {
+      const { updatedAt: _updatedAt, ...deck } = await this.decks.get(
+        participant.userId,
+        deckId,
+      );
+      return deck as Decklist;
+    } catch (error) {
+      if (error instanceof DeckError)
+        throw new TabletopError("Select one of your saved Decklists first.");
+      throw error;
+    }
+  }
+  /** Ready participants play their Decks as currently saved. */
+  private async refreshDecks(room: RoomState) {
+    for (const participant of room.participants)
+      if (participant.ready && participant.deck)
+        participant.deck = await this.deck(participant, participant.deck.id);
+  }
   async command(
     invite: string,
-    credential: string,
+    userId: string,
     command: RoomCommand,
   ): Promise<string | undefined> {
     return this.database.transaction(async (client) => {
       const room = await this.load(invite, client);
-      const participant = this.authorize(room, credential);
+      const participant = this.authorize(room, userId);
       let notice: string | undefined;
       switch (command.type) {
-        case "save-decklist": {
-          const entries = this.catalog.resolveDecklist(
-            command.text,
-            await readCatalog(),
-          );
-          const existing = command.id
-            ? participant.decklists.find(
-                (decklist) => decklist.id === command.id,
-              )
-            : undefined;
-          if (command.id && !existing)
-            throw new TabletopError("Decklist not found.");
-          if (!existing && participant.decklists.length >= 100)
-            throw new TabletopError(
-              "This participant already has 100 Decklists.",
-            );
-          const decklist = {
-            id: existing?.id ?? randomUUID(),
-            name: command.name,
-            text: command.text,
-            entries,
-          };
-          if (existing)
-            participant.decklists[participant.decklists.indexOf(existing)] =
-              decklist;
-          else participant.decklists.push(decklist);
-          if (
-            !participant.selectedDecklistId ||
-            participant.selectedDecklistId === decklist.id
-          ) {
-            participant.selectedDecklistId = decklist.id;
-            participant.ready = false;
-          }
-          if (
-            !entries.some(
-              (entry) => entry.definitionId === participant.selectedCommanderId,
-            )
-          )
-            delete participant.selectedCommanderId;
-          delete room.rematch;
-          break;
-        }
-        case "configure-commander": {
-          const deck = participant.decklists.find(
-            (d) => d.id === command.decklistId,
-          );
-          const catalog = await readCatalog();
-          const card = catalog.definitions[command.definitionId];
-          if (
-            !deck ||
-            !deck.entries.some(
-              (e) => e.definitionId === command.definitionId,
-            ) ||
-            !card ||
-            !commanderEligible(card)
-          )
-            throw new TabletopError(
-              "Choose a legendary creature from your selected Decklist.",
-            );
-          participant.selectedDecklistId = deck.id;
-          participant.selectedCommanderId = card.id;
-          participant.ready = false;
-          delete room.rematch;
-          break;
-        }
         case "ready": {
-          if (
-            (command.ready && !command.decklistId) ||
-            (command.decklistId &&
-              !participant.decklists.some(
-                (decklist) => decklist.id === command.decklistId,
-              ))
-          )
+          if (command.ready && !command.deckId)
             throw new TabletopError(
               "Select one of your saved Decklists first.",
             );
-          if (participant.selectedDecklistId !== command.decklistId)
-            delete participant.selectedCommanderId;
-          participant.selectedDecklistId = command.decklistId;
+          if (command.deckId)
+            participant.deck = await this.deck(participant, command.deckId);
+          else delete participant.deck;
+          if (command.ready) {
+            if (participant.deck!.format !== "commander")
+              throw new TabletopError(
+                "Select a Commander Decklist for a Commander Match.",
+              );
+            const [issue] = deckIssues(participant.deck!, await readCatalog());
+            if (issue) throw new TabletopError(issue);
+          }
           participant.ready = command.ready;
           delete room.rematch;
           break;
@@ -236,8 +160,7 @@ export class RoomService implements OnModuleInit {
         case "start":
         case "start-solo": {
           const ready = room.participants.filter(
-            (participant) =>
-              participant.ready && participant.selectedDecklistId,
+            (participant) => participant.ready && participant.deck,
           );
           if (
             command.type === "start-solo" &&
@@ -250,6 +173,7 @@ export class RoomService implements OnModuleInit {
             throw new TabletopError(
               "Two participants must select Decklists and mark ready.",
             );
+          await this.refreshDecks(room);
           if (room.match)
             this.matches.validateCommanderSetup(
               room,
@@ -311,6 +235,7 @@ export class RoomService implements OnModuleInit {
                   room.rematch!.confirmations.includes(player.participantId),
               )
           ) {
+            await this.refreshDecks(room);
             room.match = this.matches.createCommander(
               room,
               await readCatalog(),
@@ -394,13 +319,9 @@ export class RoomService implements OnModuleInit {
         .catch(() => {});
     }
   }
-  async view(invite: string, credential: string): Promise<RoomView> {
+  async view(invite: string, userId: string): Promise<RoomView> {
     const room = await this.load(invite, this.database.pool, false);
-    return this.toView(
-      room,
-      this.authorize(room, credential),
-      await readCatalog(),
-    );
+    return this.toView(room, this.authorize(room, userId), await readCatalog());
   }
   toView(
     room: RoomState,
@@ -416,24 +337,10 @@ export class RoomService implements OnModuleInit {
         id: p.id,
         name: p.name,
         ready: p.ready,
-        selected: !!p.selectedDecklistId,
+        selected: !!p.deck,
         connected: this.connected(room.invite, p.id),
       })),
-      decklists: participant.decklists,
-      selectedCommanderId: participant.selectedCommanderId,
-      commanderOptions: catalog
-        ? participant.decklists
-            .find((d) => d.id === participant.selectedDecklistId)
-            ?.entries.map((entry) => {
-              const card = catalog.definitions[entry.definitionId];
-              return {
-                definitionId: entry.definitionId,
-                name: card.canonicalName,
-                eligible: commanderEligible(card),
-              };
-            })
-        : [],
-      selectedDecklistId: participant.selectedDecklistId,
+      selectedDeck: participant.deck,
       rematch: room.rematch,
       match: room.match
         ? matchView(room.match, participant.id, catalog)

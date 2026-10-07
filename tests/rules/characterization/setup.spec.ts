@@ -141,10 +141,9 @@ test("Commander setup accepts validated ordered cards and rejects unknown result
     catalog.printings[card.defaultPrintingId] =
       release.printings[card.defaultPrintingId];
     for (const participant of room.participants) {
-      participant.decklists[0].entries.find(
-        (entry) => entry.definitionId === island,
-      )!.quantity--;
-      participant.decklists[0].entries.push({
+      participant.deck!.entries.find((entry) => entry.definitionId === island)!
+        .quantity--;
+      participant.deck!.entries.push({
         definitionId: card.id,
         printingId: card.defaultPrintingId,
         quantity: 1,
@@ -194,8 +193,8 @@ for (const name of [
     catalog.definitions[card.id] = card;
     catalog.printings[card.defaultPrintingId] =
       release.printings[card.defaultPrintingId];
-    room.participants[0].decklists[0].entries[1].quantity = 98;
-    room.participants[0].decklists[0].entries.push({
+    room.participants[0].deck!.entries[1].quantity = 98;
+    room.participants[0].deck!.entries.push({
       definitionId: card.id,
       printingId: card.defaultPrintingId,
       quantity: 1,
@@ -228,8 +227,8 @@ test("newly completed protection, flying, Vehicle and requirement definitions pa
     catalog.definitions[card.id] = structuredClone(card);
     catalog.printings[card.defaultPrintingId] =
       release.printings[card.defaultPrintingId];
-    room.participants[0].decklists[0].entries[1].quantity--;
-    room.participants[0].decklists[0].entries.push({
+    room.participants[0].deck!.entries[1].quantity--;
+    room.participants[0].deck!.entries.push({
       definitionId: card.id,
       printingId: card.defaultPrintingId,
       quantity: 1,
@@ -263,8 +262,8 @@ test("the complete mono-U pool resolves to 100 cards and 67 supported definition
   const sai = Object.values(catalog.definitions).find(
     (d) => d.canonicalName === "Sai, Master Thopterist",
   )!;
-  room.participants[0].decklists[0].entries = entries;
-  room.participants[0].selectedCommanderId = sai.id;
+  room.participants[0].deck!.entries = entries;
+  room.participants[0].deck!.commanderId = sai.id;
   room.participants.push({
     ...structuredClone(room.participants[0]),
     id: randomUUID(),
@@ -312,8 +311,8 @@ for (const [keyword, cardName] of [
     catalog.definitions[kappa.id] = kappa;
     catalog.printings[kappa.defaultPrintingId] =
       release.printings[kappa.defaultPrintingId];
-    room.participants[0].decklists[0].entries[1].quantity--;
-    room.participants[0].decklists[0].entries.push({
+    room.participants[0].deck!.entries[1].quantity--;
+    room.participants[0].deck!.entries.push({
       definitionId: kappa.id,
       printingId: kappa.defaultPrintingId,
       quantity: 1,

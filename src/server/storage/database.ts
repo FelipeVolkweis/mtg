@@ -13,6 +13,12 @@ export class Database implements OnModuleInit, OnModuleDestroy {
     await this.pool.query(`
       CREATE TABLE IF NOT EXISTS rooms (invite text PRIMARY KEY, document jsonb NOT NULL, last_activity timestamptz NOT NULL);
       CREATE INDEX IF NOT EXISTS rooms_activity ON rooms(last_activity);
+      CREATE TABLE IF NOT EXISTS users (id uuid PRIMARY KEY, username text NOT NULL, password_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+      CREATE UNIQUE INDEX IF NOT EXISTS users_username ON users(lower(username));
+      CREATE TABLE IF NOT EXISTS sessions (token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES users ON DELETE CASCADE, expires_at timestamptz NOT NULL);
+      CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
+      CREATE TABLE IF NOT EXISTS decks (id uuid PRIMARY KEY, user_id uuid NOT NULL REFERENCES users ON DELETE CASCADE, document jsonb NOT NULL, updated_at timestamptz NOT NULL);
+      CREATE INDEX IF NOT EXISTS decks_user ON decks(user_id, updated_at DESC);
     `);
   }
 

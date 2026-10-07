@@ -1,34 +1,45 @@
 import { useEffect, useState } from "react";
-import type { RoomCommand, RoomView } from "../shared/model";
+import type { DeckView, RoomCommand, RoomView } from "../shared/model";
+import { deckFormatNames, playableFormats } from "../shared/model";
+import type { Decks } from "./api";
+import { DeckEditor } from "./DeckEditor";
 
 export type Send = (command: RoomCommand) => void;
+const playable = (deck?: DeckView) =>
+  !!deck && playableFormats.includes(deck.format) && !deck.issues.length;
+
 export function Lobby({
   view,
   send,
   busy,
+  decks,
 }: {
   view: RoomView;
   send: Send;
   busy: boolean;
+  decks: Decks;
 }) {
-  const [decklistName, setName] = useState("");
-  const [decklistText, setText] = useState("");
   const [editingId, setEditingId] = useState<string>();
-  const [selection, setSelection] = useState(view.selectedDecklistId ?? "");
+  const [selection, setSelection] = useState(view.selectedDeck?.id ?? "");
   const [startingParticipantId, setStartingParticipantId] = useState("");
   const participant = view.participants.find(
     (p) => p.id === view.participantId,
   )!;
   useEffect(() => {
-    setSelection(view.selectedDecklistId ?? "");
-  }, [view.selectedDecklistId]);
+    setSelection(view.selectedDeck?.id ?? "");
+  }, [view.selectedDeck?.id]);
+  const selected = decks.decks.find((deck) => deck.id === selection);
+  const select = (deckId: string) => {
+    setSelection(deckId);
+    send({ type: "ready", deckId: deckId || undefined, ready: false });
+  };
   const ready = view.participants.filter((p) => p.ready).length;
   return (
     <section className="lobby">
       <div className="section-heading">
         <div>
           <h1>Room lobby</h1>
-          <p>Save a deck, take a seat, and gather your friends.</p>
+          <p>Choose a deck, take a seat, and gather your friends.</p>
         </div>
         <button onClick={() => send({ type: "close" })} disabled={busy}>
           Close Room
@@ -78,47 +89,41 @@ export function Lobby({
             <select
               value={selection}
               disabled={busy}
-              onChange={(event) => {
-                setSelection(event.target.value);
-                send({
-                  type: "ready",
-                  decklistId: event.target.value || undefined,
-                  ready: false,
-                });
-              }}
+              onChange={(event) => select(event.target.value)}
             >
               <option value="">Choose a Decklist</option>
-              {view.decklists.map((decklist) => (
-                <option key={decklist.id} value={decklist.id}>
-                  {decklist.name}
+              {decks.decks.map((deck) => (
+                <option key={deck.id} value={deck.id}>
+                  {deck.name}
+                  {deck.format === "commander"
+                    ? ""
+                    : ` (${deckFormatNames[deck.format]})`}
                 </option>
               ))}
             </select>
           </label>
+          {selected && !playableFormats.includes(selected.format) && (
+            <p className="hint">
+              {deckFormatNames[selected.format]} Matches are not available yet.
+            </p>
+          )}
           <div className="button-row">
             <button
               className="primary"
-              disabled={busy || !selection || !view.selectedCommanderId}
+              disabled={busy || !(participant.ready || playable(selected))}
               onClick={() =>
                 send({
                   type: "ready",
                   ready: !participant.ready,
-                  decklistId: selection,
+                  deckId: selection,
                 })
               }
             >
               {participant.ready ? "Not ready" : "Mark ready"}
             </button>
             <button
-              disabled={busy || !selection}
-              onClick={() => {
-                const decklist = view.decklists.find(
-                  (deck) => deck.id === selection,
-                )!;
-                setName(decklist.name);
-                setText(decklist.text);
-                setEditingId(decklist.id);
-              }}
+              disabled={busy || !selected}
+              onClick={() => setEditingId(selection)}
             >
               Edit selected Decklist
             </button>
@@ -133,59 +138,27 @@ export function Lobby({
               <option value="commander">Commander (automated)</option>
             </select>
           </label>
-          <>
-            <label>
-              Commander
-              <select
-                aria-label="Commander"
-                disabled={busy || !selection}
-                value={view.selectedCommanderId ?? ""}
-                onChange={(event) => {
-                  if (event.target.value)
-                    send({
-                      type: "configure-commander",
-                      decklistId: selection,
-                      definitionId: event.target.value,
-                    });
-                }}
-              >
-                <option value="">Choose a commander</option>
-                {view.commanderOptions
-                  ?.filter((option) => option.eligible)
-                  .map((option) => (
-                    <option
-                      key={option.definitionId}
-                      value={option.definitionId}
-                    >
-                      {option.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <label>
-              Starting player
-              <select
-                aria-label="Starting player"
-                value={startingParticipantId}
-                onChange={(event) =>
-                  setStartingParticipantId(event.target.value)
-                }
-              >
-                <option value="">Random</option>
-                {view.participants
-                  .filter((p) => p.ready)
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <p>
-              Commander starts at 40 life. Decklists must contain 100 cards and
-              every card must have complete automation support.
-            </p>
-          </>
+          <label>
+            Starting player
+            <select
+              aria-label="Starting player"
+              value={startingParticipantId}
+              onChange={(event) => setStartingParticipantId(event.target.value)}
+            >
+              <option value="">Random</option>
+              {view.participants
+                .filter((p) => p.ready)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <p>
+            Commander starts at 40 life. Decklists must contain 100 cards and
+            every card must have complete automation support.
+          </p>
           <div className="start-match">
             <button
               className="primary"
@@ -214,8 +187,8 @@ export function Lobby({
           </div>
           <p className="hint">
             {ready === 1
-              ? "1 ready. The ready participant can start a solo Match, or wait for two ready participants to play; other guests wait for the next Match."
-              : `${ready} ready. Two ready participants play; other guests wait for the next Match.`}
+              ? "1 ready. The ready participant can start a solo Match, or wait for two ready participants to play; other participants wait for the next Match."
+              : `${ready} ready. Two ready participants play; other participants wait for the next Match.`}
           </p>
           {view.rematch && (
             <div className="rematch">
@@ -249,59 +222,18 @@ export function Lobby({
         </section>
         <section>
           <h2>Your Decklists</h2>
-          <p className="hint">Private to you and reusable between Matches.</p>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              send({
-                type: "save-decklist",
-                id: editingId,
-                name: decklistName,
-                text: decklistText,
-              });
+          <p className="hint">
+            Your private Deck Catalog, shared by every Room you join.{" "}
+            <a href="/decks">Manage all decks</a>
+          </p>
+          <DeckEditor
+            decks={decks}
+            editing={decks.decks.find((deck) => deck.id === editingId)}
+            onEdit={setEditingId}
+            onSaved={(deck) => {
+              if (!selection || selection === deck.id) select(deck.id);
             }}
-          >
-            <label>
-              Decklist name
-              <input
-                required
-                maxLength={100}
-                value={decklistName}
-                onChange={(event) => setName(event.target.value)}
-              />
-            </label>
-            <label>
-              Decklist text
-              <textarea
-                required
-                rows={10}
-                placeholder={"4 Island\n1 Card Name (SET) 123"}
-                value={decklistText}
-                onChange={(event) => setText(event.target.value)}
-              />
-            </label>
-            <p className="hint">
-              Use canonical card names from locally imported sets. Specify an
-              exact printing with (SET) and collector number.
-            </p>
-            <div className="button-row">
-              <button className="primary" disabled={busy}>
-                Save Decklist
-              </button>
-              {editingId && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingId(undefined);
-                    setName("");
-                    setText("");
-                  }}
-                >
-                  New Decklist
-                </button>
-              )}
-            </div>
-          </form>
+          />
         </section>
       </div>
     </section>

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { startServer } from "./support/server";
 import { snapshot } from "./support/peer";
 import { seedCatalog } from "./setup";
+import { createRoom, joinRoom } from "./support/table";
 
 test("a server restart restores the persisted revision and private participant view", async ({
   browser,
@@ -14,20 +15,8 @@ test("a server restart restores the persisted revision and private participant v
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
   try {
     await seedCatalog();
-    await pages[0].goto(server.origin);
-    await pages[0].getByLabel("Your name").fill("Alice");
-    await pages[0]
-      .getByRole("button", { name: "Create Room", exact: true })
-      .click();
-    await expect(
-      pages[0].getByRole("heading", { name: "Room lobby" }),
-    ).toBeVisible();
-    const invitation = pages[0].url();
-    await pages[1].goto(invitation);
-    await pages[1].getByLabel("Your name").fill("Bob");
-    await pages[1]
-      .getByRole("button", { name: "Join Room", exact: true })
-      .click();
+    const invitation = await createRoom(pages[0], "Alice", server.origin);
+    await joinRoom(pages[1], invitation, "Bob");
     for (const page of pages) {
       await page.getByLabel("Decklist name").fill("Persistent list");
       await page
@@ -68,7 +57,7 @@ test("a server restart restores the persisted revision and private participant v
     );
     const restored = await snapshot(pages[0]);
     expect(restored.match).toEqual(before.match);
-    expect(restored.decklists).toEqual(before.decklists);
+    expect(restored.selectedDeck).toEqual(before.selectedDeck);
     await expect(pages[1].getByTestId("zone-hand-Alice")).not.toContainText(
       "Island",
     );
@@ -87,14 +76,7 @@ test("Room keepalives do not extend configurable inactivity expiry", async ({
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await page.goto(server.origin);
-    await page.getByLabel("Your name").fill("Expiry guest");
-    await page
-      .getByRole("button", { name: "Create Room", exact: true })
-      .click();
-    await expect(
-      page.getByRole("heading", { name: "Room lobby" }),
-    ).toBeVisible();
+    await createRoom(page, "ExpiryPlayer", server.origin);
     await page.evaluate(() => {
       const invite = location.pathname.split("/").pop()!;
       const socket = new WebSocket(`ws://${location.host}/ws`);
@@ -102,7 +84,7 @@ test("Room keepalives do not extend configurable inactivity expiry", async ({
         socket.send(
           JSON.stringify({
             event: "authenticate",
-            data: { invite, credential: localStorage.getItem(`mtg:${invite}`) },
+            data: { invite },
           }),
         );
       const timer = setInterval(
@@ -116,8 +98,7 @@ test("Room keepalives do not extend configurable inactivity expiry", async ({
     await expect(page.getByRole("alert")).toContainText("closed or expired", {
       timeout: 7000,
     });
-    await page.getByLabel("Your name").fill("Expiry guest");
-    await page.getByRole("button", { name: "Join Room", exact: true }).click();
+    await page.reload();
     await expect(page.getByRole("alert")).toContainText("closed or expired");
   } finally {
     await context.close();
@@ -140,20 +121,8 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
     const pages = await Promise.all(contexts.map((c) => c.newPage()));
     try {
       await seedCatalog();
-      await pages[0].goto(server.origin);
-      await pages[0].getByLabel("Your name").fill("Alice");
-      await pages[0]
-        .getByRole("button", { name: "Create Room", exact: true })
-        .click();
-      await expect(
-        pages[0].getByRole("heading", { name: "Room lobby" }),
-      ).toBeVisible();
-      const invitation = pages[0].url();
-      await pages[1].goto(invitation);
-      await pages[1].getByLabel("Your name").fill("Bob");
-      await pages[1]
-        .getByRole("button", { name: "Join Room", exact: true })
-        .click();
+      const invitation = await createRoom(pages[0], "Alice", server.origin);
+      await joinRoom(pages[1], invitation, "Bob");
       for (const [seat, page] of pages.entries()) {
         await saveDeck(
           page,

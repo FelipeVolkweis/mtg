@@ -2,6 +2,58 @@ import { expect, type Page, type Browser } from "@playwright/test";
 import { exchange, snapshot } from "./peer";
 import type { MatchAction } from "../../src/shared/model";
 
+export const testPassword = "correct horse battery";
+/**
+ * Signs in with the sign-in form on the current page, creating the account
+ * first if this test database does not have it yet.
+ */
+export async function signIn(page: Page, username: string) {
+  await page.evaluate(
+    async ([username, password]) => {
+      await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      // Registering signs in; sign out so the form signs in below.
+      await fetch("/api/auth/logout", { method: "POST" });
+    },
+    [username, testPassword],
+  );
+  await page.getByLabel("Username").fill(username);
+  await page.getByLabel("Password").fill(testPassword);
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(page.getByTestId("signed-in-user")).toBeVisible();
+}
+/** Deletes the signed-in User's Decks, so earlier tests' Decks are not listed. */
+export async function clearDecks(page: Page) {
+  await page.evaluate(async () => {
+    const decks: { id: string }[] = await (await fetch("/api/decks")).json();
+    for (const deck of decks)
+      await fetch(`/api/decks/${deck.id}`, { method: "DELETE" });
+  });
+}
+/** Signs in on the home page with an empty Deck Catalog and creates a Room. */
+export async function createRoom(page: Page, username: string, origin = "") {
+  await page.goto(`${origin}/`);
+  await signIn(page, username);
+  await clearDecks(page);
+  await page.getByRole("button", { name: "Create Room", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Room lobby" })).toBeVisible();
+  return page.url();
+}
+/** Signs in with an empty Deck Catalog and opens the invitation to join. */
+export async function joinRoom(
+  page: Page,
+  invitation: string,
+  username: string,
+) {
+  await page.goto(new URL("/", invitation).toString());
+  await signIn(page, username);
+  await clearDecks(page);
+  await page.goto(invitation);
+  await expect(page.getByRole("heading", { name: "Room lobby" })).toBeVisible();
+}
 export async function table(browser: Browser, players = 2) {
   const contexts = await Promise.all(
     Array.from({ length: players }, () =>
@@ -9,27 +61,10 @@ export async function table(browser: Browser, players = 2) {
     ),
   );
   const pages = await Promise.all(contexts.map((context) => context.newPage()));
-  await pages[0].goto("/");
-  await pages[0].getByLabel("Your name").fill("Alice");
-  await pages[0]
-    .getByRole("button", { name: "Create Room", exact: true })
-    .click();
-  await expect(
-    pages[0].getByRole("heading", { name: "Room lobby" }),
-  ).toBeVisible();
-  const invitation = pages[0].url();
-  for (let i = 1; i < pages.length; i++) {
-    await pages[i].goto(invitation);
-    await pages[i]
-      .getByLabel("Your name")
-      .fill(["Alice", "Bob", "Charlie", "Diana"][i]);
-    await pages[i]
-      .getByRole("button", { name: "Join Room", exact: true })
-      .click();
-    await expect(
-      pages[i].getByRole("heading", { name: "Room lobby" }),
-    ).toBeVisible();
-  }
+  const names = ["Alice", "Bob", "Charlie", "Diana"];
+  const invitation = await createRoom(pages[0], names[0]);
+  for (let i = 1; i < pages.length; i++)
+    await joinRoom(pages[i], invitation, names[i]);
   return { pages, contexts, invitation };
 }
 export async function saveDeck(
@@ -37,6 +72,14 @@ export async function saveDeck(
   name = "My deck",
   text = "2 Island\n1 Delver of Secrets (TST) 3",
 ) {
+  if (
+    await page
+      .getByRole("button", { name: "New Decklist", exact: true })
+      .isVisible()
+  )
+    await page
+      .getByRole("button", { name: "New Decklist", exact: true })
+      .click();
   await page.getByLabel("Decklist name").fill(name);
   await page.getByLabel("Decklist text").fill(text);
   await page

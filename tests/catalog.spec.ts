@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { createRoom } from "./support/table";
 import {
   cp,
   mkdtemp,
@@ -74,14 +75,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
   const context = await browser.newContext();
   const page = await context.newPage();
   try {
-    await page.goto(app.origin);
-    await page.getByLabel("Your name").fill("Catalog player");
-    await page
-      .getByRole("button", { name: "Create Room", exact: true })
-      .click();
-    await expect(
-      page.getByRole("heading", { name: "Room lobby" }),
-    ).toBeVisible();
+    await createRoom(page, "CatalogPlayer", app.origin);
     await page.getByLabel("Decklist name").fill("Before import");
     await page.getByLabel("Decklist text").fill("1 Island");
     await page
