@@ -148,7 +148,7 @@ One pure function in `src/server/catalog/` derives these values when the catalog
 
 Each field listed in §2.2 as having no writer is removed from `src/shared/model.ts`, together with the code that only initializes, copies or projects it:
 
-- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. Retiring legacy Matches (for example, ending them in `upgradeRoom`) is a product decision recorded as an open question on roadmap issue 3; once made, `rules` becomes required and the `match.rules &&` guards go away.
+- **Kept, contrary to the first draft:** `MatchState.mode` and the optional `MatchState.rules`. They mark legacy manual Matches, which Rooms still hold and replace through the consent flow. **Decided (2026-10-07):** legacy Matches are retired. `upgradeRoom` ends any stored manual Match; then `mode` goes, `rules` becomes required, and the `match.rules &&` guards and the legacy replacement path go away (roadmap issue 11).
 - `objectPatchSchema` and `ObjectPatch`. The types it lent to `GameObject` move next to `GameObject`.
 - `GameObject.designations`, `choices`, `stickerPlacements`, `meldParts`, `protectorId`, `faceDown`, `copiableValuesId`.
 - `GameObject.cannotBeCountered`, later: counter resolution reads it until DSL v2 provides a "can't be countered" grant, so it is removed together with the counter effect handler (roadmap issue 7).

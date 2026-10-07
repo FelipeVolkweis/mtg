@@ -130,6 +130,20 @@ Issues touching the same hotspot (`rules-engine.ts`, `resolution.ts`, `src/share
   - [ ] the catalog gate covers the whole catalog; gates and `npm test` are green.
 - **Human review:** the diff report and a sample of migrated files. On merge, ADR-0018 becomes `accepted` and its index row is updated.
 
+### 11. Retire legacy manual Matches
+
+- **Issue:** #81
+- **Depends:** 3
+- **Read:** CM §2.2, §4.1, §5; ADR-0016, ADR-0018
+- **Scope:** `src/server/room/room-upgrade.ts`, `src/shared/model.ts`, `match.service.ts`, `match-view.ts`, `App.tsx`, the readers of `match.rules` that guard for a manual Match, `tests/rules-ui.spec.ts`
+- **Order:** numbered after the plan was written; runs in parallel with issues 5 and 6 and merges before issue 7, because issues 7–10 rewrite code behind the `match.rules` guards.
+- **Done when:**
+  - [ ] `upgradeRoom` ends a stored manual Match (the Room returns to its lobby with Decklists kept), tested with a captured legacy Room document;
+  - [ ] `MatchState.mode` is gone and `MatchState.rules` is required; `grep -n "match.rules &&\|match.rules?\.\|mode === \"rules\"" src` is empty or each remaining hit is recorded in the pull request;
+  - [ ] the legacy rejection in `MatchService.execute` and the legacy screen in `App.tsx` are removed; the legacy replacement test is deleted or rewritten as an upgrade test (classified **Change**);
+  - [ ] ADR-0016 and ADR-0018 no longer mention the legacy marker;
+  - [ ] gates and `npm test` are green.
+
 ### 7. Event seam and effect handlers
 
 - **Issue:** #70
