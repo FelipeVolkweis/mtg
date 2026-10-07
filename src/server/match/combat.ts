@@ -6,7 +6,8 @@ import type {
   DamageChoice,
   SelectionOption,
 } from "../../shared/rules.js";
-import { manaCost, spendMana } from "./mana.js";
+import { manaCost } from "./mana.js";
+import { payMana } from "../rules/costs/cost-runtime.js";
 import { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import { emptyMana, type RulesEngine } from "./rules-engine.js";
 
@@ -292,12 +293,8 @@ export class Combat {
     if (action.selections || action.variables || action.damageAssignments)
       throw new Error("Attack choices are locked during payment.");
     this.validateAttackers(pending.selections, pending.playerId);
-    const available = { ...e.rules.mana[pending.playerId] };
-    for (const lot of e.rules.restrictedMana?.[pending.playerId] ?? [])
-      available[lot.type] -= lot.amount;
-    const payment = spendMana(available, pending.totalCost);
-    if (!payment) throw new Error("The attack costs cannot be paid yet.");
-    for (const type of payment.spent) e.rules.mana[pending.playerId][type]--;
+    if (!payMana(e.rules, pending.playerId, pending.totalCost))
+      throw new Error("The attack costs cannot be paid yet.");
     this.commitAttackers(pending.selections, pending.playerId);
     delete e.rules.pending;
     e.checkpoint({ playerId: pending.playerId });

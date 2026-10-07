@@ -1,6 +1,7 @@
 import type { JsonValue } from "../../../../shared/rules.js";
 import type { Effect } from "../../../../shared/rules-v2.js";
-import { manaCost, spendMana } from "../../../match/mana.js";
+import { manaCost } from "../../../match/mana.js";
+import { payMana } from "../../costs/cost-runtime.js";
 import { unsupportedCondition } from "../evaluate.js";
 import { selection } from "./selection.js";
 import {
@@ -102,13 +103,8 @@ export const mayPay: EffectHandler<"may-pay"> = {
     if (input.confirm === false)
       return { kind: "continue", effects: effect.else ?? [] };
     const payer = ctx.rules.pending!.playerId;
-    const pool = { ...ctx.rules.mana[payer] };
-    for (const lot of ctx.rules.restrictedMana?.[payer] ?? [])
-      pool[lot.type] -= lot.amount;
-    const payment = spendMana(pool, manaCost(symbols(effect)));
-    if (!payment)
+    if (!payMana(ctx.rules, payer, manaCost(symbols(effect))))
       throw new Error("The effect's mana payment cannot be paid yet.");
-    for (const type of payment.spent) ctx.rules.mana[payer][type]--;
     return { kind: "continue", effects: effect.then ?? [] };
   },
 };

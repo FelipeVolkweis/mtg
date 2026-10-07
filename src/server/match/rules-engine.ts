@@ -28,10 +28,8 @@ import {
   activationZone,
   castPermissions,
   choosesX,
-  costModifiers,
   costsOf,
   enchantFilter,
-  hasImprovise,
   isDiesTrigger,
   isManaAbility,
   manaSymbols,
@@ -52,13 +50,19 @@ import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { scopeBindings } from "../rules/vm/rule-vm.js";
 import { gameObject } from "./game-objects.js";
-import { manaCost, spendMana } from "./mana.js";
+import { manaCost } from "./mana.js";
 import { Library } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { Combat } from "./combat.js";
 import { actingPlayer } from "./match-players.js";
 import { CommanderRules } from "./commander-rules.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
+import {
+  costOptions,
+  determineCost,
+  pay,
+  type CostProposal,
+} from "../rules/costs/cost-runtime.js";
 import {
   PriorityCheckpoint,
   type PriorityGrant,
@@ -334,49 +338,23 @@ export class RulesEngine implements RulesMutator {
           objectIds: [...this.zone("hand", pending.playerId).objectIds],
         },
       };
-    const options: Record<string, SelectionOption> = {};
-    if (
-      pending.kind === "cast" &&
-      hasImprovise(
-        this.definition(this.object(pending.sourceId!))?.abilities ?? [],
-      )
-    )
-      options.improvise = {
-        count: pending.totalCost.generic,
-        minCount: 0,
-        label: "Improvise: tap artifacts for generic mana",
-        objectIds: this.battlefieldSources()
-          .filter(
-            (o) =>
-              o.controllerId === pending.playerId &&
-              !o.status.tapped &&
-              this.effective(o).types?.includes("Artifact"),
-          )
-          .map((o) => o.id),
-      };
-    for (const [index, cost] of costsOf(pending.ability).entries())
-      if ("filter" in cost) {
-        const crew = cost.kind === "tap-total-power";
-        options[String(index)] = {
-          count: crew ? this.battlefieldSources().length : cost.count,
-          minCount: crew ? 1 : undefined,
-          label: crew ? `Crew: at least ${cost.power} total power` : undefined,
-          objectIds: Object.values(this.match.objects)
-            .filter((object) =>
-              this.matches(object, cost.filter, pending.playerId),
-            )
-            .map((object) => object.id)
-            .filter((id) => {
-              const object = this.object(id);
-              return (
-                object.controllerId === pending.playerId &&
-                (!["tap", "tap-total-power"].includes(cost.kind) ||
-                  !object.status.tapped)
-              );
-            }),
-        };
-      }
-    return options;
+    if (pending.kind !== "cast" && pending.kind !== "activate") return {};
+    return costOptions(this, {
+      ...this.costProposal(pending),
+      totalCost: pending.totalCost,
+    });
+  }
+  /** What the Cost Runtime determines and pays for a cast or activation. */
+  costProposal(pending: PendingProcedure): CostProposal {
+    const source = this.object(pending.sourceId!);
+    return {
+      use: pending.kind === "cast" ? "cast" : "activate",
+      playerId: pending.playerId,
+      source,
+      ability: pending.ability!,
+      variables: pending.variables,
+      sourceZone: this.match.zones.find((z) => z.id === source.zoneId)?.kind,
+    };
   }
   object(id: string) {
     const object = this.match.objects[id];
@@ -937,65 +915,21 @@ export class RulesEngine implements RulesMutator {
       );
     }
   }
+  /** Determines and locks the total cost (CR 601.2f–g). */
   lockCost(pending: PendingProcedure) {
-    const target = this.object(pending.sourceId!);
-    if (pending.kind === "cast" && target.zoneId === this.zone("command").id)
-      pending.totalCost.generic +=
-        2 *
-        (this.rules.commanderCasts?.[
-          new CommanderRules(this).instance(target)!
-        ] ?? 0);
-    let reduction = 0;
-    for (const source of Object.values(this.match.objects)) {
-      if (source.controllerId !== pending.playerId) continue;
-      {
-        for (const modifier of costModifiers(
-          this.definition(source)?.abilities ?? [],
-        )) {
-          if (modifier.use !== pending.kind) continue;
-          if (
-            modifier.scope === "source"
-              ? source.id !== target.id
-              : source.zoneId !== this.zone("battlefield").id
-          )
-            continue;
-          if (
-            modifier.filter &&
-            !this.matches(
-              pending.kind === "cast"
-                ? { ...target, zoneId: this.zone("stack").id }
-                : target,
-              modifier.filter,
-              pending.playerId,
-              source.id,
-            )
-          )
-            continue;
-          reduction += this.value(
-            modifier.amount,
-            pending.playerId,
-            source.id,
-            pending.variables,
-          );
-        }
-      }
-    }
-    pending.totalCost.generic = Math.max(
-      0,
-      pending.totalCost.generic - reduction,
-    );
+    const proposal = this.costProposal(pending);
+    // A spell's cost reductions see it as a spell on the Stack.
+    if (proposal.use === "cast")
+      proposal.source = { ...proposal.source, zoneId: this.zone("stack").id };
+    pending.totalCost = determineCost(this, proposal);
   }
   lastManaSpent: ManaType[] = [];
   lastSourceName = "";
+  /** Pays the locked total cost through the Cost Runtime; false until it can. */
   pay(pending: PendingProcedure) {
-    const playerId = pending.playerId,
-      source = this.object(pending.sourceId!);
-    const player = this.match.players.find((p) => p.id === playerId)!;
-    const ability = pending.ability!;
-    const colors = this.rules.commanders[playerId].colorIdentity as ManaType[];
-    const produce = production(ability);
+    const produce = production(pending.ability);
     if (produce) {
-      const allowed = this.manaColors(produce, playerId);
+      const allowed = this.manaColors(produce, pending.playerId);
       if (
         !allowed.includes(
           pending.color ?? (allowed.length === 1 ? allowed[0] : undefined)!,
@@ -1003,175 +937,15 @@ export class RulesEngine implements RulesMutator {
       )
         throw new Error("Choose a permitted mana color.");
     }
-    const costs = pending.kind === "cast" ? [] : costsOf(ability);
-    const tapped = new Set<string>();
-    const removed = new Set<string>();
-    let life = 0;
-    for (const [index, cost] of costs.entries()) {
-      if (cost.kind === "tap-source") {
-        if (
-          removed.has(source.id) ||
-          tapped.has(source.id) ||
-          !this.canPayTapSymbol(source, playerId)
-        )
-          throw new Error("The source cannot pay its tap-symbol cost.");
-        tapped.add(source.id);
-      } else if (cost.kind === "counter-source") {
-        if (
-          removed.has(source.id) ||
-          source.zoneId !== this.zone("battlefield").id
-        )
-          throw new Error("Counter costs require a present permanent.");
-      } else if (cost.kind === "life")
-        life += this.value(cost.amount, playerId, source.id);
-      else if (
-        cost.kind === "sacrifice-source" ||
-        cost.kind === "discard-source"
-      ) {
-        const zone =
-          cost.kind === "sacrifice-source"
-            ? this.zone("battlefield")
-            : this.zone("hand", playerId);
-        if (removed.has(source.id) || source.zoneId !== zone.id)
-          throw new Error("The source cannot pay this removal cost.");
-        removed.add(source.id);
-      } else if (cost.kind === "tap-total-power") {
-        const ids = pending.selections[String(index)] ?? [];
-        if (!ids.length) return false;
-        if (new Set(ids).size !== ids.length)
-          throw new Error("Choose distinct creatures to crew.");
-        let power = 0;
-        for (const id of ids) {
-          const creature = this.object(id);
-          if (
-            removed.has(id) ||
-            tapped.has(id) ||
-            creature.controllerId !== playerId ||
-            creature.status.tapped ||
-            !this.matches(creature, cost.filter, playerId)
-          )
-            throw new Error("Choose untapped creatures you control to crew.");
-          power += Number(this.effective(creature).power) || 0;
-          tapped.add(id);
-        }
-        if (power < cost.power)
-          throw new Error("Insufficient total power to crew.");
-      } else if (
-        ["tap", "sacrifice", "discard", "return"].includes(cost.kind)
-      ) {
-        if (!("filter" in cost)) continue;
-        const ids = pending.selections[String(index)] ?? [];
-        if (ids.length !== cost.count) return false;
-        if (new Set(ids).size !== ids.length)
-          throw new Error("Choose distinct objects for each cost.");
-        for (const id of ids) {
-          const object = this.object(id);
-          if (
-            removed.has(id) ||
-            object.controllerId !== playerId ||
-            !this.matches(object, cost.filter, playerId) ||
-            (cost.kind === "tap" &&
-              (tapped.has(id) ||
-                object.status.tapped ||
-                object.zoneId !== this.zone("battlefield").id)) ||
-            (["sacrifice", "return"].includes(cost.kind) &&
-              object.zoneId !== this.zone("battlefield").id) ||
-            (cost.kind === "discard" &&
-              object.zoneId !== this.zone("hand", playerId).id)
-          )
-            throw new Error("Choose legal, distinct objects for the cost.");
-          if (cost.kind === "tap") tapped.add(id);
-          else removed.add(id);
-        }
-      }
-    }
-    if (BigInt(player.life) < BigInt(life))
-      throw new Error("You cannot pay that much life.");
-    const lots = this.rules.restrictedMana?.[playerId] ?? [];
-    const eligible = (lot: (typeof lots)[number]) =>
-      (!lot.restriction.use || lot.restriction.use === pending.kind) &&
-      (!lot.restriction.spellTypes ||
-        (pending.kind === "cast" &&
-          lot.restriction.spellTypes.some((type) =>
-            source.characteristics.types?.includes(type),
-          )));
-    const available = { ...this.rules.mana[playerId] };
-    for (const lot of lots)
-      if (!eligible(lot)) available[lot.type] -= lot.amount;
-    const improvise = pending.selections.improvise ?? [];
-    if (improvise.length) {
-      const option = this.selectionOptions(pending).improvise;
-      if (
-        !option ||
-        new Set(improvise).size !== improvise.length ||
-        improvise.length > pending.totalCost.generic ||
-        improvise.some((id) => !option.objectIds.includes(id))
-      )
-        throw new Error("Choose untapped artifacts you control for improvise.");
-    }
-    const payment = spendMana(available, {
-      ...pending.totalCost,
-      generic: pending.totalCost.generic - improvise.length,
+    const proposal = this.costProposal(pending);
+    const spent = pay(this, {
+      ...proposal,
+      totalCost: pending.totalCost,
+      selections: pending.selections,
     });
-    if (!payment) return false;
-    for (const id of improvise) this.object(id).status.tapped = true;
-    this.lastSourceName = source.characteristics.name;
-    this.lastManaSpent = payment.spent;
-    for (const type of payment.spent) {
-      this.rules.mana[playerId][type]--;
-      const lot = lots.find(
-        (lot) => lot.type === type && lot.amount > 0 && eligible(lot),
-      );
-      if (lot) lot.amount--;
-    }
-    if (this.rules.restrictedMana)
-      this.rules.restrictedMana[playerId] = lots.filter(
-        (lot) => lot.amount > 0,
-      );
-    if (life) this.propose({ kind: "life-change", playerId, amount: -life });
-    for (const [index, cost] of costs.entries()) {
-      if (cost.kind === "tap-source") source.status.tapped = true;
-      else if (cost.kind === "counter-source") {
-        const counter = source.counters.find((c) => c.kind === cost.counter);
-        if (counter)
-          counter.quantity = String(
-            BigInt(counter.quantity) + BigInt(cost.count),
-          );
-        else
-          source.counters.push({
-            kind: cost.counter,
-            quantity: String(cost.count),
-          });
-      } else if (
-        cost.kind === "sacrifice-source" ||
-        cost.kind === "discard-source"
-      )
-        this.propose({
-          kind: "zone-change",
-          objectId: source.id,
-          to: this.zone("graveyard", this.owner(source)),
-        });
-      else if (
-        cost.kind === "tap" ||
-        cost.kind === "tap-total-power" ||
-        cost.kind === "sacrifice" ||
-        cost.kind === "discard" ||
-        cost.kind === "return"
-      )
-        for (const id of pending.selections[String(index)] ?? []) {
-          if (cost.kind === "tap" || cost.kind === "tap-total-power")
-            this.object(id).status.tapped = true;
-          else
-            this.propose({
-              kind: "zone-change",
-              objectId: id,
-              to: this.zone(
-                cost.kind === "return" ? "hand" : "graveyard",
-                this.owner(this.object(id)),
-              ),
-            });
-        }
-    }
+    if (!spent) return false;
+    this.lastSourceName = proposal.source.characteristics.name;
+    this.lastManaSpent = spent;
     return true;
   }
   manaColors(produce: ManaProduction, playerId: string): ManaType[] {
