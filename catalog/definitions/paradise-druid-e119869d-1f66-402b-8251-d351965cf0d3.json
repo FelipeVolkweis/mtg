@@ -32,6 +32,54 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "hexproof-untapped",
+        "description": "This creature has hexproof as long as it's untapped.",
+        "kind": "static",
+        "condition": {
+          "matches": {
+            "selector": "source",
+            "predicate": {
+              "status": "untapped"
+            }
+          }
+        },
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "hexproof"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "W",
+            "U",
+            "B",
+            "R",
+            "G"
+          ]
+        }
+      }
+    ]
   }
 }

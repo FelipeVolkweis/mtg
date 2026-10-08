@@ -30,7 +30,42 @@
     "defaultPrintingId": "d268088d-a929-44eb-804c-02d625a7b019"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "destroy",
+        "description": "{1}, Sacrifice this creature: Destroy target artifact or enchantment.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{1}"
+            ]
+          },
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Artifact",
+                "Enchantment"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "objects": "target"
+          }
+        ]
+      }
+    ]
   }
 }

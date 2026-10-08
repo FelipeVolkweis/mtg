@@ -34,6 +34,50 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "land-dig",
+        "description": "When this creature enters, reveal cards from the top of your library until you reveal a land card. Put that card onto the battlefield tapped and the rest on the bottom of your library in a random order.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "library-sequence",
+            "player": "you",
+            "count": {
+              "until": {
+                "type": [
+                  "Land"
+                ]
+              }
+            },
+            "operation": "reveal",
+            "select": {
+              "max": 1,
+              "to": {
+                "zone": "battlefield",
+                "tapped": true
+              }
+            },
+            "rest": {
+              "to": {
+                "zone": "library",
+                "position": "bottom"
+              },
+              "order": "random"
+            }
+          }
+        ]
+      }
+    ]
   }
 }

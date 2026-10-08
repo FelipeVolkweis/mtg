@@ -9,6 +9,7 @@ import type {
   Selector,
   Value,
 } from "../../../shared/card-dsl.js";
+import { unrunPredicateFields } from "../ast.js";
 import type { RulesQuery } from "../context.js";
 import { counterCount } from "../../match/counters.js";
 import { lifeValue } from "../../match/life.js";
@@ -172,6 +173,11 @@ export class Evaluator {
     if (zone.visibility === "private" && zone.ownerId !== this.scope.playerId)
       return false;
     if (p.player !== undefined) return false;
+    for (const field of unrunPredicateFields)
+      if (p[field] !== undefined)
+        throw new Error(
+          `The ${field} predicate field is not supported by the current runtime.`,
+        );
     const c = this.query.effective(object);
     const types = c.types ?? [];
     const anyOf = (wanted: string | string[] | undefined, have?: string[]) =>
@@ -331,6 +337,10 @@ export class Evaluator {
       return match.rules.commanders[playerId]?.colorIdentity.length ?? 0;
     }
     if ("eventAmount" in value) return scope.event?.damage?.amount ?? 0;
+    if ("total" in value || "product" in value || "atCast" in value)
+      throw new Error(
+        `The ${Object.keys(value)[0]} value is not supported by the current runtime.`,
+      );
     return this.condition(value.if)
       ? this.value(value.then)
       : this.value(value.else);

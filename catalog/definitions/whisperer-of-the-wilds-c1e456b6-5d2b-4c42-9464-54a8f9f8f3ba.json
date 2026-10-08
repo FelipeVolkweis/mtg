@@ -34,6 +34,57 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {G}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "G"
+          ]
+        }
+      },
+      {
+        "id": "ferocious-mana",
+        "description": "Ferocious — {T}: Add {G}{G}. Activate only if you control a creature with power 4 or greater.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "activateOnlyIf": {
+          "exists": {
+            "all": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you",
+              "power": {
+                ">=": 4
+              }
+            }
+          }
+        },
+        "produce": {
+          "quantity": 2,
+          "colors": [
+            "G"
+          ]
+        }
+      }
+    ]
   }
 }

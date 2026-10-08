@@ -50,10 +50,15 @@ export const librarySequence: EffectHandler<"library-sequence"> = {
     e.player === "you" &&
     e.operation === "look" &&
     typeof e.count === "number" &&
+    !e.select?.linkAs &&
     (isScry(e) || isSelectToHand(e))
       ? undefined
       : "This library sequence",
   execute(effect, ctx) {
+    if (typeof effect.count === "object" && "until" in effect.count)
+      throw new Error(
+        "This library sequence is not supported by the current runtime.",
+      );
     const ids = ctx.query
       .zone("library", ctx.playerId)
       .objectIds.slice(0, ctx.eval.value(effect.count));

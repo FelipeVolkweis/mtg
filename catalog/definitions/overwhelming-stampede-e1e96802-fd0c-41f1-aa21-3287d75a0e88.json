@@ -27,6 +27,64 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "stampede",
+        "description": "Until end of turn, creatures you control gain trample and get +X/+X, where X is the greatest power among creatures you control.",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you"
+              }
+            },
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "trample"
+              },
+              {
+                "kind": "add-stats",
+                "power": {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Creature"
+                        ],
+                        "controller": "you"
+                      }
+                    },
+                    "name": "power"
+                  }
+                },
+                "toughness": {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Creature"
+                        ],
+                        "controller": "you"
+                      }
+                    },
+                    "name": "power"
+                  }
+                }
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

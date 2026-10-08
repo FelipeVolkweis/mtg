@@ -36,7 +36,13 @@ function recipients(to: Selector | PlayerRef, ctx: EffectContext) {
 
 export const damage: EffectHandler<"damage"> = {
   unsupported: (effect) =>
-    effect.source ? "Damage from another source" : undefined,
+    effect.source
+      ? "Damage from another source"
+      : effect.excessTo
+        ? "Excess damage dealt elsewhere"
+        : effect.divide
+          ? "Divided damage"
+          : undefined,
   execute(effect, ctx) {
     const amount = ctx.eval.value(effect.amount);
     const ids = recipients(effect.to, ctx);

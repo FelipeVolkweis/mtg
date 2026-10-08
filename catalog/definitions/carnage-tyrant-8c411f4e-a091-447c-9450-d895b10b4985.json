@@ -34,6 +34,30 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "uncounterable",
+        "description": "This spell can't be countered.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cant-be-countered",
+            "spells": "this"
+          }
+        ]
+      },
+      {
+        "id": "trample",
+        "description": "Trample",
+        "kind": "keyword",
+        "keyword": "trample"
+      },
+      {
+        "id": "hexproof",
+        "description": "hexproof",
+        "kind": "keyword",
+        "keyword": "hexproof"
+      }
+    ]
   }
 }

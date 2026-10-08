@@ -36,6 +36,111 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "deathtouch",
+        "description": "Deathtouch",
+        "kind": "keyword",
+        "keyword": "deathtouch"
+      },
+      {
+        "id": "indestructible",
+        "description": "indestructible",
+        "kind": "keyword",
+        "keyword": "indestructible"
+      },
+      {
+        "id": "restricted",
+        "description": "Rhonas can't attack or block unless you control another creature with power 4 or greater.",
+        "kind": "static",
+        "condition": {
+          "not": {
+            "exists": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you",
+                    "power": {
+                      ">=": 4
+                    }
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "grants": [
+          {
+            "kind": "cant-attack",
+            "objects": "source"
+          },
+          {
+            "kind": "cant-block",
+            "objects": "source"
+          }
+        ]
+      },
+      {
+        "id": "pump",
+        "description": "{2}{G}: Another target creature gets +2/+0 and gains trample until end of turn.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}",
+              "{G}"
+            ]
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "and": [
+                {
+                  "zone": "battlefield",
+                  "type": [
+                    "Creature"
+                  ]
+                },
+                {
+                  "not": {
+                    "is": "source"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": "target",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 2,
+                "toughness": 0
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "trample"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

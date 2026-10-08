@@ -36,6 +36,33 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "flash",
+        "description": "Flash",
+        "kind": "keyword",
+        "keyword": "flash"
+      },
+      {
+        "id": "green-flash",
+        "description": "You may cast green creature spells as though they had flash.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cast-timing",
+            "spells": {
+              "zone": "stack",
+              "object": "spell",
+              "type": [
+                "Creature"
+              ],
+              "color": "G",
+              "controller": "you"
+            },
+            "as": "flash"
+          }
+        ]
+      }
+    ]
   }
 }

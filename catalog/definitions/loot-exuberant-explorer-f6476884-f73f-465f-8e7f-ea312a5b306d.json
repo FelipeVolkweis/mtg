@@ -34,6 +34,75 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "extra-land",
+        "description": "You may play an additional land on each of your turns.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "additional-land-plays",
+            "player": "you",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "dig",
+        "description": "{4}{G}{G}, {T}: Look at the top six cards of your library. You may reveal a creature card with mana value less than or equal to the number of lands you control from among them and put it onto the battlefield. Put the rest on the bottom in a random order.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{4}",
+              "{G}",
+              "{G}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "library-sequence",
+            "player": "you",
+            "count": 6,
+            "operation": "look",
+            "select": {
+              "filter": {
+                "type": [
+                  "Creature"
+                ],
+                "manaValue": {
+                  "<=": {
+                    "count": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Land"
+                        ],
+                        "controller": "you"
+                      }
+                    }
+                  }
+                }
+              },
+              "max": 1,
+              "to": "battlefield",
+              "reveal": true
+            },
+            "rest": {
+              "to": {
+                "zone": "library",
+                "position": "bottom"
+              },
+              "order": "random"
+            }
+          }
+        ]
+      }
+    ]
   }
 }

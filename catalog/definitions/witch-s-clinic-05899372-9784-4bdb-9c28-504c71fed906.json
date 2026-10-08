@@ -23,6 +23,63 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
+      },
+      {
+        "id": "lifelink",
+        "description": "{2}, {T}: Target commander gains lifelink until end of turn.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{2}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "commander": true
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": "target",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "lifelink"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

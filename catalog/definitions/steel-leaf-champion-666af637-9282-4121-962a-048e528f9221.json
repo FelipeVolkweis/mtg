@@ -32,6 +32,23 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "evasion",
+        "description": "This creature can't be blocked by creatures with power 2 or less.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "block-restriction",
+            "objects": "source",
+            "by": {
+              "power": {
+                "<=": 2
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 }

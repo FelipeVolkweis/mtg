@@ -29,6 +29,46 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "predation",
+        "description": "For each creature your opponents control, create a 4/4 green Phyrexian Beast creature token. Each of those tokens fights a different one of those creatures.",
+        "kind": "spell",
+        "effects": [
+          {
+            "bind": "beasts",
+            "kind": "create-token",
+            "token": "phyrexian-beast-4-4-green",
+            "count": {
+              "count": {
+                "all": {
+                  "zone": "battlefield",
+                  "type": [
+                    "Creature"
+                  ],
+                  "controller": "opponents"
+                }
+              }
+            }
+          },
+          {
+            "kind": "fight",
+            "objects": {
+              "binding": "beasts"
+            },
+            "against": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "opponents"
+              }
+            },
+            "pairing": "distinct"
+          }
+        ]
+      }
+    ]
   }
 }

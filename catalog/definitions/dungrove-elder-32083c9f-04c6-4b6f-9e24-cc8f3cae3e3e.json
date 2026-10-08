@@ -32,7 +32,53 @@
     "defaultPrintingId": "528fc1b2-62c9-4d83-bb43-58a59713a62b"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "hexproof",
+        "description": "Hexproof",
+        "kind": "keyword",
+        "keyword": "hexproof"
+      },
+      {
+        "id": "size",
+        "description": "Dungrove Elder's power and toughness are each equal to the number of Forests you control.",
+        "kind": "static",
+        "characteristicDefining": true,
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": "source",
+            "changes": [
+              {
+                "kind": "define-stats",
+                "power": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "subtype": [
+                        "Forest"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                },
+                "toughness": {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "subtype": [
+                        "Forest"
+                      ],
+                      "controller": "you"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

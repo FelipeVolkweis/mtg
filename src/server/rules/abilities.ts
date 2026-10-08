@@ -291,6 +291,12 @@ const grantHandlers: {
             break;
           case "gain-control":
             check.unsupported("Gaining control");
+            break;
+          case "add-types":
+          case "copy-linked":
+            break;
+          default:
+            check.unsupported(`The ${change.kind} change`);
         }
     },
   },

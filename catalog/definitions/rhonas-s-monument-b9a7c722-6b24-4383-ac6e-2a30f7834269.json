@@ -25,6 +25,74 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "discount",
+        "description": "Green creature spells you cast cost {1} less to cast.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cost-modifier",
+            "applies": {
+              "spells": {
+                "zone": "stack",
+                "object": "spell",
+                "type": [
+                  "Creature"
+                ],
+                "color": "G",
+                "controller": "you"
+              }
+            },
+            "reduce": 1
+          }
+        ]
+      },
+      {
+        "id": "pump",
+        "description": "Whenever you cast a creature spell, target creature you control gets +2/+2 and gains trample until end of turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "cast",
+          "spell": {
+            "zone": "stack",
+            "type": [
+              "Creature"
+            ],
+            "controller": "you"
+          }
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": "target",
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 2,
+                "toughness": 2
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "trample"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

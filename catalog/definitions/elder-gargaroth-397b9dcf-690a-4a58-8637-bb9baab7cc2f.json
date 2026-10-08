@@ -35,6 +35,113 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "vigilance",
+        "description": "vigilance",
+        "kind": "keyword",
+        "keyword": "vigilance"
+      },
+      {
+        "id": "trample",
+        "description": "trample",
+        "kind": "keyword",
+        "keyword": "trample"
+      },
+      {
+        "id": "attack-mode",
+        "description": "Whenever this creature attacks or blocks, choose one —\n• Create a 3/3 green Beast creature token.\n• You gain 3 life.\n• Draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "modes": {
+          "choose": 1,
+          "options": [
+            {
+              "id": "beast",
+              "label": "Create a 3/3 green Beast creature token.",
+              "effects": [
+                {
+                  "kind": "create-token",
+                  "token": "beast-3-3-green"
+                }
+              ]
+            },
+            {
+              "id": "life",
+              "label": "You gain 3 life.",
+              "effects": [
+                {
+                  "kind": "gain-life",
+                  "amount": 3
+                }
+              ]
+            },
+            {
+              "id": "draw",
+              "label": "Draw a card.",
+              "effects": [
+                {
+                  "kind": "draw",
+                  "count": 1
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "block-mode",
+        "description": "Whenever this creature attacks or blocks, choose one —\n• Create a 3/3 green Beast creature token.\n• You gain 3 life.\n• Draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "blocks",
+          "blocker": "source"
+        },
+        "modes": {
+          "choose": 1,
+          "options": [
+            {
+              "id": "beast",
+              "label": "Create a 3/3 green Beast creature token.",
+              "effects": [
+                {
+                  "kind": "create-token",
+                  "token": "beast-3-3-green"
+                }
+              ]
+            },
+            {
+              "id": "life",
+              "label": "You gain 3 life.",
+              "effects": [
+                {
+                  "kind": "gain-life",
+                  "amount": 3
+                }
+              ]
+            },
+            {
+              "id": "draw",
+              "label": "Draw a card.",
+              "effects": [
+                {
+                  "kind": "draw",
+                  "count": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

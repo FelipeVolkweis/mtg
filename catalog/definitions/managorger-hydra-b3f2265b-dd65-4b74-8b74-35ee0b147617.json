@@ -33,6 +33,33 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "trample",
+        "description": "Trample",
+        "kind": "keyword",
+        "keyword": "trample"
+      },
+      {
+        "id": "grow",
+        "description": "Whenever a player casts a spell, put a +1/+1 counter on this creature.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "cast",
+          "spell": {
+            "zone": "stack",
+            "object": "spell"
+          }
+        },
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": "source",
+            "counter": "+1/+1",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

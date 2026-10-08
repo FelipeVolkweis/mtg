@@ -27,6 +27,54 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "bite",
+        "description": "Target creature you control deals damage equal to its power to target creature or planeswalker you don't control.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "biter",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you"
+            }
+          },
+          {
+            "id": "victim",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature",
+                "Planeswalker"
+              ],
+              "controller": "opponents"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": {
+              "stat": {
+                "of": {
+                  "target": "biter"
+                },
+                "name": "power"
+              }
+            },
+            "to": {
+              "target": "victim"
+            },
+            "source": {
+              "target": "biter"
+            }
+          }
+        ]
+      }
+    ]
   }
 }

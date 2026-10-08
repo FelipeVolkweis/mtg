@@ -29,6 +29,40 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "double",
+        "description": "At the beginning of each combat, double the power and toughness of each creature you control until end of turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "begin-combat"
+        },
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you"
+              }
+            },
+            "changes": [
+              {
+                "kind": "double-stats",
+                "stats": [
+                  "power",
+                  "toughness"
+                ]
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

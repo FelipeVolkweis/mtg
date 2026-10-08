@@ -36,6 +36,36 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "spider",
+        "description": "Whenever an opponent casts an instant or sorcery spell, create a 1/2 green Spider creature token with reach.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "cast",
+          "spell": {
+            "zone": "stack",
+            "type": [
+              "Instant",
+              "Sorcery"
+            ],
+            "controller": "opponents"
+          }
+        },
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "spider-1-2-green-reach",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

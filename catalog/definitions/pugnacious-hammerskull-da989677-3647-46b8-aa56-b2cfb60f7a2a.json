@@ -31,6 +31,46 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "stun",
+        "description": "Whenever this creature attacks while you don't control another Dinosaur, put a stun counter on it.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "interveningIf": {
+          "not": {
+            "exists": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "subtype": [
+                      "Dinosaur"
+                    ],
+                    "controller": "you"
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": "source",
+            "counter": "stun",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

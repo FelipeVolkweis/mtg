@@ -18,7 +18,12 @@ import {
   replacementSupport,
   runtimeKeyword,
 } from "./abilities.js";
-import { astEqual, isAttachedToSource, isSourcePredicate } from "./ast.js";
+import {
+  astEqual,
+  isAttachedToSource,
+  isSourcePredicate,
+  unrunForm,
+} from "./ast.js";
 import { costSupport } from "./costs/handlers.js";
 import type { SupportCheck } from "./support-check.js";
 import { triggerSupport } from "./triggers/trigger-runtime.js";
@@ -70,10 +75,15 @@ class Walker implements SupportCheck {
   }
 
   ability(ability: Ability) {
+    const unrun = unrunForm(ability);
+    if (unrun) this.at(unrun.path, () => this.unsupported(unrun.what));
     switch (ability.kind) {
       case "keyword":
         return keywordSupport(ability.keyword, this);
       case "mana": {
+        if (ability.activateOnlyIf)
+          this.unsupported("An activation restriction");
+        if (ability.instead) this.unsupported("An instead mana production");
         const produce = ability.produce;
         if (produce.colors && !Array.isArray(produce.colors))
           if (produce.colors.commanderColors !== "you")
@@ -101,6 +111,8 @@ class Walker implements SupportCheck {
           );
         return this.body(ability);
       case "activated":
+        if (ability.activateOnlyIf)
+          this.unsupported("An activation restriction");
         this.at("costs", () => this.costs(ability.costs));
         if (ability.limit && ability.limit.perTurn !== 1)
           this.unsupported("A limit other than once per turn");

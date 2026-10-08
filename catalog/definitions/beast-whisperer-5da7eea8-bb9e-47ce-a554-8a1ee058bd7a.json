@@ -31,7 +31,29 @@
     "defaultPrintingId": "e08be63d-8e8e-4b7a-a5ad-f4df45ca6070"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "draw",
+        "description": "Whenever you cast a creature spell, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "cast",
+          "spell": {
+            "zone": "stack",
+            "type": [
+              "Creature"
+            ],
+            "controller": "you"
+          }
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

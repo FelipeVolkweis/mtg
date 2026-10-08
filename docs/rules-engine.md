@@ -77,9 +77,12 @@ four steps:
    support check only walks the ability: each effect, trigger, cost, static
    grant, replacement and keyword registry entry declares, next to its
    runtime code, which forms it runs, and a kind with no entry is rejected
-   (`tests/rules/compiler/support-coverage.spec.ts`). An implemented
-   card that uses a construct the current runtime can't run fails the load;
-   an unimplemented one loads without runtime abilities.
+   (`tests/rules/compiler/support-coverage.spec.ts`). The check also scans
+   each ability for the value forms and predicate fields the evaluator does
+   not run yet (`unrunForm` in [ast.ts](../src/server/rules/ast.ts)), because
+   effects hold values and filters the walker does not visit one by one. An
+   implemented card that uses a construct the current runtime can't run fails
+   the load; an unimplemented one loads without runtime abilities.
 
 The catalog gate (`tests/rules/compiler/catalog-gate.spec.ts`) compiles every
 definition and runs the support check on every implemented one. Publishing

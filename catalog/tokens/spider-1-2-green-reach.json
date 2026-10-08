@@ -1,0 +1,29 @@
+{
+  "id": "spider-1-2-green-reach",
+  "characteristics": {
+    "name": "Spider",
+    "colors": [
+      "G"
+    ],
+    "supertypes": [],
+    "types": [
+      "Creature"
+    ],
+    "subtypes": [
+      "Spider"
+    ],
+    "keywords": [
+      "Reach"
+    ],
+    "rulesText": "Reach",
+    "power": "1",
+    "toughness": "2"
+  },
+  "abilities": [
+    {
+      "id": "reach",
+      "kind": "keyword",
+      "keyword": "reach"
+    }
+  ]
+}

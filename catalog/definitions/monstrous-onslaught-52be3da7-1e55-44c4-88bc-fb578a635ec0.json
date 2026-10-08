@@ -27,6 +27,52 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "onslaught",
+        "description": "Monstrous Onslaught deals X damage divided as you choose among any number of target creatures, where X is the greatest power among creatures you control as you cast this spell.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "creatures",
+            "count": {
+              "min": 0,
+              "max": 100
+            },
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "damage",
+            "amount": {
+              "atCast": {
+                "greatest": {
+                  "of": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Creature"
+                      ],
+                      "controller": "you"
+                    }
+                  },
+                  "name": "power"
+                }
+              }
+            },
+            "to": {
+              "target": "creatures"
+            },
+            "divide": true
+          }
+        ]
+      }
+    ]
   }
 }

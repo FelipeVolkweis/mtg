@@ -36,6 +36,62 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "formidable",
+        "description": "Formidable — At the beginning of combat on your turn, if creatures you control have total power 8 or greater, target creature you control gains haste until end of turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "begin-combat",
+          "player": "you"
+        },
+        "interveningIf": {
+          "compare": [
+            {
+              "total": {
+                "of": {
+                  "all": {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you"
+                  }
+                },
+                "name": "power"
+              }
+            },
+            ">=",
+            8
+          ]
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": "target",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "haste"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

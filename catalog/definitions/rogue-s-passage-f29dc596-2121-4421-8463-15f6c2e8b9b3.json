@@ -22,7 +22,63 @@
     "defaultPrintingId": "2e38a5d6-9e99-4ace-ad2b-8dced251a0f2"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
+      },
+      {
+        "id": "unblockable",
+        "description": "{4}, {T}: Target creature can't be blocked this turn.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{4}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-grant",
+            "grant": {
+              "kind": "block-restriction",
+              "objects": "target"
+            },
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

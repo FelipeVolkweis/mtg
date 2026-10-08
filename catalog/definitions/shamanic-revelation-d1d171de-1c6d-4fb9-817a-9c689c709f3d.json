@@ -29,6 +29,50 @@
   },
   "authored": {
     "automationStatus": "unimplemented",
-    "abilities": []
+    "abilities": [
+      {
+        "id": "revelation",
+        "description": "Draw a card for each creature you control.\nFerocious — You gain 4 life for each creature you control with power 4 or greater.",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "draw",
+            "count": {
+              "count": {
+                "all": {
+                  "zone": "battlefield",
+                  "type": [
+                    "Creature"
+                  ],
+                  "controller": "you"
+                }
+              }
+            }
+          },
+          {
+            "kind": "gain-life",
+            "amount": {
+              "product": [
+                4,
+                {
+                  "count": {
+                    "all": {
+                      "zone": "battlefield",
+                      "type": [
+                        "Creature"
+                      ],
+                      "controller": "you",
+                      "power": {
+                        ">=": 4
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
   }
 }

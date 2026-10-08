@@ -45,6 +45,14 @@ const unsupportedDuration = (duration: Duration) =>
 
 function unsupportedChange(change: ContinuousChange) {
   if (change.kind === "gain-control") return "Gaining control";
+  if (
+    change.kind === "set-types" ||
+    change.kind === "set-colors" ||
+    change.kind === "remove-abilities" ||
+    change.kind === "grant-ability" ||
+    change.kind === "double-stats"
+  )
+    return `The ${change.kind} change`;
   if (change.kind === "grant-keyword" && !runtimeKeyword(change.keyword))
     return `The ${change.keyword} keyword`;
   return undefined;
