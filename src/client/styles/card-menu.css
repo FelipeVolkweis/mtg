@@ -1,0 +1,62 @@
+.rules-card-menu {
+  position: fixed;
+  z-index: 40;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+  background: #11232ff7;
+  border: 1px solid #718387;
+  border-radius: 7px;
+  box-shadow: 0 8px 30px #0008;
+  font-size: 13px;
+}
+.rules-card-menu button {
+  padding: 8px;
+  font-size: 13px;
+  text-align: left;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.rules-card-menu p {
+  white-space: pre-line;
+  margin: 3px 0;
+}
+.rules-card-preview {
+  position: fixed;
+  z-index: 50;
+  padding: 6px;
+  background: #142832;
+  border: 2px solid #e4ce9b;
+  border-radius: 8px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.rules-card-preview > img {
+  display: block;
+  width: 100%;
+  object-fit: contain;
+  min-height: 0;
+  max-height: calc(100vh - 140px);
+}
+.rules-card-preview > .printing-fallback {
+  height: 350px;
+  flex-shrink: 1;
+  font-size: 14px;
+}
+.rules-card-preview .printing-fallback strong {
+  font-size: 18px;
+}
+.rules-card-preview .card-state {
+  position: static;
+  flex-shrink: 0;
+  font-size: 12px;
+  max-height: 95px;
+  overflow: auto;
+}
+.rules-card-preview .card-state strong {
+  font-size: 13px;
+}

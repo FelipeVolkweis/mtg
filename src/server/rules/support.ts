@@ -7,19 +7,32 @@ import type {
   Predicate,
   PredicateFields,
   Selector,
-  StaticGrant,
   TargetClause,
-  Trigger,
   Value,
 } from "../../shared/card-dsl.js";
 import type { CompileError, CoreAbility } from "./compiler.js";
-import { grantKeyword, runtimeKeyword, same } from "./abilities.js";
+import {
+  continuousGrants,
+  grantSupport,
+  keywordSupport,
+  replacementSupport,
+  runtimeKeyword,
+} from "./abilities.js";
+import { astEqual, isAttachedToSource, isSourcePredicate } from "./ast.js";
+import { costSupport } from "./costs/handlers.js";
+import type { SupportCheck } from "./support-check.js";
+import { triggerSupport } from "./triggers/trigger-runtime.js";
 import { unsupportedEffect } from "./vm/effects/registry.js";
 
 // Runtime support check (dsl-redesign.md §9): which Core constructs the
 // engine runs today. The engine executes the compiler's Core AST directly; an
 // implemented card using anything else fails to load with an error naming the
 // construct and its path. Nothing is approximated.
+//
+// The check only walks an ability. Each effect, trigger, cost, static grant,
+// replacement and keyword declares its supported forms next to the code that
+// runs it (their registries); a kind with no runtime handler is rejected.
+// Filters and values are checked here: the evaluator runs them all.
 
 export type SupportResult =
   { ok: true } | { ok: false; errors: CompileError[] };
@@ -33,7 +46,7 @@ class Unsupported extends Error {
   }
 }
 
-class SupportCheck {
+class Walker implements SupportCheck {
   private path = "";
 
   unsupported(what: string): never {
@@ -58,14 +71,8 @@ class SupportCheck {
 
   ability(ability: Ability) {
     switch (ability.kind) {
-      case "keyword": {
-        const keyword = ability.keyword;
-        if (typeof keyword === "string") return this.keyword(keyword);
-        if (keyword.name === "enchant")
-          return this.at("keyword.filter", () => this.filter(keyword.filter));
-        if (keyword.name === "improvise") return;
-        return this.unsupported(`The ${keyword.name} keyword`);
-      }
+      case "keyword":
+        return keywordSupport(ability.keyword, this);
       case "mana": {
         const produce = ability.produce;
         if (produce.colors && !Array.isArray(produce.colors))
@@ -76,28 +83,18 @@ class SupportCheck {
           return this.at("activation.costs", () => this.costs(costs));
         }
         const trigger = ability.activation.trigger;
-        if (trigger.produced)
-          this.unsupported("A produced-mana trigger filter");
-        return this.at("activation.trigger.object", () =>
-          this.filter(trigger.object),
+        return this.at("activation.trigger", () =>
+          triggerSupport(trigger, this),
         );
       }
       case "replacement":
-        if (
-          ability.replace.kind === "enter-tapped" &&
-          ability.event.event === "would-enter" &&
-          same(ability.event.object, { is: "source" })
-        )
-          return;
-        return this.unsupported(
-          `A ${ability.replace.kind} replacement of ${ability.event.event}`,
-        );
+        return replacementSupport(ability, this);
       case "static":
         return this.static(ability);
       case "spell":
         return this.body(ability);
       case "triggered":
-        this.at("trigger", () => this.trigger(ability.trigger));
+        this.at("trigger", () => triggerSupport(ability.trigger, this));
         if (ability.interveningIf)
           this.at("interveningIf", () =>
             this.intervening(ability.interveningIf!),
@@ -113,100 +110,28 @@ class SupportCheck {
     }
   }
 
-  private keyword(keyword: string) {
+  keyword(keyword: string) {
     if (!runtimeKeyword(keyword)) this.unsupported(`The ${keyword} keyword`);
   }
 
-  // -------------------------------------------------------------- statics
-
+  /**
+   * Each grant by its own declaration; then what `staticContinuous` builds
+   * from them: one continuous effect over one set of objects.
+   */
   private static(ability: Extract<Ability, { kind: "static" }>) {
+    const continuous = continuousGrants(ability.grants);
     let objects: Selector | undefined;
     let changes = 0;
-    const sameObjects = (selector: Selector) => {
-      if (objects && !same(objects, selector))
-        this.unsupported("Grants over different objects in one ability");
-      objects = selector;
-    };
     ability.grants.forEach((grant, i) =>
       this.at(`grants[${i}]`, () => {
-        const keyword = this.grantKeyword(grant);
-        if (keyword) {
-          sameObjects(keyword.objects);
-          changes++;
-          return;
+        const applied = continuous[i];
+        if (applied) {
+          if (objects && !astEqual(objects, applied.objects))
+            this.unsupported("Grants over different objects in one ability");
+          objects = applied.objects;
+          changes += applied.changes;
         }
-        switch (grant.kind) {
-          case "continuous":
-            sameObjects(grant.objects);
-            grant.changes.forEach((change) => {
-              switch (change.kind) {
-                case "set-base-stats":
-                case "add-stats":
-                case "define-stats":
-                  this.value(change.power);
-                  this.value(change.toughness);
-                  break;
-                case "grant-keyword":
-                  this.keyword(change.keyword);
-                  break;
-                case "gain-control":
-                  this.unsupported("Gaining control");
-              }
-              changes++;
-            });
-            return;
-          case "cost-modifier":
-            if (grant.increase !== undefined || grant.condition)
-              this.unsupported("A cost increase or conditional cost modifier");
-            this.value(grant.reduce!);
-            if (typeof grant.applies === "object" && "spells" in grant.applies)
-              this.filter(grant.applies.spells);
-            else if (
-              typeof grant.applies === "object" &&
-              !same(grant.applies.abilitiesOf, "source")
-            )
-              this.unsupported(
-                "A cost modifier for another object's abilities",
-              );
-            return;
-          case "attack-tax": {
-            const [cost] = grant.costPerAttacker;
-            if (
-              grant.defender !== "you" ||
-              grant.costPerAttacker.length !== 1 ||
-              cost.kind !== "mana"
-            )
-              this.unsupported("An attack tax other than mana to attack you");
-            return;
-          }
-          case "cast-timing":
-            this.filter(grant.spells);
-            return;
-          case "maximum-hand-size":
-            if (grant.player !== "you" || grant.value !== "unlimited")
-              this.unsupported(
-                "A maximum hand size other than your unlimited one",
-              );
-            return;
-          case "untap-restriction":
-            if (
-              !same(grant, {
-                kind: "untap-restriction",
-                objects: { attachedTo: "source" },
-                unless: { monarch: { controllerOf: { attachedTo: "source" } } },
-              })
-            )
-              this.unsupported(
-                "An untap restriction other than the monarch lock",
-              );
-            return;
-          case "cant-be-countered":
-            if (grant.spells !== "this")
-              this.unsupported("Can't be countered for other spells");
-            return;
-          default:
-            this.unsupported(`The ${grant.kind} grant`);
-        }
+        grantSupport(grant, this);
       }),
     );
     if (changes) {
@@ -219,12 +144,6 @@ class SupportCheck {
       );
   }
 
-  private grantKeyword(grant: StaticGrant) {
-    if (grant.kind === "block-restriction" && grant.by && !grantKeyword(grant))
-      this.unsupported("A block restriction other than by Walls");
-    return grantKeyword(grant);
-  }
-
   private staticCondition(condition: Condition) {
     if (
       "compare" in condition &&
@@ -233,69 +152,6 @@ class SupportCheck {
     )
       return this.value(condition.compare[0]);
     return this.unsupported("A static condition other than value ≥ number");
-  }
-
-  // ----------------------------------------------------- triggers, bodies
-
-  private trigger(trigger: Trigger) {
-    const player = (p: PlayerRef) => {
-      if (p !== "you" && p !== "opponents")
-        this.unsupported(`Trigger player ${JSON.stringify(p)}`);
-    };
-    switch (trigger.event) {
-      case "zone-change":
-        this.at("object", () => this.subject(trigger.object as Predicate));
-        if (trigger.to === "battlefield" && !trigger.from) return;
-        if (
-          trigger.from === "battlefield" &&
-          trigger.to === "graveyard" &&
-          !trigger.during
-        )
-          return;
-        return this.unsupported(
-          `A zone change from ${trigger.from} to ${trigger.to}`,
-        );
-      case "attacks":
-        return this.at("attacker", () =>
-          this.subject(trigger.attacker as Predicate),
-        );
-      case "cast":
-        if (trigger.caster) this.unsupported("A cast trigger with a caster");
-        return this.at("spell", () => this.filter(trigger.spell));
-      case "deals-damage":
-        if (trigger.to && typeof trigger.to === "object")
-          this.unsupported("A damage trigger with a recipient predicate");
-        return this.at("source", () =>
-          this.subject(trigger.source as Predicate),
-        );
-      case "draws":
-        return player(trigger.player);
-      case "step":
-        if (trigger.step !== "upkeep")
-          this.unsupported(`A ${trigger.step} step trigger`);
-        if (trigger.player === "next")
-          this.unsupported("A next-player step trigger");
-        if (trigger.player) player(trigger.player as PlayerRef);
-        return;
-      case "becomes-target":
-        this.at("object", () => this.subject(trigger.object as Predicate));
-        if (trigger.by) player(trigger.by);
-        return;
-      case "state": {
-        const c = trigger.condition;
-        if ("matches" in c && c.matches.selector === "source") {
-          const p = c.matches.predicate as PredicateFields;
-          const count = p.counters?.count as { ">="?: Value } | undefined;
-          if (Object.keys(p).length === 1 && typeof count?.[">="] === "number")
-            return;
-        }
-        return this.unsupported(
-          "A state trigger other than a source counter threshold",
-        );
-      }
-      default:
-        return this.unsupported(`The ${trigger.event} trigger`);
-    }
   }
 
   private intervening(condition: Condition) {
@@ -344,40 +200,10 @@ class SupportCheck {
 
   // -------------------------------------------------- costs, values, filters
 
-  private costs(costs: Cost[]) {
-    costs.forEach((cost, i) => this.at(`[${i}]`, () => this.cost(cost)));
-  }
-
-  private cost(cost: Cost) {
-    switch (cost.kind) {
-      case "mana":
-      case "tap-source":
-      case "sacrifice-source":
-      case "discard-source":
-        return;
-      case "life":
-        if (same(cost.amount, { commanderColors: "you" })) return;
-        if (typeof cost.amount !== "number")
-          this.unsupported("A variable life cost");
-        return;
-      case "counter-source":
-        if (cost.operation !== "put")
-          this.unsupported("Removing counters as a cost");
-        return;
-      case "tap":
-      case "sacrifice":
-      case "discard":
-      case "return":
-        return this.filter(cost.filter);
-      case "tap-total-power": {
-        const fields = conjuncts(cost.filter);
-        if (!fields.some((f) => same(f.status, "untapped")))
-          this.unsupported("Crew from possibly tapped creatures");
-        return this.filter(cost.filter);
-      }
-      default:
-        return this.unsupported(`The ${cost.kind} cost`);
-    }
+  costs(costs: Cost[]) {
+    costs.forEach((cost, i) =>
+      this.at(`[${i}]`, () => costSupport(cost, this)),
+    );
   }
 
   value(value: Value): void {
@@ -393,7 +219,7 @@ class SupportCheck {
     if ("sum" in value) return value.sum.forEach((v) => this.value(v));
     if (
       "cardsIn" in value &&
-      same(value.cardsIn, { zone: "hand", player: "you" })
+      astEqual(value.cardsIn, { zone: "hand", player: "you" })
     )
       return;
     if ("greatest" in value && value.greatest.name === "manaValue") {
@@ -403,12 +229,7 @@ class SupportCheck {
     return this.unsupported(`The value ${JSON.stringify(value)}`);
   }
 
-  /** A trigger subject: `{ is: source }` is the source on the battlefield. */
-  private subject(predicate: Predicate) {
-    if (!same(predicate, { is: "source" })) this.filter(predicate);
-  }
-
-  private objects(selector: Selector) {
+  objects(selector: Selector) {
     if (selector === "source") return;
     if (typeof selector === "object" && "all" in selector)
       return this.filter(selector.all);
@@ -428,7 +249,7 @@ class SupportCheck {
         const inner = member.not as PredicateFields;
         if (Array.isArray(inner.type) && Object.keys(inner).length === 1)
           continue;
-        if (same(inner, { is: "source" }) || same(inner, { object: "token" }))
+        if (isSourcePredicate(inner) || astEqual(inner, { object: "token" }))
           continue;
         this.unsupported(`The predicate ${JSON.stringify(member)}`);
       } else if ("and" in member || "or" in member)
@@ -442,7 +263,6 @@ class SupportCheck {
     }
     if (!seen.has("zone")) this.unsupported("A predicate without a zone");
   }
-
   private fields(p: PredicateFields, seen: Set<string>) {
     const set = (key: string) => {
       if (seen.has(key)) this.unsupported(`A predicate repeating ${key}`);
@@ -480,7 +300,7 @@ class SupportCheck {
           break;
         case "is":
           if (p.is === "source") set("self");
-          else if (same(p.is, { attachedTo: "source" })) set("attached");
+          else if (isAttachedToSource(p.is)) set("attached");
           else this.unsupported(`is: ${JSON.stringify(p.is)}`);
           break;
         case "color":
@@ -513,20 +333,13 @@ class SupportCheck {
   }
 }
 
-/** The field sets of a predicate's top-level conjuncts. */
-export function conjuncts(predicate: Predicate): PredicateFields[] {
-  if ("and" in predicate) return predicate.and.flatMap(conjuncts);
-  if ("or" in predicate || "not" in predicate) return [];
-  return [predicate];
-}
-
 /**
  * Checks one card's Core abilities against the runtime. A cost modifier for
  * the card's own abilities needs exactly one activated ability to modify.
  */
 export function checkSupport(abilities: CoreAbility[]): SupportResult {
   const errors: CompileError[] = [];
-  const check = new SupportCheck();
+  const check = new Walker();
   abilities.forEach((ability, i) => {
     const path = `abilities[${i}]`;
     try {

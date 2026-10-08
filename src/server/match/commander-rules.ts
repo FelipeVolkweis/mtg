@@ -6,6 +6,20 @@ import type {
 } from "../../shared/rules-state.js";
 import type { RulesEngine } from "./rules-engine.js";
 
+/**
+ * Interrupts an action whose zone change needs the owner's commander
+ * replacement choice (CR 903.9b). MatchService rolls the action back, asks the
+ * owner, and replays the action with the recorded answer.
+ *
+ * This is an exception on purpose. The choice can arise inside any event: a
+ * resolving spell, a cost, a state-based action, a turn-based action. Only the
+ * effect VM can suspend and resume, and only between instructions; the rest of
+ * the engine runs to completion. Rolling back and replaying needs nothing from
+ * those callers. The discarded run is never shown to anyone, so a shuffle
+ * that happened before the interruption may come out differently on replay
+ * without revealing anything. The replay path is covered by
+ * tests/rules/characterization/commander.spec.ts.
+ */
 export class CommanderReplacement extends Error {
   constructor(
     readonly playerId: string,

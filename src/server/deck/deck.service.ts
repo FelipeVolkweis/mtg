@@ -5,8 +5,8 @@ import { CatalogService } from "../catalog/catalog.service.js";
 import { readCatalog } from "../catalog/catalog-files.js";
 import { Database } from "../storage/database.js";
 import { commanderEligible, deckIssues } from "./format-rules.js";
+import { DeckError } from "./deck-errors.js";
 
-export class DeckError extends Error {}
 const maxDecks = 100;
 
 /** Each User's private Deck Catalog. */

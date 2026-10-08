@@ -1,5 +1,6 @@
 import { randomInt } from "node:crypto";
 import type { JsonValue } from "../../../../shared/rules-state.js";
+import { astEqual } from "../../ast.js";
 import { selection } from "./selection.js";
 import {
   done,
@@ -14,21 +15,19 @@ import {
 // rest on the bottom".
 
 type Sequence = EffectOf<"library-sequence">;
-const same = (a: unknown, b: unknown) =>
-  JSON.stringify(a) === JSON.stringify(b);
 
 const isScry = (e: Sequence) =>
   !!e.select &&
   !e.select.filter &&
   e.select.max === e.count &&
-  same(e.select.to, { zone: "library", position: "bottom" }) &&
-  same(e.rest, { to: { zone: "library", position: "top" }, order: "any" });
+  astEqual(e.select.to, { zone: "library", position: "bottom" }) &&
+  astEqual(e.rest, { to: { zone: "library", position: "top" }, order: "any" });
 
 const isSelectToHand = (e: Sequence) =>
   !!e.select?.filter &&
   e.select.max === 1 &&
-  same(e.select.to, { zone: "hand" }) &&
-  same(e.rest.to, { zone: "library", position: "bottom" }) &&
+  astEqual(e.select.to, { zone: "hand" }) &&
+  astEqual(e.rest.to, { zone: "library", position: "bottom" }) &&
   e.rest.order !== "any";
 
 interface State {

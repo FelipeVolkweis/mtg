@@ -1,0 +1,24 @@
+.match-command-rail {
+  position: absolute;
+  top: 132px;
+  right: 16px;
+  bottom: calc(var(--dock-height) + 12px);
+  width: var(--rail-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 8px;
+  z-index: 6;
+  pointer-events: none;
+}
+.match-command-rail > * {
+  pointer-events: auto;
+}
+.rules-stack,
+.priority-control,
+.phase-control {
+  border: 1px solid #718387;
+  border-radius: 8px;
+  background: #17272ff2;
+  padding: 12px;
+}

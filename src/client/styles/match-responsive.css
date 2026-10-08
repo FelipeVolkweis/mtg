@@ -1,0 +1,195 @@
+@media (max-height: 760px) {
+  .rules-board {
+    --dock-height: 150px;
+    --card-width: 68px;
+  }
+  .zone-pile-image {
+    height: 70px;
+    width: 50px;
+  }
+  .match-command-rail {
+    top: 110px;
+    gap: 6px;
+  }
+  .rules-stack {
+    padding: 8px;
+  }
+  .rules-stack h2 {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+  .rules-tile.stack-entry {
+    min-height: 68px;
+    gap: 6px;
+    padding: 5px;
+  }
+  .stack-thumbnail {
+    width: 35px;
+    height: 49px;
+  }
+  .priority-control {
+    padding: 8px;
+    gap: 5px;
+  }
+  .pass-priority {
+    font-size: 17px;
+    padding: 9px;
+  }
+  .phase-control {
+    padding: 8px;
+  }
+  .phase-control h2 {
+    font-size: 20px;
+  }
+  .opponent-hand {
+    top: 12px;
+    height: 55px;
+  }
+  .hidden-hand .card-back,
+  .opponent-hand .rules-tile {
+    width: 32px;
+    height: 45px;
+  }
+  .opponent-area .battlefield-groups {
+    top: 80px;
+  }
+}
+@media (max-width: 1100px) {
+  .rules-board {
+    --rail-width: 235px;
+    --card-width: 64px;
+  }
+  .battlefield-groups {
+    left: 155px;
+    right: 260px;
+    gap: 12px 20px;
+  }
+  .rules-player-info {
+    left: 12px;
+    width: 140px;
+  }
+  .player-target {
+    grid-template-columns: 48px 1fr;
+    column-gap: 6px;
+  }
+  .player-target .life-total {
+    width: 48px;
+    height: 48px;
+    font-size: 23px;
+  }
+  .player-name {
+    font-size: 13px;
+  }
+  .mana-circle {
+    width: 19px;
+    height: 19px;
+    font-size: 10px;
+  }
+  .opponent-hand {
+    left: 155px;
+    right: 260px;
+  }
+  .commander-damage {
+    font-size: 9px;
+  }
+  .hand-dock {
+    gap: 14px;
+    padding: 12px;
+  }
+  .player-zone-piles {
+    gap: 10px;
+  }
+  .hand-dock > .player-zone-piles {
+    padding-right: 14px;
+  }
+  .commander-slot {
+    width: 80px;
+  }
+}
+@media (max-width: 700px) {
+  body:has(.rules-tabletop) {
+    overflow: hidden;
+  }
+  .rules-tabletop {
+    height: 100dvh;
+  }
+  .rules-board {
+    --rail-width: 190px;
+    --dock-height: 175px;
+    --card-width: 56px;
+  }
+  .battlefield-groups {
+    left: 12px;
+    right: 214px;
+    top: 110px;
+    gap: 12px;
+  }
+  .opponent-area .battlefield-groups {
+    top: 160px;
+  }
+  .opponent-hand {
+    top: 110px;
+    left: 12px;
+    right: 214px;
+    height: 45px;
+  }
+  .opponent-hand .hand-label,
+  .opponent-hand .commander-slot {
+    display: none;
+  }
+  .opponent-hand .hand-with-commander {
+    padding-left: 0;
+  }
+  .opponent-area .player-zone-piles {
+    gap: 8px;
+    right: 12px;
+  }
+  .zone-pile-image {
+    height: 56px;
+    width: 40px;
+  }
+  .match-command-rail {
+    right: 8px;
+    top: 110px;
+  }
+  .stack-order,
+  .stack-thumbnail {
+    display: none;
+  }
+  .stack-description {
+    font-size: 10px;
+  }
+  .stack-description strong {
+    font-size: 12px;
+  }
+  .phase-progress {
+    font-size: 8px;
+    gap: 3px;
+  }
+  .choice-panel {
+    padding: 10px;
+  }
+  .hand-dock {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .hand-dock > .player-zone-piles {
+    gap: 10px;
+    padding-right: 10px;
+  }
+  .local-hand {
+    flex: 1;
+    min-width: 140px;
+  }
+  .hand-with-commander {
+    gap: 8px;
+  }
+  .commander-slot {
+    width: 66px;
+    font-size: 9px;
+  }
+  .commander-slot .rules-tile {
+    --card-width: 48px;
+    --card-height: 67px;
+  }
+}

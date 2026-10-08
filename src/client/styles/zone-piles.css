@@ -1,0 +1,79 @@
+.player-zone-piles {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.opponent-area .player-zone-piles {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+}
+.zone-pile-control {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: transparent;
+  font-size: 12px;
+  padding: 0;
+  border: 0;
+}
+.zone-pile-control:hover {
+  background: transparent;
+  color: #efc16d;
+}
+.zone-pile-control:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.zone-pile-image {
+  display: block;
+  height: 88px;
+  width: 63px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #718387;
+}
+.zone-pile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.zone-pile-image .printing-fallback {
+  height: 100%;
+  font-size: 6px;
+}
+.zone-pile-image .printing-fallback strong {
+  font-size: 7px;
+}
+.library-back,
+.card-back {
+  display: block;
+  height: 100%;
+  background: #172735 url("/card-back.png") center / cover no-repeat;
+  border: 1px solid #c4b086;
+  border-radius: 4px;
+}
+.empty-zone {
+  display: block;
+  height: 100%;
+  background: #18272d;
+}
+.zone-pile-title {
+  position: relative;
+}
+.zone-pile-title b {
+  position: absolute;
+  bottom: 20px;
+  right: -10px;
+  min-width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  border: 1px solid #718387;
+  border-radius: 50%;
+  font-size: 12px;
+  background: #17272f;
+  color: #f1ead5;
+}

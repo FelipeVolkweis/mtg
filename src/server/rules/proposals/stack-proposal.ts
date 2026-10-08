@@ -17,6 +17,7 @@ import { gameObject } from "../../match/game-objects.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { baseCost, chosenCost } from "../costs/cost-runtime.js";
+import { RuleViolation } from "../rule-violation.js";
 
 // The Stack Proposal Procedure (rules-engine-refactor.md §13–16). Casting a
 // spell and activating an ability share one CR 601/602 process: the spell or
@@ -123,16 +124,16 @@ export class StackProposalProcedure {
         )) ||
       source.characteristics.types?.includes("Land")
     )
-      throw new Error("Choose a spell from your Hand.");
+      throw new RuleViolation("Choose a spell from your Hand.");
     if (!e.canCastTiming(source, playerId))
-      throw new Error(
+      throw new RuleViolation(
         "This spell requires your main phase and an empty Stack.",
       );
     const definition = e.definition(source);
     const spellAbilities =
       definition?.abilities.filter((ability) => ability.kind === "spell") ?? [];
     if (spellAbilities.length > 1)
-      throw new Error("This spell composition is not yet supported.");
+      throw new RuleViolation("This spell composition is not yet supported.");
     // A permanent spell has no spell ability; an Aura spell targets what it
     // can enchant (CR 303.4a).
     const aura = enchantFilter(definition?.abilities ?? []);
@@ -144,9 +145,13 @@ export class StackProposalProcedure {
     const symbols: string[] =
       source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
     if (!symbols.length)
-      throw new Error("A spell without a mana cost cannot be cast normally.");
+      throw new RuleViolation(
+        "A spell without a mana cost cannot be cast normally.",
+      );
     if (symbols.includes("{X}") && !choosesX(ability))
-      throw new Error("Variable mana costs require an authored chosen value.");
+      throw new RuleViolation(
+        "Variable mana costs require an authored chosen value.",
+      );
     const base = this.snapshot();
     const sourceZone = e.match.zones.find((z) => z.id === source.zoneId)!.kind;
     const spell = e.propose({
@@ -218,7 +223,7 @@ export class StackProposalProcedure {
     pending.stage = chooseX ? "variable" : target ? "targets" : "payment";
     this.engine.rules.pending = pending;
     if (target && !this.legalTargets().length)
-      throw new Error("No legal targets are available.");
+      throw new RuleViolation("No legal targets are available.");
     if (!chooseX && !target) {
       this.lock();
       this.complete();
@@ -260,7 +265,9 @@ export class StackProposalProcedure {
         value > 1000 ||
         Object.keys(action.variables ?? {}).some((key) => key !== "X")
       )
-        throw new Error("Choose a nonnegative integer for X, at most 1000.");
+        throw new RuleViolation(
+          "Choose a nonnegative integer for X, at most 1000.",
+        );
       this.record().variables = { X: value };
       pending.totalCost = chosenCost(this.engine.costProposal(pending));
       const target = targetFilter(pending.ability);
@@ -270,19 +277,19 @@ export class StackProposalProcedure {
       return;
     }
     if (action.variables)
-      throw new Error("The chosen Variable Values are locked.");
+      throw new RuleViolation("The chosen Variable Values are locked.");
     if (action.color) pending.color = action.color;
     if (action.selections) pending.selections = action.selections;
     if (pending.stage === "targets") {
       const targets = action.targetIds ?? [];
       if (targets.length !== 1 || !this.legalTargets().includes(targets[0]))
-        throw new Error("Choose one legal target.");
+        throw new RuleViolation("Choose one legal target.");
       pending.targetIds = targets;
       this.lock();
       pending.stage = "payment";
     }
     if (action.confirm !== false && !this.complete() && action.confirm === true)
-      throw new Error("The complete costs cannot be paid yet.");
+      throw new RuleViolation("The complete costs cannot be paid yet.");
   }
 
   /**
@@ -315,7 +322,7 @@ export class StackProposalProcedure {
   /** UI abort (§16): only before the total cost is locked. */
   cancel() {
     if (this.pending.proposal.locked)
-      throw new Error(
+      throw new RuleViolation(
         "The total cost is locked: complete the payment, or reverse the action if it can't be paid.",
       );
     this.rollback();
@@ -327,7 +334,7 @@ export class StackProposalProcedure {
    */
   reverse() {
     if (!this.pending.proposal.locked)
-      throw new Error(
+      throw new RuleViolation(
         "The total cost isn't locked yet: cancel the action instead.",
       );
     this.rollback();

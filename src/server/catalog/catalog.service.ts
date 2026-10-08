@@ -16,6 +16,7 @@ import {
   type ComponentCharacteristics,
 } from "../../shared/card-dsl.js";
 import { readRegistries } from "../rules/registries.js";
+import { DeckError } from "../deck/deck-errors.js";
 
 function characteristics(
   face: SourceCard | NonNullable<SourceCard["card_faces"]>[number],
@@ -195,14 +196,14 @@ export class CatalogService {
         quantity < 1 ||
         quantity > 10000
       )
-        throw new Error(
+        throw new DeckError(
           `Line ${lineNumber + 1}: use "quantity Card Name" or "quantity Card Name (SET) collector".`,
         );
       const matching = [...definitions.values()].filter(
         (definition) => key(definition.canonicalName) === key(match[2]),
       );
       if (!matching.length)
-        throw new Error(
+        throw new DeckError(
           `Line ${lineNumber + 1}: "${match[2]}" is not a canonical card name in the locally imported pool.`,
         );
       const printings = match[3]
@@ -218,11 +219,11 @@ export class CatalogService {
             )
             .filter((printing) => Boolean(printing));
       if (!printings.length)
-        throw new Error(
+        throw new DeckError(
           `Line ${lineNumber + 1}: that exact printing is not locally imported.`,
         );
       if (printings.length > 1)
-        throw new Error(
+        throw new DeckError(
           `Line ${lineNumber + 1}: "${match[2]}" is ambiguous; specify (SET) and collector number.`,
         );
       const printing = printings[0];
@@ -238,9 +239,9 @@ export class CatalogService {
           printingId: printing.id,
         });
     }
-    if (!entries.length) throw new Error("Enter at least one card.");
+    if (!entries.length) throw new DeckError("Enter at least one card.");
     if (entries.reduce((sum, entry) => sum + entry.quantity, 0) > 10000)
-      throw new Error("A Decklist can contain at most 10,000 copies.");
+      throw new DeckError("A Decklist can contain at most 10,000 copies.");
     return entries;
   }
   async sets() {

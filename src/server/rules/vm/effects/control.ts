@@ -17,6 +17,7 @@ import {
   type EffectHandler,
   type ExecutionResult,
 } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 // Control flow (dsl-redesign.md §4.6). Nested instructions run next through
 // the same queue, so every instruction they contain dispatches through the
@@ -99,12 +100,12 @@ export const mayPay: EffectHandler<"may-pay"> = {
   },
   answer(effect, _state, input, ctx) {
     if (input.selections || input.variables || input.targetIds)
-      throw new Error("Choose Pay or Decline.");
+      throw new RuleViolation("Choose Pay or Decline.");
     if (input.confirm === false)
       return { kind: "continue", effects: effect.else ?? [] };
     const payer = ctx.rules.pending!.playerId;
     if (!payMana(ctx.rules, payer, manaCost(symbols(effect))))
-      throw new Error("The effect's mana payment cannot be paid yet.");
+      throw new RuleViolation("The effect's mana payment cannot be paid yet.");
     return { kind: "continue", effects: effect.then ?? [] };
   },
 };

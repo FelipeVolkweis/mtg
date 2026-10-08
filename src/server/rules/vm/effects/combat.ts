@@ -1,4 +1,5 @@
 import { done, type EffectHandler } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 /** Reselects the player or planeswalker an attacker attacks (CR 506.4, Misleading Signpost). */
 export const reselectDefender: EffectHandler<"reselect-defender"> = {
@@ -32,7 +33,7 @@ export const reselectDefender: EffectHandler<"reselect-defender"> = {
       new Set(ids).size !== ids.length ||
       ids.some((id) => !option.objectIds.includes(id))
     )
-      throw new Error(
+      throw new RuleViolation(
         "Choose eligible, distinct objects in the permitted quantity.",
       );
     if (!ids.length) return done;
@@ -49,7 +50,7 @@ export const reselectDefender: EffectHandler<"reselect-defender"> = {
       ctx.query.match.objects[defender.id]?.controllerId ===
         ctx.query.object(attacker.objectId).controllerId
     )
-      throw new Error("Choose a legal attack destination.");
+      throw new RuleViolation("Choose a legal attack destination.");
     attacker.defenderId = defender.id;
     attacker.defendingPlayerId = defender.playerId;
     return done;

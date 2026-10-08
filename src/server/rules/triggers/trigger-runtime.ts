@@ -9,11 +9,16 @@ import {
   type ManaTrigger,
   type PlayerRef,
   type Predicate,
+  type PredicateFields,
+  type Selector,
   type Trigger,
   turnSteps,
+  type Value,
 } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { interveningIf, production, triggerSubject } from "../abilities.js";
+import { isSourcePredicate } from "../ast.js";
+import type { Registry, SupportCheck } from "../support-check.js";
 import { Evaluator } from "../vm/evaluate.js";
 
 // Trigger Runtime (rules-engine-refactor.md §43). Event triggers match a
@@ -33,105 +38,225 @@ function playerMatches(
   return !!playerId && playerId !== controllerId;
 }
 
+type AnyTrigger = Trigger | ManaTrigger;
+type TriggerOf<E extends AnyTrigger["event"]> = Extract<
+  AnyTrigger,
+  { event: E }
+>;
+
+/**
+ * How the runtime runs one trigger event, and which of its forms it supports.
+ * `matches` says whether a semantic event is the kind the trigger waits for,
+ * before its subject filter and intervening-if; `stepIndex` is the current
+ * turn step. `subject` is what the event's object must be (CR 603.2).
+ */
+export interface TriggerHandler<E extends AnyTrigger["event"]> {
+  matches(
+    trigger: TriggerOf<E>,
+    event: SemanticEvent,
+    controllerId: string,
+    stepIndex: number,
+  ): boolean;
+  subject?(trigger: TriggerOf<E>): Predicate | undefined;
+  /** Rejects the forms of this trigger the runtime can't run. */
+  support(trigger: TriggerOf<E>, check: SupportCheck): void;
+}
+
+const during = (step: string | undefined, stepIndex: number) =>
+  step === undefined || turnSteps.indexOf(step as never) === stepIndex;
+
+/** The players a supported trigger can name: you or your opponents. */
+function supportedPlayer(ref: PlayerRef, check: SupportCheck) {
+  if (ref !== "you" && ref !== "opponents")
+    check.unsupported(`Trigger player ${JSON.stringify(ref)}`);
+}
+
+/** A trigger subject: the source on the Battlefield, or a supported filter. */
+function supportedSubject(object: Selector | Predicate, check: SupportCheck) {
+  if (!isSourcePredicate(object)) check.filter(object as Predicate);
+}
+
+/**
+ * `enters` and `dies` are authored shorthand: the compiler lowers both to
+ * `zone-change`, so a Core ability never holds them.
+ */
+const lowered = {
+  subject: (trigger: { object: Selector | Predicate }) =>
+    triggerSubject(trigger.object),
+  support: (trigger: { event: string }, check: SupportCheck) =>
+    check.unsupported(`The ${trigger.event} trigger`),
+};
+
+/**
+ * Trigger Handler Registry: one handler per trigger event the runtime
+ * observes. An event without a handler never triggers, and the support check
+ * rejects it.
+ */
+const triggerHandlers: { [E in AnyTrigger["event"]]?: TriggerHandler<E> } = {
+  "zone-change": {
+    matches(trigger, event, _controllerId, stepIndex) {
+      if (trigger.to === "battlefield" && !trigger.from)
+        return event.kind === "enter" && during(trigger.during, stepIndex);
+      return (
+        event.kind === "zone-change" &&
+        (!trigger.from || event.from === trigger.from) &&
+        (!trigger.to || event.to === trigger.to) &&
+        during(trigger.during, stepIndex)
+      );
+    },
+    subject: (trigger) => triggerSubject(trigger.object),
+    support(trigger, check) {
+      check.at("object", () => supportedSubject(trigger.object, check));
+      if (trigger.to === "battlefield" && !trigger.from) return;
+      if (
+        trigger.from === "battlefield" &&
+        trigger.to === "graveyard" &&
+        !trigger.during
+      )
+        return;
+      check.unsupported(`A zone change from ${trigger.from} to ${trigger.to}`);
+    },
+  },
+  enters: {
+    matches: (trigger, event, _controllerId, stepIndex) =>
+      event.kind === "enter" && during(trigger.during, stepIndex),
+    ...lowered,
+  },
+  dies: {
+    matches: (_trigger, event) =>
+      event.kind === "zone-change" &&
+      event.from === "battlefield" &&
+      event.to === "graveyard",
+    ...lowered,
+  },
+  cast: {
+    matches: (trigger, event, controllerId) =>
+      event.kind === "cast" &&
+      playerMatches(
+        trigger.caster,
+        event.playerId ?? event.controllerId,
+        controllerId,
+      ),
+    subject: (trigger) => trigger.spell,
+    support(trigger, check) {
+      if (trigger.caster) check.unsupported("A cast trigger with a caster");
+      check.at("spell", () => check.filter(trigger.spell));
+    },
+  },
+  attacks: {
+    matches: (_trigger, event) => event.kind === "attack",
+    subject: (trigger) => triggerSubject(trigger.attacker),
+    support: (trigger, check) =>
+      check.at("attacker", () => supportedSubject(trigger.attacker, check)),
+  },
+  "deals-damage": {
+    matches: (trigger, event) =>
+      event.kind === "damage" &&
+      (trigger.combat === undefined ||
+        event.damage?.combat === trigger.combat) &&
+      (typeof trigger.to !== "string" ||
+        event.damage?.recipientKind === trigger.to),
+    subject: (trigger) => triggerSubject(trigger.source),
+    support(trigger, check) {
+      if (trigger.to && typeof trigger.to === "object")
+        check.unsupported("A damage trigger with a recipient predicate");
+      check.at("source", () => supportedSubject(trigger.source, check));
+    },
+  },
+  draws: {
+    matches: (trigger, event, controllerId) =>
+      event.kind === "draw" &&
+      playerMatches(trigger.player, event.playerId, controllerId) &&
+      (trigger.nth === undefined || trigger.nth === event.ordinal),
+    support: (trigger, check) => supportedPlayer(trigger.player, check),
+  },
+  step: {
+    // Only the upkeep is observed as an event; the monarch's end step
+    // trigger is the designation's own (RulesEngine.monarchTrigger).
+    matches: (trigger, event, controllerId) =>
+      event.kind === "upkeep" &&
+      trigger.step === "upkeep" &&
+      playerMatches(trigger.player, event.playerId, controllerId),
+    support(trigger, check) {
+      if (trigger.step !== "upkeep")
+        check.unsupported(`A ${trigger.step} step trigger`);
+      if (trigger.player === "next")
+        check.unsupported("A next-player step trigger");
+      if (trigger.player) supportedPlayer(trigger.player as PlayerRef, check);
+    },
+  },
+  "becomes-target": {
+    matches: (trigger, event, controllerId) =>
+      event.kind === "target" &&
+      playerMatches(trigger.by, event.playerId, controllerId),
+    subject: (trigger) => triggerSubject(trigger.object),
+    support(trigger, check) {
+      check.at("object", () => supportedSubject(trigger.object, check));
+      if (trigger.by) supportedPlayer(trigger.by, check);
+    },
+  },
+  // A state trigger watches the game state, not events
+  // (StateTriggerObserver below).
+  state: {
+    matches: () => false,
+    support(trigger, check) {
+      const c = trigger.condition;
+      if ("matches" in c && c.matches.selector === "source") {
+        const p = c.matches.predicate as PredicateFields;
+        const count = p.counters?.count as { ">="?: Value } | undefined;
+        if (Object.keys(p).length === 1 && typeof count?.[">="] === "number")
+          return;
+      }
+      check.unsupported(
+        "A state trigger other than a source counter threshold",
+      );
+    },
+  },
+  "tapped-for-mana": {
+    matches: (_trigger, event) => event.kind === "mana",
+    subject: (trigger) => trigger.object,
+    support(trigger, check) {
+      if (trigger.produced) check.unsupported("A produced-mana trigger filter");
+      check.at("object", () => check.filter(trigger.object));
+    },
+  },
+};
+
+function triggerHandler<E extends AnyTrigger["event"]>(
+  trigger: TriggerOf<E>,
+): TriggerHandler<E> | undefined {
+  return triggerHandlers[trigger.event];
+}
+
+/** The trigger events the runtime observes, each with its support declaration. */
+export const triggerRegistry: Registry = triggerHandlers;
+
+/** Rejects a trigger the runtime can't run (for the support check). */
+export function triggerSupport(trigger: AnyTrigger, check: SupportCheck) {
+  const handler = triggerHandler(trigger);
+  if (!handler) return check.unsupported(`The ${trigger.event} trigger`);
+  handler.support(trigger, check);
+}
+
 /**
  * Whether a semantic event is the kind a trigger waits for, before its
  * subject filter and intervening-if. `stepIndex` is the current turn step.
  */
 export function eventMatches(
-  trigger: Trigger | ManaTrigger,
+  trigger: AnyTrigger,
   event: SemanticEvent,
   controllerId: string,
   stepIndex: number,
 ): boolean {
-  const during = (step?: string) =>
-    step === undefined || turnSteps.indexOf(step as never) === stepIndex;
-  switch (trigger.event) {
-    case "zone-change":
-      if (trigger.to === "battlefield" && !trigger.from)
-        return event.kind === "enter" && during(trigger.during);
-      return (
-        event.kind === "zone-change" &&
-        (!trigger.from || event.from === trigger.from) &&
-        (!trigger.to || event.to === trigger.to) &&
-        during(trigger.during)
-      );
-    case "enters":
-      return event.kind === "enter" && during(trigger.during);
-    case "dies":
-      return (
-        event.kind === "zone-change" &&
-        event.from === "battlefield" &&
-        event.to === "graveyard"
-      );
-    case "cast":
-      return (
-        event.kind === "cast" &&
-        playerMatches(
-          trigger.caster,
-          event.playerId ?? event.controllerId,
-          controllerId,
-        )
-      );
-    case "attacks":
-      return event.kind === "attack";
-    case "deals-damage":
-      return (
-        event.kind === "damage" &&
-        (trigger.combat === undefined ||
-          event.damage?.combat === trigger.combat) &&
-        (typeof trigger.to !== "string" ||
-          event.damage?.recipientKind === trigger.to)
-      );
-    case "draws":
-      return (
-        event.kind === "draw" &&
-        playerMatches(trigger.player, event.playerId, controllerId) &&
-        (trigger.nth === undefined || trigger.nth === event.ordinal)
-      );
-    case "step":
-      // Only the upkeep is observed as an event; the monarch's end step
-      // trigger is the designation's own (RulesEngine.monarchTrigger).
-      return (
-        event.kind === "upkeep" &&
-        trigger.step === "upkeep" &&
-        playerMatches(trigger.player, event.playerId, controllerId)
-      );
-    case "becomes-target":
-      return (
-        event.kind === "target" &&
-        playerMatches(trigger.by, event.playerId, controllerId)
-      );
-    case "tapped-for-mana":
-      return event.kind === "mana";
-    case "gains-life":
-    case "loses-life":
-    case "state":
-      // Life changes aren't observed yet; state triggers aren't events.
-      return false;
-  }
+  return (
+    triggerHandler(trigger)?.matches(trigger, event, controllerId, stepIndex) ??
+    false
+  );
 }
 
 /** What the event's object must be: the trigger's subject (CR 603.2). */
-export function eventSubject(
-  trigger: Trigger | ManaTrigger,
-): Predicate | undefined {
-  switch (trigger.event) {
-    case "zone-change":
-    case "enters":
-    case "dies":
-    case "becomes-target":
-      return triggerSubject(trigger.object);
-    case "attacks":
-      return triggerSubject(trigger.attacker);
-    case "deals-damage":
-      return triggerSubject(trigger.source);
-    case "cast":
-      return trigger.spell;
-    case "tapped-for-mana":
-      return trigger.object;
-    default:
-      return undefined;
-  }
+export function eventSubject(trigger: AnyTrigger): Predicate | undefined {
+  return triggerHandler(trigger)?.subject?.(trigger);
 }
 
 /** The trigger of a triggered or mana ability. */

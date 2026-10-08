@@ -1,0 +1,131 @@
+.hand-dock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--dock-height);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 12px 20px;
+  background: #18272d;
+  border-top: 1px solid #608185;
+}
+.hand-dock > .player-zone-piles {
+  padding-right: 24px;
+  border-right: 1px solid #43595f;
+}
+.rules-hand {
+  min-width: 0;
+  min-height: 0;
+  font-size: 12px;
+}
+.local-hand {
+  flex: 1;
+  height: 100%;
+}
+.hand-label {
+  display: block;
+  color: #d2b77c;
+  margin-bottom: 7px;
+}
+.hand-with-commander {
+  display: flex;
+  align-items: start;
+  min-width: 0;
+  height: calc(100% - 28px);
+  gap: 18px;
+}
+.rules-hand-cards {
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+  gap: 14px;
+  flex: 1;
+  padding: 3px;
+  height: 100%;
+  scrollbar-width: thin;
+}
+.rules-hand-cards > div {
+  flex-shrink: 0;
+}
+.local-hand .rules-tile {
+  --card-width: var(
+    --hand-card-width,
+    min(98px, calc((var(--dock-height) - 64px) / 1.4))
+  );
+  --card-height: calc(var(--card-width) * 1.4);
+}
+.local-hand .card-state {
+  background: transparent;
+}
+.local-hand .card-state > span:not(.sr-only) {
+  background: #15242de8;
+}
+.commander-slot {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 6px;
+  font-size: 11px;
+  width: 105px;
+  color: #c5d2cf;
+}
+.commander-slot .rules-tile {
+  --card-width: 72px;
+  --card-height: 100px;
+}
+.commander-placeholder {
+  border: 1px dashed #718387;
+  border-radius: 5px;
+  padding: 8px;
+  color: #d1d7ca;
+  font-size: 10px;
+}
+.opponent-hand {
+  position: absolute;
+  top: 22px;
+  left: 235px;
+  right: calc(var(--rail-width) + 40px);
+  height: 75px;
+}
+.opponent-hand .hand-label {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  font-size: 11px;
+}
+.opponent-hand .hand-with-commander {
+  height: 100%;
+  padding-left: 58px;
+}
+.opponent-hand .rules-hand-cards {
+  justify-content: center;
+  gap: 6px;
+}
+.hidden-hand {
+  display: flex;
+  gap: 5px;
+  align-items: start;
+}
+.hidden-hand .card-back {
+  width: 40px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.opponent-hand .rules-tile {
+  --card-width: 40px;
+  --card-height: 56px;
+}
+.opponent-hand .card-state {
+  display: none;
+}
+.opponent-hand .commander-slot {
+  width: 85px;
+  font-size: 10px;
+}
+.opponent-hand .commander-slot .rules-tile {
+  --card-width: 40px;
+  --card-height: 56px;
+}

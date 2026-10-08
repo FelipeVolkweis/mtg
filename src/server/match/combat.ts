@@ -11,6 +11,7 @@ import { manaCost } from "./mana.js";
 import { payMana } from "../rules/costs/cost-runtime.js";
 import { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import { emptyMana, type RulesEngine } from "./rules-engine.js";
+import { RuleViolation } from "../rules/rule-violation.js";
 
 // Declarations are turn-based actions. Their choices finish before Priority is offered.
 export class Combat {
@@ -166,7 +167,7 @@ export class Combat {
         ids.length > 1 ||
         ids.some((target) => !option.objectIds.includes(target))
       )
-        throw new Error("Choose a legal combat declaration.");
+        throw new RuleViolation("Choose a legal combat declaration.");
     }
     if (pending.kind === "declare-attackers") {
       this.validateAttackers(selections, pending.playerId);
@@ -192,7 +193,7 @@ export class Combat {
           attacker.defendingPlayerId !== pending.playerId ||
           !this.canBlock(blocker, e.object(attacker.objectId))
         )
-          throw new Error("Choose a legal blocker.");
+          throw new RuleViolation("Choose a legal blocker.");
         attacker.blockerIds.push(id);
         attacker.blocked = true;
       }
@@ -240,7 +241,7 @@ export class Combat {
         !this.eligible(e.object(id), playerId, true) ||
         !defenders.some((d) => d.id === ids[0])
       )
-        throw new Error("Choose an eligible attacker and defender.");
+        throw new RuleViolation("Choose an eligible attacker and defender.");
     }
     for (const object of e.battlefieldSources()) {
       if (
@@ -257,7 +258,9 @@ export class Combat {
           ).every((amount) => amount === 0),
         )
       )
-        throw new Error("An eligible creature must attack this combat.");
+        throw new RuleViolation(
+          "An eligible creature must attack this combat.",
+        );
     }
   }
   commitAttackers(selections: Record<string, string[]>, playerId: string) {
@@ -294,10 +297,10 @@ export class Combat {
     const e = this.engine,
       pending = e.rules.pending!;
     if (action.selections || action.variables || action.damageAssignments)
-      throw new Error("Attack choices are locked during payment.");
+      throw new RuleViolation("Attack choices are locked during payment.");
     this.validateAttackers(pending.selections, pending.playerId);
     if (!payMana(e.rules, pending.playerId, pending.totalCost))
-      throw new Error("The attack costs cannot be paid yet.");
+      throw new RuleViolation("The attack costs cannot be paid yet.");
     this.commitAttackers(pending.selections, pending.playerId);
     delete e.rules.pending;
     e.checkpoint({ playerId: pending.playerId });
@@ -359,7 +362,9 @@ export class Combat {
         !choice?.recipientIds.includes(a.recipientId) ||
         pairs.has(pair)
       )
-        throw new Error("Choose legal combat damage recipients and amounts.");
+        throw new RuleViolation(
+          "Choose legal combat damage recipients and amounts.",
+        );
       pairs.add(pair);
     }
     for (const c of choices)
@@ -368,7 +373,7 @@ export class Combat {
           .filter((a) => a.sourceId === c.sourceId)
           .reduce((sum, a) => sum + a.amount, 0) !== c.amount
       )
-        throw new Error("Assign all available combat damage.");
+        throw new RuleViolation("Assign all available combat damage.");
     delete this.engine.rules.pending;
     this.applyDamage(assignments);
   }

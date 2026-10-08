@@ -1,0 +1,78 @@
+:root {
+  font-family: "DM Sans", system-ui, sans-serif;
+  color: #e9e8df;
+  background: #141d24;
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid #54616a;
+  border-radius: 6px;
+  color: #ecebe4;
+  background: #26333b;
+  padding: 0.65rem 1rem;
+}
+button:hover {
+  background: #35444c;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+button.primary {
+  background: #d2b77c;
+  color: #152229;
+  border-color: #d2b77c;
+  font-weight: 700;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  color: #ebe9df;
+  background: #1c2931;
+  border: 1px solid #4a5960;
+  padding: 0.7rem;
+  border-radius: 5px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+a {
+  color: #d2b77c;
+}
+h1,
+h2 {
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-weight: 400;
+}
+p {
+  line-height: 1.65;
+  color: #b3bec3;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.5rem;
+  border-bottom: 1px solid #36434b;
+}
+header span {
+  color: #a5b6bd;
+  font-size: 0.85rem;
+}

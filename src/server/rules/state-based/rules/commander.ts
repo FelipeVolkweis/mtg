@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { RulesQuery } from "../../context.js";
 import { none, type StateBasedRule } from "../types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 /** The first queued commander still in a Graveyard or exile. */
 function returnable(query: RulesQuery) {
@@ -45,7 +46,7 @@ export const commanderReturn: StateBasedRule = {
       input.targetIds ||
       input.variables
     )
-      throw new Error("Choose Confirm or Decline.");
+      throw new RuleViolation("Choose Confirm or Decline.");
     const rules = ctx.query.match.rules!;
     const queue = rules.commanderReturns ?? [];
     // Earlier entries had already left the Graveyard or exile.

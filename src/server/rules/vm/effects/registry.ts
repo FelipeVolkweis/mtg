@@ -22,6 +22,7 @@ import type {
   RulesInput,
 } from "./types.js";
 import { counter, destroy, exile, move, sacrifice } from "./zone-change.js";
+import type { Registry } from "../../support-check.js";
 
 // Effect Handler Registry (rules-engine-refactor.md §34): one handler per
 // Core effect kind. A kind without a handler can't run yet; the catalog
@@ -66,6 +67,12 @@ function handler(kind: EffectKind): EffectHandler {
 
 /** The kinds that have a handler. */
 export const handledEffectKinds = Object.keys(handlers) as EffectKind[];
+
+/**
+ * The effect kinds the runtime executes. A handler's `unsupported` is its
+ * support declaration; without one, every form of the kind runs.
+ */
+export const effectRegistry: Registry = handlers;
 
 /**
  * What in an instruction (or its nested instructions) the runtime can't run,

@@ -1,0 +1,21 @@
+.deck-issues {
+  color: #f0b4a4;
+  font-size: 0.85rem;
+  padding-left: 1.2rem;
+}
+.deck-catalog ul {
+  list-style: none;
+  padding: 0;
+}
+.deck-catalog li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #36434b;
+}
+.deck-catalog li .button-row {
+  margin: 0;
+}

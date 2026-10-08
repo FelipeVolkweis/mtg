@@ -1,0 +1,270 @@
+/* Viewport tabletop */
+body:has(.tabletop) {
+  overflow: hidden;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.tabletop {
+  height: calc(100dvh - 59px);
+  min-width: 1000px;
+  padding: 8px 12px;
+  overflow: hidden;
+}
+.tabletop-controls {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.tabletop-heading {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tabletop-heading h1 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+.tabletop-heading span {
+  font-size: 0.72rem;
+  color: #b6c4c7;
+}
+.tabletop-heading-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.tabletop-heading button {
+  padding: 0.3rem 0.7rem;
+}
+.tabletop-turn {
+  flex: 0 0 auto;
+}
+.tabletop-turn .turn-markers {
+  margin-bottom: 6px;
+  padding: 3px 7px;
+}
+.tabletop-turn .turn-markers label {
+  font-size: 0.65rem;
+}
+.tabletop-turn .turn-markers form label {
+  margin: 0;
+}
+.tabletop-turn .turn-markers input,
+.tabletop-turn .turn-markers select {
+  padding: 0.23rem;
+}
+.tabletop-turn .turn-markers button {
+  padding: 0.3rem 0.45rem;
+}
+.tabletop-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+.table-main {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tabletop .battlefield {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  padding: 0;
+  background: #122b29;
+  border: 1px solid #547773;
+  border-radius: 10px;
+  touch-action: none;
+}
+.table-surface {
+  position: absolute;
+  width: 1000px;
+  height: 600px;
+  transform-origin: top left;
+  background: #17332e;
+}
+.player-area {
+  position: absolute;
+  border: 2px solid var(--accent);
+  border-radius: 9px;
+  background: var(--wash);
+  box-shadow: inset 0 0 40px #091f1d77;
+}
+.accent-0 {
+  --accent: #77d9d1;
+  --wash: #24514d;
+  --back: #126d78;
+}
+.accent-1 {
+  --accent: #efc16d;
+  --wash: #5b4930;
+  --back: #91612a;
+}
+.accent-2 {
+  --accent: #b9a1ef;
+  --wash: #443b63;
+  --back: #6554a9;
+}
+.accent-3 {
+  --accent: #f39caf;
+  --wash: #613c4b;
+  --back: #a84a6b;
+}
+.player-area article {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  width: min(270px, calc(100% - 16px));
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 7px;
+  background: #101e22dc;
+  border: 1px solid var(--accent);
+  padding: 5px;
+}
+.player-area article h2 {
+  font:
+    700 20px "DM Sans",
+    sans-serif;
+  margin: 0;
+  color: #fff;
+}
+.player-area .mulligan-summary {
+  font-size: 15px;
+  color: #dce3e1;
+}
+.player-area article form {
+  grid-column: 1 / -1;
+  grid-row: auto;
+  display: flex;
+  align-items: end;
+  gap: 4px;
+}
+.player-area article form label {
+  font-size: 14px;
+}
+.player-area article form input {
+  padding: 2px 3px;
+  font-size: 18px;
+  width: 70px;
+}
+.player-area article form button {
+  padding: 4px;
+  font-size: 14px;
+}
+.player-area article > label {
+  grid-column: 1 / -1;
+  grid-row: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+.player-area article > label select {
+  width: 130px;
+  padding: 2px;
+  font-size: 14px;
+}
+.player-area article .counter-summary {
+  grid-column: 1 / -1;
+  max-height: 25px;
+  overflow: hidden;
+  font-size: 11px;
+}
+.area-zones {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 5px;
+}
+.zone-indicator {
+  background: #0d2228df;
+  border: 1px solid #64807e;
+  border-radius: 6px;
+  padding: 3px;
+  min-width: 72px;
+}
+.zone-indicator > button {
+  display: flex;
+  justify-content: space-between;
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 15px;
+  background: transparent;
+  border: 0;
+}
+.zone-indicator b {
+  color: #f3da9d;
+}
+.concealed-hand {
+  display: flex;
+  justify-content: center;
+  padding: 3px;
+  min-height: 26px;
+}
+.card-back {
+  display: block;
+  width: 19px;
+  height: 27px;
+  margin-left: -6px;
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--back),
+    var(--back) 5px,
+    #14252d 5px,
+    #14252d 9px
+  );
+}
+.center-zones {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  z-index: 2;
+}
+.center-zones .zone-indicator:first-child {
+  min-width: 142px;
+  max-width: 230px;
+  min-height: 80px;
+  border-color: #dabd82;
+  background: #15272cee;
+}
+.center-zones .card-list {
+  margin: 0;
+  max-height: 130px;
+  overflow: auto;
+}
+.center-zones .game-card {
+  width: 55px;
+  height: 75px;
+  flex: 0 0 55px;
+}

@@ -1,0 +1,54 @@
+.choice-panel {
+  flex: 0 1 auto;
+  min-height: 80px;
+  overflow: auto;
+  border: 1px solid #718387;
+  border-radius: 8px;
+  background: #17272ff5;
+  padding: 16px;
+  font-size: 13px;
+  z-index: 8;
+  box-shadow: 0 8px 25px #0006;
+}
+.choice-panel.quiet-panel {
+  display: none;
+}
+.choice-panel > fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.choice-panel h2 {
+  font-size: 18px;
+  margin: 0 0 10px;
+}
+.choice-panel p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+.choice-panel .practice-hint {
+  font-size: 11px;
+}
+.choice-panel label {
+  font-size: 12px;
+  margin: 8px 0;
+}
+.choice-panel input,
+.choice-panel select {
+  padding: 6px;
+  max-width: 100%;
+}
+.choice-panel button {
+  padding: 8px 12px;
+  font-size: 13px;
+  margin: 4px 4px 2px 0;
+}
+.choice-panel input[type="checkbox"] {
+  width: auto;
+}
+.choice-panel label:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}

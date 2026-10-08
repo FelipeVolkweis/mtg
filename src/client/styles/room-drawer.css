@@ -1,0 +1,38 @@
+body:has(.rules-tabletop) .room-panel {
+  position: fixed;
+  left: 20px;
+  right: auto;
+  top: 10px;
+  bottom: auto;
+  z-index: 20;
+  width: auto;
+  margin: 0;
+  border: 1px solid #718387;
+  border-radius: 6px;
+  background: #17272f;
+}
+body:has(.rules-tabletop) .room-panel > summary {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+.room-drawer-title,
+.room-connection {
+  display: none;
+}
+body:has(.rules-tabletop) .room-panel[open] {
+  top: 10px;
+  bottom: 12px;
+  width: min(780px, calc(100vw - 40px));
+  overflow: auto;
+  box-shadow: 0 8px 30px #0008;
+}
+body:has(.rules-tabletop) .room-panel[open] .room-drawer-title {
+  display: inline;
+  margin-left: 12px;
+}
+body:has(.rules-tabletop) .room-panel[open] .room-connection {
+  display: block;
+  padding: 0 16px;
+  font-size: 12px;
+  color: #a5b6bd;
+}

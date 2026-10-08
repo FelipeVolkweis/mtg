@@ -13,8 +13,10 @@ import WebSocket from "ws";
 import { z } from "zod";
 import type { ServerMessage, User } from "../../shared/model.js";
 import { roomCommandSchema } from "../../shared/model.js";
-import { RoomService, TabletopError } from "./room.service.js";
+import { RoomService } from "./room.service.js";
+import { playerMessage, TabletopError } from "./player-errors.js";
 import { UserService } from "../user/user.service.js";
+import { internalErrorMessage } from "../rules/rule-violation.js";
 
 interface Connection {
   id: string;
@@ -190,6 +192,12 @@ export class RoomGateway
       });
       await this.broadcast(session.invite);
     } catch (error) {
+      const message = playerMessage(error);
+      if (message === undefined)
+        console.error(
+          `Room ${session.invite} failed on command ${parsed.data.command.type}:`,
+          error,
+        );
       let view;
       try {
         view = await this.rooms.view(session.invite, session.userId);
@@ -199,7 +207,7 @@ export class RoomGateway
       this.send(client, {
         event: "rejected",
         data: {
-          message: error instanceof Error ? error.message : "Action rejected",
+          message: message ?? internalErrorMessage,
           requestId: parsed.data.requestId,
           view,
         },

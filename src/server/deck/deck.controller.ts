@@ -15,7 +15,8 @@ import {
 import type { IncomingMessage } from "node:http";
 import { deckInputSchema, id } from "../../shared/model.js";
 import { UserService } from "../user/user.service.js";
-import { DeckError, DeckService } from "./deck.service.js";
+import { DeckService } from "./deck.service.js";
+import { deckRequestError } from "./deck-errors.js";
 
 function deckId(value: string) {
   if (!id.safeParse(value).success) throw new NotFoundException();
@@ -25,11 +26,7 @@ async function rejected<T>(operation: Promise<T>) {
   try {
     return await operation;
   } catch (error) {
-    if (error instanceof DeckError && error.message === "Decklist not found.")
-      throw new NotFoundException(error.message);
-    throw new BadRequestException(
-      error instanceof Error ? error.message : "Unable to save Decklist",
-    );
+    throw deckRequestError(error);
   }
 }
 

@@ -1,9 +1,11 @@
 import type { PlayerRef, Selector } from "../../../../shared/card-dsl.js";
 import { gameObject } from "../../../match/game-objects.js";
 import { tokenCharacteristics } from "../../../match/tokens.js";
+import { astEqual } from "../../ast.js";
 import { selection } from "./selection.js";
 import { choiceOf } from "./zone-change.js";
 import { done, type EffectContext, type EffectHandler } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 // Object instructions: damage (CR 120), tap (CR 701.21), counters (CR 122),
 // attach (CR 701.3) and tokens (CR 111).
@@ -56,11 +58,7 @@ export const damage: EffectHandler<"damage"> = {
 export const tap: EffectHandler<"tap"> = {
   unsupported(effect) {
     const choice = choiceOf(effect.objects);
-    if (
-      choice &&
-      (choice.chooser ||
-        JSON.stringify(choice.count) !== JSON.stringify({ min: 0 }))
-    )
+    if (choice && (choice.chooser || !astEqual(choice.count, { min: 0 })))
       return "Tapping other than any number of chosen objects";
     return undefined;
   },
@@ -92,7 +90,7 @@ export const tap: EffectHandler<"tap"> = {
     const { ids } = selection(ctx, input);
     const choice = choiceOf(effect.objects)!;
     if (ids.some((id) => !ctx.eval.matches(ctx.query.object(id), choice.from)))
-      throw new Error("Choose untapped eligible objects.");
+      throw new RuleViolation("Choose untapped eligible objects.");
     for (const id of ids) ctx.query.object(id).status.tapped = true;
     if (effect.bind) ctx.bind(effect.bind, ids);
     return done;

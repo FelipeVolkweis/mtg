@@ -1,4 +1,5 @@
 import type { EffectContext, RulesInput } from "./types.js";
+import { RuleViolation } from "../../rule-violation.js";
 
 /**
  * The objects a player chose in answer to a one-option prompt, checked
@@ -8,7 +9,7 @@ export function selection(ctx: EffectContext, input: RulesInput) {
   const options = ctx.options;
   const entries = Object.entries(input.selections ?? {});
   if (entries.some(([key]) => !options[key]) || entries.length > 1)
-    throw new Error("Choose a legal option.");
+    throw new RuleViolation("Choose a legal option.");
   const key = Object.keys(options)[0];
   const ids = input.selections?.[key] ?? [];
   const option = options[key];
@@ -18,7 +19,7 @@ export function selection(ctx: EffectContext, input: RulesInput) {
     new Set(ids).size !== ids.length ||
     ids.some((id) => !option.objectIds.includes(id))
   )
-    throw new Error(
+    throw new RuleViolation(
       "Choose eligible, distinct objects in the permitted quantity.",
     );
   return { key, ids };

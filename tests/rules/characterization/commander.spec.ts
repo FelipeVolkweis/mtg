@@ -7,6 +7,7 @@
 // | Favor attaches before its entry trigger, taps the creature and crowns the monarch | Preserve |
 // | solo Commander practice has an inert opponent, automatic passes and private delegated choices | Preserve |
 // | commander Hand replacement … (parameterized) | Preserve |
+// | a commander replacement rolls the action back and replays it once with the owner's answer | Add (quality Q4: covers the replay path that stays) |
 // | combat … (parameterized) | Preserve |
 // | the monarch end-step draw is stacked and privately increases only that player's Hand | Preserve |
 // | Favor untap restriction evaluates the creature controller as monarch {monarch} (parameterized) | Preserve |
@@ -193,6 +194,78 @@ for (const returnToCommand of [true, false])
       ).kind,
     ).toBe("rejected");
   });
+
+// The replacement choice can arise deep inside any event, so MatchService
+// rolls the whole action back, asks the owner, then replays the action with
+// the recorded answer (CommanderReplacement in commander-rules.ts).
+test("a commander replacement rolls the action back and replays it once with the owner's answer", async () => {
+  const g = await triggerGame();
+  const p = g.match.players[0].id;
+  const instanceId = g.match.rules.commanders[p].instanceId;
+  const commanderObject = () =>
+    Object.values(g.match.objects).find((o) =>
+      o.cardInstanceIds.includes(instanceId),
+    )!;
+  const zoneKind = () =>
+    g.match.zones.find((z) => z.id === commanderObject().zoneId)!.kind;
+  const stack = () => g.match.zones.find((z) => z.kind === "stack")!.objectIds;
+  force.mana(g.match, p, { U: 1 });
+  g.command(0, { type: "cast-spell", objectId: commanderObject().id });
+  g.pass();
+  const creature = commanderObject();
+  const bomb = g.seed("Aether Spellbomb", "battlefield");
+  force.mana(g.match, p, { U: 1 });
+  g.command(0, {
+    type: "activate-ability",
+    objectId: bomb.id,
+    abilityId: "bounce",
+  });
+  g.command(0, {
+    type: "rules-input",
+    procedureId: g.view().rules.prompt!.procedureId,
+    targetIds: [creature.id],
+  });
+  expect(g.command(0, { type: "pass-priority" }).kind).toBe("accepted");
+  // The second pass resolves the bounce; the replacement interrupts it.
+  expect(g.command(1, { type: "pass-priority" })).toEqual({
+    kind: "pending",
+    playerId: p,
+  });
+  const replay = g.match.rules.commanderReplay!;
+  expect(replay).toMatchObject({
+    action: { type: "pass-priority" },
+    participantId: g.room.participants[1].id,
+    answers: {},
+  });
+  expect(replay.key.startsWith(`${instanceId}:`)).toBe(true);
+  // Rolled back: the ability is still on the Stack, the commander unmoved.
+  expect(stack()).toHaveLength(1);
+  expect(commanderObject().id).toBe(creature.id);
+  expect(zoneKind()).toBe("battlefield");
+  expect(g.match.priority).toBeUndefined();
+  const procedureId = g.view().rules.prompt!.procedureId;
+  const waiting = structuredClone(g.match);
+  for (const [seat, action] of [
+    [0, { type: "pass-priority" }],
+    [1, { type: "rules-input", procedureId, confirm: true }],
+    [0, { type: "rules-input", procedureId: "stale", confirm: true }],
+  ] as const) {
+    expect(g.command(seat, action)).toEqual({
+      kind: "rejected",
+      message: "Complete your current commander return choice.",
+    });
+    expect(g.match).toEqual(waiting);
+  }
+  expect(
+    g.command(0, { type: "rules-input", procedureId, confirm: true }),
+  ).toEqual({ kind: "accepted" });
+  // Replayed once, as the player who passed, with the recorded answer.
+  expect(g.match.rules.commanderReplay).toBeUndefined();
+  expect(stack()).toEqual([]);
+  expect(zoneKind()).toBe("command");
+  expect(g.match.rules.mana[p].U).toBe(0);
+  expect(g.match.priority?.playerId).toBe(waiting.turn.activePlayerId);
+});
 
 for (const commander of [false, true])
   test(`combat ${commander ? "commander damage causes loss at 21" : "transfers monarch through a Stack trigger"}`, async () => {
