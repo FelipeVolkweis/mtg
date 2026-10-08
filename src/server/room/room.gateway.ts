@@ -11,9 +11,13 @@ import { randomUUID } from "node:crypto";
 import type { IncomingMessage } from "node:http";
 import WebSocket from "ws";
 import { z } from "zod";
-import type { ServerMessage, User } from "../../shared/model.js";
+import type { RoomCommand, ServerMessage, User } from "../../shared/model.js";
 import { roomCommandSchema } from "../../shared/model.js";
-import { RoomService } from "./room.service.js";
+import {
+  closedRoomMessage,
+  type RoomProjection,
+  RoomService,
+} from "./room.service.js";
 import { playerMessage, TabletopError } from "./player-errors.js";
 import { UserService } from "../user/user.service.js";
 import { internalErrorMessage } from "../rules/rule-violation.js";
@@ -43,6 +47,8 @@ export class RoomGateway
   /** Authenticated sockets by Room invite, so a broadcast touches only that Room. */
   private readonly members = new Map<string, Set<WebSocket>>();
   private readonly users = new Map<WebSocket, Promise<User | undefined>>();
+  /** Each Room's revision and presence as its members last received them. */
+  private readonly sent = new Map<string, string>();
   private shuttingDown = false;
   private readonly authenticationTimers = new Map<
     WebSocket,
@@ -121,6 +127,8 @@ export class RoomGateway
         connection.participantId,
         connection.id,
       );
+      // Read again: a command may have changed the Room before this socket
+      // joined its members.
       await this.broadcast(connection.invite);
     } catch (error) {
       if (error instanceof TabletopError)
@@ -172,73 +180,105 @@ export class RoomGateway
       });
       return;
     }
+    const { requestId, command } = parsed.data;
     try {
-      const notice = await this.rooms.command(
+      const outcome = await this.rooms.command(
         session.invite,
         session.userId,
-        parsed.data.command,
+        command,
       );
-      if (parsed.data.command.type === "close") {
-        await this.broadcast(session.invite);
+      if (outcome.kind === "closed") {
+        this.close(session.invite, closedRoomMessage);
+        return;
+      }
+      if (outcome.kind === "rejected") {
+        this.reject(client, session, command, requestId, outcome);
         return;
       }
       this.send(client, {
         event: "view",
         data: {
-          view: await this.rooms.view(session.invite, session.userId),
-          requestId: parsed.data.requestId,
-          notice,
+          view: outcome.room.view(session.userId),
+          requestId,
+          notice: outcome.notice,
         },
       });
-      await this.broadcast(session.invite);
+      await this.broadcast(session.invite, outcome.room, client);
     } catch (error) {
-      const message = playerMessage(error);
-      if (message === undefined)
-        console.error(
-          `Room ${session.invite} failed on command ${parsed.data.command.type}:`,
-          error,
-        );
-      let view;
-      try {
-        view = await this.rooms.view(session.invite, session.userId);
-      } catch {
-        // The rejection is sent without a view.
-      }
-      this.send(client, {
-        event: "rejected",
-        data: {
-          message: message ?? internalErrorMessage,
-          requestId: parsed.data.requestId,
-          view,
-        },
-      });
+      this.reject(client, session, command, requestId, { error });
     }
   }
-  async broadcast(invite: string) {
+  /** Answers a failed command with the Room as saved, when it was read. */
+  private reject(
+    client: WebSocket,
+    session: Connection,
+    command: RoomCommand,
+    requestId: string,
+    failure: { error: unknown; room?: RoomProjection },
+  ) {
+    const message = playerMessage(failure.error);
+    if (message === undefined)
+      console.error(
+        `Room ${session.invite} failed on command ${command.type}:`,
+        failure.error,
+      );
+    let view;
+    try {
+      view = failure.room?.view(session.userId);
+    } catch {
+      // The rejection is sent without a view.
+    }
+    this.send(client, {
+      event: "rejected",
+      data: { message: message ?? internalErrorMessage, requestId, view },
+    });
+  }
+  /**
+   * Sends each member of a Room its own view, projected from `room` or from
+   * one read of the Room; `except` already has its view.
+   */
+  async broadcast(invite: string, room?: RoomProjection, except?: WebSocket) {
     const members = this.members.get(invite);
     if (!members?.size) return;
-    // One load per broadcast; a failure reaches each socket below as before.
-    const viewer = this.rooms.viewer(invite);
-    viewer.catch(() => {});
-    await Promise.all(
-      [...members].map(async (client) => {
-        const session = this.sessions.get(client);
-        if (!session) return;
-        try {
-          this.send(client, {
-            event: "view",
-            data: { view: (await viewer)(session.userId) },
-          });
-        } catch (error) {
-          if (error instanceof TabletopError)
-            this.send(client, {
-              event: "closed",
-              data: { message: error.message },
-            });
-          client.close();
-        }
-      }),
-    );
+    let projection: RoomProjection;
+    try {
+      projection = room ?? (await this.rooms.viewer(invite));
+    } catch (error) {
+      this.sent.delete(invite);
+      for (const client of [...members]) this.drop(client, error);
+      return;
+    }
+    this.sent.set(invite, this.stamp(invite, projection.revision));
+    for (const client of [...members]) {
+      const session = this.sessions.get(client);
+      if (!session || client === except) continue;
+      try {
+        this.send(client, {
+          event: "view",
+          data: { view: projection.view(session.userId) },
+        });
+      } catch (error) {
+        this.drop(client, error);
+      }
+    }
+  }
+  /** What a Room's members have seen: its revision and who is connected. */
+  private stamp(invite: string, revision: number) {
+    return `${revision}|${this.rooms.presence(invite)}`;
+  }
+  /** Closes a socket whose view can't be projected, saying why if it may. */
+  private drop(client: WebSocket, error: unknown) {
+    if (error instanceof TabletopError)
+      this.send(client, { event: "closed", data: { message: error.message } });
+    client.close();
+  }
+  /** Closes every member's socket of a Room that no longer exists. */
+  private close(invite: string, message: string) {
+    this.sent.delete(invite);
+    for (const client of [...(this.members.get(invite) ?? [])]) {
+      this.send(client, { event: "closed", data: { message } });
+      client.close();
+    }
   }
   async handleDisconnect(client: WebSocket) {
     clearTimeout(this.authenticationTimers.get(client));
@@ -249,7 +289,10 @@ export class RoomGateway
     this.sessions.delete(client);
     const members = this.members.get(session.invite);
     members?.delete(client);
-    if (members?.size === 0) this.members.delete(session.invite);
+    if (members?.size === 0) {
+      this.members.delete(session.invite);
+      this.sent.delete(session.invite);
+    }
     if (this.shuttingDown) return;
     await this.rooms.disconnect(
       session.invite,
@@ -266,8 +309,20 @@ export class RoomGateway
       }
       await this.rooms.purgeExpired();
       await this.accounts.purgeExpiredSessions();
+      // Only a Room changed outside a command (or closed) needs its views
+      // again; commands and connections broadcast their own changes.
+      const invites = [...this.members.keys()];
+      const revisions = await this.rooms.revisions(invites);
       await Promise.all(
-        [...this.members.keys()].map((invite) => this.broadcast(invite)),
+        invites
+          .filter((invite) => {
+            const revision = revisions.get(invite);
+            return (
+              revision === undefined ||
+              this.sent.get(invite) !== this.stamp(invite, revision)
+            );
+          })
+          .map((invite) => this.broadcast(invite)),
       );
     } catch (error) {
       console.error("Room expiry failed", error);

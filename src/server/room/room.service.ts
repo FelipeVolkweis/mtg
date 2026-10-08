@@ -17,9 +17,27 @@ import { DeckError } from "../deck/deck-errors.js";
 import { deckIssues } from "../deck/format-rules.js";
 import { matchView } from "../match/match-view.js";
 import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";
-import { TabletopError } from "./player-errors.js";
+import { playerMessage, TabletopError } from "./player-errors.js";
 
 const nameKey = (name: string) => name.normalize("NFKC").trim().toLowerCase();
+
+export const closedRoomMessage = "This Room is closed or expired.";
+
+/** A Room as loaded or saved; it projects each user's own view of it. */
+export interface RoomProjection {
+  readonly revision: number;
+  view(userId: string): RoomView;
+}
+
+/**
+ * What a Room command did. Each outcome carries the Room as saved, so its
+ * views are projected without reading the Room again.
+ */
+export type CommandOutcome =
+  | { kind: "applied"; notice?: string; room: RoomProjection }
+  | { kind: "closed" }
+  /** Nothing changed; `room` is the saved Room, unless it couldn't be read. */
+  | { kind: "rejected"; error: unknown; room?: RoomProjection };
 
 @Injectable()
 export class RoomService implements OnModuleInit {
@@ -103,7 +121,7 @@ export class RoomService implements OnModuleInit {
     );
     const room = result.rows[0]?.document;
     if (!room || Date.now() - room.lastActivity >= this.expiryMs)
-      throw new TabletopError("This Room is closed or expired.");
+      throw new TabletopError(closedRoomMessage);
     return upgradeRoom(room);
   }
   touch(room: RoomState) {
@@ -130,13 +148,40 @@ export class RoomService implements OnModuleInit {
       if (participant.ready && participant.deck)
         participant.deck = await this.deck(participant, participant.deck.id);
   }
+  /** Runs a Room command; it reads the Room once. */
   async command(
     invite: string,
     userId: string,
     command: RoomCommand,
-  ): Promise<string | undefined> {
+  ): Promise<CommandOutcome> {
+    const loaded: { room?: RoomState } = {};
+    let result: { room: RoomState; notice?: string } | "closed";
+    try {
+      result = await this.change(invite, userId, command, loaded);
+    } catch (error) {
+      return {
+        kind: "rejected",
+        error,
+        room: loaded.room && (await this.projection(loaded.room)),
+      };
+    }
+    if (result === "closed") return { kind: "closed" };
+    return {
+      kind: "applied",
+      notice: result.notice,
+      room: await this.projection(result.room),
+    };
+  }
+  /** Applies a command in one transaction; `loaded` keeps the Room as read. */
+  private async change(
+    invite: string,
+    userId: string,
+    command: RoomCommand,
+    loaded: { room?: RoomState },
+  ) {
     return this.database.transaction(async (client) => {
       const room = await this.load(invite, client);
+      loaded.room = structuredClone(room);
       const participant = this.authorize(room, userId);
       let notice: string | undefined;
       switch (command.type) {
@@ -280,14 +325,21 @@ export class RoomService implements OnModuleInit {
         }
         case "close":
           await client.query("DELETE FROM rooms WHERE invite = $1", [invite]);
-          return "Room closed.";
+          return "closed" as const;
         default:
           throw new TabletopError("This action is not available yet.");
       }
       this.touch(room);
       await this.database.saveRoom(client, room);
-      return notice;
+      return { room, notice };
     });
+  }
+  /** The Room's connected participants, as a key that changes with them. */
+  presence(invite: string) {
+    return [...this.connections.keys()]
+      .filter((key) => key.startsWith(`${invite}:`))
+      .sort()
+      .join(",");
   }
   connected(invite: string, participantId: string) {
     return (this.connections.get(`${invite}:${participantId}`)?.size ?? 0) > 0;
@@ -319,20 +371,49 @@ export class RoomService implements OnModuleInit {
             await this.database.saveRoom(client, room);
           }
         })
-        .catch(() => {});
+        .catch((error: unknown) => {
+          // A closed or expired Room has no confirmations left to withdraw.
+          if (playerMessage(error) === undefined)
+            console.error(
+              `Room ${invite} failed to record a disconnect:`,
+              error,
+            );
+        });
     }
   }
   async view(invite: string, userId: string): Promise<RoomView> {
-    return (await this.viewer(invite))(userId);
+    return (await this.viewer(invite)).view(userId);
   }
   /** Loads the Room once; the result projects each user's own view of it. */
-  async viewer(invite: string): Promise<(userId: string) => RoomView> {
-    const room = await this.load(invite, this.database.pool, false);
+  async viewer(invite: string): Promise<RoomProjection> {
+    return this.projection(await this.load(invite, this.database.pool, false));
+  }
+  private async projection(room: RoomState): Promise<RoomProjection> {
     const catalog = await readCatalog();
-    return (userId) => {
-      const own = structuredClone(room);
-      return this.toView(own, this.authorize(own, userId), catalog);
+    return {
+      revision: room.revision,
+      view: (userId) => {
+        const own = structuredClone(room);
+        return this.toView(own, this.authorize(own, userId), catalog);
+      },
     };
+  }
+  /**
+   * The revision of each of `invites` that is still open; a closed or
+   * expired Room is missing. Reads only the revisions, not the documents.
+   */
+  async revisions(invites: string[]): Promise<Map<string, number>> {
+    if (!invites.length) return new Map();
+    const result = await this.database.pool.query<{
+      invite: string;
+      revision: string;
+    }>(
+      `SELECT invite, document->>'revision' AS revision FROM rooms WHERE invite = ANY($1) AND last_activity > $2`,
+      [invites, new Date(Date.now() - this.expiryMs)],
+    );
+    return new Map(
+      result.rows.map((row) => [row.invite, Number(row.revision)]),
+    );
   }
   toView(
     room: RoomState,
