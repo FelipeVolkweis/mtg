@@ -6,6 +6,7 @@ import type {
   MatchState,
 } from "../../shared/rules-state.js";
 import { ownKeyword, staticContinuous } from "../rules/abilities.js";
+import { netStatCounters } from "./counters.js";
 import type { RulesQuery } from "../rules/context.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { RuleViolation } from "../rules/rule-violation.js";
@@ -257,10 +258,7 @@ export class CharacteristicsCalculator {
             effect.sourceId,
           ),
         );
-      for (const counter of object.counters) {
-        if (counter.kind === "+1/+1") amount += BigInt(counter.quantity);
-        if (counter.kind === "-1/-1") amount -= BigInt(counter.quantity);
-      }
+      amount += netStatCounters(object.counters);
       result[stat] = amount.toString();
     }
     return result;

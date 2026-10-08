@@ -81,7 +81,7 @@ export function legalActions(
       if (object.characteristics.types?.includes("Land")) {
         if (
           mainTiming(ctx.query, playerId) &&
-          !(rules.landsPlayed[playerId] ?? 0)
+          !(rules.thisTurn.landsPlayed[playerId] ?? 0)
         )
           actions.push({
             label: `Play ${object.characteristics.name}`,
@@ -104,7 +104,7 @@ export function legalActions(
       if (pending && !isManaAbility(ability)) continue;
       if (
         oncePerTurn(ability) &&
-        rules.activationUsage?.[`${object.id}:${ability.id}`]
+        rules.thisTurn.activationUsage[`${object.id}:${ability.id}`]
       )
         continue;
       if (sorceryTiming(ability) && !mainTiming(ctx.query, playerId)) continue;

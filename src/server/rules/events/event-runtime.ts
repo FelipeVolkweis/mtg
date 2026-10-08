@@ -5,6 +5,8 @@ import type {
   ZoneState,
 } from "../../../shared/rules-state.js";
 import { moveObject } from "../../match/game-objects.js";
+import { removeCountersDownToZero } from "../../match/counters.js";
+import { changeLife } from "../../match/life.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import { EventTriggerObserver } from "../triggers/trigger-runtime.js";
@@ -135,9 +137,8 @@ export class EventRuntime {
       return {};
     }
     const card = moveObject(engine.match, library.objectIds[0], hand);
-    engine.rules.drawsThisTurn ??= {};
-    const ordinal = (engine.rules.drawsThisTurn[playerId] =
-      (engine.rules.drawsThisTurn[playerId] ?? 0) + 1);
+    const draws = engine.rules.thisTurn.draws;
+    const ordinal = (draws[playerId] = (draws[playerId] ?? 0) + 1);
     new EventTriggerObserver(engine).collect(
       {
         kind: "draw",
@@ -158,7 +159,7 @@ export class EventRuntime {
   private lifeChange(playerId: string, amount: number) {
     const player = this.engine.match.players.find((p) => p.id === playerId);
     if (!player) return;
-    player.life = String(BigInt(player.life) + BigInt(amount));
+    changeLife(player, amount);
   }
 
   private create(object: GameObject, zone: ZoneState) {
@@ -243,21 +244,14 @@ export class EventRuntime {
           engine.rules.markedDamage[recipient.id] =
             (engine.rules.markedDamage[recipient.id] ?? 0) + assignment.amount;
         } else if (types.includes("Planeswalker") || types.includes("Battle")) {
-          const counter = recipient.counters.find(
-            (c) =>
-              c.kind ===
-              (types.includes("Planeswalker") ? "loyalty" : "defense"),
+          removeCountersDownToZero(
+            recipient.counters,
+            types.includes("Planeswalker") ? "loyalty" : "defense",
+            assignment.amount,
           );
-          if (counter)
-            counter.quantity = String(
-              BigInt(counter.quantity) > BigInt(assignment.amount)
-                ? BigInt(counter.quantity) - BigInt(assignment.amount)
-                : 0n,
-            );
         } else continue;
       } else continue;
-      engine.rules.damageEvents ??= [];
-      engine.rules.damageEvents.push({
+      engine.rules.thisTurn.damageEvents.push({
         ...recorded,
         sourceCharacteristics: structuredClone(characteristics),
         combat,

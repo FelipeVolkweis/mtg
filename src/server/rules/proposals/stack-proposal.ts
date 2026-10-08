@@ -71,9 +71,9 @@ const spellProposal: Specialization = {
 const abilityProposal: Specialization = {
   finalize(engine, pending, object, sourceSnapshot) {
     if (oncePerTurn(pending.ability)) {
-      engine.rules.activationUsage ??= {};
-      engine.rules.activationUsage[`${pending.sourceId}:${pending.abilityId}`] =
-        1;
+      engine.rules.thisTurn.activationUsage[
+        `${pending.sourceId}:${pending.abilityId}`
+      ] = 1;
     }
     object.resolution = {
       sourceSnapshot,

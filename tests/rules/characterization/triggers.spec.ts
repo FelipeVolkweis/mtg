@@ -524,7 +524,7 @@ test("Scrawling upkeep draws for each player, Fabricator resets ordinals, and Ve
   game.pass();
   expect(game.handCount()).toBe(9);
   expect(game.view().players[0].life).toBe("38");
-  expect(game.view().rules!.damageEvents ?? []).toHaveLength(0);
+  expect(game.view().rules!.thisTurn.damageEvents).toHaveLength(0);
   force.step(game.match, "end");
   game.pass();
   expect(game.match.turn.step).toBe("upkeep");

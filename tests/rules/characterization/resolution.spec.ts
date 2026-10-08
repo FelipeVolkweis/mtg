@@ -707,7 +707,7 @@ test("noncombat ability damage retains the permanent source after sacrifice", as
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   expect(view().objects[target.id]).toBeUndefined();
-  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+  expect(view().rules!.thisTurn.damageEvents.at(-1)).toMatchObject({
     sourceId: bomb.id,
     recipientId: target.id,
     amount: 1,

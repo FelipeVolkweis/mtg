@@ -10,6 +10,8 @@ import type {
   Value,
 } from "../../../shared/card-dsl.js";
 import type { RulesQuery } from "../context.js";
+import { counterCount } from "../../match/counters.js";
+import { lifeValue } from "../../match/life.js";
 
 // Evaluates Core AST selectors, predicates, values, player references and
 // conditions (dsl-redesign.md §4.2-4.4) against the current Match.
@@ -232,16 +234,15 @@ export class Evaluator {
       if (!this.compare(Number(c[stat]), p[stat]!)) return false;
     }
     if (p.counters) {
-      const counter = object.counters.find((x) => x.kind === p.counters!.kind);
-      if (!this.compare(Number(counter?.quantity ?? 0), p.counters.count))
-        return false;
+      const count = counterCount(object.counters, p.counters.kind);
+      if (!this.compare(count, p.counters.count)) return false;
     }
     if (p.dealtDamageBy) {
       // As the version 1 runtime reads it: the object's controller was dealt
       // combat damage by the source this turn (Steel Hellkite).
       const sources = this.objects(p.dealtDamageBy);
       if (
-        !match.rules.damageEvents?.some(
+        !match.rules.thisTurn.damageEvents.some(
           (e) =>
             sources.includes(e.sourceId) &&
             e.combat &&
@@ -319,7 +320,7 @@ export class Evaluator {
     }
     if ("lifeTotal" in value) {
       const [playerId] = this.players(value.lifeTotal);
-      return Number(match.players.find((p) => p.id === playerId)?.life ?? 0);
+      return lifeValue(match.players.find((p) => p.id === playerId));
     }
     if ("commanderColors" in value) {
       const [playerId] = this.players(value.commanderColors);

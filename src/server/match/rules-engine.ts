@@ -299,14 +299,14 @@ export class RulesEngine implements RulesMutator {
       throw new RuleViolation(
         "Play a land from your Hand during your main phase with an empty Stack.",
       );
-    if ((this.rules.landsPlayed[playerId] ?? 0) >= 1)
+    if ((this.rules.thisTurn.landsPlayed[playerId] ?? 0) >= 1)
       throw new RuleViolation("You have already played a land this turn.");
     this.propose({
       kind: "zone-change",
       objectId: object.id,
       to: this.zone("battlefield"),
     });
-    this.rules.landsPlayed[playerId] = 1;
+    this.rules.thisTurn.landsPlayed[playerId] = 1;
     this.checkpoint({ playerId });
   }
   battlefieldSources() {
@@ -494,7 +494,7 @@ export class RulesEngine implements RulesMutator {
       );
     if (
       oncePerTurn(ability) &&
-      this.rules.activationUsage?.[`${source.id}:${authored.id}`]
+      this.rules.thisTurn.activationUsage[`${source.id}:${authored.id}`]
     )
       throw new RuleViolation("Activate this ability only once each turn.");
     if (sorceryTiming(ability) && !mainTiming(this.query, playerId))

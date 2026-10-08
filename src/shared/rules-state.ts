@@ -198,12 +198,33 @@ export interface CheckpointState {
   passedPlayerIds?: string[];
   cleanup?: { performed: boolean };
 }
+/**
+ * What happened during the current turn. Turn-based bookkeeping lives here so
+ * a new turn replaces it as a whole (`TurnStructure.begin`) and no field is
+ * left behind.
+ */
+export interface TurnRecord {
+  /** Lands each player has played this turn, by player id (CR 305.2). */
+  landsPlayed: Record<string, number>;
+  /** Cards each player has drawn this turn, by player id. */
+  draws: Record<string, number>;
+  /** Once-each-turn abilities activated this turn, keyed `sourceId:abilityId`. */
+  activationUsage: Record<string, number>;
+  /** Damage dealt this turn, in order. */
+  damageEvents: DamageEvent[];
+}
 export interface RulesState {
+  /** Solo Practice: the inert player and who handles its choices. */
   practice?: { playerId: string; controllerParticipantId: string };
+  /** Once a player has become the monarch. */
   monarchId?: string;
+  /** Once a commander is cast: casts by Card Instance id (CR 903.8). */
   commanderCasts?: Record<string, number>;
+  /** Once commander combat damage is dealt: by player, then commander instance. */
   commanderDamage?: Record<string, Record<string, number>>;
+  /** While commanders wait for their owners' return choice (CR 903.9a). */
   commanderReturns?: string[];
+  /** While a command waits for a commander replacement choice to replay it. */
   commanderReplay?: {
     action: MatchAction;
     participantId: string;
@@ -212,27 +233,36 @@ export interface RulesState {
     key: string;
     answers: Record<string, boolean>;
   };
+  /** Once a creature is dealt damage; emptied in the cleanup step (CR 514.2). */
   markedDamage?: Record<string, number>;
-  damageEvents?: DamageEvent[];
-  drawsThisTurn?: Record<string, number>;
-  activationUsage?: Record<string, number>;
+  /** Once a card in a hand is revealed: the revealed hand cards. */
   revealedHandIds?: string[];
+  /** Once an until-end-of-turn effect starts; emptied in the cleanup step. */
   temporaryEffects?: ActiveContinuousEffect[];
+  /** From the beginning of combat to the postcombat main phase. */
   combat?: CombatState;
+  /** While players order their simultaneous triggers (APNAP, CR 603.3b). */
   orderedTriggerPlayerIds?: string[];
+  /** Once state-based actions have run: the continuous effects in force. */
   continuousEffects?: ActiveContinuousEffect[];
+  /** Once a trigger has fired: triggers waiting to be put on the Stack. */
   waitingTriggers?: WaitingTrigger[];
+  /** While waiting triggers are being placed on the Stack. */
   triggerPlacement?: WaitingTrigger[];
   /** A Priority Checkpoint suspended on a choice (rules-engine-refactor.md §11, §47). */
   checkpoint?: CheckpointState;
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
+  /** While a procedure waits for a player's input. */
   pending?: PendingProcedure;
+  /** While a spell or ability resolves. */
   resolving?: RuleExecution;
   mana: Record<string, ManaPool>;
+  /** Once restricted mana is added; emptied when the step ends. */
   restrictedMana?: Record<string, RestrictedMana[]>;
+  /** Once a player draws from an empty Library, until state-based actions. */
   failedDrawPlayerIds?: string[];
-  landsPlayed: Record<string, number>;
+  thisTurn: TurnRecord;
   controlledSinceTurn: Record<string, number>;
   turnStarted: Record<string, number>;
   commanders: Record<string, { instanceId: string; colorIdentity: string[] }>;

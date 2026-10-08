@@ -1,6 +1,7 @@
 import type { PendingProcedure } from "../../../shared/rules-state.js";
 import { CharacteristicsCalculator } from "../../match/characteristics.js";
 import { Combat } from "../../match/combat.js";
+import { cancelStatCounters } from "../../match/counters.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { budget } from "../loop-budget.js";
 import { LoopDetector } from "../mandatory-loop.js";
@@ -102,12 +103,7 @@ export class StateBasedRuntime {
         moved.add(object.id);
         engine.propose({ kind: "cease", objectId: object.id });
       } else {
-        for (const counter of object.counters)
-          if (counter.kind === "+1/+1" || counter.kind === "-1/-1")
-            counter.quantity = (
-              BigInt(counter.quantity) - BigInt(change.amount)
-            ).toString();
-        object.counters = object.counters.filter((c) => c.quantity !== "0");
+        cancelStatCounters(object, change.amount);
       }
     }
   }

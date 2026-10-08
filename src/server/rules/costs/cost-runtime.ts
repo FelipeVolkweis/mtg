@@ -13,6 +13,8 @@ import {
   manaSymbols,
 } from "../abilities.js";
 import { manaCost, spendMana, type ManaCost } from "../../match/mana.js";
+import { adjustCounters, dropEmptyCounters } from "../../match/counters.js";
+import { canPayLife } from "../../match/life.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { costHandler } from "./handlers.js";
@@ -324,7 +326,7 @@ export function planPayment(
     .flat()
     .reduce((sum, m) => sum + (m.kind === "pay-life" ? m.amount : 0), 0);
   const player = engine.match.players.find((p) => p.id === payment.playerId)!;
-  if (BigInt(player.life) < BigInt(life))
+  if (!canPayLife(player, life))
     throw new RuleViolation("You cannot pay that much life.");
   const eligible = manaEligibility(payment.use, payment.source);
   const spent = planMana(
@@ -367,16 +369,8 @@ function commit(engine: RulesEngine, playerId: string, mutation: CostMutation) {
       return;
     case "counters": {
       const object = engine.object(mutation.objectId);
-      const counter = object.counters.find((c) => c.kind === mutation.counter);
-      const quantity =
-        BigInt(counter?.quantity ?? "0") + BigInt(mutation.delta);
-      if (counter) counter.quantity = String(quantity);
-      else
-        object.counters.push({
-          kind: mutation.counter,
-          quantity: String(quantity),
-        });
-      object.counters = object.counters.filter((c) => c.quantity !== "0");
+      adjustCounters(object, mutation.counter, mutation.delta);
+      dropEmptyCounters(object);
       return;
     }
     case "move": {

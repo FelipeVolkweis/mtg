@@ -1,12 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { type Effect, nextTurnStep } from "../../shared/card-dsl.js";
-import type { GameObject } from "../../shared/rules-state.js";
+import type { GameObject, TurnRecord } from "../../shared/rules-state.js";
 import { restrictsUntap } from "../rules/abilities.js";
 import type { RulesMutator, RulesQuery } from "../rules/context.js";
 import type { PriorityGrant } from "../rules/priority/priority-checkpoint.js";
 import type { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import type { Combat } from "./combat.js";
 import { emptyMana } from "./rules-engine.js";
+
+/** A turn's bookkeeping before anything has happened in it. */
+export function newTurnRecord(): TurnRecord {
+  return { landsPlayed: {}, draws: {}, activationUsage: {}, damageEvents: [] };
+}
 
 /**
  * What the turn structure needs beyond proposing events: Priority grants,
@@ -55,12 +60,9 @@ export class TurnStructure {
   /** The untap step (CR 502), then the upkeep step. */
   begin() {
     const { match, rules } = this;
-    rules.drawsThisTurn = {};
-    rules.activationUsage = {};
-    rules.damageEvents = [];
+    rules.thisTurn = newTurnRecord();
     match.turn.step = "untap";
     rules.turnStarted[match.turn.activePlayerId] = match.turn.number;
-    rules.landsPlayed = {};
     const battlefield = this.ctx.query.zone("battlefield").id;
     for (const object of Object.values(match.objects))
       if (

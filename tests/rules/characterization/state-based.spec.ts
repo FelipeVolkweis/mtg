@@ -128,7 +128,7 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
   game.command(1, { type: "pass-priority" });
   expect(view().objects[jug.id]).toBeDefined();
   expect(view().rules!.markedDamage![jug.id]).toBe(5);
-  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+  expect(view().rules!.thisTurn.damageEvents.at(-1)).toMatchObject({
     recipientId: jug.id,
     amount: 5,
     combat: false,
