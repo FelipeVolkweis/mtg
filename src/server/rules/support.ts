@@ -24,7 +24,7 @@ import type { SupportCheck } from "./support-check.js";
 import { triggerSupport } from "./triggers/trigger-runtime.js";
 import { unsupportedEffect } from "./vm/effects/registry.js";
 
-// Runtime support check (dsl-redesign.md §9): which Core constructs the
+// Runtime support check (docs/rules-engine.md): which Core constructs the
 // engine runs today. The engine executes the compiler's Core AST directly; an
 // implemented card using anything else fails to load with an error naming the
 // construct and its path. Nothing is approximated.

@@ -25,7 +25,7 @@ import {
 } from "../../shared/card-dsl.js";
 import type { Registries } from "./registries.js";
 
-// Rules Compiler: authored AST v2 → Core AST (dsl-redesign.md §7).
+// Rules Compiler: authored AST v2 → Core AST (docs/card-model.md).
 //
 // The Core AST uses the same types as the authored AST, with these
 // invariants:

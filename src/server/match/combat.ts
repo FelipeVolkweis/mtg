@@ -176,7 +176,7 @@ export class Combat {
       if (Object.values(pending.totalCost).some((amount) => amount > 0)) {
         pending.kind = "attack-payment";
         pending.stage = "payment";
-        // A new choice gets a new identifier (rules test plan §32).
+        // A new choice gets a new identifier, so a stale answer is refused.
         pending.id = randomUUID();
         delete pending.options;
         return;

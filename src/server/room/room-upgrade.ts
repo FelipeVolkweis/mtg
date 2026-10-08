@@ -1,7 +1,7 @@
 import type { RoomState } from "../../shared/model.js";
 
 /**
- * The Room document shape this server writes (CM §5). Version 10 gives a
+ * The Room document shape this server writes. Version 10 gives a
  * waiting trigger a typed `source`, an object or the monarch designation
  * (version 9 grouped the per-turn rules state in `rules.thisTurn`).
  */

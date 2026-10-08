@@ -119,7 +119,7 @@ export class RulesEngine implements RulesMutator {
   get rules() {
     return this.match.rules;
   }
-  /** The read-only rules context (rules-engine-refactor.md §6). */
+  /** The read-only rules context. */
   get query(): RulesQuery {
     return {
       match: this.match,
@@ -254,7 +254,7 @@ export class RulesEngine implements RulesMutator {
   }
   /**
    * A player would receive Priority: every grant goes through the Priority
-   * Checkpoint (rules-engine-refactor.md §11).
+   * Checkpoint (CR 117.5).
    */
   checkpoint(grant: PriorityGrant = {}) {
     new PriorityCheckpoint(this).run(grant);

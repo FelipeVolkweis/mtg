@@ -15,7 +15,7 @@ import {
 
 // Zone-change instructions (CR 701.7 destroy, 701.17 sacrifice, 406 exile,
 // 701.5 counter, and plain moves). Every member of a set leaves at once: they
-// share one snapshot of trigger sources and characteristics (§24, §56).
+// share one snapshot of trigger sources and characteristics (CR 603.10a).
 
 export type ObjectMove = EffectOf<"move" | "destroy" | "sacrifice" | "exile">;
 

@@ -52,12 +52,12 @@ and replayed with the answer (see `CommanderReplacement`).
 ## Authored rules and coverage
 
 Each Card Definition is one `catalogVersion: 2` file in `catalog/definitions/`
-with two sections ([card model plan §3](plans/card-model-refactor.md)):
+with two sections ([Card Definition files](card-model.md#card-definition-files)):
 
 - `imported`: the form, Card Components, Color Identity and default Printing. A
   set import writes only this section.
-- `authored`: the automation status and the card's abilities in the rules DSL
-  version 2 ([DSL plan §4](plans/dsl-redesign.md)). Reviewers own it; a diff
+- `authored`: the automation status and the card's abilities in the
+  [card DSL](card-model.md#card-dsl) version 2. Reviewers own it; a diff
   here is a rules change, and a set import never touches it.
 
 The file stores no derived values. The
@@ -197,11 +197,12 @@ there is no external Magic rules engine package in
 
 Pending procedures, trigger queues, combat state, resolving effects, mana pools,
 and other gameplay data are stored on `MatchState.rules`. Stored abilities and
-resolution queues hold Core AST effects. Rooms stored below snapshot version 7
-are deleted at startup (ADR-0019), so
-[upgradeRoom](../src/server/room/room-upgrade.ts) reads version 7 and refuses
-any other version; a later change to the stored shape adds its upgrade step
-there. A pending procedure
+resolution queues hold Core AST effects. A Room document carries its
+`snapshotVersion`. Rooms stored below the current version (10) are deleted at
+startup, and [upgradeRoom](../src/server/room/room-upgrade.ts) refuses any
+other version: during development the database is reset whenever the stored
+shape changes, so a change to the stored shape bumps `currentSnapshotVersion`
+and adds no upgrade step. A pending procedure
 contains the responsible Match Player, its stage, a fresh identifier, and the
 legal selection data needed to validate its answer; a cast or activation also
 holds its rollback snapshot. This lets the Room persist
@@ -217,3 +218,27 @@ Other participants receive only whose choice is awaited and its prompt kind.
 A spell or ability being proposed is public on the Stack, marked `beingCast`. Solo Practice routes required Practice
 Opponent choices to the human controller while leaving that seat's Priority
 passes automatic.
+
+## Rules tests
+
+The rules suite (`npm run test:rules`, `tests/rules/`) runs Match commands in
+memory, without a web server or database. `npm run test:rules:round-trip` runs
+it again with `ROUND_TRIP=1`: [round-trip.ts](../tests/support/round-trip.ts)
+checks before and after every command that the Match is JSON-safe and replaces
+it with a JSON round trip of itself, as the Room store does. Both runs are part
+of `npm run gates`.
+
+- `tests/rules/characterization/` holds externally meaningful behavior by
+  area (casting, combat, triggers, hidden information, commander, …). Its
+  tests set games up with [rules-game.ts](../tests/support/rules-game.ts)
+  (`rulesGame`, `triggerGame`, `seed`) and reach states that commands can't
+  reach with the [force helpers](../tests/support/force.ts), never by writing
+  Match state directly.
+- The other folders test one runtime each: compiler, costs, events, priority,
+  procedures, state-based rules, triggers and the Rule VM with its effect
+  handlers. [procedure-scenarios.ts](../tests/support/procedure-scenarios.ts)
+  reaches every pending procedure kind, so each kind is tested for stale ids,
+  save and restore, and what each player sees.
+- A refactor classifies each changed test: **Preserve** (still valid as is),
+  **Move** (the assertion belongs in a lower-level test) or **Change** (the
+  behavior changes on purpose, with the reason).

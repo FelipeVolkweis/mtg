@@ -8,7 +8,7 @@ import { LoopDetector } from "../mandatory-loop.js";
 import { stateBasedRule, stateBasedRules } from "./registry.js";
 import type { RulesInput, StateBasedChange } from "./types.js";
 
-// State-Based Action Runtime (rules-engine-refactor.md §46–48). A check
+// State-Based Action Runtime (CR 704). A check
 // evaluates every State-Based Rule against the same game state and performs
 // all their changes together as one event, then checks again. Choices come
 // once no automatic action is left: the state a player chooses in is stable.

@@ -18,9 +18,43 @@ Effects contain ordered semantic parts. Continuous Effects retain source ability
 
 A Library Sequence records source Zone, operation, stop predicate, selected/rest handling, ordering, and no-match behavior. Reveal, look, and exile remain distinct operations. Captured Copiable Values include exceptions and use immutable characteristic records independent of later changes to the original; each copy retains its own Counters, status, and Attachments.
 
+## Card Definition files
+
+Each Card Definition is one `catalogVersion: 2` file in `catalog/definitions/`, keyed by Oracle identity (ADR-0015), with two sections. The schema is `cardDefinitionFileSchema` in [card-dsl.ts](../src/shared/card-dsl.ts).
+
+- `imported`: the card form (one of the layouts the importer accepts), the Card Components' characteristics, the Color Identity and the default Printing. A set import writes only this section; a diff here is a data refresh. Imported keywords are facts, not rules support (ADR-0005).
+- `authored`: the automation status and the abilities in the card DSL. Reviewers own it; a diff here is a rules change, and a set import never touches it.
+
+The file stores no derived value. The [catalog reader](../src/server/catalog/catalog-files.ts) derives them when it loads the file ([derive.ts](../src/server/catalog/derive.ts)), and `CardDefinition` keeps them as fields:
+
+| Value | Rule |
+|---|---|
+| canonical name | the front face name; split cards join face names with ` // ` |
+| mana value | per form: `split` and `room` combine both halves; `transform`, `modal_dfc` and `flip` use the front face; `reversible_card` faces have no combined value |
+| keywords | the union over components |
+| Oracle Text | component rules text joined with ` // ` |
+| type line | `supertypes types — subtypes` per component |
+
+Tokens are definitions in `catalog/tokens/` with the same characteristics and ability model, referenced by id. Counter kinds come from a registry; counters with rules meaning (`+1/+1`, `-1/-1`) carry it there ([registries.ts](../src/server/rules/registries.ts)).
+
+## Card DSL
+
+Authored abilities are the card DSL, version 2 ([card-dsl.ts](../src/shared/card-dsl.ts)). The [Rules Compiler](../src/server/rules/compiler.ts) turns them into the Core AST the engine runs. These design rules hold for every addition:
+
+1. **One CR concept per kind.** Every ability, effect, cost and trigger kind names a Comprehensive Rules concept, never one card's wording.
+2. **No dependent fields.** A field valid only for some values of another field means the type is a discriminated union.
+3. **Choices are selectors.** A choice during resolution is a `choose` selector, not an effect flag.
+4. **Control flow is structural.** "May", "if you do", "unless", "choose one", "for each player" and sequencing are control-flow nodes.
+5. **Durations are explicit.** A temporary effect states its duration.
+6. **Vocabularies are data.** Tokens, counter kinds and keywords are validated against registries, not schema enums.
+7. **Shorthand must desugar.** Concise syntax exists only where the compiler expands it deterministically.
+8. **Unsupported means unimplemented.** A card the primitives can't express stays `automationStatus: "unimplemented"` until the missing CR concept is added; there is no card-specific escape hatch.
+
+The compiler validates the schema; resolves references (targets, binding names and types, links, tokens, counter kinds, keywords); checks context (event selectors only in triggered or replacement abilities, `X` only where a cost has `{X}`, CR 605 mana-ability criteria); desugars shorthand and macro keywords (affinity, ward, cycling, equip, crew, living weapon); and tags every continuous change with its CR 613 layer. Keywords that change how a card is cast or paid for (enchant, improvise, kicker, escalate, flashback) stay keyword abilities, read by the casting and cost runtimes. Rule keywords such as flying are lowercase properties the engine checks directly. The fixtures in `tests/fixtures/dsl-expressiveness/` show the DSL across a fixed set of 26 cards.
+
 ## Match relationships
 
-The relationships below describe modeling capacity. Under proposed [ADR-0018](adr/0018-runtime-model-carries-supported-capacity.md), only those used by supported cards stay in the runtime model: meld, face-down state, Battle Protector, stickers, Opening-Hand Actions, Captured Copiable Values and variant Zones become catalog-level capacity until a supported card needs them. See [card-model-refactor.md](plans/card-model-refactor.md).
+The relationships below describe modeling capacity. Under proposed [ADR-0018](adr/0018-runtime-model-carries-supported-capacity.md), only those used by supported cards stay in the runtime model: meld, face-down state, Battle Protector, stickers, Opening-Hand Actions, Captured Copiable Values and variant Zones become catalog-level capacity until a supported card needs them. A removed field returns only with a supported card whose rules need it, a rules test that sets it through gameplay, and a decision on who sees it in the Match view.
 
 Card Instances preserve identity and Owner across Game Object lifetimes; Zone changes generally create fresh Game Objects with rule-specific exceptions. Meld can relate multiple Instances to one Object. Attachments and Object Links are separate relationships. Ability Game Objects have no Card Instance and can retain source references, variable bindings, and relevant Object Links.
 

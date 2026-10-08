@@ -32,7 +32,7 @@ import {
   type SupportCheck,
 } from "./support-check.js";
 
-// Readers over Core abilities (dsl-redesign.md §4): what the engine asks of
+// Readers over Core abilities (docs/card-model.md): what the engine asks of
 // an ability, answered from the compiler's output. The runtime supports the
 // subset `support.ts` accepts, so these read only that subset. Static grants,
 // replacements and keywords declare that subset here, next to their readers.

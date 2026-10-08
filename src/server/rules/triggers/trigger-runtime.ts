@@ -21,7 +21,7 @@ import { isSourcePredicate } from "../ast.js";
 import type { Registry, SupportCheck } from "../support-check.js";
 import { Evaluator } from "../vm/evaluate.js";
 
-// Trigger Runtime (rules-engine-refactor.md §43). Event triggers match a
+// Trigger Runtime (CR 603). Event triggers match a
 // source's Core trigger against each semantic event; state triggers watch for
 // a condition becoming true. Either way a triggered ability becomes a waiting
 // trigger: it goes on the Stack at the next Priority Checkpoint.

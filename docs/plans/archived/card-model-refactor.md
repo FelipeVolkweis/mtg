@@ -11,7 +11,7 @@ This plan covers two layers:
 
 It is carried out in runtime milestone M1 ([rules-engine-refactor.md](rules-engine-refactor.md) §63), as **one migration together with the DSL redesign** ([dsl-redesign.md](dsl-redesign.md) §9). Both rewrite every definition file, so they ship as one catalog version.
 
-The governing decision is [ADR-0018](../adr/0018-runtime-model-carries-supported-capacity.md): the catalog may model the full card pool's forms, and the runtime model carries only what supported cards use.
+The governing decision is [ADR-0018](../../adr/0018-runtime-model-carries-supported-capacity.md): the catalog may model the full card pool's forms, and the runtime model carries only what supported cards use.
 
 ---
 

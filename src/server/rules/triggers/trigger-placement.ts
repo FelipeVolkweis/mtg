@@ -9,7 +9,7 @@ import { PutTriggeredAbilityOnStackProcedure } from "./put-triggered-ability.js"
 import { triggerOf } from "./trigger-runtime.js";
 import { RuleViolation } from "../rule-violation.js";
 
-// Trigger placement (rules-engine-refactor.md §44), part of the Priority
+// Trigger placement (CR 603.3b), part of the Priority
 // Checkpoint. The waiting triggers become the current batch; triggers that
 // happen while it is placed wait for the next one. CR 603.3b places a batch
 // in two parts, each in APNAP order: first the triggers whose condition isn't

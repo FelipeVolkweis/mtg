@@ -69,7 +69,7 @@ function parseTypes(line: string) {
 
 const supportedLayouts = new Set<string>(cardForms);
 const singleFaceLayouts = new Set(["normal", "saga"]);
-/** The `imported` section of a definition file (card-model-refactor.md §3.2). */
+/** The `imported` section of a definition file (docs/card-model.md). */
 function importedSection(
   card: SourceCard,
   defaultPrintingId: string,

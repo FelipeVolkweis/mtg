@@ -18,7 +18,7 @@ import {
   type SupportCheck,
 } from "../support-check.js";
 
-// Cost Handlers (rules-engine-refactor.md §36): one per Core cost kind. Each
+// Cost Handlers (CR 601.2h): one per Core cost kind. Each
 // validates its own component and returns data; the Cost Runtime checks the
 // components against each other and commits them together. Each also
 // declares which of its forms the catalog may use (`support`).

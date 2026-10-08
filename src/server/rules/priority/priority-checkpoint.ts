@@ -7,12 +7,12 @@ import { PutTriggeredAbilityOnStackProcedure } from "../triggers/put-triggered-a
 import { TriggerPlacement } from "../triggers/trigger-placement.js";
 import { StateTriggerObserver } from "../triggers/trigger-runtime.js";
 
-// Priority Checkpoint (rules-engine-refactor.md §11). Whenever a player would
+// Priority Checkpoint (CR 117.5). Whenever a player would
 // receive Priority, state-based actions are checked until none applies, then
 // waiting triggers are put on the Stack, and both repeat until the game is
 // stable; only then is Priority granted (CR 117.5). A choice suspends the
 // checkpoint with its progress in `rules.checkpoint`, so a restored Match
-// resumes the same checkpoint and never grants Priority midway (§47).
+// resumes the same checkpoint and never grants Priority midway.
 
 export type PriorityGrant =
   /** Priority for a player (the active player by default), keeping passes. */
@@ -71,7 +71,7 @@ export class PriorityCheckpoint {
     delete rules.checkpoint;
   }
 
-  /** Answers a state-based choice and resumes (§47). */
+  /** Answers a state-based choice and resumes. */
   answerStateBased(input: RulesInput) {
     const performed = new StateBasedRuntime(this.engine).answer(input);
     const cleanup = this.engine.rules.checkpoint?.cleanup;

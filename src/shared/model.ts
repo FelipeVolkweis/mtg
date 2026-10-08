@@ -22,7 +22,7 @@ export const id = z.uuid();
 export const integer = z.string().regex(/^-?\d+$/, "Use an integer");
 /**
  * A Card Definition as the engine uses it. The file stores only the imported
- * facts and the authored abilities (card-model-refactor.md §3); the reader
+ * facts and the authored abilities (docs/card-model.md); the reader
  * derives the name, mana value, keywords, Oracle text and type lines, and
  * compiles the authored abilities into the Core `abilities` the engine runs.
  */
@@ -209,7 +209,7 @@ export interface ObjectView extends Partial<GameObject> {
 }
 /**
  * What a pending procedure asks of its player: a stable kind, not internal
- * stage names (rules-engine-refactor.md §57).
+ * stage names (docs/rules-engine.md).
  */
 export type PromptKind =
   | "choose-x"

@@ -9,7 +9,7 @@ import {
 } from "./rules/players.js";
 import type { StateBasedRule } from "./types.js";
 
-// State-Based Rule registry (rules-engine-refactor.md §46). Changes from one
+// State-Based Rule registry (CR 704.3). Changes from one
 // check are performed in this order, as one simultaneous event.
 
 const rules: StateBasedRule[] = [

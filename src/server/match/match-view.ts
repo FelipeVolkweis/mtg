@@ -165,7 +165,7 @@ const noCatalog: Catalog = {
 };
 
 /**
- * The responsible player's prompt (rules-engine-refactor.md §57): what is
+ * The responsible player's prompt (docs/rules-engine.md): what is
  * asked and its options, never the authored ability, internal stage names
  * or the proposal's rollback snapshot.
  */
