@@ -10,6 +10,7 @@ import { netStatCounters } from "./counters.js";
 import type { RulesQuery } from "../rules/context.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { RuleViolation } from "../rules/rule-violation.js";
+import { zoneById, zoneOf } from "./zones.js";
 
 /**
  * A read-only rules context over a Match without an engine. `effective` is
@@ -31,9 +32,7 @@ export function queryOver(
       return object;
     },
     zone(kind, playerId) {
-      const zone = match.zones.find(
-        (z) => z.kind === kind && (!playerId || z.ownerId === playerId),
-      );
+      const zone = zoneOf(match, kind, playerId);
       if (!zone) throw new Error("Zone not found.");
       return zone;
     },
@@ -51,10 +50,22 @@ export function queryOver(
 
 const base = (object: GameObject) => object.characteristics;
 
+/**
+ * The layer system (CR 613): an object's effective characteristics from its
+ * base characteristics and the continuous effects in force.
+ *
+ * A `cached` calculator computes the effects in force and each object's
+ * effective characteristics once, so it must only live while the Match
+ * can't change: `RulesEngine.reading` makes one per read pass and drops it
+ * when the pass ends or the Match changes.
+ */
 export class CharacteristicsCalculator {
+  private activeEffects?: ActiveContinuousEffect[];
+  private readonly results = new Map<string, Characteristics>();
   constructor(
     readonly match: MatchState,
     readonly catalog: Catalog,
+    readonly cached = false,
   ) {}
   /** A Core value over base characteristics (inside the layer system). */
   value(
@@ -82,8 +93,7 @@ export class CharacteristicsCalculator {
     if (selector === "source")
       return (
         object.id === effect.sourceId &&
-        this.match.zones.find((z) => z.id === object.zoneId)?.kind ===
-          "battlefield"
+        zoneById(this.match, object.zoneId)?.kind === "battlefield"
       );
     const evaluator = new Evaluator(
       queryOver(this.match, this.catalog, (o) =>
@@ -95,7 +105,13 @@ export class CharacteristicsCalculator {
       ? evaluator.matches(object, selector.all)
       : evaluator.objects(selector).includes(object.id);
   }
+  /** The continuous effects in force. */
   active(): ActiveContinuousEffect[] {
+    if (!this.cached) return this.inForce();
+    this.activeEffects ??= this.inForce();
+    return [...this.activeEffects];
+  }
+  private inForce(): ActiveContinuousEffect[] {
     return [
       ...(this.match.rules.temporaryEffects ?? []).filter(
         (effect) => !!this.match.objects[effect.sourceId],
@@ -110,8 +126,7 @@ export class CharacteristicsCalculator {
           if (!effect) return [];
           if (
             !effect.characteristicDefining &&
-            this.match.zones.find((z) => z.id === source.zoneId)?.kind !==
-              "battlefield"
+            zoneById(this.match, source.zoneId)?.kind !== "battlefield"
           )
             return [];
           if (
@@ -138,9 +153,12 @@ export class CharacteristicsCalculator {
       }),
     ];
   }
-  typeCharacteristics(object: GameObject): Characteristics {
+  typeCharacteristics(
+    object: GameObject,
+    active = this.active(),
+  ): Characteristics {
     const result = structuredClone(object.characteristics);
-    for (const effect of this.active())
+    for (const effect of active)
       if (this.applies(effect, object, result))
         for (const change of effect.changes)
           if (change.kind === "add-types") {
@@ -157,7 +175,18 @@ export class CharacteristicsCalculator {
     return result;
   }
   effective(object: GameObject): Characteristics {
-    const result = this.typeCharacteristics(object);
+    if (!this.cached) return this.compute(object);
+    let result = this.results.get(object.id);
+    if (!result) {
+      result = this.compute(object);
+      this.results.set(object.id, result);
+    }
+    // Callers may change what they get; the kept result stays as computed.
+    return structuredClone(result);
+  }
+  private compute(object: GameObject): Characteristics {
+    const active = this.active();
+    const result = this.typeCharacteristics(object, active);
     const definition =
       this.catalog.definitions[
         this.match.instances[object.cardInstanceIds[0]]?.definitionId
@@ -167,7 +196,7 @@ export class CharacteristicsCalculator {
       if (keyword)
         result.keywords = [...new Set([...(result.keywords ?? []), keyword])];
     }
-    const changes = this.active().flatMap((effect) => {
+    const changes = active.flatMap((effect) => {
       const applies =
         effect.applicability === "characteristic-defining"
           ? effect.sourceId === object.id
@@ -213,8 +242,7 @@ export class CharacteristicsCalculator {
             card &&
             card.kind === "card" &&
             card.characteristics.types?.includes("Creature") &&
-            this.match.zones.find((z) => z.id === card.zoneId)?.kind ===
-              "exile",
+            zoneById(this.match, card.zoneId)?.kind === "exile",
         )
         .at(-1);
       if (!linked) continue;

@@ -12,6 +12,7 @@ import type {
 import type { RulesQuery } from "../context.js";
 import { counterCount } from "../../match/counters.js";
 import { lifeValue } from "../../match/life.js";
+import { zoneById, zoneOf } from "../../match/zones.js";
 
 // Evaluates Core AST selectors, predicates, values, player references and
 // conditions (dsl-redesign.md §4.2-4.4) against the current Match.
@@ -166,7 +167,7 @@ export class Evaluator {
 
   private fields(object: GameObject, p: PredicateFields): boolean {
     const match = this.match;
-    const zone = match.zones.find((z) => z.id === object.zoneId)!;
+    const zone = zoneById(match, object.zoneId)!;
     // A private Zone's objects are known only to its owner.
     if (zone.visibility === "private" && zone.ownerId !== this.scope.playerId)
       return false;
@@ -308,9 +309,12 @@ export class Evaluator {
     }
     if ("cardsIn" in value) {
       const [playerId] = this.players(value.cardsIn.player);
-      const zone = match.zones.find(
-        (z) => z.kind === value.cardsIn.zone && z.ownerId === playerId,
-      );
+      // The player's own Zone of that kind; a shared Zone counts what they control.
+      const zone = playerId
+        ? zoneOf(match, value.cardsIn.zone, playerId)
+        : match.zones.find(
+            (z) => z.kind === value.cardsIn.zone && z.ownerId === playerId,
+          );
       if (zone) return zone.objectIds.length;
       return Object.values(match.objects).filter(
         (o) =>

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { Catalog, Participant } from "../../shared/model.js";
 import type {
+  ActiveContinuousEffect,
   GameObject,
   ManaPool,
   MatchAction,
@@ -46,7 +47,7 @@ import { Evaluator } from "../rules/vm/evaluate.js";
 import { scopeBindings } from "../rules/vm/rule-vm.js";
 import { gameObject } from "./game-objects.js";
 import { manaCost } from "./mana.js";
-import { Library } from "./zones.js";
+import { Library, zoneOf } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { Combat } from "./combat.js";
 import { mainTiming, TurnStructure } from "./turn-structure.js";
@@ -80,10 +81,45 @@ export const emptyMana = (): ManaPool => ({
 });
 
 export class RulesEngine implements RulesMutator {
+  /** The current read pass's characteristics, computed once per object. */
+  private snapshot?: CharacteristicsCalculator;
   constructor(
     readonly match: MatchState,
     readonly catalog: Catalog,
   ) {}
+  /**
+   * Runs a read pass: while it runs the Match doesn't change, so each
+   * object's effective characteristics are computed once. Every change
+   * happens outside a read pass; a proposed event or a continuous-effect
+   * change during one still drops what was computed.
+   */
+  reading<T>(read: () => T): T {
+    if (this.snapshot) return read();
+    this.snapshot = new CharacteristicsCalculator(
+      this.match,
+      this.catalog,
+      true,
+    );
+    try {
+      return read();
+    } finally {
+      this.snapshot = undefined;
+    }
+  }
+  /** The Match changed: a read pass in progress computes afresh. */
+  private changed() {
+    if (this.snapshot)
+      this.snapshot = new CharacteristicsCalculator(
+        this.match,
+        this.catalog,
+        true,
+      );
+  }
+  private characteristics() {
+    return (
+      this.snapshot ?? new CharacteristicsCalculator(this.match, this.catalog)
+    );
+  }
   /** The rules state; a rolled-back proposal replaces it, so it's read live. */
   get rules() {
     return this.match.rules;
@@ -106,12 +142,30 @@ export class RulesEngine implements RulesMutator {
     };
   }
   propose(event: ProposedEvent): EventResult {
-    return new EventRuntime(this).propose(event);
+    this.changed();
+    try {
+      return new EventRuntime(this).propose(event);
+    } finally {
+      this.changed();
+    }
+  }
+  /** An until-end-of-turn continuous effect starts (CR 611.2). */
+  addTemporaryEffect(effect: ActiveContinuousEffect) {
+    this.rules.temporaryEffects ??= [];
+    this.rules.temporaryEffects.push(effect);
+    this.changed();
+  }
+  /** Until-end-of-turn effects end in the cleanup step (CR 514.2). */
+  endTemporaryEffects() {
+    this.rules.temporaryEffects = [];
+    this.changed();
+  }
+  /** The continuous effects in force. */
+  continuousEffects() {
+    return this.characteristics().active();
   }
   zone(kind: ZoneKind, playerId?: string) {
-    const zone = this.match.zones.find(
-      (z) => z.kind === kind && (!playerId || z.ownerId === playerId),
-    );
+    const zone = zoneOf(this.match, kind, playerId);
     if (!zone) throw new Error("Zone not found.");
     return zone;
   }
@@ -347,9 +401,7 @@ export class RulesEngine implements RulesMutator {
     return execution ? scopeBindings(execution).bindings : undefined;
   }
   effective(object: GameObject) {
-    return new CharacteristicsCalculator(this.match, this.catalog).effective(
-      object,
-    );
+    return this.characteristics().effective(object);
   }
   value(
     value: Value,
@@ -429,13 +481,15 @@ export class RulesEngine implements RulesMutator {
     sourceId?: string,
     selfId?: string,
   ) {
-    return Object.values(this.match.objects)
-      .filter(
-        (object) =>
-          object.id !== selfId &&
-          this.targetEligible(object, filter, playerId, sourceId),
-      )
-      .map((object) => object.id);
+    return this.reading(() =>
+      Object.values(this.match.objects)
+        .filter(
+          (object) =>
+            object.id !== selfId &&
+            this.targetEligible(object, filter, playerId, sourceId),
+        )
+        .map((object) => object.id),
+    );
   }
   abilities(object: GameObject) {
     const abilities = (this.definition(object)?.abilities ?? []).filter(

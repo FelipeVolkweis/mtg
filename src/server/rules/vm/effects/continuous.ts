@@ -26,8 +26,7 @@ function apply(
   for (const id of ctx.eval.objects(objects)) {
     const object = query.match.objects[id];
     if (object?.zoneId !== battlefield) continue;
-    ctx.rules.temporaryEffects ??= [];
-    ctx.rules.temporaryEffects.push({
+    ctx.addTemporaryEffect({
       sourceId: object.id,
       abilityId: stack?.sourceAbilityId ?? "animation",
       playerId: ctx.playerId,

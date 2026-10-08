@@ -22,6 +22,8 @@ export interface TurnContext extends RulesMutator {
   /** A player would receive Priority. */
   checkpoint(grant?: PriorityGrant): void;
   draw(playerId: string, count: number): void;
+  /** Until-end-of-turn effects end (CR 514.2). */
+  endTemporaryEffects(): void;
   battlefieldSources(): GameObject[];
   maximumHandSize(playerId: string): number;
   monarchTrigger(playerId: string, effects: Effect[], abilityId: string): void;
@@ -161,7 +163,7 @@ export class TurnStructure {
     }
     // CR 514: after discarding, damage and end-of-turn changes end together.
     this.rules.markedDamage = {};
-    this.rules.temporaryEffects = [];
+    ctx.endTemporaryEffects();
     ctx.checkpoint({ cleanup: true });
   }
 

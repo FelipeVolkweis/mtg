@@ -7,6 +7,7 @@ import type {
 import { moveObject } from "../../match/game-objects.js";
 import { removeCountersDownToZero } from "../../match/counters.js";
 import { changeLife } from "../../match/life.js";
+import { zoneById } from "../../match/zones.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import { EventTriggerObserver } from "../triggers/trigger-runtime.js";
@@ -75,7 +76,7 @@ export class EventRuntime {
   ): EventResult {
     const engine = this.engine;
     const object = engine.object(id);
-    const from = engine.match.zones.find((z) => z.id === object.zoneId)!;
+    const from = zoneById(engine.match, object.zoneId)!;
     // Moving within a Zone reorders it; it isn't a zone change (CR 400.7).
     const index = position === "top" ? 0 : undefined;
     if (from.id === to.id) {
@@ -177,7 +178,7 @@ export class EventRuntime {
     const match = this.engine.match;
     const object = match.objects[id];
     if (!object) return;
-    const zone = match.zones.find((z) => z.id === object.zoneId)!;
+    const zone = zoneById(match, object.zoneId)!;
     zone.objectIds.splice(zone.objectIds.indexOf(id), 1);
     delete match.objects[id];
   }

@@ -1,4 +1,5 @@
 import type {
+  ActiveContinuousEffect,
   JsonValue,
   ManaPool,
   MatchAction,
@@ -46,6 +47,8 @@ export interface EffectContext extends RulesMutator {
   readonly eval: Evaluator;
   /** An evaluator with extra bindings, e.g. `for-each-player`'s player. */
   scoped(extra: Partial<Scope>): Evaluator;
+  /** An until-end-of-turn continuous effect starts (CR 611.2). */
+  addTemporaryEffect(effect: ActiveContinuousEffect): void;
   /** Names an instruction's result: a number or an object set. */
   bind(name: string, value: number | string[]): void;
   prompt(
