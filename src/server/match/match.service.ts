@@ -7,7 +7,6 @@ import type {
   MatchAction,
   MatchState,
 } from "../../shared/rules-state.js";
-import { phaseSteps } from "../../shared/model.js";
 import { Library, zoneFor } from "./zones.js";
 import { validateCommanderDeck } from "./commander.js";
 
@@ -67,7 +66,7 @@ export class MatchService implements GameplayExecutor {
       instances: {},
       objects: {},
       zones: [],
-      turn: { activePlayerId: "", number: 1, stepIndex: 0, order: [] },
+      turn: { activePlayerId: "", number: 1, step: "untap", order: [] },
       outcome: "ongoing",
     };
     const addZone = (kind: ZoneKind, name: string, ownerId?: string) => {

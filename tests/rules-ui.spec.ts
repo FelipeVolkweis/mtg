@@ -963,8 +963,8 @@ test("solo full mono-U practice resumes, delegates opponent choices and replaces
       .getByRole("button", { name: "Pass Priority", exact: true })
       .click();
     await expect
-      .poll(async () => (await snapshot(alice)).match!.turn.stepIndex)
-      .toBe(2);
+      .poll(async () => (await snapshot(alice)).match!.turn.step)
+      .toBe("draw");
     await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await alice
       .getByRole("button", { name: "Start solo practice", exact: true })

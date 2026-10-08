@@ -83,13 +83,13 @@ test("opening choices and explicit Priority passes perform the first turn draw a
   expect(command(1, { type: "keep-hand", bottomIds: [] }).kind).toBe(
     "accepted",
   );
-  expect(match.turn.stepIndex).toBe(1);
+  expect(match.turn.step).toBe("upkeep");
   expect(match.priority?.playerId).toBe(match.players[0].id);
   expect(command(1, { type: "pass-priority" }).kind).toBe("rejected");
   expect(command(0, { type: "pass-priority" }).kind).toBe("accepted");
-  expect(match.turn.stepIndex).toBe(1);
+  expect(match.turn.step).toBe("upkeep");
   expect(command(1, { type: "pass-priority" }).kind).toBe("accepted");
-  expect(match.turn.stepIndex).toBe(2);
+  expect(match.turn.step).toBe("draw");
   expect(
     matchView(match, room.participants[0].id).zones.find(
       (z) => z.kind === "hand" && z.ownerId === match.players[0].id,
@@ -326,6 +326,8 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
   const { resolve } = await import("node:path");
   const { RulesEngine } =
     await import("../../../src/server/match/rules-engine");
+  const { legalActions } =
+    await import("../../../src/server/match/action-listing");
   const released = await readCatalog(resolve("catalog"));
   const implemented = Object.values(released.definitions).filter(
     (card) => card.automationStatus === "implemented",
@@ -385,7 +387,7 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
     const object = force.card(match, definition, "battlefield", player.id);
     objects.set(name, object.id);
   }
-  const actions = new RulesEngine(match, catalog).actions(player.id);
+  const actions = legalActions(new RulesEngine(match, catalog), player.id);
   const forCard = (name: string) =>
     actions.filter(
       ({ action }) =>

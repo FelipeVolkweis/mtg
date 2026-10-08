@@ -114,7 +114,7 @@ test("solo Commander practice has an inert opponent, automatic passes and privat
   expect(match.priority!.playerId).toBe(match.players[0].id);
   expect(act({ type: "pass-priority" }).kind).toBe("accepted");
   expect(match.priority!.playerId).toBe(match.players[0].id);
-  expect(match.turn.stepIndex).toBe(2);
+  expect(match.turn.step).toBe("draw");
   const spectator = matchView(match, randomUUID(), catalog);
   expect(spectator.actions).toEqual([]);
   expect(
@@ -493,7 +493,7 @@ for (const returnToCommand of [true, false])
     expect(g.answer({ discard: [discarded.id] }).kind).toBe("pending");
     expect(g.view().rules!.prompt!.promptKind).toBe("commander-return");
     expect(g.match.turn.number).toBe(1);
-    expect(g.match.turn.stepIndex).toBe(11);
+    expect(g.match.turn.step).toBe("cleanup");
     expect(g.view().objects[stone.id].status.tapped).toBe(true);
     const recovered: MatchState = JSON.parse(JSON.stringify(g.match));
     expect(

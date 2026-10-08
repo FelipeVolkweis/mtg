@@ -26,7 +26,7 @@ test("turn transitions expire mana, untap only the active player's permanents an
     );
     expect(command(seat, { type: "pass-priority" }).kind).not.toBe("rejected");
   }
-  expect(match.turn.stepIndex).toBe(11);
+  expect(match.turn.step).toBe("cleanup");
   expect(match.priority).toBeUndefined();
   expect(match.rules!.mana[match.players[0].id].C).toBe(0);
   const hand = matchView(match, room.participants[0].id).zones.find(
@@ -41,7 +41,7 @@ test("turn transitions expire mana, untap only the active player's permanents an
     }).kind,
   ).toBe("accepted");
   expect(match.turn.number).toBe(2);
-  expect(match.turn.stepIndex).toBe(1);
+  expect(match.turn.step).toBe("upkeep");
   expect(match.objects[land.id].status.tapped).toBe(true);
   command(1, { type: "pass-priority" });
   command(0, { type: "pass-priority" });
@@ -95,7 +95,7 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
     game.command(1, { type: "pass-priority" });
   };
   pass();
-  expect(view().turn.stepIndex).toBe(11);
+  expect(view().turn.step).toBe("cleanup");
   expect(view().turn.number).toBe(1);
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
   pass(); // Resolve the death draw during cleanup.

@@ -35,9 +35,11 @@ export class RoomService implements OnModuleInit {
       throw new Error("ROOM_EXPIRY_DAYS must be positive");
   }
   async onModuleInit() {
-    // Rooms from before ADR-0019 seat guests who have no User to sign in as.
+    // Older Rooms are not upgraded (room-upgrade.ts); those from before
+    // ADR-0019 also seat guests who have no User to sign in as.
     await this.database.pool.query(
-      `DELETE FROM rooms WHERE COALESCE((document->>'snapshotVersion')::int, 1) < 7`,
+      `DELETE FROM rooms WHERE COALESCE((document->>'snapshotVersion')::int, 1) < $1`,
+      [currentSnapshotVersion],
     );
     // A server restart disconnects all players; earlier consent cannot authorize a replacement after recovery.
     await this.database.pool.query(

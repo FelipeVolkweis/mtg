@@ -1,5 +1,10 @@
 import { z } from "zod";
-import type { Ability, CardForm, Characteristics } from "./card-dsl.js";
+import type {
+  Ability,
+  CardForm,
+  Characteristics,
+  TurnStep,
+} from "./card-dsl.js";
 import {
   type Counter,
   type DamageChoice,
@@ -138,20 +143,30 @@ export interface Participant {
   deck?: Decklist;
   ready: boolean;
 }
-export const phaseSteps = [
-  ["Beginning", "Untap"],
-  ["Beginning", "Upkeep"],
-  ["Beginning", "Draw"],
-  ["Precombat main", "Main"],
-  ["Combat", "Beginning of combat"],
-  ["Combat", "Declare attackers"],
-  ["Combat", "Declare blockers"],
-  ["Combat", "Combat damage"],
-  ["Combat", "End of combat"],
-  ["Postcombat main", "Main"],
-  ["Ending", "End"],
-  ["Ending", "Cleanup"],
+/** The phases of a turn in order (CR 500.1). */
+export const turnPhases = [
+  "Beginning",
+  "Precombat main",
+  "Combat",
+  "Postcombat main",
+  "Ending",
 ] as const;
+export type TurnPhase = (typeof turnPhases)[number];
+/** Each of `turnSteps`' phase and display name. */
+export const phaseSteps: Record<TurnStep, readonly [TurnPhase, string]> = {
+  untap: ["Beginning", "Untap"],
+  upkeep: ["Beginning", "Upkeep"],
+  draw: ["Beginning", "Draw"],
+  "precombat-main": ["Precombat main", "Main"],
+  "begin-combat": ["Combat", "Beginning of combat"],
+  "declare-attackers": ["Combat", "Declare attackers"],
+  "declare-blockers": ["Combat", "Declare blockers"],
+  "combat-damage": ["Combat", "Combat damage"],
+  "end-combat": ["Combat", "End of combat"],
+  "postcombat-main": ["Postcombat main", "Main"],
+  end: ["Ending", "End"],
+  cleanup: ["Ending", "Cleanup"],
+};
 export interface RematchProposal {
   id: string;
   startingLife: string;

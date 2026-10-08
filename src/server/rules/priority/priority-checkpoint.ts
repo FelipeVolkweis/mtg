@@ -54,7 +54,7 @@ export class PriorityCheckpoint {
       if (state.cleanup) {
         if (!state.cleanup.performed && !rules.waitingTriggers?.length) {
           delete rules.checkpoint;
-          engine.nextTurn();
+          engine.turn.next();
           return;
         }
         rules.checkpoint = {};

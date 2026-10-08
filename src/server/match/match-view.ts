@@ -7,6 +7,7 @@ import type {
 import type { MatchState, PendingProcedure } from "../../shared/rules-state.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
+import { legalActions } from "./action-listing.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
 import { zoneFor } from "./zones.js";
@@ -135,7 +136,8 @@ export function matchView(
               ? prompt(match, pending, catalog)
               : undefined,
         },
-        actions: engine && playerId ? engine.actions(choicePlayerId!) : [],
+        actions:
+          engine && playerId ? legalActions(engine, choicePlayerId!) : [],
       };
     })(),
     players: match.players.map((player) => ({
