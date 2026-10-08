@@ -5,7 +5,7 @@ import {
 import { readRegistries } from "../../src/server/rules/registries";
 import { checkSupport } from "../../src/server/rules/support";
 import type { CardDefinition } from "../../src/shared/model";
-import type { Ability } from "../../src/shared/rules-v2";
+import type { Ability } from "../../src/shared/card-dsl";
 
 // Inline test cards are authored in DSL version 2 and load the way catalog
 // files do: the compiler, then the runtime support check (dsl-redesign.md

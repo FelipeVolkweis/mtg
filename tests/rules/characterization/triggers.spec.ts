@@ -21,9 +21,9 @@
 // | Ward generated during trigger targeting follows the complete original placement batch across … (parameterized) | Move | reads internal runtime fields (TP §8)
 
 import { expect, test } from "@playwright/test";
-import type { ActivatedAbility } from "../../../src/shared/rules-v2";
+import type { ActivatedAbility } from "../../../src/shared/card-dsl";
 import { matchView } from "../../../src/server/match/match-view";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
@@ -80,7 +80,7 @@ test("artifact cast triggers keep their chosen Stack order across reconnects and
   );
   const send = (
     seat: number,
-    action: import("../../../src/shared/model").MatchAction,
+    action: import("../../../src/shared/rules-state").MatchAction,
   ) => service.execute(recovered, room.participants[seat], action, catalog);
   expect(
     send(0, {
@@ -763,7 +763,7 @@ for (const legacySnapshot of [false, true])
     }
     const command = (
       seat: number,
-      action: import("../../../src/shared/model").MatchAction,
+      action: import("../../../src/shared/rules-state").MatchAction,
     ) =>
       g.service.execute(
         recovered,

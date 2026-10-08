@@ -18,7 +18,7 @@ import {
   staticGrantSchema,
   triggerSchema,
   valueSchema,
-} from "../../../src/shared/rules-v2";
+} from "../../../src/shared/card-dsl";
 
 // One valid sample per union branch of each authored AST family (DSL §4).
 const valid: [string, z.ZodType, unknown[]][] = [
@@ -526,7 +526,7 @@ test("every ability kind parses", () => {
 
 test("the effect samples cover every effect kind", () => {
   const kinds = new Set(effects.map((e) => (e as { kind: string }).kind));
-  // Keep in step with the Effect type in src/shared/rules-v2.ts.
+  // Keep in step with the Effect type in src/shared/card-dsl.ts.
   expect([...kinds].sort()).toEqual(
     [
       "move",

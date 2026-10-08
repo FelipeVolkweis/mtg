@@ -226,7 +226,7 @@ test("commander return: a commander in a Graveyard is a choice; answering resume
   const pending = game.match.rules!.pending!;
   expect(pending.stateBasedRule).toBe("commander-return");
   // Restore, then answer: the checkpoint resumes and grants Priority.
-  const restored = JSON.parse(JSON.stringify(game.match));
+  const restored = JSON.parse(JSON.stringify(game.match)) as typeof game.match;
   force.rules(restored, { checkpoint: { playerId: game.player(1) } });
   expect(
     game.service.execute(
@@ -239,8 +239,7 @@ test("commander return: a commander in a Graveyard is a choice; answering resume
   expect(restored.rules.commanderReturns).toBeUndefined();
   expect(restored.objects[commander.id]).toBeUndefined();
   expect(
-    restored.zones.find((z: { kind: string }) => z.kind === "command")
-      .objectIds,
+    restored.zones.find((z) => z.kind === "command")!.objectIds,
   ).toHaveLength(game.ids("command").length + 1);
   expect(restored.priority).toEqual({
     playerId: game.player(1),

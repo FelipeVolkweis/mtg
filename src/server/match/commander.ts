@@ -3,7 +3,7 @@ import type {
   Catalog,
   Participant,
 } from "../../shared/model.js";
-import type { Effect } from "../../shared/rules-v2.js";
+import type { Effect } from "../../shared/card-dsl.js";
 import {
   activationZone,
   costModifiers,

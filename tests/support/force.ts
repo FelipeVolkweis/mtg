@@ -1,13 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { gameObject } from "../../src/server/match/game-objects";
+import type { CardDefinition } from "../../src/shared/model";
 import type {
-  CardDefinition,
   Counter,
   GameObject,
+  ManaPool,
   MatchState,
-  ZoneKind,
-} from "../../src/shared/model";
-import type { ManaPool, RulesState } from "../../src/shared/rules";
+  RulesState,
+} from "../../src/shared/rules-state";
+import type { ZoneKind } from "../../src/shared/card-dsl";
 
 // Force helpers set up states that would be tedious or impossible to reach
 // through Match commands (rules test plan §16). The name says it: they bypass

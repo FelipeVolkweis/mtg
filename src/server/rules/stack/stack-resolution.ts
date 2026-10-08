@@ -1,4 +1,4 @@
-import type { GameObject, MatchAction } from "../../../shared/model.js";
+import type { GameObject, MatchAction } from "../../../shared/rules-state.js";
 import { Resolution } from "../../match/resolution.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import {

@@ -3,7 +3,7 @@ import type {
   Choice,
   Selector,
   ZoneKind,
-} from "../../../../shared/rules-v2.js";
+} from "../../../../shared/card-dsl.js";
 import { ownedZones, selection } from "./selection.js";
 import {
   done,

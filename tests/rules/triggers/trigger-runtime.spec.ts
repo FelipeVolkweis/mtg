@@ -6,8 +6,8 @@ import {
   eventMatches,
   StateTriggerObserver,
 } from "../../../src/server/rules/triggers/trigger-runtime";
-import type { SemanticEvent } from "../../../src/shared/rules";
-import type { Trigger } from "../../../src/shared/rules-v2";
+import type { SemanticEvent } from "../../../src/shared/rules-state";
+import type { Trigger } from "../../../src/shared/card-dsl";
 import { author } from "../../support/authored";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";

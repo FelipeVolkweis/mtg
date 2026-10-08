@@ -2,7 +2,8 @@ import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { readCatalog } from "../../src/server/catalog/catalog-files";
 import { gameObject } from "../../src/server/match/game-objects";
-import type { RoomState, ZoneKind } from "../../src/shared/model";
+import type { RoomState } from "../../src/shared/model";
+import type { ZoneKind } from "../../src/shared/card-dsl";
 
 // Initial scenario construction is test-only. Assertions and every subsequent
 // action use the public player command/view protocol; no fixture command exists.

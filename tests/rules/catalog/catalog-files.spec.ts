@@ -17,7 +17,7 @@ import {
 import { CatalogService } from "../../../src/server/catalog/catalog.service";
 import type { ScryfallSource } from "../../../src/server/catalog/scryfall-source";
 import { readRegistries } from "../../../src/server/rules/registries";
-import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
+import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 import { initializeTestCatalog } from "../../support/empty-catalog";
 
 // The version 2 catalog (card-model-refactor.md §3, §6; dsl-redesign.md §9):
@@ -31,7 +31,10 @@ const fileNamed = async (prefix: string) =>
     definitions,
     (await readdir(definitions)).find((f) => f.startsWith(prefix))!,
   );
-const json = async (path: string) => JSON.parse(await readFile(path, "utf8"));
+// Untyped JSON: the tests below read catalog files field by field.
+const json = async (path: string) =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  JSON.parse(await readFile(path, "utf8"));
 
 async function tempCatalog() {
   const parent = await mkdtemp(join(tmpdir(), "mtg-catalog-"));

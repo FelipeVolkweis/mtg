@@ -23,7 +23,7 @@
 
 import { expect, test } from "@playwright/test";
 import { effectsOf } from "../../../src/server/rules/abilities";
-import type { ActivatedAbility } from "../../../src/shared/rules-v2";
+import type { ActivatedAbility } from "../../../src/shared/card-dsl";
 import { randomUUID } from "node:crypto";
 import { matchView } from "../../../src/server/match/match-view";
 import { gameObject } from "../../../src/server/match/game-objects";

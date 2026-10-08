@@ -21,7 +21,7 @@
 // | {name} composes artifact affinity, flying and its distinct resolved characteristics (parameterized) | Preserve |
 
 import { expect, test } from "@playwright/test";
-import type { ActivatedAbility } from "../../../src/shared/rules-v2";
+import type { ActivatedAbility } from "../../../src/shared/card-dsl";
 import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";

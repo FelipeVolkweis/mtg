@@ -1,4 +1,5 @@
-import { manaTypes, type ManaPool, type ManaType } from "../../shared/rules.js";
+import { type ManaType, manaTypes } from "../../shared/card-dsl.js";
+import type { ManaPool } from "../../shared/rules-state.js";
 import { emptyMana } from "./rules-engine.js";
 
 export type ManaCost = ManaPool & { generic: number };

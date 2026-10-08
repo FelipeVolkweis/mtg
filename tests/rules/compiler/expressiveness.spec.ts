@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readdirSync, readFileSync } from "node:fs";
 import { compileCard } from "../../../src/server/rules/compiler";
 import { readRegistries } from "../../../src/server/rules/registries";
-import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
+import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 
 // The expressiveness gate (dsl-redesign.md §8, rules-test-plan.md §17): every
 // card of the fixed test set is written in version 2 and compiles. The strict

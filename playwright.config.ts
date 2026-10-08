@@ -19,6 +19,9 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120_000,
     env: {
+      // Every test signs in from 127.0.0.1; the default 20 per minute is
+      // meant for real clients.
+      AUTH_RATE_LIMIT: "100000",
       DATABASE_URL:
         process.env.TEST_DATABASE_URL ??
         "postgres://mtg:mtg-local@127.0.0.1:5432/mtg_test",

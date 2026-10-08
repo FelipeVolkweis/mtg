@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
+import type { Characteristics } from "../../shared/card-dsl.js";
 import type {
-  Characteristics,
   GameObject,
   MatchState,
   ZoneState,
-} from "../../shared/model.js";
+} from "../../shared/rules-state.js";
 export function gameObject(
   kind: GameObject["kind"],
   zoneId: string,

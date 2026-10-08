@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { CatalogService } from "../../src/server/catalog/catalog.service.js";
 import type { ScryfallSource } from "../../src/server/catalog/scryfall-source.js";
 
-test("imports a single-faced Saga with its chapter text", async (t) => {
+void test("imports a single-faced Saga with its chapter text", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "mtg-saga-import-"));
   const previousRoot = process.env.CATALOG_ROOT;
   t.after(async () => {

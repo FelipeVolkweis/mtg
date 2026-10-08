@@ -111,9 +111,8 @@ test("a pending activated procedure resumes without sacrificing twice", async ()
     }).kind,
   ).toBe("pending");
   const id = match.rules!.pending!.id;
-  const recovered: import("../../../src/shared/model").MatchState = JSON.parse(
-    JSON.stringify(match),
-  );
+  const recovered: import("../../../src/shared/rules-state").MatchState =
+    JSON.parse(JSON.stringify(match));
   force.mana(recovered, recovered.players[0].id, { C: 2 });
   expect(
     service.execute(

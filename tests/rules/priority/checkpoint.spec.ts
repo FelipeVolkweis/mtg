@@ -4,7 +4,7 @@ import { RulesEngine } from "../../../src/server/match/rules-engine";
 import { registerStateBasedRule } from "../../../src/server/rules/state-based/registry";
 import { stateBasedRules } from "../../../src/server/rules/state-based/registry";
 import type { StateBasedRule } from "../../../src/server/rules/state-based/types";
-import type { GameObject, MatchState } from "../../../src/shared/model";
+import type { GameObject, MatchState } from "../../../src/shared/rules-state";
 import { author } from "../../support/authored";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";

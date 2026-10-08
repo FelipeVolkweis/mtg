@@ -9,7 +9,7 @@
 
 import { expect, test } from "@playwright/test";
 import { matchView } from "../../../src/server/match/match-view";
-import type { Selector } from "../../../src/shared/rules-v2";
+import type { Selector } from "../../../src/shared/card-dsl";
 import "../../support/round-trip";
 import { rulesGame } from "../../support/rules-game";
 import { force } from "../../support/force";

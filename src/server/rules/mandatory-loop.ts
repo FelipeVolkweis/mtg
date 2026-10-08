@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { MatchState } from "../../shared/model.js";
+import type { MatchState } from "../../shared/rules-state.js";
 
 // Mandatory loop detection (CR 104.4b). The engine is deterministic, so a
 // checkpoint or state-based check that comes back to a game state it already

@@ -1,4 +1,4 @@
-import type { PendingProcedure } from "../../../shared/rules.js";
+import type { PendingProcedure } from "../../../shared/rules-state.js";
 import { CharacteristicsCalculator } from "../../match/characteristics.js";
 import { Combat } from "../../match/combat.js";
 import type { RulesEngine } from "../../match/rules-engine.js";

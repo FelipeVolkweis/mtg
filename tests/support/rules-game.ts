@@ -4,12 +4,9 @@ import { readCatalog } from "../../src/server/catalog/catalog-files";
 import { force } from "./force";
 import { MatchService } from "../../src/server/match/match.service";
 import { matchView } from "../../src/server/match/match-view";
-import type {
-  Catalog,
-  MatchAction,
-  Participant,
-  RoomState,
-} from "../../src/shared/model";
+import { currentSnapshotVersion } from "../../src/server/room/room-upgrade";
+import type { Catalog, Participant, RoomState } from "../../src/shared/model";
+import type { MatchAction } from "../../src/shared/rules-state";
 
 // Shared Match fixtures for the rules suites (rules test plan §15-16).
 
@@ -28,7 +25,7 @@ export function emptyRoom(): RoomState {
     },
   };
   return {
-    snapshotVersion: 3,
+    snapshotVersion: currentSnapshotVersion,
     id: randomUUID(),
     invite: "",
     revision: 0,

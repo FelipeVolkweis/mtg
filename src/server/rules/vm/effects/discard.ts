@@ -1,5 +1,8 @@
-import type { JsonValue, SelectionOption } from "../../../../shared/rules.js";
-import type { Effect } from "../../../../shared/rules-v2.js";
+import type {
+  JsonValue,
+  SelectionOption,
+} from "../../../../shared/rules-state.js";
+import type { Effect } from "../../../../shared/card-dsl.js";
 import {
   done,
   type EffectContext,

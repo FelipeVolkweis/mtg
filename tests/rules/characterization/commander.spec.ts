@@ -21,7 +21,7 @@ import { randomUUID } from "node:crypto";
 import { MatchService } from "../../../src/server/match/match.service";
 import { matchView } from "../../../src/server/match/match-view";
 import { moveObject } from "../../../src/server/match/game-objects";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { commanderFixture, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
@@ -104,7 +104,7 @@ test("solo Commander practice has an inert opponent, automatic passes and privat
   room.participants.pop();
   const service = new MatchService();
   const match = service.createCommander(room, catalog, room.participants[0].id);
-  const act = (action: import("../../../src/shared/model").MatchAction) =>
+  const act = (action: import("../../../src/shared/rules-state").MatchAction) =>
     service.execute(match, room.participants[0], action, catalog);
   expect(match.players).toHaveLength(2);
   expect(room.participants).toHaveLength(1);

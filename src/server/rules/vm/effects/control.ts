@@ -1,5 +1,5 @@
-import type { JsonValue } from "../../../../shared/rules.js";
-import type { Effect } from "../../../../shared/rules-v2.js";
+import type { JsonValue } from "../../../../shared/rules-state.js";
+import type { Effect } from "../../../../shared/card-dsl.js";
 import { manaCost } from "../../../match/mana.js";
 import { payMana } from "../../costs/cost-runtime.js";
 import { unsupportedCondition } from "../evaluate.js";

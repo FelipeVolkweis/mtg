@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
-import { abilitySchema, componentSchema } from "../../shared/rules-v2.js";
+import { abilitySchema, componentSchema } from "../../shared/card-dsl.js";
 
 // Vocabularies the rules DSL references by name (dsl-redesign.md §4.11).
 

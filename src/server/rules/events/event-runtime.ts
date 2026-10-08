@@ -1,8 +1,9 @@
-import type { GameObject, ZoneState } from "../../../shared/model.js";
 import type {
   DamageAssignment,
+  GameObject,
   LastKnownInformation,
-} from "../../../shared/rules.js";
+  ZoneState,
+} from "../../../shared/rules-state.js";
 import { moveObject } from "../../match/game-objects.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";

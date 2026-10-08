@@ -142,7 +142,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 - **Issue:** #99
 - **Depends:** Q4
 - **Read:** `src/server/match/rules-engine.ts`; `turnSteps` in the card DSL; `phaseSteps` in `model.ts`; `RulesTabletop.tsx`
-- **Scope:** `rules-engine.ts`, `combat.ts`, `model.ts`, `room-upgrade.ts`, `match-view.ts`, the client's step readers
+- **Scope:** `rules-engine.ts`, `combat.ts`, `model.ts`, `rules-state.ts` (`MatchState.turn`), `room-upgrade.ts`, `match-view.ts`, the client's step readers
 - **Why:** `RulesEngine` is an 853-line object with about 45 methods that every subsystem receives through `new X(this)`. Steps are raw indexes (`stepIndex === 11`, `[3, 9]`) on the server and the client, with three representations of steps in total.
 - **Done when:**
   - [ ] `MatchState.turn.step` is a `TurnStep` name; `stepIndex` is gone; `phaseSteps` is derived from `turnSteps`; the snapshot version is bumped with an upgrade step;
@@ -171,7 +171,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 
 - **Issue:** #101
 - **Depends:** Q8
-- **Read:** `src/shared/rules-state.ts`; `MatchPlayer` and `Counter` in `model.ts`; `event-runtime.ts`; `evaluate.ts`; ADR-0018
+- **Read:** `src/shared/rules-state.ts`, including `MatchPlayer` and `Counter` (moved there from `model.ts` by Q3); `event-runtime.ts`; `evaluate.ts`; ADR-0018
 - **Scope:** `model.ts`, `rules-state.ts`, `room-upgrade.ts`, the engine readers and writers of life, counters and per-turn fields, the client displays
 - **Why:** life and counter quantities are strings: `event-runtime.ts` adds with `BigInt` while `evaluate.ts` reads with `Number()`. `RulesState` has about 30 optional fields; per-turn fields are reset one by one, so a new one is easy to forget.
 - **Done when:**

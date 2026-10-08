@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { MatchService } from "../src/server/match/match.service";
-import type { MatchState, Participant } from "../src/shared/model";
+import type { MatchState } from "../src/shared/rules-state";
+import type { Participant } from "../src/shared/model";
 import { assertJsonSafe, roundTripEnabled } from "./support/round-trip";
 
 test("JSON-safe Match state passes the persistence check", () => {

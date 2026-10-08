@@ -41,7 +41,7 @@ test("lands and simple spells use selected mana sources and retain casting ident
   const match = service.createCommander(room, catalog, room.participants[0].id);
   const command = (
     seat: number,
-    action: import("../../../src/shared/model").MatchAction,
+    action: import("../../../src/shared/rules-state").MatchAction,
   ) => service.execute(match, room.participants[seat], action, catalog);
   for (let seat = 0; seat < 2; seat++)
     command(seat, { type: "keep-hand", bottomIds: [] });

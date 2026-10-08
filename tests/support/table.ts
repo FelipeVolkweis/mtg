@@ -1,6 +1,6 @@
 import { expect, type Page, type Browser } from "@playwright/test";
 import { exchange, snapshot } from "./peer";
-import type { MatchAction } from "../../src/shared/model";
+import type { MatchAction } from "../../src/shared/rules-state";
 
 export const testPassword = "correct horse battery";
 /**

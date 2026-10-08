@@ -1,11 +1,11 @@
-import type { MatchAction } from "../../../../shared/model.js";
 import type {
   JsonValue,
   ManaPool,
+  MatchAction,
   RulesState,
   SelectionOption,
-} from "../../../../shared/rules.js";
-import type { Effect } from "../../../../shared/rules-v2.js";
+} from "../../../../shared/rules-state.js";
+import type { Effect } from "../../../../shared/card-dsl.js";
 import type { RulesMutator } from "../../context.js";
 import type { Evaluator, Scope } from "../evaluate.js";
 

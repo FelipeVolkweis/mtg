@@ -3,11 +3,10 @@ import type {
   GameObject,
   MatchAction,
   MatchState,
+  PendingProcedure,
   ProposalRecord,
-  ZoneKind,
-} from "../../../shared/model.js";
-import type { PendingProcedure } from "../../../shared/rules.js";
-import type { Ability } from "../../../shared/rules-v2.js";
+} from "../../../shared/rules-state.js";
+import type { Ability, ZoneKind } from "../../../shared/card-dsl.js";
 import {
   choosesX,
   enchantFilter,

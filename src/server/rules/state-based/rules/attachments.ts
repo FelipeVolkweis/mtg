@@ -1,4 +1,4 @@
-import type { GameObject } from "../../../../shared/model.js";
+import type { GameObject } from "../../../../shared/rules-state.js";
 import type { RulesQuery } from "../../context.js";
 import { changes, type StateBasedRule } from "../types.js";
 import { battlefield } from "./support.js";

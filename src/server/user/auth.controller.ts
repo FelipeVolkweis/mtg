@@ -38,13 +38,17 @@ function clientIp(request: IncomingMessage) {
   const left = head ? head.split(":") : [];
   const right = tail ? tail.split(":") : [];
   const groups = ip.includes("::")
-    ? [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill("0"), ...right]
+    ? [...left, ...Array<string>(Math.max(0, 8 - left.length - right.length)).fill("0"), ...right]
     : left;
   return `${groups.slice(0, 4).map((group) => group.replace(/^0+(?=.)/, "")).join(":")}::/64`;
 }
 
-// At most `rateLimit` register and login requests per IP each minute.
-const rateLimit = 20;
+// At most `rateLimit` register and login requests per IP each minute;
+// AUTH_RATE_LIMIT overrides the default of 20 (the browser suite signs in
+// from one address far more often).
+const rateLimit = /^[1-9]\d*$/.test(process.env.AUTH_RATE_LIMIT ?? "")
+  ? Number(process.env.AUTH_RATE_LIMIT)
+  : 20;
 const rateWindowMs = 60_000;
 const attempts = new Map<string, { count: number; since: number }>();
 function throttle(request: IncomingMessage) {

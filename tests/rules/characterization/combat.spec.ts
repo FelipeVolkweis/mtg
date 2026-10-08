@@ -21,7 +21,7 @@
 
 import { expect, test } from "@playwright/test";
 import { matchView } from "../../../src/server/match/match-view";
-import type { MatchState } from "../../../src/shared/model";
+import type { MatchState } from "../../../src/shared/rules-state";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
 import { force } from "../../support/force";
@@ -549,7 +549,7 @@ test("Hellkite's fresh object lifetime has no prior combat recipients", async ()
   game.pass();
   game.answer({}, 1);
   game.pass();
-  let order = game.view().rules!.prompt!;
+  const order = game.view().rules!.prompt!;
   expect(order.options.order.objectIds).toHaveLength(3);
   game.answer({ order: order.options.order.objectIds });
   for (let i = 0; i < 3; i++) game.pass();

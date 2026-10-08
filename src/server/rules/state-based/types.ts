@@ -1,5 +1,7 @@
-import type { MatchAction } from "../../../shared/model.js";
-import type { PendingProcedure } from "../../../shared/rules.js";
+import type {
+  MatchAction,
+  PendingProcedure,
+} from "../../../shared/rules-state.js";
 import type { RulesMutator, RulesQuery } from "../context.js";
 
 // State-Based Rule contract (rules-engine-refactor.md §46–48). Each

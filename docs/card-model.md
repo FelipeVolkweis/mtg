@@ -31,6 +31,6 @@ Sticker Sheets and Definitions remain separate catalog concepts; availability an
 ## Sources
 
 - [Git-Versioned Card Catalog issue](https://github.com/FelipeVolkweis/mtg/issues/7): imported/authored ownership and release records.
-- [Shared model](../src/shared/model.ts) and [rules model](../src/shared/rules.ts): implemented structures.
+- [Card DSL](../src/shared/card-dsl.ts) (card vocabulary, definition file and authored abilities), [runtime Match state](../src/shared/rules-state.ts) and [shared model](../src/shared/model.ts) (catalog, Deck, Room and view types): implemented structures.
 
 The former glossary suggestion to choose specialized Zone subclasses was implementation guidance, not a domain definition or a new architectural decision. Consult [zones.ts](../src/server/match/zones.ts) when changing Zone behavior.

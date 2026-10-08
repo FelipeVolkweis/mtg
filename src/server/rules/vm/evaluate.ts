@@ -1,5 +1,4 @@
-import type { GameObject } from "../../../shared/model.js";
-import type { SemanticEvent } from "../../../shared/rules.js";
+import type { GameObject, SemanticEvent } from "../../../shared/rules-state.js";
 import type {
   Choice,
   Comparison,
@@ -9,7 +8,7 @@ import type {
   PredicateFields,
   Selector,
   Value,
-} from "../../../shared/rules-v2.js";
+} from "../../../shared/card-dsl.js";
 import type { RulesQuery } from "../context.js";
 
 // Evaluates Core AST selectors, predicates, values, player references and

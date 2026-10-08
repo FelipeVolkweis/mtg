@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { compileCard } from "../../../src/server/rules/compiler";
 import { readRegistries } from "../../../src/server/rules/registries";
 import { checkSupport } from "../../../src/server/rules/support";
-import { cardDefinitionFileSchema } from "../../../src/shared/rules-v2";
+import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 
 // The catalog gate (roadmap issues 4 and 6): every version 2 definition, in
 // the catalog and in tests/fixtures/dsl-v2, parses and compiles, and every
