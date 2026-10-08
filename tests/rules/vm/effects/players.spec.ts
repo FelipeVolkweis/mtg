@@ -70,7 +70,7 @@ test("lose-life can name the triggering event's player", async () => {
 test("become-monarch makes the named player the monarch", async () => {
   const game = await effectGame();
   game.resolve([{ kind: "become-monarch", player: "you" }], { seat: 1 });
-  expect(game.match.rules!.monarchId).toBe(game.player(1));
+  expect(game.match.rules.monarchId).toBe(game.player(1));
 });
 
 test("become-monarch can name the controller of the event's object from last known information", async () => {
@@ -93,5 +93,5 @@ test("become-monarch can name the controller of the event's object from last kno
       },
     },
   );
-  expect(game.match.rules!.monarchId).toBe(game.player(1));
+  expect(game.match.rules.monarchId).toBe(game.player(1));
 });

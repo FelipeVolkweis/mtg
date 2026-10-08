@@ -178,7 +178,7 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
         await act(1, { type: "pass-priority" });
       }
       const before = await snapshot(pages[0]);
-      expect(before.match!.rules!.prompt!.promptKind).toBe(
+      expect(before.match!.rules.prompt!.promptKind).toBe(
         kind === "casting" || kind === "practice"
           ? "pay-costs"
           : kind === "resolution"
@@ -186,7 +186,7 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
             : "order-triggers",
       );
       const opponentBefore = await snapshot(pages[1]);
-      expect(opponentBefore.match!.rules!.prompt).toBeUndefined();
+      expect(opponentBefore.match!.rules.prompt).toBeUndefined();
       await server.stop();
       server = await startServer("mtg_rules_recovery_test", 4321);
       await pages[0].reload();
@@ -195,7 +195,7 @@ for (const kind of ["casting", "resolution", "ordering", "practice"] as const)
       const restored = await snapshot(pages[0]);
       expect(restored.match).toEqual(before.match);
       expect((await snapshot(pages[1])).match).toEqual(opponentBefore.match);
-      const pending = restored.match!.rules!.prompt!;
+      const pending = restored.match!.rules.prompt!;
       if (kind === "ordering")
         expect(
           (

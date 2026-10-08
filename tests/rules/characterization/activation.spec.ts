@@ -12,6 +12,7 @@
 // | crew taps newly controlled creatures for effective power and animation expires at cleanup | Preserve |
 
 import { expect, test } from "@playwright/test";
+import type { MatchState } from "../../../src/shared/rules-state";
 import { effectsOf } from "../../../src/server/rules/abilities";
 import { matchView } from "../../../src/server/match/match-view";
 import { moveObject } from "../../../src/server/match/game-objects";
@@ -110,9 +111,8 @@ test("a pending activated procedure resumes without sacrificing twice", async ()
       abilityId: "draw",
     }).kind,
   ).toBe("pending");
-  const id = match.rules!.pending!.id;
-  const recovered: import("../../../src/shared/rules-state").MatchState =
-    JSON.parse(JSON.stringify(match));
+  const id = match.rules.pending!.id;
+  const recovered = JSON.parse(JSON.stringify(match)) as MatchState;
   force.mana(recovered, recovered.players[0].id, { C: 2 });
   expect(
     service.execute(
@@ -155,7 +155,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
       abilityId: "transmute",
     }).kind,
   ).toBe("pending");
-  const payment = view().rules!.prompt!;
+  const payment = view().rules.prompt!;
   expect(
     game.command(0, {
       type: "rules-input",
@@ -172,7 +172,7 @@ test("Transmuter returns Wellspring as a cost and can privately select that same
   expect(view(1).objects[returned.id]).toBeUndefined();
   game.command(0, { type: "pass-priority" });
   expect(game.command(1, { type: "pass-priority" }).kind).toBe("pending");
-  const choice = view().rules!.prompt!;
+  const choice = view().rules.prompt!;
   expect(choice.options.select.objectIds).toContain(returned.id);
   Object.assign(game.match, JSON.parse(JSON.stringify(game.match)));
   expect(
@@ -237,7 +237,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
   });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.prompt!.procedureId,
+    procedureId: view().rules.prompt!.procedureId,
     targetIds: [stolen.id],
   });
   game.command(0, { type: "pass-priority" });
@@ -253,7 +253,7 @@ test("bounce returns a stolen creature to its owner's Hand and Buried Ruin retri
     objectId: ruin.id,
     abilityId: "retrieve",
   });
-  const pending = view().rules!.prompt!;
+  const pending = view().rules.prompt!;
   expect(
     pending.targets[0].legalIds
       .map((id) => view().objects[id].characteristics.name)
@@ -309,17 +309,17 @@ test("Transmuter permits declining and skips selection when Hand has no artifact
     });
     game.command(0, {
       type: "rules-input",
-      procedureId: view().rules!.prompt!.procedureId,
+      procedureId: view().rules.prompt!.procedureId,
       selections: { "2": [payment.id] },
     });
     game.command(0, { type: "pass-priority" });
     game.command(1, { type: "pass-priority" });
     if (!hasCard) {
-      expect(view().rules!.prompt).toBeUndefined();
+      expect(view().rules.prompt).toBeUndefined();
       expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(0);
       continue;
     }
-    const pending = view().rules!.prompt!;
+    const pending = view().rules.prompt!;
     expect(
       game.command(0, {
         type: "rules-input",
@@ -356,7 +356,7 @@ test("crew taps newly controlled creatures for effective power and animation exp
       abilityId: "crew",
     }).kind,
   ).toBe("pending");
-  const pending = view().rules!.prompt!;
+  const pending = view().rules.prompt!;
   expect(pending.options["0"].objectIds).toContain(myr.id);
   expect(
     game.command(0, {

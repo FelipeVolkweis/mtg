@@ -26,7 +26,7 @@ async function costGame() {
   const engine = new RulesEngine(game.match, game.catalog);
   const playerId = game.match.players[0].id;
   const ability = (object: GameObject, id: string) =>
-    engine.definition(object)!.abilities.find((a) => a.id === id)!;
+    engine.definition(object).abilities.find((a) => a.id === id)!;
   const activation = (
     source: GameObject,
     costs: Cost[] | Ability,

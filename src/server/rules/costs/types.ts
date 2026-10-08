@@ -6,7 +6,7 @@ import type { Cost } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import type { SupportCheck } from "../support-check.js";
 
-// Cost Runtime types (rules-engine-refactor.md §35–38). A cost is fully
+// Cost Runtime types (CR 601.2f–h). A cost is fully
 // payable or not paid at all: handlers plan data, and nothing changes until
 // every component is planned.
 
@@ -50,7 +50,8 @@ export interface CostHandler<C extends Cost = Cost> {
 
 /**
  * A complete payment: every component's mutations, in a rules-valid order.
- * Player-chosen payment order is deferred (§37), so the order is forced.
+ * Player-chosen payment order (CR 601.2h) isn't supported, so the order is
+ * forced.
  */
 export interface CostPlan {
   components: CostMutation[][];

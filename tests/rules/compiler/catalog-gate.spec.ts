@@ -5,10 +5,11 @@ import { readRegistries } from "../../../src/server/rules/registries";
 import { checkSupport } from "../../../src/server/rules/support";
 import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 
-// The catalog gate (roadmap issues 4 and 6): every version 2 definition, in
-// the catalog and in tests/fixtures/dsl-v2, parses and compiles, and every
-// implemented catalog definition passes the runtime support check: the engine
-// can run its Core AST.
+// The catalog gate: every version 2 definition, in the catalog and in
+// tests/fixtures/dsl-v2, parses and compiles, and every implemented catalog
+// definition passes the runtime support check: the engine can run its Core
+// AST. tests/fixtures/dsl-v2 holds only cards outside the expressiveness set
+// (tests/fixtures/dsl-expressiveness, compiled by expressiveness.spec.ts).
 
 test("the token registry loads from the catalog", async () => {
   const { tokens } = await readRegistries("catalog");

@@ -53,7 +53,7 @@ test("dragging a land and using its card menu keeps gameplay server-owned; Alt a
       .click();
     await expect(land).toContainText("Tapped");
     const current = (await snapshot(alice)).match!;
-    expect(current.rules!.mana[current.players[0].id].U).toBe(1);
+    expect(current.rules.mana[current.players[0].id].U).toBe(1);
     await expect(bob.getByTestId("zone-hand-Alice")).not.toContainText(
       "Island",
     );
@@ -172,7 +172,7 @@ test("drag casting selects a Stack target by click and preserves payment through
       (object) => object.characteristics.name === "Counterspell",
     )!;
     await act(alice, { type: "cast-spell", objectId: counter.id });
-    const procedure = (await snapshot(alice)).match!.rules!.prompt!;
+    const procedure = (await snapshot(alice)).match!.rules.prompt!;
     await expect(
       alice.getByRole("dialog", { name: "Card actions" }),
     ).toHaveCount(0);
@@ -194,9 +194,9 @@ test("drag casting selects a Stack target by click and preserves payment through
     await alice
       .getByRole("button", { name: "Confirm target", exact: true })
       .click();
-    const pending = (await snapshot(alice)).match!.rules!.prompt!;
+    const pending = (await snapshot(alice)).match!.rules.prompt!;
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       pending.procedureId,
     );
     await alice

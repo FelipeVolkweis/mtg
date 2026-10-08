@@ -12,7 +12,7 @@ import type {
   ZoneState,
 } from "../../shared/rules-state.js";
 
-// The rules context (rules-engine-refactor.md §6): a read-only query view and
+// The rules context (docs/rules-engine.md): a read-only query view and
 // a mutator. A subsystem that only reads takes a RulesQuery; one that changes
 // game state proposes events through a RulesMutator.
 
@@ -21,7 +21,6 @@ export interface RulesQuery {
   readonly catalog: Catalog;
   object(id: string): GameObject;
   zone(kind: ZoneKind, playerId?: string): ZoneState;
-  owner(object: GameObject): string;
   effective(object: GameObject): Characteristics;
   definition(object: GameObject): CardDefinition | undefined;
   /** Core AST predicate match, evaluated for `playerId` ("you"). */
@@ -44,8 +43,9 @@ export interface SimultaneousSnapshot {
 }
 
 /**
- * A game change before replacement and prevention apply (§41). Zone changes,
- * draws, damage, life changes and object creation all start here.
+ * A game change before replacement and prevention apply (CR 614, 615).
+ * Zone changes, draws, damage, life changes and object creation all start
+ * here.
  */
 export type ProposedEvent =
   | {
@@ -81,7 +81,7 @@ export interface RulesMutator {
   readonly query: RulesQuery;
   /**
    * Applies a proposed event and reports it to trigger observation. Until the
-   * replacement runtime exists it applies the event unchanged (§6), except for
+   * replacement runtime exists it applies the event unchanged, except for
    * the commander's Hand and Library replacement (CR 903.9b).
    */
   propose(event: ProposedEvent): EventResult;

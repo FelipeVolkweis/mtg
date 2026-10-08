@@ -32,7 +32,7 @@ export async function exchange(
             }),
           );
         ws.onmessage = (event) => {
-          const message: ServerMessage = JSON.parse(event.data);
+          const message = JSON.parse(event.data as string) as ServerMessage;
           if (!authenticated && message.event === "view") {
             authenticated = true;
             if (command) {

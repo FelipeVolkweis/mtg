@@ -10,7 +10,7 @@ import {
 } from "../abilities.js";
 import type { VMResult } from "../vm/rule-vm.js";
 
-// Stack Resolution Runtime (rules-engine-refactor.md §28–30): the CR 608
+// Stack Resolution Runtime: the CR 608
 // envelope around the top object of the Stack. It checks an intervening-if,
 // revalidates targets, and sends the object down one of two paths: a
 // permanent spell enters the Battlefield (no effect program), and an instant,

@@ -10,7 +10,7 @@ import type { Effect } from "../../../../shared/card-dsl.js";
 import type { RulesMutator } from "../../context.js";
 import type { Evaluator, Scope } from "../evaluate.js";
 
-// Effect Handler Registry contract (rules-engine-refactor.md §34). Each Core
+// Effect Handler Registry contract (docs/rules-engine.md). Each Core
 // effect kind has one handler. A handler runs its instruction against an
 // EffectContext and either finishes, hands back nested instructions to run
 // next, or suspends for a player's answer with state that survives

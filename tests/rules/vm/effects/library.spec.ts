@@ -29,7 +29,7 @@ test("scry puts chosen cards on the bottom, then orders the rest on top", async 
   const library = game.ids("library", 0);
   expect(library.slice(0, 3)).toEqual([c, a, after]);
   expect(library.at(-1)).toBe(b);
-  expect(game.match.rules!.resolving).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
 });
 
 test("select one matching card to the Hand, revealed, and the rest to the bottom", async () => {
@@ -65,7 +65,7 @@ test("select one matching card to the Hand, revealed, and the rest to the bottom
   const [inHand] = game
     .ids("hand", 0)
     .filter((id) => game.match.objects[id].characteristics.name === "Sol Ring");
-  expect(game.match.rules!.revealedHandIds).toContain(inHand);
+  expect(game.match.rules.revealedHandIds).toContain(inHand);
   expect(game.view(1).objects[inHand]).toBeDefined();
   expect(game.ids("library", 0).slice(-2)).toEqual([second, third]);
 });

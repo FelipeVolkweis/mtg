@@ -19,7 +19,7 @@ const discardTwice = [
 test("a choice suspends with the program counter on the waiting instruction", async () => {
   const game = await effectGame();
   expect(game.resolve(discardTwice).kind).toBe("pending");
-  const execution = game.match.rules!.resolving!;
+  const execution = game.match.rules.resolving!;
   expect(execution.frames).toHaveLength(1);
   expect(execution.frames[0].pc).toBe(1);
   expect(execution.waiting).toBeDefined();
@@ -32,12 +32,12 @@ test("an answer resumes after the waiting instruction, inside a nested frame", a
   game.resolve(discardTwice);
   const first = game.prompt();
   game.answer({ discard: [first.options.discard.objectIds[0]] });
-  const execution = game.match.rules!.resolving!;
+  const execution = game.match.rules.resolving!;
   expect(execution.frames.map((f) => f.pc)).toEqual([3, 0]);
   const second = game.prompt();
   expect(second.procedureId).not.toBe(first.procedureId);
   game.answer({ discard: [second.options.discard.objectIds[0]] });
-  expect(game.match.rules!.resolving).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
   expect(game.life(0)).toBe("42");
   expect(game.ids("graveyard", 0)).toHaveLength(2);
 });
@@ -47,7 +47,7 @@ test("a stale procedure id is refused and changes nothing", async () => {
   game.resolve(discardTwice);
   const first = game.prompt();
   game.answer({ discard: [first.options.discard.objectIds[0]] });
-  const before = structuredClone(game.match.rules!.resolving);
+  const before = structuredClone(game.match.rules.resolving);
   expect(
     game.command(0, {
       type: "rules-input",
@@ -55,5 +55,5 @@ test("a stale procedure id is refused and changes nothing", async () => {
       selections: { discard: [] },
     }).kind,
   ).toBe("rejected");
-  expect(game.match.rules!.resolving).toEqual(before);
+  expect(game.match.rules.resolving).toEqual(before);
 });

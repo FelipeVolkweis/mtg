@@ -96,7 +96,12 @@ test("opening choices and explicit Priority passes perform the first turn draw a
     )!.count,
   ).toBe(6);
   expect(
-    command(0, JSON.parse('{"type":"turn","direction":"next"}')).kind,
+    command(
+      0,
+      JSON.parse('{"type":"turn","direction":"next"}') as Parameters<
+        typeof command
+      >[1],
+    ).kind,
   ).toBe("rejected");
 });
 
@@ -184,7 +189,7 @@ for (const name of [
 ]) {
   test(`${name} passes Commander setup with complete validated automation`, async () => {
     const release = structuredClone(await readCatalog("catalog"));
-    const { room, catalog, commander } = commanderFixture();
+    const { room, catalog } = commanderFixture();
     const card = Object.values(release.definitions).find(
       (c) => c.canonicalName === name,
     )!;
@@ -282,7 +287,7 @@ test("the complete mono-U pool resolves to 100 cards and 67 supported definition
     catalog,
     room.participants[0].id,
   );
-  expect(practice.rules!.practice).toBeDefined();
+  expect(practice.rules.practice).toBeDefined();
   expect(Object.keys(practice.instances)).toHaveLength(200);
 });
 
@@ -364,13 +369,13 @@ test("implemented catalog abilities retain exact rules descriptions and expose r
   const player = match.players[0];
   force.rules(match, {
     setup: {
-      ...match.rules!.setup,
+      ...match.rules.setup,
       keptPlayerIds: match.players.map((seat) => seat.id),
     },
     commanders: {
-      ...match.rules!.commanders,
+      ...match.rules.commanders,
       [player.id]: {
-        ...match.rules!.commanders[player.id],
+        ...match.rules.commanders[player.id],
         colorIdentity: ["U", "R"],
       },
     },

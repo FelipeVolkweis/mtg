@@ -25,9 +25,9 @@ const input = (
   >,
 ): MatchAction => ({ type: "rules-input", procedureId: pending.id, ...fields });
 const options = (game: Game, seat: number) =>
-  game.view(seat).rules!.prompt!.options;
+  game.view(seat).rules.prompt!.options;
 
-async function attack(game: Game, blockers: number) {
+function attack(game: Game, blockers: number) {
   const golem = game.seed("Spire Golem", "battlefield");
   const myrs = Array.from({ length: blockers }, () => {
     const myr = game.seed("Silver Myr", "battlefield", 1);
@@ -44,14 +44,14 @@ async function attack(game: Game, blockers: number) {
   return { golem, myrs, declare };
 }
 
-export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
-  async cast(game) {
+export const scenarios: Record<string, (game: Game) => Reached> = {
+  cast(game) {
     const archive = game.seed("Hedron Archive", "hand");
     game.command(0, { type: "cast-spell", objectId: archive.id });
     force.mana(game.match, game.match.players[0].id, { C: 4 });
     return { seat: 0, answer: (p) => input(p, { confirm: true }) };
   },
-  async activate(game) {
+  activate(game) {
     const bomb = game.seed("Aether Spellbomb", "battlefield");
     const myr = game.seed("Silver Myr", "battlefield", 1);
     force.mana(game.match, game.match.players[0].id, { U: 1 });
@@ -62,7 +62,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
     });
     return { seat: 0, answer: (p) => input(p, { targetIds: [myr.id] }) };
   },
-  async resolve(game) {
+  resolve(game) {
     const pull = game.seed("Pull from Tomorrow", "hand");
     force.mana(game.match, game.match.players[0].id, { U: 3 });
     game.command(0, { type: "cast-spell", objectId: pull.id });
@@ -79,7 +79,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
         }),
     };
   },
-  async "trigger-order"(game) {
+  "trigger-order"(game) {
     game.seed("Sai, Master Thopterist", "battlefield");
     game.seed("Vedalken Archmage", "battlefield");
     const ring = game.seed("Sol Ring", "hand");
@@ -91,7 +91,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
         input(p, { selections: { order: options(g, 0).order.objectIds } }),
     };
   },
-  async "trigger-target"(game) {
+  "trigger-target"(game) {
     const disk = game.seed("Nevinyrral's Disk", "battlefield");
     game.seed("Ichor Wellspring", "battlefield");
     game.seed("Myr Retriever", "battlefield");
@@ -113,11 +113,11 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
       old: order.id,
       answer: (p, g) =>
         input(p, {
-          targetIds: [g.view(0).rules!.prompt!.targets[0].legalIds[0]],
+          targetIds: [g.view(0).rules.prompt!.targets[0].legalIds[0]],
         }),
     };
   },
-  async "declare-attackers"(game) {
+  "declare-attackers"(game) {
     const golem = game.seed("Spire Golem", "battlefield");
     game.pass();
     game.pass();
@@ -127,8 +127,8 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
         input(p, { selections: { [golem.id]: [g.match.players[1].id] } }),
     };
   },
-  async "declare-blockers"(game) {
-    const { golem, myrs, declare } = await attack(game, 1);
+  "declare-blockers"(game) {
+    const { golem, myrs, declare } = attack(game, 1);
     game.pass();
     return {
       seat: 1,
@@ -136,8 +136,8 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
       answer: (p) => input(p, { selections: { [myrs[0].id]: [golem.id] } }),
     };
   },
-  async "combat-damage"(game) {
-    const { golem, myrs } = await attack(game, 2);
+  "combat-damage"(game) {
+    const { golem, myrs } = attack(game, 2);
     game.pass();
     const blocks = game.match.rules.pending!;
     game.command(
@@ -160,7 +160,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
         }),
     };
   },
-  async "attack-payment"(game) {
+  "attack-payment"(game) {
     const jug = game.seed("Darksteel Juggernaut", "battlefield");
     game.seed("Propaganda", "battlefield", 1);
     game.pass();
@@ -177,7 +177,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
       answer: (p) => input(p, { confirm: true }),
     };
   },
-  async cleanup(game) {
+  cleanup(game) {
     game.seed("Mind Stone", "hand");
     while (!game.match.rules.pending && game.match.turn.number === 1)
       game.pass();
@@ -189,7 +189,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
         }),
     };
   },
-  async "state-based-choice"(game) {
+  "state-based-choice"(game) {
     const p = game.match.players[1].id;
     force.activePlayer(game.match, p);
     force.priority(game.match, p);
@@ -209,7 +209,7 @@ export const scenarios: Record<string, (game: Game) => Promise<Reached>> = {
     game.pass();
     return { seat: 1, answer: (p) => input(p, { confirm: true }) };
   },
-  async "commander-return"(game) {
+  "commander-return"(game) {
     const p = game.match.players[0].id;
     const instance = game.match.rules.commanders[p].instanceId;
     const find = () =>

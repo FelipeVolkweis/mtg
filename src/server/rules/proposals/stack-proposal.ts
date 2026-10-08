@@ -20,7 +20,7 @@ import type { RulesEngine } from "../../match/rules-engine.js";
 import { baseCost, chosenCost } from "../costs/cost-runtime.js";
 import { RuleViolation } from "../rule-violation.js";
 
-// The Stack Proposal Procedure (rules-engine-refactor.md §13–16). Casting a
+// The Stack Proposal Procedure (docs/rules-engine.md). Casting a
 // spell and activating an ability share one CR 601/602 process: the spell or
 // ability is on the Stack from the start, choices are announced, the total
 // cost is determined and locked, mana abilities may be activated, and the
@@ -303,7 +303,7 @@ export class StackProposalProcedure {
     const source = e.object(pending.sourceId!);
     const sourceSnapshot = {
       characteristics: e.effective(source),
-      ownerId: e.owner(source),
+      ownerId: source.ownerId,
     };
     const spent = e.pay(pending);
     if (!spent) return false;
@@ -321,7 +321,7 @@ export class StackProposalProcedure {
     return true;
   }
 
-  /** UI abort (§16): only before the total cost is locked. */
+  /** UI abort: only before the total cost is locked. */
   cancel() {
     if (this.pending.proposal.locked)
       throw new RuleViolation(
@@ -331,7 +331,7 @@ export class StackProposalProcedure {
   }
 
   /**
-   * Rules rollback (§16): after the total cost is locked, a proposal its
+   * Rules rollback: after the total cost is locked, a proposal its
    * player can't complete is reversed as an illegal action.
    */
   reverse() {

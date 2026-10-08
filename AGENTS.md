@@ -12,10 +12,10 @@ Use the five triage labels. See `docs/agents/triage-labels.md`.
 
 Use the single-context layout. See `docs/agents/domain.md`.
 
-### Refactor roadmap
+### Rules engine and card model
 
-Rules engine, card DSL or card model refactor work follows `docs/plans/roadmap.md`: its issue order, work loop and gates.
+Read `docs/rules-engine.md` before changing the rules engine and `docs/card-model.md` before changing the Card Catalog, the card DSL or Game Objects. Keep them true when the code changes. Code comments cite CR rules or these docs.
 
-### Code quality roadmap
+### Roadmaps
 
-Code quality refactors (issues Q1–Q13) follow `docs/plans/quality-roadmap.md`: its waves, work loop and gates.
+The refactor and code quality roadmaps are finished and archived in `docs/plans/archived/`, with the plans they followed.

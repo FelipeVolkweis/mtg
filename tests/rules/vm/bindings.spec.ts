@@ -18,7 +18,7 @@ test("the TP §18 program: draw, discard, then draw as many as were drawn", asyn
       then: [{ kind: "draw", count: { binding: "drawn" } }],
     },
   ]);
-  const execution = game.match.rules!.resolving!;
+  const execution = game.match.rules.resolving!;
   expect(execution.bindings.drawn).toEqual({ kind: "number", value: 2 });
   const [card] = game.prompt().options.discard.objectIds;
   game.answer({ discard: [card] });
@@ -60,7 +60,7 @@ test("a flag binding records whether an optional instruction was performed", asy
   game.answer({ select: [myr.id] });
   expect(game.life(0)).toBe("40");
   // The binding was typed while the program ran; the program has completed.
-  expect(game.match.rules!.resolving).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
 });
 
 test("the chosen X is a number binding from the start", async () => {
@@ -74,7 +74,7 @@ test("the chosen X is a number binding from the start", async () => {
     ],
     { x: 3 },
   );
-  expect(game.match.rules!.resolving!.bindings.X).toEqual({
+  expect(game.match.rules.resolving!.bindings.X).toEqual({
     kind: "number",
     value: 3,
   });

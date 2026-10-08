@@ -28,7 +28,9 @@ export async function signIn(page: Page, username: string) {
 /** Deletes the signed-in User's Decks, so earlier tests' Decks are not listed. */
 export async function clearDecks(page: Page) {
   await page.evaluate(async () => {
-    const decks: { id: string }[] = await (await fetch("/api/decks")).json();
+    const decks = (await (await fetch("/api/decks")).json()) as {
+      id: string;
+    }[];
     for (const deck of decks)
       await fetch(`/api/decks/${deck.id}`, { method: "DELETE" });
   });

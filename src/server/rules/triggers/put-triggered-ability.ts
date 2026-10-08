@@ -8,7 +8,7 @@ import type { RulesEngine } from "../../match/rules-engine.js";
 import { isDiesTrigger, targetFilter } from "../abilities.js";
 import { RuleViolation } from "../rule-violation.js";
 
-// PutTriggeredAbilityOnStackProcedure (rules-engine-refactor.md §45): a
+// PutTriggeredAbilityOnStackProcedure (CR 603.3): a
 // waiting trigger becomes an Ability Game Object on the Stack, and its
 // controller chooses its targets. A triggered ability isn't cast, so it pays
 // no costs. Modes and divisions aren't supported by any triggered ability the
@@ -23,15 +23,15 @@ export class PutTriggeredAbilityOnStackProcedure {
    */
   start(trigger: WaitingTrigger) {
     const engine = this.engine;
+    const sourceId =
+      trigger.source.kind === "object" ? trigger.source.id : undefined;
     const target = targetFilter(trigger.ability);
     if (
       target &&
       !engine.legalTargets(
         trigger.playerId,
         target,
-        isDiesTrigger(trigger.ability)
-          ? trigger.event.affectedId
-          : trigger.sourceId,
+        isDiesTrigger(trigger.ability) ? trigger.event.affectedId : sourceId,
       ).length
     )
       return;
@@ -47,7 +47,8 @@ export class PutTriggeredAbilityOnStackProcedure {
         rulesText: "",
       },
     );
-    object.sourceObjectId = trigger.sourceId;
+    // A designation's trigger has no source object.
+    if (sourceId) object.sourceObjectId = sourceId;
     object.sourceAbilityId = trigger.abilityId;
     object.resolution = {
       sourceSnapshot: trigger.sourceSnapshot,

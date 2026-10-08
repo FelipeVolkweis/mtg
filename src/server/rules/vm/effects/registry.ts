@@ -24,7 +24,7 @@ import type {
 import { counter, destroy, exile, move, sacrifice } from "./zone-change.js";
 import type { Registry } from "../../support-check.js";
 
-// Effect Handler Registry (rules-engine-refactor.md §34): one handler per
+// Effect Handler Registry (docs/rules-engine.md): one handler per
 // Core effect kind. A kind without a handler can't run yet; the catalog
 // loader rejects implemented cards that use it.
 

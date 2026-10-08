@@ -13,7 +13,7 @@ import type {
 } from "./effects/types.js";
 import type { Scope } from "./evaluate.js";
 
-// Rule VM (rules-engine-refactor.md §31–33): runs a resolving spell or
+// Rule VM (docs/rules-engine.md): runs a resolving spell or
 // ability's Core AST instructions. Execution state is Match data: frames with
 // program counters and typed bindings. A handler's nested instructions run in
 // a new frame; a handler waiting for a choice leaves its frame's program

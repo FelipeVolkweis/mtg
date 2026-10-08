@@ -15,7 +15,7 @@ import {
 
 // Zone-change instructions (CR 701.7 destroy, 701.17 sacrifice, 406 exile,
 // 701.5 counter, and plain moves). Every member of a set leaves at once: they
-// share one snapshot of trigger sources and characteristics (§24, §56).
+// share one snapshot of trigger sources and characteristics (CR 603.10a).
 
 export type ObjectMove = EffectOf<"move" | "destroy" | "sacrifice" | "exile">;
 
@@ -75,7 +75,7 @@ export function performMove(
           : "graveyard";
     const destination = query.zone(
       kind,
-      ownedZones.has(kind) ? query.owner(object) : undefined,
+      ownedZones.has(kind) ? object.ownerId : undefined,
     );
     const { object: fresh } = ctx.propose({
       kind: "zone-change",
@@ -84,7 +84,7 @@ export function performMove(
       simultaneous: { sources, before: snapshots.get(id) },
     });
     if (!fresh) continue;
-    if (kind !== "battlefield") fresh.controllerId = query.owner(fresh);
+    if (kind !== "battlefield") fresh.controllerId = fresh.ownerId;
     moved.push(fresh.id);
     if (
       effect.kind === "exile" &&
@@ -137,7 +137,7 @@ export function unsupportedMove(effect: ObjectMove): string | undefined {
 }
 
 const moveHandler = <K extends ObjectMove["kind"]>(): EffectHandler<K> => ({
-  unsupported: (effect) => unsupportedMove(effect as ObjectMove),
+  unsupported: (effect) => unsupportedMove(effect),
   execute(instruction, ctx) {
     const effect = instruction as ObjectMove;
     const ids = candidates(effect, ctx);
@@ -150,7 +150,7 @@ const moveHandler = <K extends ObjectMove["kind"]>(): EffectHandler<K> => ({
     return done;
   },
   answer(effect, _state, input, ctx) {
-    performMove(effect as ObjectMove, selection(ctx, input).ids, ctx);
+    performMove(effect, selection(ctx, input).ids, ctx);
     return done;
   },
 });
@@ -180,7 +180,7 @@ export const counter: EffectHandler<"counter"> = {
         ctx.propose({
           kind: "zone-change",
           objectId: id,
-          to: query.zone("graveyard", query.owner(object)),
+          to: query.zone("graveyard", object.ownerId),
         });
       countered.push(id);
     }

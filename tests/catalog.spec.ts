@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { CardDefinitionFile } from "../src/shared/card-dsl";
 import { createServer } from "node:http";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -12,11 +13,15 @@ import {
   rename,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 
 import { initializeTestCatalog } from "./support/empty-catalog";
 import { fixtureCards, catalogResponse } from "./support/catalog-fixture";
 import { startServer } from "./support/server";
+
+/** A stored definition file, read field by field. */
+const definitionFile = async (path: string) =>
+  JSON.parse(await readFile(path, "utf8")) as CardDefinitionFile;
 
 test("set-code import is local, idempotent and preserves the catalog when the provider fails", async ({
   playwright,
@@ -108,14 +113,11 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     );
     expect(providerCalls).toBe(callsAfterImport);
     failed = false;
-    const island = JSON.parse(
-      await readFile(
-        join(
-          catalogRoot,
-          "definitions",
-          "island-20000000-0000-4000-8000-000000000001.json",
-        ),
-        "utf8",
+    const island = await definitionFile(
+      join(
+        catalogRoot,
+        "definitions",
+        "island-20000000-0000-4000-8000-000000000001.json",
       ),
     );
     expect(island).toMatchObject({
@@ -136,7 +138,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       ],
     });
     expect(island.imported.components[0]).not.toHaveProperty("typeLine");
-    const printed = JSON.parse(
+    const printed: unknown = JSON.parse(
       await readFile(
         join(catalogRoot, "printings", `${fixtureCards[1].id}.json`),
         "utf8",
@@ -152,14 +154,11 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     expect(await readdir(join(catalogRoot, "definitions"))).toContain(
       `delver-of-secrets-${fixtureCards[2].oracle_id}.json`,
     );
-    const delver = JSON.parse(
-      await readFile(
-        join(
-          catalogRoot,
-          "definitions",
-          `delver-of-secrets-${fixtureCards[2].oracle_id}.json`,
-        ),
-        "utf8",
+    const delver = await definitionFile(
+      join(
+        catalogRoot,
+        "definitions",
+        `delver-of-secrets-${fixtureCards[2].oracle_id}.json`,
       ),
     );
     expect(delver.imported).toMatchObject({
@@ -191,7 +190,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         )
       ).json(),
     ).toHaveLength(2);
-    const lookup = await (
+    const lookup: unknown = await (
       await request.get("/api/catalog/cards?q=Island")
     ).json();
     expect(lookup).toMatchObject([
@@ -207,13 +206,15 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
     expect(
       await (await request.get("/api/catalog/cards?q=Echoing%20Isle")).json(),
     ).toMatchObject([{ id: fixtureCards[0].oracle_id }]);
-    const before = await (await request.get("/api/catalog/sets")).json();
+    const before: unknown = await (
+      await request.get("/api/catalog/sets")
+    ).json();
     const file = join(
       catalogRoot,
       "definitions",
       `shared-name-${fixtureCards[4].oracle_id}.json`,
     );
-    const authored = JSON.parse(await readFile(file, "utf8"));
+    const authored = await definitionFile(file);
     // A reviewer's authored section; the fixture's ward pays {2}.
     authored.authored = {
       automationStatus: "implemented",
@@ -234,7 +235,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       "definitions",
       `shared-name-${fixtureCards[5].oracle_id}.json`,
     );
-    const unfinished = JSON.parse(await readFile(unfinishedFile, "utf8"));
+    const unfinished = await definitionFile(unfinishedFile);
     unfinished.authored.abilities = [
       { id: "haste", kind: "keyword", keyword: "haste" },
     ];
@@ -245,7 +246,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
       normal: "https://cards.example.test/shared-one-new.svg",
     };
     await importSet();
-    const refreshed = JSON.parse(await readFile(file, "utf8"));
+    const refreshed = await definitionFile(file);
     expect(refreshed.authored).toEqual(authored.authored);
     expect(refreshed.imported).toMatchObject({
       components: [
@@ -257,7 +258,7 @@ test("set-code import is local, idempotent and preserves the catalog when the pr
         },
       ],
     });
-    expect(JSON.parse(await readFile(unfinishedFile, "utf8")).authored).toEqual(
+    expect((await definitionFile(unfinishedFile)).authored).toEqual(
       unfinished.authored,
     );
     expect(
@@ -429,7 +430,7 @@ test("an interrupted publication restores the last complete catalog on startup",
 }) => {
   const root = await mkdtemp(join(tmpdir(), "mtg-catalog-recover-"));
   await cp(process.env.CATALOG_ROOT!, root, { recursive: true });
-  const expectedSets = JSON.parse(
+  const expectedSets: unknown = JSON.parse(
     await readFile(join(root, "sets.json"), "utf8"),
   );
   const expectedDefinitions = (await readdir(join(root, "definitions"))).filter(

@@ -21,7 +21,7 @@ import { costHandler } from "./handlers.js";
 import type { CostContext, CostMutation, CostPlan, CostUse } from "./types.js";
 import { RuleViolation } from "../rule-violation.js";
 
-// The Cost Runtime (rules-engine-refactor.md §36–38): determine the total
+// The Cost Runtime (CR 601.2f–h): determine the total
 // cost, lock it, plan every component, then commit the whole payment or
 // nothing.
 

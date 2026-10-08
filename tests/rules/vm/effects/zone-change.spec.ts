@@ -123,7 +123,7 @@ test("a chosen object waits for its controller's selection and resumes once", as
       .ids("battlefield")
       .map((id) => game.match.objects[id].characteristics.name),
   ).toContain("Sol Ring");
-  expect(game.match.rules!.resolving).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
 });
 
 test("counter puts a spell into its owner's Graveyard and ends an ability", async () => {

@@ -79,7 +79,7 @@ test("may-pay asks the named player and runs then or else", async () => {
         },
       },
     );
-    const pending = game.view(1).rules!.prompt!;
+    const pending = game.view(1).rules.prompt!;
     expect(game.match.rules.pending!.playerId).toBe(game.player(1));
     const hand = game.ids("hand", 0).length;
     expect(
@@ -89,7 +89,7 @@ test("may-pay asks the named player and runs then or else", async () => {
         confirm: pay,
       }).kind,
     ).toBe("accepted");
-    expect(game.match.rules!.mana[game.player(1)].C).toBe(pay ? 0 : 2);
+    expect(game.match.rules.mana[game.player(1)].C).toBe(pay ? 0 : 2);
     expect(game.life(0)).toBe(pay ? "41" : "40");
     expect(game.ids("hand", 0).length).toBe(pay ? hand : hand + 1);
   }

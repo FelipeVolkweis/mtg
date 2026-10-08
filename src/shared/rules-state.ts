@@ -102,13 +102,13 @@ export interface PendingProcedure {
   totalCost: ManaPool & { generic: number };
   /** A state-based choice: the State-Based Rule that answers it. */
   stateBasedRule?: string;
-  /** A cast or activation in progress (rules-engine-refactor.md §13–16). */
+  /** A cast or activation in progress (CR 601, 602). */
   proposal?: StackProposal;
 }
 /**
  * The spell or ability a player is proposing: it is on the Stack from the
  * start (CR 601.2a, 602.2a). Rolling back restores `base`, the Match as it was
- * before the proposal began (§16).
+ * before the proposal began.
  */
 export interface StackProposal {
   stackObjectId: string;
@@ -130,7 +130,7 @@ export interface SelectionOption {
 export type JsonValue =
   string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
-/** A typed binding value (rules-engine-refactor.md §32). */
+/** A typed binding value (docs/rules-engine.md). */
 export type RuntimeValue =
   | { kind: "number"; value: number }
   | { kind: "objects"; ids: string[] }
@@ -146,7 +146,7 @@ export interface ExecutionFrame {
 }
 
 /**
- * A resolving spell or ability's Rule VM state (rules-engine-refactor.md §32).
+ * A resolving spell or ability's Rule VM state (docs/rules-engine.md).
  * A suspended instruction keeps its frame's program counter, so a restored
  * Match answers it without running anything again.
  */
@@ -249,7 +249,7 @@ export interface RulesState {
   waitingTriggers?: WaitingTrigger[];
   /** While waiting triggers are being placed on the Stack. */
   triggerPlacement?: WaitingTrigger[];
-  /** A Priority Checkpoint suspended on a choice (rules-engine-refactor.md §11, §47). */
+  /** A Priority Checkpoint suspended on a choice (CR 117.5). */
   checkpoint?: CheckpointState;
   format: "commander";
   setup: { keptPlayerIds: string[]; startingPlayerId: string };
@@ -296,7 +296,7 @@ export interface SemanticEvent {
   to?: ZoneKind;
   before?: Characteristics;
   after: Characteristics;
-  /** Zone changes: the object as it last existed (rules-engine-refactor.md §56). */
+  /** Zone changes: the object as it last existed (CR 603.10). */
   lastKnown?: LastKnownInformation;
 }
 /**
@@ -313,6 +313,14 @@ export interface LastKnownInformation {
   attachmentTo: string | null;
   tapped: boolean;
 }
+/** A designation a player can have (CR 724: the monarch). */
+export type Designation = "monarch";
+
+/** What a triggered ability triggered from: an object, or a player's designation. */
+export type TriggerSource =
+  | { kind: "object"; id: string }
+  | { kind: "designation"; designation: Designation };
+
 export interface WaitingTrigger {
   sourceSnapshot?: {
     characteristics: Characteristics;
@@ -320,7 +328,7 @@ export interface WaitingTrigger {
   };
   id: string;
   playerId: string;
-  sourceId: string;
+  source: TriggerSource;
   abilityId: string;
   sourceName: string;
   ability: Ability;
@@ -335,8 +343,8 @@ export const statusSchema = z
   })
   .strict();
 /**
- * What was chosen while a spell or ability was proposed (CR 601.2b–h,
- * card-model-refactor.md §4.2). It stays with a permanent spell onto the
+ * What was chosen while a spell or ability was proposed (CR 601.2b–h).
+ * It stays with a permanent spell onto the
  * Battlefield, because a permanent can ask how it was cast.
  */
 export interface ProposalRecord {
@@ -471,8 +479,7 @@ export const matchActionSchema = z.discriminatedUnion("type", [
     })
     .strict(),
   z.object({ type: z.literal("cancel-procedure"), procedureId: id }).strict(),
-  // Reverses a cast or activation whose locked total cost can't be paid
-  // (rules-engine-refactor.md §16).
+  // Reverses a cast or activation whose locked total cost can't be paid.
   z.object({ type: z.literal("reverse-proposal"), procedureId: id }).strict(),
   z
     .object({ type: z.literal("keep-hand"), bottomIds: z.array(id).max(7) })

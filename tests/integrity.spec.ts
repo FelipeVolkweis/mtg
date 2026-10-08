@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { act, startTable } from "./support/table";
-import { exchange, snapshot } from "./support/peer";
+import { startTable } from "./support/table";
 
 test("repeated authentication on one socket cannot leave a disconnected guest connected", async ({
   browser,

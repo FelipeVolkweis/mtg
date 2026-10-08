@@ -27,9 +27,9 @@ test("a restored suspension resumes without replaying earlier instructions", asy
       ],
     },
   ]);
-  const saved = JSON.stringify(game.match.rules!.resolving);
+  const saved = JSON.stringify(game.match.rules.resolving);
   restore(game.match);
-  expect(JSON.stringify(game.match.rules!.resolving)).toBe(saved);
+  expect(JSON.stringify(game.match.rules.resolving)).toBe(saved);
   expect(game.handCount()).toBe(before + 2);
   const [card] = game.prompt().options.discard.objectIds;
   game.answer({ discard: [card] });
@@ -44,7 +44,7 @@ test("the execution state holds only frames, program counters and typed bindings
     { kind: "draw", count: 1, bind: "drawn" },
     { kind: "discard", count: 1 },
   ]);
-  const execution = game.match.rules!.resolving!;
+  const execution = game.match.rules.resolving!;
   expect(Object.keys(execution).sort()).toEqual(
     ["bindings", "controllerId", "frames", "stackObjectId", "waiting"].sort(),
   );

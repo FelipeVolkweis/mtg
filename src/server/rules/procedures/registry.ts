@@ -13,7 +13,7 @@ import { StackProposalProcedure } from "../proposals/stack-proposal.js";
 import { StackResolutionRuntime } from "../stack/stack-resolution.js";
 import { RuleViolation } from "../rule-violation.js";
 
-// The Procedure Registry (rules-engine-refactor.md §12): every pending
+// The Procedure Registry (docs/rules-engine.md): every pending
 // procedure kind has one handler, so RulesEngine.apply() and input()
 // dispatch without branching on procedure kinds. Each handler's state is
 // the serializable pending procedure; answers are revalidated against it.
@@ -24,11 +24,11 @@ export interface ProcedureHandler {
   /** Answers the procedure's current choice. */
   input(engine: RulesEngine, action: RulesInput): void;
   /**
-   * UI abort (§16). Absent for procedures that can't be aborted: turn-based
+   * UI abort. Absent for procedures that can't be aborted: turn-based
    * procedures, resolution choices, trigger and state-based choices.
    */
   abort?(engine: RulesEngine): void;
-  /** Rules rollback of a proposal whose locked cost can't be paid (§16). */
+  /** Rules rollback of a proposal whose locked cost can't be paid. */
   reverse?(engine: RulesEngine): void;
   /** Mana abilities may be activated while the procedure waits for payment. */
   manaWindow(pending: PendingProcedure): boolean;
@@ -37,7 +37,7 @@ export interface ProcedureHandler {
     engine: RulesEngine,
     pending: PendingProcedure,
   ): Record<string, SelectionOption>;
-  /** What the projected prompt asks (rules-engine-refactor.md §57). */
+  /** What the projected prompt asks (docs/rules-engine.md). */
   prompt(engine: RulesEngine, pending: PendingProcedure): PromptBasics;
   /** Is the UI abort offered right now? */
   canAbort?(pending: PendingProcedure): boolean;
@@ -81,7 +81,7 @@ const stored = (_: RulesEngine, pending: PendingProcedure) =>
 const never = () => false;
 const paying = (pending: PendingProcedure) => pending.stage === "payment";
 
-/** Casting a spell or activating an ability (§13–16). */
+/** Casting a spell or activating an ability (CR 601, 602). */
 const proposal: ProcedureHandler = {
   input: (engine, action) => new StackProposalProcedure(engine).input(action),
   abort: (engine) => new StackProposalProcedure(engine).cancel(),
@@ -106,7 +106,7 @@ const proposal: ProcedureHandler = {
   canReverse: (pending) => !!pending.proposal?.locked,
 };
 
-/** A resolving spell or ability's choice (§28), including a may-pay payment. */
+/** A resolving spell or ability's choice (CR 608.2), including a may-pay payment. */
 const resolution: ProcedureHandler = {
   input: (engine, action) => new StackResolutionRuntime(engine).answer(action),
   manaWindow: paying,
@@ -137,7 +137,7 @@ const triggerTarget: ProcedureHandler = {
   }),
 };
 
-/** A State-Based Rule's choice (§47), such as a commander return. */
+/** A State-Based Rule's choice, such as a commander return (CR 903.9a). */
 const stateBasedChoice: ProcedureHandler = {
   input: (engine, action) =>
     new PriorityCheckpoint(engine).answerStateBased(action),

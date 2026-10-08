@@ -91,7 +91,7 @@ test("creatures with zero toughness die at checkpoints and hidden characteristic
     Object.values(view.objects).filter((o) => o.kind === "token"),
   ).toHaveLength(0);
   expect(
-    view.rules!.continuousEffects?.some(
+    view.rules.continuousEffects?.some(
       (effect) => effect.sourceId === master.id,
     ),
   ).toBe(false);
@@ -121,14 +121,14 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
   game.command(0, { type: "cast-spell", objectId: spell.id });
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.prompt!.procedureId,
+    procedureId: view().rules.prompt!.procedureId,
     targetIds: [jug.id],
   });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
   expect(view().objects[jug.id]).toBeDefined();
-  expect(view().rules!.markedDamage![jug.id]).toBe(5);
-  expect(view().rules!.thisTurn.damageEvents.at(-1)).toMatchObject({
+  expect(view().rules.markedDamage![jug.id]).toBe(5);
+  expect(view().rules.thisTurn.damageEvents.at(-1)).toMatchObject({
     recipientId: jug.id,
     amount: 5,
     combat: false,
@@ -136,6 +136,6 @@ test("noncombat damage retains lethal marks on indestructible creatures and clea
   force.step(game.match, "end");
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  expect(view().rules!.markedDamage).toEqual({});
+  expect(view().rules.markedDamage).toEqual({});
   expect(view().objects[jug.id]).toBeDefined();
 });

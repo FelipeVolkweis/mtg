@@ -208,7 +208,7 @@ test("commander return: a commander in a Graveyard is a choice; answering resume
   const game = await effectGame();
   const p = game.player(0);
   const commander = Object.values(game.match.objects).find((o) =>
-    o.cardInstanceIds.includes(game.match.rules!.commanders[p].instanceId),
+    o.cardInstanceIds.includes(game.match.rules.commanders[p].instanceId),
   )!;
   force.move(game.match, commander, "graveyard", p);
   force.rules(game.match, { commanderReturns: ["gone", commander.id] });
@@ -223,7 +223,7 @@ test("commander return: a commander in a Graveyard is a choice; answering resume
   });
   expect(check(game)).toEqual({ kind: "suspended", performed: false });
   expect(game.match.priority).toBeUndefined();
-  const pending = game.match.rules!.pending!;
+  const pending = game.match.rules.pending!;
   expect(pending.stateBasedRule).toBe("commander-return");
   // Restore, then answer: the checkpoint resumes and grants Priority.
   const restored = JSON.parse(JSON.stringify(game.match)) as typeof game.match;
@@ -252,5 +252,5 @@ test("a commander that already left its Graveyard offers no choice", async () =>
   force.rules(game.match, { commanderReturns: ["gone"] });
   expect(evaluate(game, "commander-return")).toEqual({ kind: "none" });
   check(game);
-  expect(game.match.rules!.commanderReturns).toBeUndefined();
+  expect(game.match.rules.commanderReturns).toBeUndefined();
 });

@@ -19,7 +19,7 @@ import {
 } from "./types.js";
 import { RuleViolation } from "../../rule-violation.js";
 
-// Control flow (dsl-redesign.md §4.6). Nested instructions run next through
+// Control flow (docs/card-model.md). Nested instructions run next through
 // the same queue, so every instruction they contain dispatches through the
 // registry too.
 

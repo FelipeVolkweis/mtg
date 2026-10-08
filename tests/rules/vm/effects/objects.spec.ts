@@ -15,7 +15,7 @@ test("damage to a target creature is marked and lethal damage destroys it", asyn
     targetIds: [creature.id],
   });
   expect(game.match.objects[creature.id]).toBeUndefined();
-  expect(game.match.rules!.thisTurn.damageEvents).toMatchObject([
+  expect(game.match.rules.thisTurn.damageEvents).toMatchObject([
     { sourceId: source.id, recipientId: creature.id, amount: 3, combat: false },
   ]);
 });
@@ -98,7 +98,7 @@ test("tap a chosen set binds it for later instructions", async () => {
     true,
     false,
   ]);
-  const power = game.view().objects[source.id].characteristics!.power;
+  const power = game.view().objects[source.id].characteristics.power;
   expect(power).toBe(String(Number(source.characteristics.power) + 2));
 });
 
@@ -192,10 +192,10 @@ test("apply-continuous changes a permanent until end of turn", async () => {
     ],
     { source: vehicle },
   );
-  expect(game.view().objects[vehicle.id].characteristics!.types).toContain(
+  expect(game.view().objects[vehicle.id].characteristics.types).toContain(
     "Creature",
   );
-  expect(game.match.rules!.temporaryEffects).toMatchObject([
+  expect(game.match.rules.temporaryEffects).toMatchObject([
     { sourceId: vehicle.id, applicability: "until-end-of-turn" },
   ]);
 });
@@ -213,7 +213,7 @@ test("apply-grant makes a target unblockable this turn", async () => {
     ],
     { targetIds: [creature.id] },
   );
-  expect(game.view().objects[creature.id].characteristics!.keywords).toContain(
+  expect(game.view().objects[creature.id].characteristics.keywords).toContain(
     "Unblockable",
   );
 });
@@ -227,5 +227,5 @@ test("reselect-defender does nothing for a target that isn't attacking", async (
       { targetIds: [creature.id] },
     ).kind,
   ).toBe("accepted");
-  expect(game.match.rules!.pending).toBeUndefined();
+  expect(game.match.rules.pending).toBeUndefined();
 });

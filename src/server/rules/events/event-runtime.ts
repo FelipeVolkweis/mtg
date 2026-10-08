@@ -18,7 +18,7 @@ import type {
   SimultaneousSnapshot,
 } from "../context.js";
 
-// Semantic Event Runtime (rules-engine-refactor.md §40-41). Every zone
+// Semantic Event Runtime (docs/rules-engine.md). Every zone
 // change, draw, damage event and life change is proposed here, applied, and
 // reported to trigger observation. Replacement and prevention will run
 // between proposal and application; today only the commander's Hand and
@@ -53,7 +53,7 @@ export class EventRuntime {
     }
   }
 
-  /** The object as it last existed, for bindings and look-back triggers (§56). */
+  /** The object as it last existed, for bindings and look-back triggers (CR 603.10). */
   lastKnown(object: GameObject): LastKnownInformation {
     return {
       objectId: object.id,
@@ -267,7 +267,7 @@ export class EventRuntime {
           affectedId: source.id,
           controllerId: source.controllerId,
           ownerId: live
-            ? engine.owner(source)
+            ? source.ownerId
             : (stackSource.resolution?.sourceSnapshot ?? source).ownerId,
           after: characteristics,
           damage: {

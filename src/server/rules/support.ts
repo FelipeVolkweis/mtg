@@ -24,7 +24,7 @@ import type { SupportCheck } from "./support-check.js";
 import { triggerSupport } from "./triggers/trigger-runtime.js";
 import { unsupportedEffect } from "./vm/effects/registry.js";
 
-// Runtime support check (dsl-redesign.md §9): which Core constructs the
+// Runtime support check (docs/rules-engine.md): which Core constructs the
 // engine runs today. The engine executes the compiler's Core AST directly; an
 // implemented card using anything else fails to load with an error naming the
 // construct and its path. Nothing is approximated.
@@ -243,7 +243,7 @@ class Walker implements SupportCheck {
     if ("and" in base || "or" in base || "not" in base)
       this.unsupported("A nested predicate");
     const seen = new Set<string>();
-    this.fields(base as PredicateFields, seen);
+    this.fields(base, seen);
     for (const member of rest) {
       if ("not" in member) {
         const inner = member.not as PredicateFields;
@@ -255,7 +255,7 @@ class Walker implements SupportCheck {
       } else if ("and" in member || "or" in member)
         this.unsupported("A nested predicate");
       else {
-        const fields = member as PredicateFields;
+        const fields = member;
         if (typeof fields.type === "string" && Object.keys(fields).length === 1)
           continue;
         this.fields(fields, seen);
@@ -317,7 +317,7 @@ class Walker implements SupportCheck {
           const comparison = p.manaValue as { "="?: Value };
           if (comparison["="] === undefined)
             this.unsupported("A mana value comparison other than =");
-          this.value(comparison["="]!);
+          this.value(comparison["="]);
           set("manaValue");
           break;
         }

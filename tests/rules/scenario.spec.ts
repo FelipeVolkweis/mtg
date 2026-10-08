@@ -21,7 +21,7 @@ test("seed and force.card create an owned Card Instance in the requested Zone", 
   expect(zoneOf(match, ring.id)?.kind).toBe("battlefield");
   expect(ring.controllerId).toBe(player);
   expect(match.instances[ring.cardInstanceIds[0]].ownerId).toBe(player);
-  expect(match.rules!.controlledSinceTurn[ring.id]).toBe(0);
+  expect(match.rules.controlledSinceTurn[ring.id]).toBe(0);
   const hand = seed("Negate", "hand");
   expect(zoneOf(match, hand.id)).toMatchObject({
     kind: "hand",
@@ -34,7 +34,7 @@ test("force.mana merges into the pool and fills missing colors", async () => {
   const player = match.players[0].id;
   force.mana(match, player, { U: 2 });
   force.mana(match, player, { C: 1 });
-  expect(match.rules!.mana[player]).toEqual({
+  expect(match.rules.mana[player]).toEqual({
     W: 0,
     U: 2,
     B: 0,
@@ -68,7 +68,7 @@ test("object helpers set counters, attachment and controller", async () => {
   expect(creature.counters).toEqual([{ kind: "+1/+1", quantity: "2" }]);
   expect(tool.attachmentTo).toBe(creature.id);
   expect(creature.controllerId).toBe(match.players[1].id);
-  expect(match.rules!.controlledSinceTurn[creature.id]).toBe(4);
+  expect(match.rules.controlledSinceTurn[creature.id]).toBe(4);
   force.attach(tool, null);
   expect(tool.attachmentTo).toBeNull();
 });
@@ -120,6 +120,6 @@ test("force.rules and force.commander set one-off state", async () => {
   const card = seed("Sol Ring", "battlefield");
   force.rules(match, { monarchId: match.players[1].id });
   force.commander(match, card.cardInstanceIds[0]);
-  expect(match.rules!.monarchId).toBe(match.players[1].id);
+  expect(match.rules.monarchId).toBe(match.players[1].id);
   expect(match.instances[card.cardInstanceIds[0]].commander).toBe(true);
 });

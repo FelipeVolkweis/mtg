@@ -103,7 +103,7 @@ export class TurnStructure {
             sourceId: source.id,
             affectedId: source.id,
             controllerId: source.controllerId,
-            ownerId: ctx.query.owner(source),
+            ownerId: source.ownerId,
             after: ctx.query.effective(source),
           },
           source,

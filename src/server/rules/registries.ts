@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { z } from "zod";
 import { abilitySchema, componentSchema } from "../../shared/card-dsl.js";
 
-// Vocabularies the rules DSL references by name (dsl-redesign.md §4.11).
+// Vocabularies the rules DSL references by name (docs/card-model.md).
 
 export const tokenDefinitionSchema = z
   .object({

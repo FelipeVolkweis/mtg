@@ -103,7 +103,10 @@ export class ScryfallSource {
         (async function* () {
           try {
             while (true) {
-              const { done, value } = await reader.read();
+              const { done, value } = (await reader.read()) as {
+                done: boolean;
+                value?: Uint8Array;
+              };
               if (done) return;
               yield value;
             }

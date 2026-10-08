@@ -131,7 +131,7 @@ export const discard: EffectHandler<"discard"> = {
 
 const onlyDiscard = (effects: Effect[]) =>
   effects.length === 1 && effects[0].kind === "discard"
-    ? (effects[0] as Discard)
+    ? effects[0]
     : undefined;
 
 export const chooseOne: EffectHandler<"choose-one"> = {

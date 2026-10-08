@@ -44,10 +44,10 @@ async function dying(game: Game, seat = 0) {
 }
 
 /** Runs with a synthetic State-Based Rule registered. */
-async function withRule(rule: StateBasedRule, body: () => Promise<void>) {
+function withRule(rule: StateBasedRule, body: () => void) {
   const remove = registerStateBasedRule(rule);
   try {
-    await body();
+    body();
   } finally {
     remove();
   }
@@ -58,7 +58,7 @@ function expectStable(game: Game, match: MatchState = game.match) {
   const query = engine(game, match).query;
   for (const rule of stateBasedRules())
     expect(rule.evaluate(query).kind, rule.id).not.toBe("changes");
-  expect(match.rules!.waitingTriggers ?? []).toEqual([]);
+  expect(match.rules.waitingTriggers ?? []).toEqual([]);
   expect(match.rules).not.toHaveProperty("triggerPlacement");
   expect(match.rules).not.toHaveProperty("checkpoint");
 }
@@ -130,7 +130,7 @@ test("trigger placement that causes a state-based action repeats the checkpoint"
           }
         : { kind: "none" },
   };
-  await withRule(rule, async () => {
+  withRule(rule, () => {
     force.rules(game.match, { markedDamage: { [creature.id]: 5 } });
     engine(game).checkpoint();
     expect(stackSources(game)).toEqual(["death"]);
@@ -179,27 +179,27 @@ test("a state-based choice suspends the checkpoint, survives restore, and resume
   const game = await effectGame();
   const marker = await dying(game, 1);
   const answered: string[] = [];
-  await withRule(choiceRule(marker, answered), async () => {
+  withRule(choiceRule(marker, answered), () => {
     // Player 0 passes: player 1 would receive Priority.
     expect(game.command(0, { type: "pass-priority" }).kind).toBe("pending");
     expect(game.match.priority).toBeUndefined();
-    const pending = game.match.rules!.pending!;
+    const pending = game.match.rules.pending!;
     expect(pending).toMatchObject({
       kind: "state-based-choice",
       stateBasedRule: "test-choice",
       playerId: game.player(1),
     });
-    expect(game.match.rules!.checkpoint).toEqual({
+    expect(game.match.rules.checkpoint).toEqual({
       playerId: game.player(1),
       passedPlayerIds: [game.player(0)],
     });
     // Only the chooser sees the procedure; nobody has Priority.
-    expect(game.view(1).rules!.prompt!.procedureId).toBe(pending.id);
-    expect(game.view(0).rules!.prompt).toBeUndefined();
+    expect(game.view(1).rules.prompt!.procedureId).toBe(pending.id);
+    expect(game.view(0).rules.prompt).toBeUndefined();
     expect(game.view(0).priority).toBeUndefined();
     expect(game.command(1, { type: "pass-priority" }).kind).toBe("rejected");
 
-    const restored: MatchState = JSON.parse(JSON.stringify(game.match));
+    const restored = JSON.parse(JSON.stringify(game.match)) as MatchState;
     expect(
       game.service.execute(
         restored,
@@ -228,7 +228,7 @@ test("a state-based choice suspends the checkpoint, survives restore, and resume
 test("a stale state-based choice id is refused and changes nothing", async () => {
   const game = await effectGame();
   const marker = game.seed("Silver Myr", "battlefield");
-  await withRule(choiceRule(marker, []), async () => {
+  withRule(choiceRule(marker, []), () => {
     engine(game).checkpoint();
     const before = JSON.stringify(game.match);
     expect(
@@ -252,7 +252,7 @@ test("every Priority grant through a turn follows a stable checkpoint", async ()
   const seen = new Set<TurnStep>();
   // Pass through every step to the next turn, resolving what triggers.
   for (let i = 0; i < 60 && game.match.turn.number < 3; i++) {
-    const pending = game.match.rules!.pending;
+    const pending = game.match.rules.pending;
     if (pending) {
       const seat = game.match.players.findIndex(
         (p) => p.id === pending.playerId,

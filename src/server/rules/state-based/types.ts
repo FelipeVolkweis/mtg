@@ -4,7 +4,7 @@ import type {
 } from "../../../shared/rules-state.js";
 import type { RulesMutator, RulesQuery } from "../context.js";
 
-// State-Based Rule contract (rules-engine-refactor.md §46–48). Each
+// State-Based Rule contract (CR 704). Each
 // state-based action is a rule object that reads the whole game state and
 // reports what it would do; the State-Based Action Runtime performs every
 // rule's changes together.
@@ -25,7 +25,7 @@ export type StateBasedChange =
 export type StateBasedResult =
   | { kind: "none" }
   | { kind: "changes"; changes: StateBasedChange[] }
-  /** A player must choose; the checkpoint suspends on this procedure (§47). */
+  /** A player must choose; the checkpoint suspends on this procedure. */
   | { kind: "choice"; procedure: PendingProcedure };
 
 export type RulesInput = Extract<MatchAction, { type: "rules-input" }>;

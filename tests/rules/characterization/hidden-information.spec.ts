@@ -8,6 +8,7 @@
 // | {kind}: only the responsible player sees the prompt, and its private options don't leak (parameterized) | New | issue 10: projected prompts (TP §33)
 
 import { expect, test } from "@playwright/test";
+import type { MatchState } from "../../../src/shared/rules-state";
 import { matchView } from "../../../src/server/match/match-view";
 import "../../support/round-trip";
 import { rulesGame, triggerGame } from "../../support/rules-game";
@@ -35,16 +36,16 @@ test("Omnitool privately inspects a short Library and reveals only its selected 
   }
   game.command(0, {
     type: "rules-input",
-    procedureId: view().rules!.prompt!.procedureId,
+    procedureId: view().rules.prompt!.procedureId,
     selections: { [creature.id]: [game.match.players[1].id] },
   });
   game.command(0, { type: "pass-priority" });
   game.command(1, { type: "pass-priority" });
-  const choice = view().rules!.prompt!;
+  const choice = view().rules.prompt!;
   expect(choice.promptKind).toBe("resolution-choice");
   expect(view().objects[artifact.id]).toBeDefined();
   expect(view(1).objects[artifact.id]).toBeUndefined();
-  const recovered = JSON.parse(JSON.stringify(game.match));
+  const recovered = JSON.parse(JSON.stringify(game.match)) as MatchState;
   expect(
     game.service.execute(
       recovered,
@@ -87,13 +88,13 @@ for (const selection of ["decline", "no-artifact", "empty"] as const) {
     game.answer({ [myr.id]: [game.match.players[1].id] });
     game.pass();
     if (selection !== "empty") {
-      const pending = game.view().rules!.prompt!;
+      const pending = game.view().rules.prompt!;
       expect(pending.options.select.objectIds).toEqual([]);
       expect(initial.slice(0, 6).every((id) => !game.view(1).objects[id])).toBe(
         true,
       );
       game.answer({ select: [] });
-      const recovered = JSON.parse(JSON.stringify(game.match));
+      const recovered = JSON.parse(JSON.stringify(game.match)) as MatchState;
       expect(
         game.service.execute(
           recovered,
@@ -119,7 +120,7 @@ for (const selection of ["decline", "no-artifact", "empty"] as const) {
 for (const [kind, reach] of Object.entries(scenarios))
   test(`${kind}: only the responsible player sees the prompt, and its private options don't leak`, async () => {
     const game = await triggerGame();
-    const { seat } = await reach(game);
+    const { seat } = reach(game);
     const actor = game.view(seat),
       other = game.view(1 - seat);
     const prompt = actor.rules.prompt!;

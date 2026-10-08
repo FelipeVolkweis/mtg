@@ -20,7 +20,7 @@ test("turn transitions expire mana, untap only the active player's permanents an
   force.mana(match, match.players[0].id, { C: 5 });
   // Eight starting cards require exactly one selected discard in cleanup.
   seed("Mind Stone", "hand");
-  while (!match.rules!.pending && match.turn.number === 1) {
+  while (!match.rules.pending && match.turn.number === 1) {
     const seat = match.players.findIndex(
       (player) => player.id === match.priority!.playerId,
     );
@@ -28,14 +28,14 @@ test("turn transitions expire mana, untap only the active player's permanents an
   }
   expect(match.turn.step).toBe("cleanup");
   expect(match.priority).toBeUndefined();
-  expect(match.rules!.mana[match.players[0].id].C).toBe(0);
+  expect(match.rules.mana[match.players[0].id].C).toBe(0);
   const hand = matchView(match, room.participants[0].id).zones.find(
     (zone) => zone.kind === "hand" && zone.ownerId === match.players[0].id,
   )!;
   expect(
     command(0, {
       type: "rules-input",
-      procedureId: match.rules!.pending!.id,
+      procedureId: match.rules.pending!.id,
       selections: { discard: [hand.objectIds![0]] },
       confirm: true,
     }).kind,
@@ -100,13 +100,13 @@ test("cleanup removes damage and temporary bonuses together, gives Priority for 
   expect(view().zones.find((z) => z.kind === "stack")!.count).toBe(1);
   pass(); // Resolve the death draw during cleanup.
   pass(); // A further cleanup requires discarding the newly drawn eighth card.
-  expect(view().rules!.prompt!.promptKind).toBe("cleanup-discard");
-  const pending = view().rules!.prompt!;
+  expect(view().rules.prompt!.promptKind).toBe("cleanup-discard");
+  const pending = view().rules.prompt!;
   game.command(0, {
     type: "rules-input",
     procedureId: pending.procedureId,
     selections: { discard: [pending.options.discard.objectIds[0]] },
   });
   expect(view().turn.number).toBe(2);
-  expect(view().rules!.markedDamage).toEqual({});
+  expect(view().rules.markedDamage).toEqual({});
 });

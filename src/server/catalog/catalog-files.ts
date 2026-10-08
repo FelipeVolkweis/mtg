@@ -29,10 +29,10 @@ const loadError = (name: string, errors: CompileError[]) =>
 
 /**
  * Loads a version 2 file into the Card Definition the engine uses: derived
- * values (card-model-refactor.md §3.3), then the compiler (dsl-redesign.md
- * §9); the engine runs the Core AST it emits. An authored error fails the
- * load. An implemented card the current runtime can't run fails too; an
- * unimplemented one loads without runtime abilities.
+ * values, then the compiler and the runtime support check
+ * (docs/rules-engine.md); the engine runs the Core AST it emits. An authored
+ * error fails the load. An implemented card the current runtime can't run
+ * fails too; an unimplemented one loads without runtime abilities.
  */
 export function definitionFromFile(
   file: CardDefinitionFile,

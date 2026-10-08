@@ -49,7 +49,7 @@ export class CommanderRules {
     const key = `${instance}:${destination.id}`;
     const answer = this.engine.rules.commanderReplay?.answers[key];
     if (answer === undefined)
-      throw new CommanderReplacement(this.engine.owner(object), key);
+      throw new CommanderReplacement(object.ownerId, key);
     return answer ? this.engine.zone("command") : destination;
   }
   moved(object: GameObject, destination: ZoneState) {

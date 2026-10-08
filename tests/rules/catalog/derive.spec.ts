@@ -10,7 +10,7 @@ test("derived fields equal the stored values for every catalog definition", asyn
   const catalog = await readCatalog("catalog");
   const mismatches: string[] = [];
   for (const card of Object.values(catalog.definitions)) {
-    const derived = deriveFields(card.form as CardForm, card.components);
+    const derived = deriveFields(card.form, card.components);
     const stored = {
       canonicalName: card.canonicalName,
       manaValue: card.manaValue,

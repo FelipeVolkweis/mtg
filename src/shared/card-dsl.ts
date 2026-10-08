@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// The card DSL: authored rules AST, version 2 (docs/plans/dsl-redesign.md §4),
+// The card DSL: authored rules AST, version 2 (docs/card-model.md),
 // the card definition file, and the card vocabulary every other shared
 // module builds on (colors, mana types, zone kinds, characteristics). This
 // module imports no other shared module.
@@ -76,7 +76,7 @@ export const statuses = [
 ] as const;
 export type Status = (typeof statuses)[number];
 
-/** Keywords the engine checks directly (§4.10). */
+/** Keywords the engine checks directly. */
 export const ruleKeywords = [
   "flying",
   "reach",
@@ -275,7 +275,7 @@ export type MacroKeyword =
   | { name: "living-weapon" };
 export type Keyword = RuleKeyword | MacroKeyword;
 
-/** CR 613 layers; the compiler tags every continuous change (§4.9). */
+/** CR 613 layers; the compiler tags every continuous change. */
 export type Layer =
   "1" | "2" | "3" | "4" | "5" | "6" | "7a" | "7b" | "7c" | "7d";
 
@@ -1215,7 +1215,7 @@ export const abilitySchema: z.ZodType<Ability> = z.lazy(
     ]) as z.ZodType<Ability>,
 );
 
-// ------------------------------------------------- definition file (CM §3)
+// ------------------------------------------------------------ definition file
 
 /** Scryfall layouts the importer accepts (catalog.service.ts supportedLayouts). */
 export const cardForms = [

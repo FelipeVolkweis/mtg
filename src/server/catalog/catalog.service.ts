@@ -69,7 +69,7 @@ function parseTypes(line: string) {
 
 const supportedLayouts = new Set<string>(cardForms);
 const singleFaceLayouts = new Set(["normal", "saga"]);
-/** The `imported` section of a definition file (card-model-refactor.md §3.2). */
+/** The `imported` section of a definition file (docs/card-model.md). */
 function importedSection(
   card: SourceCard,
   defaultPrintingId: string,
@@ -86,8 +86,7 @@ function importedSection(
   return {
     form: card.layout as CardDefinitionFile["imported"]["form"],
     components: faces.map((face) => characteristics(face, card)),
-    colorIdentity:
-      card.color_identity as CardDefinitionFile["imported"]["colorIdentity"],
+    colorIdentity: card.color_identity,
     defaultPrintingId,
   };
 }
