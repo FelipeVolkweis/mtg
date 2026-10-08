@@ -137,7 +137,7 @@ export function unsupportedMove(effect: ObjectMove): string | undefined {
 }
 
 const moveHandler = <K extends ObjectMove["kind"]>(): EffectHandler<K> => ({
-  unsupported: (effect) => unsupportedMove(effect as ObjectMove),
+  unsupported: (effect) => unsupportedMove(effect),
   execute(instruction, ctx) {
     const effect = instruction as ObjectMove;
     const ids = candidates(effect, ctx);
@@ -150,7 +150,7 @@ const moveHandler = <K extends ObjectMove["kind"]>(): EffectHandler<K> => ({
     return done;
   },
   answer(effect, _state, input, ctx) {
-    performMove(effect as ObjectMove, selection(ctx, input).ids, ctx);
+    performMove(effect, selection(ctx, input).ids, ctx);
     return done;
   },
 });

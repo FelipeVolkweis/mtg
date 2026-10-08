@@ -243,7 +243,7 @@ class Walker implements SupportCheck {
     if ("and" in base || "or" in base || "not" in base)
       this.unsupported("A nested predicate");
     const seen = new Set<string>();
-    this.fields(base as PredicateFields, seen);
+    this.fields(base, seen);
     for (const member of rest) {
       if ("not" in member) {
         const inner = member.not as PredicateFields;
@@ -255,7 +255,7 @@ class Walker implements SupportCheck {
       } else if ("and" in member || "or" in member)
         this.unsupported("A nested predicate");
       else {
-        const fields = member as PredicateFields;
+        const fields = member;
         if (typeof fields.type === "string" && Object.keys(fields).length === 1)
           continue;
         this.fields(fields, seen);
@@ -317,7 +317,7 @@ class Walker implements SupportCheck {
           const comparison = p.manaValue as { "="?: Value };
           if (comparison["="] === undefined)
             this.unsupported("A mana value comparison other than =");
-          this.value(comparison["="]!);
+          this.value(comparison["="]);
           set("manaValue");
           break;
         }

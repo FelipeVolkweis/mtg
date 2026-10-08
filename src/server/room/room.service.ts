@@ -2,7 +2,6 @@ import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { randomBytes, randomUUID } from "node:crypto";
 import type {
   Catalog,
-  Decklist,
   Participant,
   RoomCommand,
   RoomState,
@@ -135,7 +134,7 @@ export class RoomService implements OnModuleInit {
         participant.userId,
         deckId,
       );
-      return deck as Decklist;
+      return deck;
     } catch (error) {
       if (error instanceof DeckError)
         throw new TabletopError("Select one of your saved Decklists first.");

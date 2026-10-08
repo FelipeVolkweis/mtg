@@ -167,7 +167,7 @@ test("a resolving instant runs its program, then goes to its owner's Graveyard; 
     game.command(0, { type: "cast-spell", objectId: spell.id });
     game.command(0, {
       type: "rules-input",
-      procedureId: game.match.rules!.pending!.id,
+      procedureId: game.match.rules.pending!.id,
       targetIds: [myr.id],
     });
     if (!legal)
@@ -202,6 +202,6 @@ test("a permanent spell enters the Battlefield without an effect program", async
       .ids("battlefield")
       .map((id) => game.match.objects[id].characteristics.name),
   ).toContain("Sol Ring");
-  expect(game.match.rules!.resolving).toBeUndefined();
-  expect(game.match.rules!.pending).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
+  expect(game.match.rules.pending).toBeUndefined();
 });

@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { exchange, snapshot } from "./support/peer";
-import { table, saveDeck, startTable, act } from "./support/table";
+import { table, saveDeck } from "./support/table";
 
 test("Decklists are private, reusable and rejected as a whole for unavailable names or printings", async ({
   browser,

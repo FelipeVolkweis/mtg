@@ -33,7 +33,9 @@ export function assertJsonSafe(value: unknown, path = "match"): void {
     });
     return;
   }
-  const prototype = Object.getPrototypeOf(value);
+  const prototype = Object.getPrototypeOf(value) as {
+    constructor?: { name?: string };
+  } | null;
   if (prototype !== Object.prototype && prototype !== null)
     throw new Error(
       `${path} is a ${prototype?.constructor?.name ?? "class instance"}, which JSON does not restore.`,

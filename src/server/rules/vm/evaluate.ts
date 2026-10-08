@@ -232,7 +232,7 @@ export class Evaluator {
     for (const stat of ["power", "toughness"] as const) {
       if (p[stat] === undefined) continue;
       if (!/^-?\d+$/.test(c[stat] ?? "")) return false;
-      if (!this.compare(Number(c[stat]), p[stat]!)) return false;
+      if (!this.compare(Number(c[stat]), p[stat])) return false;
     }
     if (p.counters) {
       const count = counterCount(object.counters, p.counters.kind);

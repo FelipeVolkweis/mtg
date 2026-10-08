@@ -83,7 +83,7 @@ test("two players configure Commander, keep private opening Hands, pass Priority
     );
     const recovered = (await snapshot(alice)).match!;
     expect(recovered.revision).toBe(before.revision);
-    expect(recovered.rules!.mana[recovered.players[0].id].U).toBe(1);
+    expect(recovered.rules.mana[recovered.players[0].id].U).toBe(1);
     await alice.getByLabel("Room lobby and Decklists", { exact: true }).click();
     await alice
       .getByRole("button", { name: "Request new Match", exact: true })
@@ -153,7 +153,7 @@ test("target choices and activation payment resume after reload and stale input 
     await expect(
       alice.getByRole("heading", { name: "Choose target", exact: true }),
     ).toBeVisible();
-    const pendingId = (await snapshot(alice)).match!.rules!.prompt!.procedureId;
+    const pendingId = (await snapshot(alice)).match!.rules.prompt!.procedureId;
     await alice.reload();
     await expect(
       alice.getByRole("heading", { name: "Choose target", exact: true }),
@@ -181,10 +181,9 @@ test("target choices and activation payment resume after reload and stale input 
     await expect(
       alice.getByRole("heading", { name: "Pay costs", exact: true }),
     ).toBeVisible();
-    const activation = (await snapshot(alice)).match!.rules!.prompt!
-      .procedureId;
+    const activation = (await snapshot(alice)).match!.rules.prompt!.procedureId;
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       activation,
     );
     await cardAction(alice, "Sol Ring: add 2 C");
@@ -263,13 +262,13 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
       await cardAction(alice, `Cast ${name}`);
       if (name === "Pull from Tomorrow") {
         await alice.getByLabel("X", { exact: true }).fill("2");
-        const variableId = (await snapshot(alice)).match!.rules!.prompt!
+        const variableId = (await snapshot(alice)).match!.rules.prompt!
           .procedureId;
         await alice
           .getByRole("button", { name: "Confirm X", exact: true })
           .click();
         await alice.reload();
-        const payment = (await snapshot(alice)).match!.rules!.prompt!;
+        const payment = (await snapshot(alice)).match!.rules.prompt!;
         expect(payment.procedureId).not.toBe(variableId);
         expect(payment.lockedCost!).toMatchObject({ U: 2, generic: 2 });
         await alice
@@ -293,10 +292,10 @@ for (const name of ["Thirst for Knowledge", "Pull from Tomorrow"]) {
       const library = suspended.zones.find(
         (z) => z.kind === "library" && z.ownerId === player,
       )!.count;
-      const pendingId = suspended.rules!.prompt!.procedureId;
+      const pendingId = suspended.rules.prompt!.procedureId;
       await alice.reload();
       const restored = (await snapshot(alice)).match!;
-      expect(restored.rules!.prompt!.procedureId).toBe(pendingId);
+      expect(restored.rules.prompt!.procedureId).toBe(pendingId);
       expect(
         restored.zones.find(
           (z) => z.kind === "library" && z.ownerId === player,
@@ -384,9 +383,9 @@ test("simultaneous trigger controls restore their order choice after reconnect a
     await expect(
       alice.getByRole("heading", { name: "Order simultaneous triggers" }),
     ).toBeVisible();
-    const id = (await snapshot(alice)).match!.rules!.prompt!.procedureId;
+    const id = (await snapshot(alice)).match!.rules.prompt!.procedureId;
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(id);
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(id);
     await expect(
       bob.getByRole("heading", { name: "Order simultaneous triggers" }),
     ).toHaveCount(0);
@@ -475,14 +474,14 @@ test("Tome restores private scry controls after reconnect and permits keeping th
     await expect(
       prompt.getByRole("checkbox", { name: "Island", exact: true }),
     ).toBeVisible();
-    const before = (await snapshot(alice)).match!.rules!.prompt!;
+    const before = (await snapshot(alice)).match!.rules.prompt!;
     const inspected = before.options.bottom.objectIds[0];
     expect((await snapshot(bob)).match!.objects[inspected]).toBeUndefined();
     await expect(
       bob.getByRole("region", { name: "Pending rules choice" }),
     ).toHaveCount(0);
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       before.procedureId,
     );
     await prompt
@@ -549,7 +548,7 @@ test("living weapon shows its Attachment and equip offers only controlled creatu
     await expect(
       alice.getByRole("heading", { name: "Choose target", exact: true }),
     ).toBeVisible();
-    const pending = (await snapshot(alice)).match!.rules!.prompt!;
+    const pending = (await snapshot(alice)).match!.rules.prompt!;
     expect(pending.targets[0].legalIds).toHaveLength(1);
     await alice
       .getByLabel("Legal target")
@@ -812,12 +811,12 @@ test("Mind's Eye restores its private mana choice and uses the shared source and
     await expect(
       bob.getByRole("button", { name: "Decline payment", exact: true }),
     ).toHaveCount(0);
-    const pending = (await snapshot(alice)).match!.rules!.prompt!;
+    const pending = (await snapshot(alice)).match!.rules.prompt!;
     await alice.reload();
     await expect(
       alice.getByRole("button", { name: "Pay mana", exact: true }),
     ).toBeVisible();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       pending.procedureId,
     );
     const before = (await snapshot(alice)).match!.zones.find(
@@ -891,12 +890,12 @@ test("Omnitool's private Library choice survives reload and publicly displays on
     await expect(
       bob.getByRole("group", { name: /Select a card \(optional\)/ }),
     ).toHaveCount(0);
-    const pending = (await snapshot(alice)).match!.rules!.prompt!;
+    const pending = (await snapshot(alice)).match!.rules.prompt!;
     await alice.reload();
     await expect(
       selection.getByLabel("Mind Stone", { exact: true }),
     ).toBeVisible();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       pending.procedureId,
     );
     await selection.getByLabel("Mind Stone", { exact: true }).check();
@@ -1042,9 +1041,9 @@ test("improvise choices survive reload and share the locked payment controls", a
     await expect(
       alice.getByRole("group", { name: /Improvise: tap artifacts/ }),
     ).toBeVisible();
-    const pending = (await snapshot(alice)).match!.rules!.prompt!;
+    const pending = (await snapshot(alice)).match!.rules.prompt!;
     await alice.reload();
-    expect((await snapshot(alice)).match!.rules!.prompt!.procedureId).toBe(
+    expect((await snapshot(alice)).match!.rules.prompt!.procedureId).toBe(
       pending.procedureId,
     );
     const group = alice.getByRole("group", {
@@ -1057,7 +1056,7 @@ test("improvise choices survive reload and share the locked payment controls", a
       .click();
     await expect(group).toHaveCount(0);
     const match = (await snapshot(alice)).match!;
-    expect(match.rules!.prompt).toBeUndefined();
+    expect(match.rules.prompt).toBeUndefined();
     expect(match.zones.find((z) => z.kind === "stack")!.count).toBe(1);
     const artifacts = Object.values(match.objects).filter(
       (o) =>

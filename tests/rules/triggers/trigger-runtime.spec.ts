@@ -31,7 +31,7 @@ function event(
     ownerId: you,
     after: { name: "O", colors: [], typeLine: "", rulesText: "" },
     ...extra,
-  } as SemanticEvent;
+  };
 }
 
 const upkeep: TurnStep = "upkeep";
@@ -165,13 +165,13 @@ test("an event trigger reads the affected object as the event saw it", async () 
       before: { ...myr.characteristics, types: before },
     });
   new EventTriggerObserver(engine).collect(died(["Creature"]), myr, [watcher]);
-  expect(game.match.rules!.waitingTriggers ?? []).toHaveLength(0);
+  expect(game.match.rules.waitingTriggers ?? []).toHaveLength(0);
   new EventTriggerObserver(engine).collect(
     died(["Artifact", "Creature"]),
     myr,
     [watcher],
   );
-  expect(game.match.rules!.waitingTriggers).toMatchObject([
+  expect(game.match.rules.waitingTriggers).toMatchObject([
     { abilityId: "artifact-dies", playerId: game.player(0) },
   ]);
 });
@@ -181,7 +181,7 @@ test("a state trigger triggers when its condition becomes true, once while it wa
   const tome = game.seed("Mazemind Tome", "battlefield");
   const engine = new RulesEngine(game.match, game.catalog);
   const observe = () => new StateTriggerObserver(engine).collect();
-  const waiting = () => game.match.rules!.waitingTriggers ?? [];
+  const waiting = () => game.match.rules.waitingTriggers ?? [];
   force.counters(tome, [{ kind: "page", quantity: "3" }]);
   observe();
   expect(waiting()).toHaveLength(0);

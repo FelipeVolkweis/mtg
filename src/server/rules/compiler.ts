@@ -871,9 +871,7 @@ class Compiler {
       this.targetRef(to.target, s);
       return to;
     }
-    return isSelector(to)
-      ? this.selector(to, s)
-      : this.player(to as PlayerRef, s);
+    return isSelector(to) ? this.selector(to, s) : this.player(to, s);
   }
 
   private replacement(replacement: Replacement, s: Scope): Replacement {
@@ -962,7 +960,7 @@ class Compiler {
     if ("or" in predicate)
       return predicate.or.every((p) => this.mentions(p, key));
     if ("not" in predicate) return false;
-    return (predicate as PredicateFields)[key] !== undefined;
+    return predicate[key] !== undefined;
   }
 
   private grant(
@@ -1295,7 +1293,7 @@ class Compiler {
     if ("or" in predicate)
       return { or: predicate.or.map((p) => this.predicate(p, s)) };
     if ("not" in predicate) return { not: this.predicate(predicate.not, s) };
-    const { anyTarget, ...fields } = predicate as PredicateFields;
+    const { anyTarget, ...fields } = predicate;
     const out: PredicateFields = { ...fields };
     if (fields.controller) out.controller = this.player(fields.controller, s);
     if (fields.owner) out.owner = this.player(fields.owner, s);
@@ -1305,7 +1303,7 @@ class Compiler {
       out.dealtDamageBy = this.selector(fields.dealtDamageBy, s);
     for (const stat of ["manaValue", "power", "toughness"] as const)
       if (fields[stat] !== undefined)
-        out[stat] = this.comparison(fields[stat]!, s);
+        out[stat] = this.comparison(fields[stat], s);
     if (fields.counters) {
       this.counter(fields.counters.kind, s);
       out.counters = {

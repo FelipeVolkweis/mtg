@@ -62,7 +62,7 @@ export async function seedRulesScenario(
       object.artwork = catalog.printings[card.defaultPrintingId].artwork;
       match.objects[object.id] = object;
       zone.objectIds.push(object.id);
-      match.rules!.controlledSinceTurn[object.id] = 0;
+      match.rules.controlledSinceTurn[object.id] = 0;
       return object;
     }
     if (combat) {
@@ -72,7 +72,7 @@ export async function seedRulesScenario(
       add("Silver Myr", "battlefield", 1);
       add("Silver Myr", "battlefield", 1);
       add("Propaganda", "battlefield", 1);
-      match.rules!.mana[player.id].U = 0;
+      match.rules.mana[player.id].U = 0;
     }
     if (scenario === "crowded") {
       for (let i = 0; i < 104; i++) add("Silver Myr", "battlefield");
@@ -103,17 +103,17 @@ export async function seedRulesScenario(
     add("Counterspell", "hand");
     add("Mind Stone", "battlefield");
     add("Sol Ring", "battlefield");
-    match.rules!.setup.keptPlayerIds = match.players.map((player) => player.id);
-    match.rules!.turnStarted[player.id] = 1;
+    match.rules.setup.keptPlayerIds = match.players.map((player) => player.id);
+    match.rules.turnStarted[player.id] = 1;
     match.turn.activePlayerId = player.id;
     match.turn.step = scenario === "flash" ? "begin-combat" : "precombat-main";
     match.priority = { playerId: player.id, passedPlayerIds: [] };
-    match.rules!.mana[player.id].U = combat ? 0 : spellName ? 5 : 2;
+    match.rules.mana[player.id].U = combat ? 0 : spellName ? 5 : 2;
     if (scenario === "draw") {
       add("Mind's Eye", "battlefield");
       add("Mind Stone", "battlefield", 1);
-      match.rules!.mana[player.id].U = 0;
-      match.rules!.mana[match.players[1].id].U = 1;
+      match.rules.mana[player.id].U = 0;
+      match.rules.mana[match.players[1].id].U = 1;
       match.priority = { playerId: match.players[1].id, passedPlayerIds: [] };
     }
     if (scenario === "inspect") {

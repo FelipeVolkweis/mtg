@@ -17,7 +17,10 @@ import {
 import { CatalogService } from "../../../src/server/catalog/catalog.service";
 import type { ScryfallSource } from "../../../src/server/catalog/scryfall-source";
 import { readRegistries } from "../../../src/server/rules/registries";
-import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
+import {
+  cardDefinitionFileSchema,
+  type CardDefinitionFile,
+} from "../../../src/shared/card-dsl";
 import { initializeTestCatalog } from "../../support/empty-catalog";
 
 // The version 2 catalog (card-model-refactor.md §3, §6; dsl-redesign.md §9):
@@ -31,10 +34,9 @@ const fileNamed = async (prefix: string) =>
     definitions,
     (await readdir(definitions)).find((f) => f.startsWith(prefix))!,
   );
-// Untyped JSON: the tests below read catalog files field by field.
+// A stored definition file; the tests below read it field by field.
 const json = async (path: string) =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  JSON.parse(await readFile(path, "utf8"));
+  JSON.parse(await readFile(path, "utf8")) as CardDefinitionFile;
 
 async function tempCatalog() {
   const parent = await mkdtemp(join(tmpdir(), "mtg-catalog-"));
@@ -99,7 +101,10 @@ test("publishing a read catalog rewrites every definition file unchanged", async
 
 test("an authored error fails the load with the card and path", async () => {
   const file = await json(await fileNamed("thoughtcast-"));
-  file.authored.abilities[1].effects[0] = {
+  const spell = file.authored.abilities[1];
+  if (!("effects" in spell) || !spell.effects)
+    throw new Error("Thoughtcast's spell has effects");
+  spell.effects[0] = {
     kind: "create-token",
     token: "dragon-5-5",
     count: 1,
@@ -166,10 +171,11 @@ test("a set import writes only the imported section and leaves authored unchange
     };
     const source = (oracle: string) =>
       ({
-        fetchSet: async () => ({
-          cards: [{ ...card, oracle_text: oracle }],
-          names: [{ name: card.name, canonicalName: card.name }],
-        }),
+        fetchSet: () =>
+          Promise.resolve({
+            cards: [{ ...card, oracle_text: oracle }],
+            names: [{ name: card.name, canonicalName: card.name }],
+          }),
       }) as unknown as ScryfallSource;
     await new CatalogService().importSet("tst", source("Ward {2}"));
     const path = join(root, "definitions", `warded-wizard-${oracleId}.json`);

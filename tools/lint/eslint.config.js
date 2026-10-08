@@ -41,14 +41,16 @@ export default tseslint.config(
       // Promises: errors from the start.
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
-      // Too many hits to fix with the lint setup; quality roadmap Q13 fixes
-      // them and turns each back to "error".
-      "@typescript-eslint/no-unnecessary-type-assertion": "warn",
-      "@typescript-eslint/no-unsafe-member-access": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/no-unsafe-assignment": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
-      "@typescript-eslint/require-await": "warn",
+      // A leading underscore or a rest sibling marks a value left out on
+      // purpose, as in `const { revision: _revision, ...state } = match`.
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
   {

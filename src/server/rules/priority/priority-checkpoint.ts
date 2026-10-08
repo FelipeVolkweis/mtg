@@ -63,7 +63,7 @@ export class PriorityCheckpoint {
       if (placement === "suspended") return;
       if (placement === "idle") break;
     }
-    const state = rules.checkpoint!;
+    const state = rules.checkpoint;
     engine.match.priority = {
       playerId: state.playerId ?? engine.match.turn.activePlayerId,
       passedPlayerIds: state.passedPlayerIds ?? [],

@@ -22,7 +22,7 @@ export function RulesTabletop({
   busy: boolean;
 }) {
   const match = view.match!;
-  const rules = match.rules!;
+  const rules = match.rules;
   const player = match.players.find(
     (p) => p.participantId === view.participantId,
   );

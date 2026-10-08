@@ -109,7 +109,7 @@ test("a player with simultaneous triggers orders them, bottom of the Stack first
   ]);
   const placement = new TriggerPlacement(engine);
   expect(placement.place()).toBe("suspended");
-  const pending = game.match.rules!.pending!;
+  const pending = game.match.rules.pending!;
   expect(pending).toMatchObject({
     kind: "trigger-order",
     playerId: game.player(0),
@@ -148,7 +148,7 @@ test("two-part placement: part 1 in APNAP order, then part 2, each ordered separ
   const placement = new TriggerPlacement(engine, part);
   expect(placement.place()).toBe("suspended");
   // Player 0 has one part-1 trigger, then two part-2 triggers to order.
-  const pending = game.match.rules!.pending!;
+  const pending = game.match.rules.pending!;
   expect(pending.options!.order.objectIds).toHaveLength(2);
   expect(stack(game)).toEqual(["p1-a", "p1-b"]);
   const [x, y] = pending.options!.order.objectIds;
@@ -173,7 +173,7 @@ test("an order applies to its part: a later part asks the player again", async (
     t.abilityId.startsWith("p2") ? 2 : 1,
   );
   const answer = () => {
-    const pending = game.match.rules!.pending!;
+    const pending = game.match.rules.pending!;
     placement.answer({
       type: "rules-input",
       procedureId: pending.id,
@@ -183,7 +183,7 @@ test("an order applies to its part: a later part asks the player again", async (
   expect(placement.place()).toBe("suspended");
   answer();
   expect(placement.place()).toBe("suspended");
-  expect(game.match.rules!.pending!.options!.order.objectIds).toHaveLength(2);
+  expect(game.match.rules.pending!.options!.order.objectIds).toHaveLength(2);
   answer();
   expect(placement.place()).toBe("placed");
   expect(stack(game)).toEqual(["p1-a", "p1-b", "p2-c", "p2-d"]);
@@ -198,15 +198,15 @@ test("triggers that happen while a batch is placed wait for the next batch", asy
   ]);
   const placement = new TriggerPlacement(engine);
   expect(placement.place()).toBe("suspended");
-  expect(game.match.rules!.pending!.kind).toBe("trigger-target");
+  expect(game.match.rules.pending!.kind).toBe("trigger-target");
   // Something triggers during the target choice: the next batch.
-  game.match.rules!.waitingTriggers = [waiting(game, 0, "later")];
-  expect(game.match.rules!.triggerPlacement!.map((t) => t.abilityId)).toEqual([
+  game.match.rules.waitingTriggers = [waiting(game, 0, "later")];
+  expect(game.match.rules.triggerPlacement!.map((t) => t.abilityId)).toEqual([
     "second",
   ]);
   new PutTriggeredAbilityOnStackProcedure(engine).answer({
     type: "rules-input",
-    procedureId: game.match.rules!.pending!.id,
+    procedureId: game.match.rules.pending!.id,
     targetIds: [creature.id],
   });
   // Player 1's trigger finishes the current batch before player 0's new one.
@@ -222,7 +222,7 @@ test("a triggered ability's targets are chosen as it goes on the Stack", async (
   const creature = game.seed("Silver Myr", "battlefield");
   const engine = setup(game, [waiting(game, 0, "aim", true)]);
   expect(new TriggerPlacement(engine).place()).toBe("suspended");
-  const pending = game.match.rules!.pending!;
+  const pending = game.match.rules.pending!;
   expect(pending).toMatchObject({ kind: "trigger-target", stage: "targets" });
   const object = game.match.objects[pending.sourceId!];
   expect(object.zoneId).toBe(game.zone("stack").id);

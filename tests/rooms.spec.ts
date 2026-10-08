@@ -1,5 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIResponse } from "@playwright/test";
 import { createRoom, joinRoom, signIn, testPassword } from "./support/table";
+
+const message = async (response: APIResponse) =>
+  ((await response.json()) as { message: string }).message;
 
 test("a visitor creates an account, signs out and signs back in with the password", async ({
   page,
@@ -49,13 +52,9 @@ test("usernames are unique regardless of case and passwords have a minimum lengt
     password: testPassword,
   });
   expect(duplicate.status()).toBe(400);
-  expect((await duplicate.json()).message).toBe(
-    "That username is already taken.",
-  );
+  expect(await message(duplicate)).toBe("That username is already taken.");
   const short = await register({ username: `${username}x`, password: "short" });
-  expect((await short.json()).message).toBe(
-    "Passwords need at least 8 characters.",
-  );
+  expect(await message(short)).toBe("Passwords need at least 8 characters.");
 });
 
 test("ten failed sign-ins lock the username, even for the right password", async ({
@@ -71,7 +70,7 @@ test("ten failed sign-ins lock the username, even for the right password", async
     expect((await login("wrong password")).status()).toBe(401);
   const locked = await login(testPassword);
   expect(locked.status()).toBe(401);
-  expect((await locked.json()).message).toContain("Too many failed sign-ins");
+  expect(await message(locked)).toContain("Too many failed sign-ins");
 });
 
 test("signed-in Users create an invitation-only Room and return as the same participant", async ({

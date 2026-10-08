@@ -31,7 +31,7 @@ function recipients(to: Selector | PlayerRef, ctx: EffectContext) {
     ("binding" in to && ctx.eval.scope.players?.[to.binding])
   )
     return ctx.eval.players(to as PlayerRef);
-  return ctx.eval.objects(to as Selector);
+  return ctx.eval.objects(to);
 }
 
 export const damage: EffectHandler<"damage"> = {

@@ -66,7 +66,7 @@ test("a dies trigger observes the zone change with its snapshot", async () => {
     objectId: retriever.id,
     to: zone("graveyard", 0),
   });
-  const [trigger] = match.rules!.waitingTriggers!;
+  const [trigger] = match.rules.waitingTriggers!;
   expect(trigger.event).toMatchObject({
     kind: "zone-change",
     from: "battlefield",
@@ -85,7 +85,7 @@ test("a setup move is not observed by triggers", async () => {
     to: zone("library", 0),
     cause: "setup",
   });
-  expect(match.rules!.waitingTriggers ?? []).toEqual([]);
+  expect(match.rules.waitingTriggers ?? []).toEqual([]);
   expect(zone("library", 0).objectIds.at(-1)).not.toBe(card.id);
 });
 
@@ -107,16 +107,16 @@ test("a draw moves the top card and counts the turn's draws; an empty Library re
   const { engine, match, zone } = await engineGame();
   const player = match.players[0].id;
   const top = zone("library", 0).objectIds[0];
-  const before = match.rules!.thisTurn.draws[player] ?? 0;
+  const before = match.rules.thisTurn.draws[player] ?? 0;
   const { object } = engine.propose({ kind: "draw", playerId: player });
   expect(object!.zoneId).toBe(zone("hand", 0).id);
   expect(match.objects[top]).toBeUndefined();
-  expect(match.rules!.thisTurn.draws[player]).toBe(before + 1);
+  expect(match.rules.thisTurn.draws[player]).toBe(before + 1);
   force.clearZone(match, "library", player);
   expect(
     engine.propose({ kind: "draw", playerId: player }).object,
   ).toBeUndefined();
-  expect(match.rules!.failedDrawPlayerIds).toEqual([player]);
+  expect(match.rules.failedDrawPlayerIds).toEqual([player]);
 });
 
 test("damage marks creatures, lowers life and records the event", async () => {
@@ -131,9 +131,9 @@ test("damage marks creatures, lowers life and records the event", async () => {
       { sourceId: source.id, recipientId: match.players[1].id, amount: 3 },
     ],
   });
-  expect(match.rules!.markedDamage![creature.id]).toBe(1);
+  expect(match.rules.markedDamage![creature.id]).toBe(1);
   expect(match.players[1].life).toBe("37");
-  expect(match.rules!.thisTurn.damageEvents).toHaveLength(2);
+  expect(match.rules.thisTurn.damageEvents).toHaveLength(2);
 });
 
 test("life changes add or subtract", async () => {
@@ -162,7 +162,7 @@ test("a created token enters the Battlefield; a ceased object is gone", async ()
   );
   engine.propose({ kind: "create", object: token, zone: zone("battlefield") });
   expect(zone("battlefield").objectIds).toContain(token.id);
-  expect(match.rules!.controlledSinceTurn[token.id]).toBe(match.turn.number);
+  expect(match.rules.controlledSinceTurn[token.id]).toBe(match.turn.number);
   engine.propose({ kind: "cease", objectId: token.id });
   expect(match.objects[token.id]).toBeUndefined();
   expect(zone("battlefield").objectIds).not.toContain(token.id);

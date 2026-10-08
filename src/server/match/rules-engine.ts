@@ -24,12 +24,9 @@ import {
   activatable,
   activationZone,
   castPermissions,
-  choosesX,
   costsOf,
-  enchantFilter,
   isDiesTrigger,
   isManaAbility,
-  manaSymbols,
   oncePerTurn,
   production,
   sorceryTiming,
@@ -45,8 +42,6 @@ import type {
 import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { scopeBindings } from "../rules/vm/rule-vm.js";
-import { gameObject } from "./game-objects.js";
-import { manaCost } from "./mana.js";
 import { Library, zoneOf } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { Combat } from "./combat.js";
@@ -56,7 +51,6 @@ import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
 import { StackProposalProcedure } from "../rules/proposals/stack-proposal.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
 import {
-  costOptions,
   determineCost,
   pay,
   type CostProposal,
@@ -471,7 +465,7 @@ export class RulesEngine implements RulesMutator {
   targetSource(pending: PendingProcedure) {
     const object = this.match.objects[pending.sourceId ?? ""];
     return isDiesTrigger(object?.resolution?.ability)
-      ? object!.resolution!.event?.affectedId
+      ? object.resolution!.event?.affectedId
       : (object?.sourceObjectId ?? pending.sourceId);
   }
   /** Objects a filter can target; `selfId` (the targeting spell or ability) can't target itself. */

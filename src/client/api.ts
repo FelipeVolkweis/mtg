@@ -12,7 +12,9 @@ export async function request<T>(
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (response.status === 204) return undefined as T;
-  const data = await response.json().catch(() => ({}));
+  const data = (await response.json().catch(() => ({}))) as {
+    message?: string | string[];
+  };
   if (!response.ok)
     throw new Error(
       (Array.isArray(data.message) ? data.message[0] : data.message) ??

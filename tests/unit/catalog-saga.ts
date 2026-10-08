@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CatalogService } from "../../src/server/catalog/catalog.service.js";
 import type { ScryfallSource } from "../../src/server/catalog/scryfall-source.js";
+import type { CardDefinitionFile } from "../../src/shared/card-dsl.js";
 
 void test("imports a single-faced Saga with its chapter text", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "mtg-saga-import-"));
@@ -23,30 +24,34 @@ void test("imports a single-faced Saga with its chapter text", async (t) => {
   const printingId = "10000000-0000-4000-8000-000000000008";
   const oracleId = "20000000-0000-4000-8000-000000000008";
   const source = {
-    fetchSet: async () => ({
-      cards: [
-        {
-          id: printingId,
-          oracle_id: oracleId,
-          name: "The Elder Dragon War",
-          set: "fdc",
-          collector_number: "1",
-          layout: "saga",
-          color_identity: ["R"],
-          colors: ["R"],
-          cmc: 4,
-          keywords: ["Read Ahead"],
-          mana_cost: "{2}{R}{R}",
-          type_line: "Enchantment — Saga",
-          oracle_text:
-            "Read ahead\nI — Deal 2 damage.\nII — Discard.\nIII — Create a Dragon.",
-          image_uris: { normal: "https://cards.example.test/saga.svg" },
-        },
-      ],
-      names: [
-        { name: "The Elder Dragon War", canonicalName: "The Elder Dragon War" },
-      ],
-    }),
+    fetchSet: () =>
+      Promise.resolve({
+        cards: [
+          {
+            id: printingId,
+            oracle_id: oracleId,
+            name: "The Elder Dragon War",
+            set: "fdc",
+            collector_number: "1",
+            layout: "saga",
+            color_identity: ["R"],
+            colors: ["R"],
+            cmc: 4,
+            keywords: ["Read Ahead"],
+            mana_cost: "{2}{R}{R}",
+            type_line: "Enchantment — Saga",
+            oracle_text:
+              "Read ahead\nI — Deal 2 damage.\nII — Discard.\nIII — Create a Dragon.",
+            image_uris: { normal: "https://cards.example.test/saga.svg" },
+          },
+        ],
+        names: [
+          {
+            name: "The Elder Dragon War",
+            canonicalName: "The Elder Dragon War",
+          },
+        ],
+      }),
   } as unknown as ScryfallSource;
   await new CatalogService().importSet("fdc", source);
   const definition = JSON.parse(
@@ -54,7 +59,7 @@ void test("imports a single-faced Saga with its chapter text", async (t) => {
       join(root, "definitions", `the-elder-dragon-war-${oracleId}.json`),
       "utf8",
     ),
-  );
+  ) as CardDefinitionFile;
   assert.equal(definition.catalogVersion, 2);
   assert.equal(definition.imported.form, "saga");
   assert.equal(definition.imported.components.length, 1);

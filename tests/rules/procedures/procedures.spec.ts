@@ -22,7 +22,7 @@ const kindOf = (pending: PendingProcedure) =>
 for (const [kind, reach] of Object.entries(scenarios)) {
   test(`${kind}: an old or unknown procedure id is refused and changes nothing`, async () => {
     const game = await triggerGame();
-    const { seat, answer, old } = await reach(game);
+    const { seat, answer, old } = reach(game);
     const pending = game.match.rules.pending!;
     expect(kindOf(pending)).toBe(kind);
     const action = answer(pending, game) as { procedureId: string };
@@ -41,7 +41,7 @@ for (const [kind, reach] of Object.entries(scenarios)) {
 
   test(`${kind}: saved and restored, it continues the same way`, async () => {
     const game = await triggerGame();
-    const { seat, answer } = await reach(game);
+    const { seat, answer } = reach(game);
     const pending = game.match.rules.pending!;
     const action = answer(pending, game);
     const restored = JSON.parse(JSON.stringify(game.match)) as MatchState;

@@ -69,7 +69,7 @@ test("the program completes, the ability leaves the Stack and Priority returns",
   expect(game.resolve([{ kind: "gain-life", amount: 1 }]).kind).toBe(
     "accepted",
   );
-  expect(game.match.rules!.resolving).toBeUndefined();
+  expect(game.match.rules.resolving).toBeUndefined();
   expect(game.ids("stack")).toEqual([]);
   expect(game.match.priority?.playerId).toBe(game.match.turn.activePlayerId);
 });

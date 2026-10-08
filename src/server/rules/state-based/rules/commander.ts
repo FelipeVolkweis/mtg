@@ -48,7 +48,7 @@ export const commanderReturn: StateBasedRule = {
       input.variables
     )
       throw new RuleViolation("Choose Confirm or Decline.");
-    const rules = ctx.query.match.rules!;
+    const rules = ctx.query.match.rules;
     const queue = rules.commanderReturns ?? [];
     // Earlier entries had already left the Graveyard or exile.
     rules.commanderReturns = queue.slice(queue.indexOf(pending.sourceId!) + 1);

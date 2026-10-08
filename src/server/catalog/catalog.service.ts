@@ -86,8 +86,7 @@ function importedSection(
   return {
     form: card.layout as CardDefinitionFile["imported"]["form"],
     components: faces.map((face) => characteristics(face, card)),
-    colorIdentity:
-      card.color_identity as CardDefinitionFile["imported"]["colorIdentity"],
+    colorIdentity: card.color_identity,
     defaultPrintingId,
   };
 }
