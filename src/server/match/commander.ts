@@ -14,7 +14,7 @@ import {
   ownKeyword,
   triggerSubject,
 } from "../rules/abilities.js";
-import { conjuncts } from "../rules/support.js";
+import { conjuncts, isEventReference } from "../rules/ast.js";
 import { unsupportedEffect } from "../rules/vm/effects/registry.js";
 import { commanderEligible, deckIssues } from "../deck/format-rules.js";
 import { RuleViolation } from "../rules/rule-violation.js";
@@ -92,13 +92,11 @@ export function automationEligible(card: CardDefinition): boolean {
             effects.some(
               (effect) =>
                 effect.kind === "may-pay" &&
-                JSON.stringify(effect.player) ===
-                  JSON.stringify({ event: "player" }) &&
+                isEventReference(effect.player, "player") &&
                 !!effect.else?.some(
                   (e) =>
                     e.kind === "counter" &&
-                    JSON.stringify(e.objects) ===
-                      JSON.stringify({ event: "source" }),
+                    isEventReference(e.objects, "source"),
                 ),
             )
           );
@@ -146,7 +144,9 @@ export function validateCommanderDeck(
   const deck = participant.deck;
   if (!deck) throw new RuleViolation("Select a Decklist first.");
   if (deck.format !== "commander")
-    throw new RuleViolation("Select a Commander Decklist for a Commander Match.");
+    throw new RuleViolation(
+      "Select a Commander Decklist for a Commander Match.",
+    );
   const [issue] = deckIssues(deck, catalog);
   if (issue) throw new RuleViolation(issue);
   const unsupported = deck.entries

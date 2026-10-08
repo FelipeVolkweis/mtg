@@ -4,6 +4,7 @@ import type {
 } from "../../../shared/rules-state.js";
 import type { Cost } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
+import type { SupportCheck } from "../support-check.js";
 
 // Cost Runtime types (rules-engine-refactor.md §35–38). A cost is fully
 // payable or not paid at all: handlers plan data, and nothing changes until
@@ -43,6 +44,8 @@ export interface CostHandler<C extends Cost = Cost> {
   plan(cost: C, key: string, ctx: CostContext): ComponentPlan;
   /** The objects the player may choose for this component. */
   options?(cost: C, ctx: CostContext): SelectionOption;
+  /** Rejects the forms of this cost the runtime doesn't support. */
+  support(cost: C, check: SupportCheck): void;
 }
 
 /**

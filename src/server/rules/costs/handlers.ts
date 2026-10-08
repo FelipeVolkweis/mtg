@@ -10,10 +10,17 @@ import type {
   CostMutation,
 } from "./types.js";
 import { RuleViolation } from "../rule-violation.js";
+import { astEqual, conjuncts } from "../ast.js";
+import {
+  supported,
+  type Registry,
+  type SupportCheck,
+} from "../support-check.js";
 
 // Cost Handlers (rules-engine-refactor.md §36): one per Core cost kind. Each
 // validates its own component and returns data; the Cost Runtime checks the
-// components against each other and commits them together.
+// components against each other and commits them together. Each also
+// declares which of its forms the catalog may use (`support`).
 
 type Of<K extends Cost["kind"]> = Extract<Cost, { kind: K }>;
 type Selected = Of<"tap" | "sacrifice" | "discard" | "return" | "exile">;
@@ -80,6 +87,10 @@ const selectedMove = {
   exile: "exile",
 } as const;
 
+/** A cost that runs but no supported card may use yet. */
+const unreleased = (cost: Cost, check: SupportCheck) =>
+  check.unsupported(`The ${cost.kind} cost`);
+
 const selected: CostHandler<Selected> = {
   plan(cost, key, ctx) {
     const objects = chosen(ctx, key, cost.count);
@@ -114,17 +125,22 @@ const selected: CostHandler<Selected> = {
       objectIds: candidates(ctx, cost, cost.kind === "tap"),
     };
   },
+  support(cost, check) {
+    if (cost.kind === "exile") unreleased(cost, check);
+    check.filter(cost.filter);
+  },
 };
 
 const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
   // Mana is the locked total cost, paid by the Cost Runtime's mana step.
-  mana: { plan: () => planned() },
+  mana: { plan: () => planned(), support: supported },
   "tap-source": {
     plan(_cost, _key, ctx) {
       if (!ctx.engine.canPayTapSymbol(ctx.source, ctx.playerId))
         throw new RuleViolation("The source cannot pay its tap-symbol cost.");
       return planned({ kind: "tap", objectId: ctx.source.id });
     },
+    support: supported,
   },
   "untap-source": {
     plan(_cost, _key, ctx) {
@@ -132,6 +148,7 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         throw new RuleViolation("The source cannot pay its untap-symbol cost.");
       return planned({ kind: "untap", objectId: ctx.source.id });
     },
+    support: unreleased,
   },
   "sacrifice-source": {
     plan(_cost, _key, ctx) {
@@ -142,6 +159,7 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         to: "graveyard",
       });
     },
+    support: supported,
   },
   "discard-source": {
     plan(_cost, _key, ctx) {
@@ -152,17 +170,24 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         to: "graveyard",
       });
     },
+    support: supported,
   },
   "exile-source": {
     plan(_cost, _key, ctx) {
       requireSourceIn(ctx, "battlefield", "The source cannot be exiled.");
       return planned({ kind: "move", objectId: ctx.source.id, to: "exile" });
     },
+    support: unreleased,
   },
   life: {
     plan(cost, _key, ctx) {
       const amount = ctx.engine.value(cost.amount, ctx.playerId, ctx.source.id);
       return planned({ kind: "pay-life", amount });
+    },
+    support(cost, check) {
+      if (astEqual(cost.amount, { commanderColors: "you" })) return;
+      if (typeof cost.amount !== "number")
+        check.unsupported("A variable life cost");
     },
   },
   "counter-source": {
@@ -177,7 +202,9 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
           (c) => c.kind === cost.counter,
         );
         if (!counter || BigInt(counter.quantity) < BigInt(cost.count))
-          throw new RuleViolation(`Remove ${cost.count} ${cost.counter} counters.`);
+          throw new RuleViolation(
+            `Remove ${cost.count} ${cost.counter} counters.`,
+          );
       }
       return planned({
         kind: "counters",
@@ -185,6 +212,10 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         counter: cost.counter,
         delta: cost.operation === "remove" ? -cost.count : cost.count,
       });
+    },
+    support(cost, check) {
+      if (cost.operation !== "put")
+        check.unsupported("Removing counters as a cost");
     },
   },
   tap: selected,
@@ -203,7 +234,9 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
           creature.status.tapped ||
           !ctx.engine.matches(creature, cost.filter, ctx.playerId)
         )
-          throw new RuleViolation("Choose untapped creatures you control to crew.");
+          throw new RuleViolation(
+            "Choose untapped creatures you control to crew.",
+          );
         power += Number(ctx.engine.effective(creature).power) || 0;
       }
       if (power < cost.power)
@@ -223,9 +256,24 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         objectIds: candidates(ctx, cost, true),
       };
     },
+    support(cost, check) {
+      if (!conjuncts(cost.filter).some((f) => f.status === "untapped"))
+        check.unsupported("Crew from possibly tapped creatures");
+      check.filter(cost.filter);
+    },
   },
 };
 
 export function costHandler<C extends Cost>(cost: C): CostHandler<C> {
   return handlers[cost.kind] as unknown as CostHandler<C>;
+}
+
+/** The cost kinds the runtime pays, each with its support declaration. */
+export const costRegistry: Registry = handlers;
+
+/** Rejects a cost the runtime can't pay (for the support check). */
+export function costSupport(cost: Cost, check: SupportCheck) {
+  const handler = (handlers as Partial<typeof handlers>)[cost.kind];
+  if (!handler) return check.unsupported(`The ${cost.kind} cost`);
+  (handler as CostHandler).support(cost, check);
 }

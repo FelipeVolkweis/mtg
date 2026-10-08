@@ -73,8 +73,11 @@ four steps:
    name and the path.
 4. Check the Core AST against the runtime
    ([support.ts](../src/server/rules/support.ts)). The engine runs the
-   compiler's Core abilities directly (`CardDefinition.abilities`); the
-   effect handler registry confirms it can run each effect. An implemented
+   compiler's Core abilities directly (`CardDefinition.abilities`). The
+   support check only walks the ability: each effect, trigger, cost, static
+   grant, replacement and keyword registry entry declares, next to its
+   runtime code, which forms it runs, and a kind with no entry is rejected
+   (`tests/rules/compiler/support-coverage.spec.ts`). An implemented
    card that uses a construct the current runtime can't run fails the load;
    an unimplemented one loads without runtime abilities.
 

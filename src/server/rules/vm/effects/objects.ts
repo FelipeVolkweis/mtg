@@ -1,6 +1,7 @@
 import type { PlayerRef, Selector } from "../../../../shared/card-dsl.js";
 import { gameObject } from "../../../match/game-objects.js";
 import { tokenCharacteristics } from "../../../match/tokens.js";
+import { astEqual } from "../../ast.js";
 import { selection } from "./selection.js";
 import { choiceOf } from "./zone-change.js";
 import { done, type EffectContext, type EffectHandler } from "./types.js";
@@ -57,11 +58,7 @@ export const damage: EffectHandler<"damage"> = {
 export const tap: EffectHandler<"tap"> = {
   unsupported(effect) {
     const choice = choiceOf(effect.objects);
-    if (
-      choice &&
-      (choice.chooser ||
-        JSON.stringify(choice.count) !== JSON.stringify({ min: 0 }))
-    )
+    if (choice && (choice.chooser || !astEqual(choice.count, { min: 0 })))
       return "Tapping other than any number of chosen objects";
     return undefined;
   },
