@@ -60,7 +60,8 @@ function kinds(schema: Schema, field: string): string[] {
 function literals(schema: Schema): string[] {
   const d = def(schema);
   if (d.type === "literal") return d.values as string[];
-  if (d.type === "enum") return Object.values(d.entries as Record<string, string>);
+  if (d.type === "enum")
+    return Object.values(d.entries as Record<string, string>);
   throw new Error(`Not a literal or enum: ${String(d.type)}`);
 }
 
@@ -72,6 +73,7 @@ const check: SupportCheck = {
   },
   at: (_field, run) => run(),
   filter() {},
+  condition() {},
   value() {},
   objects() {},
   keyword() {},
@@ -221,6 +223,7 @@ test("the registries run these kinds", () => {
   expect(handled(triggerRegistry)).toEqual([
     "attacks",
     "becomes-target",
+    "blocks",
     "cast",
     "deals-damage",
     "dies",
@@ -233,16 +236,25 @@ test("the registries run these kinds", () => {
   ]);
   expect(handled(costRegistry)).toEqual(kinds(costSchema, "kind").sort());
   expect(handled(grantRegistry)).toEqual([
+    "additional-land-plays",
     "attack-requirement",
     "attack-tax",
     "block-restriction",
+    "cant-attack",
     "cant-be-countered",
+    "cant-block",
     "cast-timing",
     "continuous",
     "cost-modifier",
+    "max-blockers",
     "maximum-hand-size",
     "untap-restriction",
   ]);
   expect(handled(replacementRegistry)).toEqual(["enter-tapped"]);
-  expect(handled(macroKeywordRegistry)).toEqual(["enchant", "improvise"]);
+  expect(handled(macroKeywordRegistry)).toEqual([
+    "enchant",
+    "escalate",
+    "gift",
+    "improvise",
+  ]);
 });

@@ -26,7 +26,58 @@
     "defaultPrintingId": "0cc5faf4-c42b-4bbe-bd1f-92be522330b3"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "spiders",
+        "description": "Create X 1/2 green Spider creature tokens with reach, where X is the number of creatures attacking you. Prevent all combat damage that would be dealt this turn by non-Spider creatures.",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "create-token",
+            "token": "spider-1-2-green-reach",
+            "count": {
+              "count": {
+                "all": {
+                  "zone": "battlefield",
+                  "type": [
+                    "Creature"
+                  ],
+                  "attacking": "you"
+                }
+              }
+            }
+          },
+          {
+            "kind": "apply-replacement",
+            "event": {
+              "event": "would-be-dealt-damage",
+              "source": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ]
+                  },
+                  {
+                    "not": {
+                      "subtype": [
+                        "Spider"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "combat": true
+            },
+            "replace": {
+              "kind": "prevent"
+            },
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

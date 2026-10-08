@@ -30,7 +30,64 @@
     "defaultPrintingId": "7a4e636a-2926-4ee3-aae0-a5c784ce5edc"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "devour",
+        "description": "{G}: Exile target card from a graveyard. If it was a creature card, put a +1/+1 counter on this creature and you gain 1 life.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{G}"
+            ]
+          }
+        ],
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "graveyard",
+              "object": "card"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "bind": "exiled",
+            "kind": "exile",
+            "objects": "target"
+          },
+          {
+            "kind": "if",
+            "condition": {
+              "matches": {
+                "selector": {
+                  "binding": "exiled"
+                },
+                "predicate": {
+                  "type": [
+                    "Creature"
+                  ]
+                }
+              }
+            },
+            "then": [
+              {
+                "kind": "add-counters",
+                "objects": "source",
+                "counter": "+1/+1",
+                "count": 1
+              },
+              {
+                "kind": "gain-life",
+                "amount": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

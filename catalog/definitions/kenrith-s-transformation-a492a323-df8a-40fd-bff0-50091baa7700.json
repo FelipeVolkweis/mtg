@@ -30,7 +30,83 @@
     "defaultPrintingId": "f265caeb-d1d2-4d95-ba38-9425482746e7"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enchant",
+        "description": "Enchant creature",
+        "kind": "keyword",
+        "keyword": {
+          "name": "enchant",
+          "filter": {
+            "zone": "battlefield",
+            "type": [
+              "Creature"
+            ]
+          }
+        }
+      },
+      {
+        "id": "entry-draw",
+        "description": "When this Aura enters, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "elk",
+        "description": "Enchanted creature loses all abilities and is a green Elk creature with base power and toughness 3/3. (It loses all other card types and creature types.)",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "is": {
+                  "attachedTo": "source"
+                }
+              }
+            },
+            "changes": [
+              {
+                "kind": "remove-abilities"
+              },
+              {
+                "kind": "set-types",
+                "types": [
+                  "Creature"
+                ],
+                "subtypes": [
+                  "Elk"
+                ]
+              },
+              {
+                "kind": "set-colors",
+                "colors": [
+                  "G"
+                ]
+              },
+              {
+                "kind": "set-base-stats",
+                "power": 3,
+                "toughness": 3
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

@@ -116,6 +116,13 @@ export class RuleVM {
     }
   }
 
+  /** The waiting instruction finished outside the VM: continue after it. */
+  resume(): VMResult {
+    delete this.execution.waiting;
+    top(this.execution)!.pc++;
+    return this.run();
+  }
+
   /** Answers the waiting instruction, then continues. */
   answer(input: RulesInput): VMResult {
     const waiting = this.execution.waiting;

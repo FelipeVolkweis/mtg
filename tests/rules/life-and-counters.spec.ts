@@ -73,6 +73,9 @@ test("counters are added, counted and dropped when empty", () => {
   ]);
   expect(counterCount(object.counters, "+1/+1")).toBe(5);
   expect(counterCount(object.counters, "loyalty")).toBe(0);
+  // No kind counts the counters of every kind ("a counter on it").
+  expect(counterCount(object.counters)).toBe(6);
+  expect(counterCount([])).toBe(0);
   expect(hasCounters(object.counters, "charge", 1)).toBe(true);
   expect(hasCounters(object.counters, "charge", 2)).toBe(false);
   // A counter cost needs the counter, even for zero of them.

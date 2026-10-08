@@ -1,7 +1,7 @@
 import type { JsonValue } from "../../../../shared/rules-state.js";
 import type { Effect } from "../../../../shared/card-dsl.js";
 import { reselectDefender } from "./combat.js";
-import { applyContinuous, applyGrant } from "./continuous.js";
+import { applyContinuous, applyGrant, applyReplacement } from "./continuous.js";
 import {
   forEachPlayer,
   ifThen,
@@ -11,9 +11,11 @@ import {
   sequence,
 } from "./control.js";
 import { chooseOne, discard } from "./discard.js";
+import { fight } from "./fight.js";
 import { librarySequence } from "./library.js";
+import { play } from "./play.js";
 import { addCounters, attach, createToken, damage, tap } from "./objects.js";
-import { becomeMonarch, draw, gainLife, loseLife } from "./players.js";
+import { addMana, becomeMonarch, draw, gainLife, loseLife } from "./players.js";
 import type {
   EffectContext,
   EffectHandler,
@@ -40,13 +42,17 @@ const handlers: { [K in EffectKind]?: EffectHandler<K> } = {
   "gain-life": gainLife,
   "lose-life": loseLife,
   "become-monarch": becomeMonarch,
+  "add-mana": addMana,
+  play,
   damage,
+  fight,
   tap,
   "add-counters": addCounters,
   attach,
   "create-token": createToken,
   "apply-continuous": applyContinuous,
   "apply-grant": applyGrant,
+  "apply-replacement": applyReplacement,
   "reselect-defender": reselectDefender,
   sequence,
   if: ifThen,

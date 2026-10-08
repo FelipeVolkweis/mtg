@@ -32,7 +32,36 @@
     "defaultPrintingId": "6672f025-525d-41ca-bd81-d4029e04f5f2"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "flying",
+        "description": "Flying",
+        "kind": "keyword",
+        "keyword": "flying"
+      },
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "W",
+            "U",
+            "B",
+            "R",
+            "G"
+          ]
+        }
+      }
+    ]
   }
 }

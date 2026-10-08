@@ -26,7 +26,55 @@
     "defaultPrintingId": "c193aab3-e53a-40ff-bd30-892170a88ff9"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "equipped-keywords",
+        "description": "Equipped creature has hexproof and haste.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "is": {
+                  "attachedTo": "source"
+                }
+              }
+            },
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "hexproof"
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "haste"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "equip",
+        "description": "Equip {1} ({1}: Attach to target creature you control. Equip only as a sorcery.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "equip",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{1}"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

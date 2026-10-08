@@ -153,10 +153,17 @@ export interface PredicateFields {
   manaValue?: Comparison;
   power?: Comparison;
   toughness?: Comparison;
-  counters?: { kind: string; count: Comparison };
+  /** `kind` omitted: counters of any kind. */
+  counters?: { kind?: string; count: Comparison };
   dealtDamageBy?: Selector;
   player?: PlayerRef;
   anyTarget?: true;
+  /** Has the commander designation (CR 903.3). */
+  commander?: true;
+  /** Has the keyword ability (any of, when several). */
+  keyword?: RuleKeyword | RuleKeyword[];
+  /** Is attacking that player (CR 506.3). */
+  attacking?: PlayerRef;
 }
 
 export type Predicate =
@@ -175,6 +182,9 @@ export type Value =
   | { sum: Value[] }
   | { stat: { of: Selector; name: StatName } }
   | { greatest: { of: Selector; name: StatName } }
+  | { total: { of: Selector; name: StatName } }
+  | { product: Value[] }
+  | { atCast: Value }
   | { cardsIn: { zone: ZoneKind; player: PlayerRef } }
   | { lifeTotal: PlayerRef }
   | { commanderColors: PlayerRef }
@@ -227,6 +237,8 @@ export type Destination =
       player?: PlayerRef;
       position?: "top" | "bottom";
       tapped?: true;
+      /** Exile only: the object is exiled face down (CR 406.3). */
+      faceDown?: true;
       controller?: PlayerRef;
     };
 
@@ -234,7 +246,15 @@ export type EventPattern =
   | { event: "would-enter"; object: Selector | Predicate }
   | { event: "would-gain-life"; player: PlayerRef }
   | { event: "would-draw"; player: PlayerRef }
-  | { event: "would-be-dealt-damage"; recipient: Selector | Predicate }
+  | {
+      event: "would-be-dealt-damage";
+      /** Omitted: any object or player. */
+      recipient?: Selector | Predicate;
+      /** Omitted: damage from any source. */
+      source?: Selector | Predicate;
+      /** Only combat damage (true) or only noncombat damage (false). */
+      combat?: boolean;
+    }
   | { event: "leaves-battlefield"; object: Selector };
 
 export type Duration =
@@ -269,6 +289,7 @@ export type MacroKeyword =
   | { name: "crew"; power: number }
   | { name: "enchant"; filter: Predicate }
   | { name: "improvise" }
+  | { name: "gift"; gift: string }
   | { name: "kicker"; costs: Cost[] }
   | { name: "escalate"; costs: Cost[] }
   | { name: "flashback"; costs: Cost[] }
@@ -281,8 +302,13 @@ export type Layer =
 
 export type ContinuousChange = { layer?: Layer[] } & (
   | { kind: "add-types"; types?: string[]; subtypes?: string[] }
+  | { kind: "set-types"; types?: string[]; subtypes?: string[] }
+  | { kind: "set-colors"; colors: Color[] }
+  | { kind: "remove-abilities" }
+  | { kind: "grant-ability"; ability: Ability }
   | { kind: "set-base-stats"; power: Value; toughness: Value }
   | { kind: "add-stats"; power: Value; toughness: Value }
+  | { kind: "double-stats"; stats: ("power" | "toughness")[] }
   | { kind: "define-stats"; power: Value; toughness: Value }
   | { kind: "grant-keyword"; keyword: RuleKeyword }
   | { kind: "gain-control"; player: PlayerRef }
@@ -309,7 +335,10 @@ export type StaticGrant =
   | { kind: "block-tax"; costPerBlocker: Cost[] }
   | { kind: "attack-requirement"; objects: Selector }
   | { kind: "block-restriction"; objects: Selector; by?: Predicate }
+  | { kind: "cant-attack"; objects: Selector }
   | { kind: "cant-block"; objects: Selector }
+  | { kind: "max-blockers"; objects: Selector; count: number }
+  | { kind: "additional-land-plays"; player: PlayerRef; count: Value }
   | { kind: "cant-be-countered"; spells: "this" | Predicate }
   | { kind: "untap-restriction"; objects: Selector; unless?: Condition };
 
@@ -325,6 +354,7 @@ export type Trigger =
   | { event: "dies"; object: Selector | Predicate }
   | { event: "cast"; spell: Predicate; caster?: PlayerRef }
   | { event: "attacks"; attacker: Selector | Predicate }
+  | { event: "blocks"; blocker: Selector | Predicate }
   | {
       event: "deals-damage";
       source: Selector | Predicate;
@@ -367,13 +397,16 @@ export type Effect = Bind &
     | {
         kind: "library-sequence";
         player: PlayerRef;
-        count: Value;
+        /** A number of cards, or all cards down to the first matching one. */
+        count: Value | { until: Predicate };
         operation: "look" | "reveal";
         select?: {
           filter?: Predicate;
           max: number;
           to: Destination;
           reveal?: boolean;
+          /** Links the selected cards, as an exile's `linkAs` does. */
+          linkAs?: string;
         };
         rest: { to: Destination; order: "random" | "any" | "keep" };
       }
@@ -397,7 +430,19 @@ export type Effect = Bind &
         amount: Value;
         to: Selector | PlayerRef;
         source?: Selector;
+        /** Damage beyond lethal damage to `to` is dealt here instead (CR 702.19). */
+        excessTo?: Selector | PlayerRef;
+        /** The controller divides `amount` among the targets (CR 601.2d). */
+        divide?: true;
       }
+    | {
+        kind: "fight";
+        objects: Selector;
+        against: Selector;
+        pairing?: "distinct";
+      }
+    | { kind: "add-mana"; player?: PlayerRef; mana: ManaProduction }
+    | { kind: "play"; objects: Selector; payment: "free" }
     | { kind: "tap"; objects: Selector }
     | { kind: "untap"; objects: Selector }
     | { kind: "add-counters"; objects: Selector; counter: string; count: Value }
@@ -422,6 +467,12 @@ export type Effect = Bind &
         duration: Duration;
       }
     | { kind: "apply-grant"; grant: StaticGrant; duration: Duration }
+    | {
+        kind: "apply-replacement";
+        event: EventPattern;
+        replace: Replacement;
+        duration: Duration;
+      }
     | { kind: "reselect-defender"; attacker: Selector }
     | { kind: "create-delayed-trigger"; trigger: Trigger; effects: Effect[] }
     | { kind: "sequence"; effects: Effect[] }
@@ -474,6 +525,8 @@ export interface ActivatedAbility extends AbilityBase {
   costs: Cost[];
   timing?: "sorcery";
   limit?: { perTurn: number };
+  /** "Activate only if ..." (CR 602.5b). */
+  activateOnlyIf?: Condition;
   activeFrom?: ZoneKind;
   targets?: TargetClause[];
   modes?: Modes;
@@ -482,7 +535,11 @@ export interface ActivatedAbility extends AbilityBase {
 export interface ManaAbility extends AbilityBase {
   kind: "mana";
   activation: { costs: Cost[] } | { trigger: ManaTrigger };
+  /** "Activate only if ..." (CR 602.5b). */
+  activateOnlyIf?: Condition;
   produce: ManaProduction;
+  /** "If ..., add ... instead": the production when the condition holds. */
+  instead?: { condition: Condition; produce: ManaProduction };
 }
 export interface TriggeredAbility extends AbilityBase {
   kind: "triggered";
@@ -595,12 +652,15 @@ const predicateFieldsSchema: z.ZodType<PredicateFields> = z.lazy(() =>
     power: comparisonSchema.optional(),
     toughness: comparisonSchema.optional(),
     counters: strict({
-      kind: z.string().min(1),
+      kind: z.string().min(1).optional(),
       count: comparisonSchema,
     }).optional(),
     dealtDamageBy: selectorSchema.optional(),
     player: playerRefSchema.optional(),
     anyTarget: z.literal(true).optional(),
+    commander: z.literal(true).optional(),
+    keyword: oneOrMany(z.enum(ruleKeywords)).optional(),
+    attacking: playerRefSchema.optional(),
   }),
 );
 
@@ -624,6 +684,9 @@ export const valueSchema: z.ZodType<Value> = z.lazy(() =>
     strict({ sum: z.array(valueSchema).min(1).max(20) }),
     strict({ stat: strict({ of: selectorSchema, name: statName }) }),
     strict({ greatest: strict({ of: selectorSchema, name: statName }) }),
+    strict({ total: strict({ of: selectorSchema, name: statName }) }),
+    strict({ product: z.array(valueSchema).min(2).max(20) }),
+    strict({ atCast: valueSchema }),
     strict({ cardsIn: strict({ zone, player: playerRefSchema }) }),
     strict({ lifeTotal: playerRefSchema }),
     strict({ commanderColors: playerRefSchema }),
@@ -695,6 +758,7 @@ export const destinationSchema: z.ZodType<Destination> = z.lazy(() =>
       player: playerRefSchema.optional(),
       position: z.enum(["top", "bottom"]).optional(),
       tapped: z.literal(true).optional(),
+      faceDown: z.literal(true).optional(),
       controller: playerRefSchema.optional(),
     }),
   ]),
@@ -711,7 +775,9 @@ export const eventPatternSchema: z.ZodType<EventPattern> = z.lazy(() =>
     strict({ event: z.literal("would-draw"), player: playerRefSchema }),
     strict({
       event: z.literal("would-be-dealt-damage"),
-      recipient: selectorOrPredicate,
+      recipient: selectorOrPredicate.optional(),
+      source: selectorOrPredicate.optional(),
+      combat: z.boolean().optional(),
     }),
     strict({ event: z.literal("leaves-battlefield"), object: selectorSchema }),
   ]),
@@ -784,6 +850,7 @@ export const keywordSchema: z.ZodType<Keyword> = z.lazy(
       }),
       strict({ name: z.literal("enchant"), filter: predicateSchema }),
       strict({ name: z.enum(["improvise", "living-weapon"]) }),
+      strict({ name: z.literal("gift"), gift: id }),
     ]) as z.ZodType<Keyword>,
 );
 
@@ -796,6 +863,24 @@ export const continuousChangeSchema: z.ZodType<ContinuousChange> = z.lazy(() =>
       kind: z.literal("add-types"),
       types: z.array(z.string().min(1)).min(1).optional(),
       subtypes: z.array(z.string().min(1)).min(1).optional(),
+    }),
+    strict({
+      kind: z.literal("set-types"),
+      types: z.array(z.string().min(1)).min(1).optional(),
+      subtypes: z.array(z.string().min(1)).min(1).optional(),
+    }),
+    strict({
+      kind: z.literal("set-colors"),
+      colors: z.array(z.enum(colors)).max(5),
+    }),
+    strict({ kind: z.literal("remove-abilities") }),
+    strict({ kind: z.literal("grant-ability"), ability: abilitySchema }),
+    strict({
+      kind: z.literal("double-stats"),
+      stats: z
+        .array(z.enum(["power", "toughness"]))
+        .min(1)
+        .max(2),
     }),
     statsChange("set-base-stats"),
     statsChange("add-stats"),
@@ -856,7 +941,18 @@ export const staticGrantSchema: z.ZodType<StaticGrant> = z.lazy(() =>
       objects: selectorSchema,
       by: predicateSchema.optional(),
     }),
+    strict({ kind: z.literal("cant-attack"), objects: selectorSchema }),
     strict({ kind: z.literal("cant-block"), objects: selectorSchema }),
+    strict({
+      kind: z.literal("max-blockers"),
+      objects: selectorSchema,
+      count: z.number().int().positive().max(100),
+    }),
+    strict({
+      kind: z.literal("additional-land-plays"),
+      player: playerRefSchema,
+      count: valueSchema,
+    }),
     strict({
       kind: z.literal("cant-be-countered"),
       spells: z.union([z.literal("this"), predicateSchema]),
@@ -891,6 +987,7 @@ export const triggerSchema: z.ZodType<Trigger> = z.lazy(
         caster: playerRefSchema.optional(),
       }),
       strict({ event: z.literal("attacks"), attacker: selectorOrPredicate }),
+      strict({ event: z.literal("blocks"), blocker: selectorOrPredicate }),
       strict({
         event: z.literal("deals-damage"),
         source: selectorOrPredicate,
@@ -973,13 +1070,14 @@ export const effectSchema: z.ZodType<Effect> = z.lazy(
         ...bind,
         kind: kind("library-sequence"),
         player: playerRefSchema,
-        count: valueSchema,
+        count: z.union([valueSchema, strict({ until: predicateSchema })]),
         operation: z.enum(["look", "reveal"]),
         select: strict({
           filter: predicateSchema.optional(),
           max: z.number().int().positive().max(100),
           to: destinationSchema,
           reveal: z.boolean().optional(),
+          linkAs: id.optional(),
         }).optional(),
         rest: strict({
           to: destinationSchema,
@@ -1041,6 +1139,27 @@ export const effectSchema: z.ZodType<Effect> = z.lazy(
         amount: valueSchema,
         to: z.union([selectorSchema, playerRefSchema]),
         source: selectorSchema.optional(),
+        excessTo: z.union([selectorSchema, playerRefSchema]).optional(),
+        divide: z.literal(true).optional(),
+      }),
+      strict({
+        ...bind,
+        kind: kind("fight"),
+        objects: selectorSchema,
+        against: selectorSchema,
+        pairing: z.literal("distinct").optional(),
+      }),
+      strict({
+        ...bind,
+        kind: kind("add-mana"),
+        player: playerRefSchema.optional(),
+        mana: manaProductionSchema,
+      }),
+      strict({
+        ...bind,
+        kind: kind("play"),
+        objects: selectorSchema,
+        payment: z.literal("free"),
       }),
       strict({
         ...bind,
@@ -1074,6 +1193,13 @@ export const effectSchema: z.ZodType<Effect> = z.lazy(
         ...bind,
         kind: kind("apply-grant"),
         grant: staticGrantSchema,
+        duration: durationSchema,
+      }),
+      strict({
+        ...bind,
+        kind: kind("apply-replacement"),
+        event: eventPatternSchema,
+        replace: replacementSchema,
         duration: durationSchema,
       }),
       strict({
@@ -1169,6 +1295,7 @@ export const abilitySchema: z.ZodType<Ability> = z.lazy(
         limit: strict({
           perTurn: z.number().int().positive().max(10),
         }).optional(),
+        activateOnlyIf: conditionSchema.optional(),
         activeFrom: zone.optional(),
         targets: targets.optional(),
         modes: modesSchema.optional(),
@@ -1181,7 +1308,12 @@ export const abilitySchema: z.ZodType<Ability> = z.lazy(
           strict({ costs: z.array(costSchema).max(20) }),
           strict({ trigger: manaTriggerSchema }),
         ]),
+        activateOnlyIf: conditionSchema.optional(),
         produce: manaProductionSchema,
+        instead: strict({
+          condition: conditionSchema,
+          produce: manaProductionSchema,
+        }).optional(),
       }),
       strict({
         ...abilityBase,

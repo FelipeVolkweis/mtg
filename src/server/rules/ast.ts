@@ -2,6 +2,7 @@ import type {
   Predicate,
   PredicateFields,
   Selector,
+  Value,
 } from "../../shared/card-dsl.js";
 
 // Structural reads over Core AST nodes. Nodes are compared by structure, not
@@ -31,6 +32,22 @@ export function astEqual(a: unknown, b: unknown): boolean {
   );
 }
 
+const selectorKeys = [
+  "target",
+  "all",
+  "choose",
+  "binding",
+  "event",
+  "attachedTo",
+  "attachedBy",
+  "linked",
+  "attackedBy",
+];
+
+/** Whether a selector-or-predicate node is a selector (no predicate has these keys). */
+export const isSelector = (node: Selector | Predicate): node is Selector =>
+  typeof node === "string" || selectorKeys.some((key) => key in node);
+
 /** `{ is: "source" }`: the ability's own object. */
 export const isSourcePredicate = (node: unknown) =>
   astEqual(node, { is: "source" });
@@ -54,6 +71,70 @@ export function mentionsVariable(node: unknown, name: string): boolean {
   return (Array.isArray(node) ? node : Object.values(node)).some((child) =>
     mentionsVariable(child, name),
   );
+}
+
+/**
+ * Value forms and predicate fields the evaluator does not run yet. The card
+ * DSL grows ahead of the runtime (docs/plans/mono-g-port.md): a form listed
+ * here compiles, fails the support check naming it and throws if it ever
+ * reaches the evaluator. The runtime runs every form today.
+ */
+export const unrunValueForms = [] as readonly string[];
+export const unrunPredicateFields = [] as readonly (keyof PredicateFields)[];
+
+/** The binding that holds an `atCast` value, fixed when the spell is cast. */
+export const atCastKey = (value: unknown) => `atCast:${JSON.stringify(value)}`;
+
+/** The values a spell fixes as it is cast (CR 601.2): every `atCast` operand. */
+export function atCastValues(node: unknown): Value[] {
+  if (typeof node !== "object" || !node) return [];
+  if (
+    !Array.isArray(node) &&
+    Object.keys(node).length === 1 &&
+    "atCast" in node
+  )
+    return [(node as { atCast: Value }).atCast];
+  return (Array.isArray(node) ? node : Object.values(node)).flatMap(
+    atCastValues,
+  );
+}
+
+/**
+ * The first value form or predicate field in `node` that the evaluator
+ * can't run, as a noun phrase with its path, or undefined. An ability's
+ * effects hold values and predicates the support walker doesn't visit one by
+ * one, so the check scans for these by shape: a predicate has neither `id`
+ * nor `kind`, which a keyword ability or a granted-keyword change has.
+ */
+export function unrunForm(
+  node: unknown,
+  path = "",
+  forms: { values: readonly string[]; fields: readonly string[] } = {
+    values: unrunValueForms,
+    fields: unrunPredicateFields,
+  },
+): { what: string; path: string } | undefined {
+  if (typeof node !== "object" || !node) return undefined;
+  if (!Array.isArray(node)) {
+    const keys = Object.keys(node);
+    const value = forms.values.find(
+      (form) => keys.length === 1 && keys[0] === form,
+    );
+    if (value) return { what: `The ${value} value`, path };
+    if (!("kind" in node) && !("id" in node)) {
+      const field = forms.fields.find((f) => f in node);
+      if (field) return { what: `The predicate field ${field}`, path };
+    }
+  }
+  for (const [key, child] of Object.entries(node)) {
+    const found = unrunForm(
+      child,
+      Array.isArray(node) ? `${path}[${key}]` : path ? `${path}.${key}` : key,
+      forms,
+    );
+    if (found) return found;
+  }
+  return undefined;
 }
 
 /** The field sets of a predicate's top-level conjuncts. */

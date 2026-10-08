@@ -8,8 +8,13 @@ interface WithCounters {
   counters: Counter[];
 }
 
-/** The quantity of a kind of counter as a DSL number value; 0 without one. */
-export function counterCount(counters: Counter[], kind: string) {
+/**
+ * The quantity of a kind of counter as a DSL number value; 0 without one. No
+ * kind counts the counters of every kind.
+ */
+export function counterCount(counters: Counter[], kind?: string) {
+  if (kind === undefined)
+    return counters.reduce((sum, c) => sum + Number(c.quantity), 0);
   return Number(counters.find((c) => c.kind === kind)?.quantity ?? 0);
 }
 

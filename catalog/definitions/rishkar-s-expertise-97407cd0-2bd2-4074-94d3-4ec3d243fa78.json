@@ -26,7 +26,64 @@
     "defaultPrintingId": "c2354a0a-1fb6-4de3-bcc9-df5565b3ceba"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "expertise",
+        "description": "Draw cards equal to the greatest power among creatures you control.\nYou may cast a spell with mana value 5 or less from your hand without paying its mana cost.",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "draw",
+            "count": {
+              "greatest": {
+                "of": {
+                  "all": {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you"
+                  }
+                },
+                "name": "power"
+              }
+            }
+          },
+          {
+            "kind": "may",
+            "effects": [
+              {
+                "kind": "play",
+                "objects": {
+                  "choose": {
+                    "from": {
+                      "and": [
+                        {
+                          "zone": "hand",
+                          "owner": "you",
+                          "manaValue": {
+                            "<=": 5
+                          }
+                        },
+                        {
+                          "not": {
+                            "type": [
+                              "Land"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "count": 1
+                  }
+                },
+                "payment": "free"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

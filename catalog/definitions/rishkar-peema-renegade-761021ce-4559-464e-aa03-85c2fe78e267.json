@@ -33,7 +33,90 @@
     "defaultPrintingId": "f542fbf8-3700-4b86-83d8-d8bdf8f14285"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "entry-counters",
+        "description": "When Rishkar enters, put a +1/+1 counter on each of up to two target creatures.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
+          {
+            "id": "creatures",
+            "count": {
+              "min": 0,
+              "max": 2
+            },
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": {
+              "target": "creatures"
+            },
+            "counter": "+1/+1",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "counter-mana",
+        "description": "Each creature you control with a counter on it has \"{T}: Add {G}.\"",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you",
+                "counters": {
+                  "count": {
+                    ">=": 1
+                  }
+                }
+              }
+            },
+            "changes": [
+              {
+                "kind": "grant-ability",
+                "ability": {
+                  "id": "mana",
+                  "origin": "granted",
+                  "description": "{T}: Add {G}.",
+                  "kind": "mana",
+                  "activation": {
+                    "costs": [
+                      {
+                        "kind": "tap-source"
+                      }
+                    ]
+                  },
+                  "produce": {
+                    "quantity": 1,
+                    "colors": [
+                      "G"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

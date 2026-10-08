@@ -26,7 +26,19 @@
     "defaultPrintingId": "36bd3fb1-deeb-422e-a29e-b50e7aa3c334"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "draw",
+        "description": "Draw three cards.",
+        "kind": "spell",
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 3
+          }
+        ]
+      }
+    ]
   }
 }

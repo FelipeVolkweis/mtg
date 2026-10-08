@@ -33,7 +33,43 @@
     "defaultPrintingId": "d5c8619f-753b-472f-a6cd-00bd9e897279"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "vigilance",
+        "description": "vigilance",
+        "kind": "keyword",
+        "keyword": "vigilance"
+      },
+      {
+        "id": "combat-draw",
+        "description": "Whenever a Dinosaur you control deals combat damage to a player, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "deals-damage",
+          "source": {
+            "zone": "battlefield",
+            "subtype": [
+              "Dinosaur"
+            ],
+            "controller": "you"
+          },
+          "to": "player",
+          "combat": true
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

@@ -31,7 +31,26 @@
     "defaultPrintingId": "5368ce20-0970-4630-8c46-439db2231a39"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {G}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "G"
+          ]
+        }
+      }
+    ]
   }
 }

@@ -9,6 +9,7 @@ import type { Ability, ManaType, ZoneKind } from "../../../shared/card-dsl.js";
 import {
   costModifiers,
   costsOf,
+  escalateCosts,
   hasImprovise,
   manaSymbols,
 } from "../abilities.js";
@@ -35,6 +36,10 @@ export interface CostProposal {
   variables?: Record<string, number>;
   /** A spell's Zone when its casting began (commander tax reads it). */
   sourceZone?: ZoneKind;
+  /** The modes chosen as a spell was cast (escalate reads their number). */
+  modes?: string[];
+  /** An alternative cost chosen as the spell was cast; "free" pays no mana cost (CR 118.9). */
+  alternativeCost?: string;
 }
 
 /** A total-cost adjustment: generic mana added (or removed when negative). */
@@ -52,9 +57,7 @@ const reductions: CostAdjustment = (engine, proposal) => {
   let reduction = 0;
   for (const source of Object.values(engine.match.objects)) {
     if (source.controllerId !== proposal.playerId) continue;
-    for (const modifier of costModifiers(
-      engine.definition(source)?.abilities ?? [],
-    )) {
+    for (const modifier of costModifiers(engine.abilitiesOf(source))) {
       if (modifier.use !== proposal.use) continue;
       if (
         modifier.scope === "source"
@@ -118,10 +121,30 @@ export function determineCost(
   engine: RulesEngine,
   proposal: CostProposal,
 ): ManaCost {
+  // CR 118.9: a spell cast without paying its mana cost pays none of it.
+  if (proposal.alternativeCost === "free") return manaCost([]);
   const cost = chosenCost(proposal);
+  // CR 601.2f: additional costs are added before reductions apply.
+  const extra = escalation(engine, proposal);
+  for (const type of Object.keys(extra) as (keyof ManaCost)[])
+    cost[type] += extra[type];
   for (const adjust of adjustments) cost.generic += adjust(engine, proposal);
   cost.generic = Math.max(0, cost.generic);
   return cost;
+}
+
+/** CR 702.120: the escalate cost, paid for each mode chosen beyond the first. */
+function escalation(engine: RulesEngine, proposal: CostProposal): ManaCost {
+  const extra = manaCost([]);
+  const modes = proposal.modes?.length ?? 0;
+  if (proposal.use !== "cast" || modes < 2) return extra;
+  const costs = escalateCosts(
+    engine.definition(proposal.source)?.abilities ?? [],
+  );
+  const each = manaCost(manaSymbols(costs ?? []));
+  for (const type of Object.keys(each) as (keyof ManaCost)[])
+    extra[type] = each[type] * (modes - 1);
+  return extra;
 }
 
 // ----------------------------------------------------------- mana spending

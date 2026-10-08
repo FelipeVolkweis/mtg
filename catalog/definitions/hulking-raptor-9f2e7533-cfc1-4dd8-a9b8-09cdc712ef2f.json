@@ -32,7 +32,45 @@
     "defaultPrintingId": "10ddd8c1-6424-41cf-be1f-5fdc0b70a787"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "ward",
+        "description": "Ward {2}",
+        "kind": "keyword",
+        "keyword": {
+          "name": "ward",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{2}"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "main-mana",
+        "description": "At the beginning of your first main phase, add {G}{G}.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "precombat-main",
+          "player": "you"
+        },
+        "effects": [
+          {
+            "kind": "add-mana",
+            "mana": {
+              "quantity": 2,
+              "colors": [
+                "G"
+              ]
+            }
+          }
+        ]
+      }
+    ]
   }
 }

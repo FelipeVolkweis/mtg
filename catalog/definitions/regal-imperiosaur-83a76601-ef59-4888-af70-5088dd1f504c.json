@@ -30,7 +30,45 @@
     "defaultPrintingId": "c14646ba-8ac8-4bca-a2b3-67fc1f338f25"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "bonus",
+        "description": "Other Dinosaurs you control get +1/+1.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "controller": "you"
+                  },
+                  {
+                    "subtype": [
+                      "Dinosaur"
+                    ]
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

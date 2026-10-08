@@ -26,7 +26,94 @@
     "defaultPrintingId": "2534da93-ef25-4020-bea5-d3f75bfc44f8"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "entry-counters",
+        "description": "When this enchantment enters, put X +1/+1 counters on target creature, where X is that creature's power.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ]
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": "target",
+            "counter": "+1/+1",
+            "count": {
+              "stat": {
+                "of": "target",
+                "name": "power"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "end-step-draw",
+        "description": "At the beginning of your end step, draw two cards if you control the creature with the greatest power or tied for the greatest power.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "end",
+          "player": "you"
+        },
+        "effects": [
+          {
+            "kind": "if",
+            "condition": {
+              "compare": [
+                {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Creature"
+                        ],
+                        "controller": "you"
+                      }
+                    },
+                    "name": "power"
+                  }
+                },
+                ">=",
+                {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Creature"
+                        ]
+                      }
+                    },
+                    "name": "power"
+                  }
+                }
+              ]
+            },
+            "then": [
+              {
+                "kind": "draw",
+                "count": 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

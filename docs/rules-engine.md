@@ -77,9 +77,12 @@ four steps:
    support check only walks the ability: each effect, trigger, cost, static
    grant, replacement and keyword registry entry declares, next to its
    runtime code, which forms it runs, and a kind with no entry is rejected
-   (`tests/rules/compiler/support-coverage.spec.ts`). An implemented
-   card that uses a construct the current runtime can't run fails the load;
-   an unimplemented one loads without runtime abilities.
+   (`tests/rules/compiler/support-coverage.spec.ts`). The check also scans
+   each ability for the value forms and predicate fields the evaluator does
+   not run yet (`unrunForm` in [ast.ts](../src/server/rules/ast.ts)), because
+   effects hold values and filters the walker does not visit one by one. An
+   implemented card that uses a construct the current runtime can't run fails
+   the load; an unimplemented one loads without runtime abilities.
 
 The catalog gate (`tests/rules/compiler/catalog-gate.spec.ts`) compiles every
 definition and runs the support check on every implemented one. Publishing
@@ -115,9 +118,14 @@ costs, choices, events, and effects correctly.
 4. Casting a spell moves the card to the Stack at once (CR 601.2a), and
    activating an ability creates its Ability Game Object there (CR 602.2a).
    The [Stack Proposal Procedure](../src/server/rules/proposals/stack-proposal.ts)
-   then suspends for X and targets, determines and locks the total cost
-   through the [Cost Runtime](../src/server/rules/costs/cost-runtime.ts), lets
-   the Match Player activate mana abilities explicitly, and pays. Payment
+   then suspends for the choices of CR 601.2b–d in order: a promised gift,
+   the modes, X, the targets of every target clause (each takes the number of
+   targets it allows) and damage divided among them. It determines and locks
+   the total cost through the
+   [Cost Runtime](../src/server/rules/costs/cost-runtime.ts) (an escalate cost
+   for each mode beyond the first, no mana cost for a spell cast free), lets
+   the Match Player activate mana abilities explicitly, and pays. Values "as
+   you cast this spell" (`atCast`) are fixed as the proposal begins. Payment
    finalizes the proposal: the spell is cast (cast triggers wait) or the
    ability activated. The pending procedure keeps a snapshot of the Match from
    before the proposal began. `cancel-procedure` aborts before the cost is
@@ -128,8 +136,10 @@ costs, choices, events, and effects correctly.
 5. After all Match Players pass Priority, the top Stack object resolves
    through the [Stack Resolution Runtime](../src/server/rules/stack/stack-resolution.ts).
    A triggered ability's intervening-if is checked again and targets are
-   revalidated; an object whose condition is false or whose targets are all
-   illegal leaves the Stack without effect. A permanent spell enters the
+   revalidated clause by clause; an object whose condition is false or whose
+   targets are all illegal leaves the Stack without effect, and one with some
+   legal targets affects only those (CR 608.2b). A triggered ability's modes
+   and targets are chosen as it is put on the Stack (CR 700.2b, 603.3d). A permanent spell enters the
    Battlefield (an Aura attaches to its target) without an effect program.
    An instant, sorcery or ability runs its Core AST instructions in the
    [Rule VM](../src/server/rules/vm/rule-vm.ts), dispatching each through the
@@ -141,8 +151,15 @@ costs, choices, events, and effects correctly.
    private selection or payment: its frame's program counter stays on it and
    its state persists in `resolving.waiting`, so the answer resumes it and
    nothing before it runs again. The Match does not receive Priority in the
-   middle of that resolution.
-6. Zone changes, attacks, draws, damage, and other modeled events are
+   middle of that resolution. An instruction that plays a card without paying
+   its mana cost (CR 118.9) starts a nested cast: the card goes on the Stack
+   above the resolving object, its choices are a pending proposal, and the
+   resolution resumes (`RuleVM.resume`) when the proposal is complete or
+   returns to the card choice if it is cancelled. The VM remembers who
+   controlled and owned the objects that left during a resolution, so "its
+   controller" still names them (CR 608.2h).
+6. Zone changes, attacks, blocks, draws, damage, the beginning of the upkeep,
+   first main phase, combat and end steps, and other modeled events are
    reported to the [Trigger Runtime](../src/server/rules/triggers/trigger-runtime.ts),
    which records waiting triggers. Whenever a player would receive Priority,
    the [Priority Checkpoint](../src/server/rules/priority/priority-checkpoint.ts)
@@ -168,13 +185,29 @@ The core engine delegates focused rules work to these modules:
   Zones, preserve Card Instance identity, and operate on Libraries. Rules code
   moves objects only through `propose`.
 - [characteristics.ts](../src/server/match/characteristics.ts) calculates
-  effective characteristics and evaluates shared Object Filters.
+  effective characteristics and evaluates shared Object Filters. It applies
+  the continuous effects in force by layer (CR 613): type-changing effects
+  first (an effect that affects "creatures" waits for the one that makes the
+  object a creature, CR 613.8), then colors, then abilities, then stats. Within
+  a layer effects apply in timestamp order (CR 613.7): `rules.timestamp` counts
+  up as Game Objects come to be and temporary effects begin. `abilitiesOf` is
+  the abilities an object has now: its card's, none after an effect removes
+  them all, and the ones effects grant it later; the engine reads abilities
+  through it, never straight from the card.
 - [mana.ts](../src/server/match/mana.ts) parses mana costs and applies the
   engine's mana-pool spending policy; the
   [Cost Runtime](../src/server/rules/costs/) spends mana through it for
   casting, activation, attack costs and resolution payments.
 - [combat.ts](../src/server/match/combat.ts) persists combat declarations,
-  payments, and damage assignments.
+  payments, and damage assignments. It reads the restrictions static abilities
+  place on attackers and blockers (can't attack or block, at most so many
+  blockers, can't be blocked by creatures matching a predicate), each gated by
+  its ability's condition, and offers a trampling attacker the choice of
+  assigning excess damage to what it attacks once every blocker has lethal
+  damage (CR 702.19b). Deathtouch and lifelink are applied where damage is
+  dealt ([event-runtime.ts](../src/server/rules/events/event-runtime.ts)); a
+  prevention effect from a resolved spell (CR 615) stops matching damage
+  there too.
 - [state-based/](../src/server/rules/state-based/) holds the State-Based
   Rules and the runtime that performs them; [triggers/](../src/server/rules/triggers/)
   observes events and state, and puts triggered abilities on the Stack.

@@ -22,7 +22,62 @@
     "defaultPrintingId": "7cfeb33d-65c7-4aa2-a1d8-964e6cd73b82"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add {C}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "C"
+          ]
+        }
+      },
+      {
+        "id": "draw",
+        "description": "{3}, {T}: Draw a card. Activate only if you control a creature with power 4 or greater.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{3}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "activateOnlyIf": {
+          "exists": {
+            "all": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you",
+              "power": {
+                ">=": 4
+              }
+            }
+          }
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

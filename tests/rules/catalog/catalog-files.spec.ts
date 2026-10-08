@@ -120,7 +120,7 @@ test("an authored error fails the load with the card and path", async () => {
 test("an implemented card the runtime can't run fails to load; unimplemented loads without runtime abilities", async () => {
   const registries = await readRegistries("catalog");
   const file = cardDefinitionFileSchema.parse(
-    await json("tests/fixtures/dsl-expressiveness/austere-command.json"),
+    await json("tests/fixtures/dsl-expressiveness/ajani-s-pridemate.json"),
   );
   expect(() =>
     definitionFromFile(
@@ -131,7 +131,7 @@ test("an implemented card the runtime can't run fails to load; unimplemented loa
       registries,
     ),
   ).toThrow(
-    "Austere Command: abilities[0]: Modes is not supported by the current runtime.",
+    "Ajani's Pridemate: abilities[0].trigger: The gains-life trigger is not supported by the current runtime.",
   );
   const card = definitionFromFile(
     {

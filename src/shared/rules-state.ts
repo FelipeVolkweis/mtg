@@ -6,6 +6,7 @@ import {
   type Effect,
   type ManaType,
   manaTypes,
+  type Predicate,
   type Selector,
   type TurnStep,
   type ZoneKind,
@@ -44,6 +45,9 @@ export const runtimeKeywords = [
   "Must attack",
   "Cannot be blocked by Walls",
   "Defender",
+  "Trample",
+  "Deathtouch",
+  "Lifelink",
 ] as const;
 export type RuntimeKeyword = (typeof runtimeKeywords)[number];
 
@@ -60,6 +64,11 @@ export type AppliedChange =
 
 /** A continuous effect in force (CR 611): what it affects and changes. */
 export interface ActiveContinuousEffect {
+  /**
+   * CR 613.7: effects apply in timestamp order within a layer. A temporary
+   * effect's is when it began; a static ability's is its object's.
+   */
+  timestamp?: number;
   sourceId: string;
   abilityId: string;
   /** The effect's controller: "you" in its selector and values. */
@@ -69,6 +78,19 @@ export interface ActiveContinuousEffect {
   changes: AppliedChange[];
   applicability:
     "source-on-battlefield" | "characteristic-defining" | "until-end-of-turn";
+}
+
+/**
+ * A prevention effect in force (CR 615): damage that matches `source` and
+ * `combat` is prevented. Relative to the effect's source and controller.
+ */
+export interface Prevention {
+  sourceId: string;
+  playerId: string;
+  /** Damage only from objects matching this predicate or selector. */
+  source?: Selector | Predicate;
+  /** Only combat damage (true) or only noncombat damage (false). */
+  combat?: boolean;
 }
 
 export interface PendingProcedure {
@@ -87,7 +109,14 @@ export interface PendingProcedure {
     | "trigger-order"
     | "trigger-target"
     | "state-based-choice";
-  stage: "variable" | "targets" | "payment" | "selection";
+  stage:
+    | "gift"
+    | "modes"
+    | "variable"
+    | "targets"
+    | "division"
+    | "payment"
+    | "selection";
   damageChoices?: DamageChoice[];
   variables?: Record<string, number>;
   context?: string;
@@ -96,7 +125,12 @@ export interface PendingProcedure {
   /** The Core ability being cast or activated. */
   ability?: Ability;
   abilityId?: string;
+  /** Every chosen target, in target clause order. */
   targetIds: string[];
+  /** The chosen targets of each target clause, by clause id. */
+  targets?: Record<string, string[]>;
+  /** Damage divided as the spell is cast (CR 601.2d), by recipient. */
+  division?: Record<string, number>;
   selections: Record<string, string[]>;
   color?: ManaType;
   totalCost: ManaPool & { generic: number };
@@ -159,6 +193,13 @@ export interface RuleExecution {
   waiting?: { state: JsonValue };
   /** Library cards the waiting chooser looks at privately (shown in their view). */
   inspectedIds?: string[];
+  /** The chosen targets still legal as the resolution began, by target clause id (CR 608.2b). */
+  targets?: Record<string, string[]>;
+  /**
+   * Objects that left their Zone during this resolution, by their old id: who
+   * controlled and owned them last (CR 608.2h).
+   */
+  lastKnown?: Record<string, { controllerId: string; ownerId: string }>;
 }
 export interface CombatAttacker {
   objectId: string;
@@ -187,6 +228,11 @@ export interface DamageChoice {
   sourceId: string;
   amount: number;
   recipientIds: string[];
+  /**
+   * Trample (CR 702.19b): the attacker may assign damage to the defender only
+   * after assigning each blocker its lethal damage (CR 120.6), given here.
+   */
+  trample?: { defenderId: string; lethal: Record<string, number> };
 }
 /**
  * What a suspended Priority Checkpoint resumes toward: Priority for a player
@@ -235,10 +281,16 @@ export interface RulesState {
   };
   /** Once a creature is dealt damage; emptied in the cleanup step (CR 514.2). */
   markedDamage?: Record<string, number>;
+  /** Creatures dealt damage by a source with deathtouch; emptied with the damage (CR 702.2b). */
+  deathtouchDamaged?: string[];
   /** Once a card in a hand is revealed: the revealed hand cards. */
   revealedHandIds?: string[];
+  /** The last timestamp given to an object or an effect (CR 613.7). */
+  timestamp?: number;
   /** Once an until-end-of-turn effect starts; emptied in the cleanup step. */
   temporaryEffects?: ActiveContinuousEffect[];
+  /** Once an until-end-of-turn prevention effect starts; emptied in the cleanup step. */
+  preventions?: Prevention[];
   /** From the beginning of combat to the postcombat main phase. */
   combat?: CombatState;
   /** While players order their simultaneous triggers (APNAP, CR 603.3b). */
@@ -276,10 +328,14 @@ export interface SemanticEvent {
     | "state"
     | "damage"
     | "attack"
+    | "block"
     | "draw"
     | "upkeep"
+    | "step"
     | "target"
     | "mana";
+  /** Step events: the step that began; the active player is `playerId`. */
+  step?: TurnStep;
   playerId?: string;
   stackId?: string;
   defenderId?: string;
@@ -325,6 +381,8 @@ export interface WaitingTrigger {
   sourceSnapshot?: {
     characteristics: Characteristics;
     ownerId: string;
+    /** The optional costs the source was cast with (an intervening-if reads them). */
+    optionalCosts?: string[];
   };
   id: string;
   playerId: string;
@@ -340,6 +398,8 @@ export interface WaitingTrigger {
 export const statusSchema = z
   .object({
     tapped: z.boolean(),
+    /** Exiled face down (CR 406.3): its owner can look at it, no one else. */
+    faceDown: z.literal(true).optional(),
   })
   .strict();
 /**
@@ -357,6 +417,8 @@ export interface ProposalRecord {
   /** Paid optional cost ids, such as "kicker". */
   optionalCosts: string[];
   alternativeCost?: string;
+  /** The player promised a gift as the spell was cast (CR 702.174a). */
+  gift?: string;
   manaSpent: ManaType[];
 }
 export interface ObjectLink {
@@ -412,13 +474,24 @@ export interface GameObject {
   sourceObjectId?: string;
   sourceAbilityId?: string;
   resolution?: {
-    sourceSnapshot?: { characteristics: Characteristics; ownerId: string };
+    sourceSnapshot?: {
+      characteristics: Characteristics;
+      ownerId: string;
+      optionalCosts?: string[];
+    };
     ability: Ability;
     event?: SemanticEvent;
+    /** Every chosen target, in target clause order. */
     targetIds: string[];
+    /** The chosen targets of each target clause, by clause id. */
+    targets?: Record<string, string[]>;
+    /** Damage divided as the spell was cast, by recipient. */
+    division?: Record<string, number>;
     color?: ManaType;
   };
   ownerId: string;
+  /** CR 613.7d: when the object came to be, from `rules.timestamp`. */
+  timestamp?: number;
 }
 export interface MatchState {
   id: string;
@@ -470,6 +543,10 @@ export const matchActionSchema = z.discriminatedUnion("type", [
         .max(100)
         .optional(),
       targetIds: z.array(id).max(100).optional(),
+      /** The targets of each target clause, by clause id. */
+      targets: z.record(z.string(), z.array(id).max(100)).optional(),
+      /** The modes chosen, by mode id. */
+      modes: z.array(z.string().min(1).max(200)).max(20).optional(),
       selections: z.record(z.string(), z.array(id).max(100)).optional(),
       color: z.enum(manaTypes).optional(),
       variables: z

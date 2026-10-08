@@ -33,7 +33,48 @@
     "defaultPrintingId": "43f7ccca-7810-42de-86e2-ef09eb4a54c8"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "sweep",
+        "description": "When this creature enters, destroy all creatures with flying. Put a +1/+1 counter on this creature for each creature destroyed this way.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "bind": "destroyed",
+            "kind": "destroy",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "keyword": "flying"
+              }
+            }
+          },
+          {
+            "kind": "add-counters",
+            "objects": "source",
+            "counter": "+1/+1",
+            "count": {
+              "count": {
+                "binding": "destroyed"
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 }

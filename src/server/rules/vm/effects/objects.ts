@@ -1,5 +1,7 @@
 import type { PlayerRef, Selector } from "../../../../shared/card-dsl.js";
+import type { DamageAssignment } from "../../../../shared/rules-state.js";
 import { gameObject } from "../../../match/game-objects.js";
+import { lethalDamage } from "../../damage.js";
 import { adjustCounters } from "../../../match/counters.js";
 import { tokenCharacteristics } from "../../../match/tokens.js";
 import { astEqual } from "../../ast.js";
@@ -36,22 +38,57 @@ function recipients(to: Selector | PlayerRef, ctx: EffectContext) {
 
 export const damage: EffectHandler<"damage"> = {
   unsupported: (effect) =>
-    effect.source ? "Damage from another source" : undefined,
+    effect.divide && !(typeof effect.to === "object" && "target" in effect.to)
+      ? "Divided damage among something other than targets"
+      : undefined,
   execute(effect, ctx) {
-    const amount = ctx.eval.value(effect.amount);
-    const ids = recipients(effect.to, ctx);
-    // The resolving object is the damage source; the event runtime reads its
-    // source's last known information if that has left (CR 609.7).
-    ctx.propose({
-      kind: "damage",
-      assignments: ids.map((recipientId) => ({
-        sourceId: ctx.stackId,
-        recipientId,
-        amount,
-      })),
-      combat: false,
-    });
-    if (effect.bind) ctx.bind(effect.bind, amount * ids.length);
+    // The resolving object is the damage source unless another is named; the
+    // event runtime reads a spell's last known information if it has left
+    // (CR 609.7). A named source that has left deals no damage.
+    const [sourceId] = effect.source
+      ? ctx.eval
+          .objects(effect.source)
+          .filter((id) => ctx.query.match.objects[id])
+      : [ctx.stackId];
+    if (!sourceId) return done;
+    const deathtouch = !!(
+      ctx.query.match.objects[sourceId] &&
+      ctx.query
+        .effective(ctx.query.match.objects[sourceId])
+        .keywords?.includes("Deathtouch")
+    );
+    const assignments: DamageAssignment[] = [];
+    for (const recipientId of recipients(effect.to, ctx)) {
+      // Divided damage was divided among the targets as the spell was cast
+      // (CR 601.2d).
+      const amount = effect.divide
+        ? (ctx.eval.scope.division?.[recipientId] ?? 0)
+        : ctx.eval.value(effect.amount);
+      const creature = ctx.query.match.objects[recipientId];
+      // "Excess damage is dealt to … instead": all of the damage beyond what
+      // is lethal to the creature goes elsewhere (CR 120.4a).
+      const excess =
+        effect.excessTo && creature
+          ? Math.max(
+              0,
+              amount - lethalDamage(ctx.query, recipientId, deathtouch),
+            )
+          : 0;
+      assignments.push({ sourceId, recipientId, amount: amount - excess });
+      if (excess)
+        for (const elsewhere of recipients(effect.excessTo!, ctx))
+          assignments.push({
+            sourceId,
+            recipientId: elsewhere,
+            amount: excess,
+          });
+    }
+    ctx.propose({ kind: "damage", assignments, combat: false });
+    if (effect.bind)
+      ctx.bind(
+        effect.bind,
+        assignments.reduce((sum, a) => sum + a.amount, 0),
+      );
     return done;
   },
 };

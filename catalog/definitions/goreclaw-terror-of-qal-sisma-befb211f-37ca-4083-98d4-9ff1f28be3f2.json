@@ -32,7 +32,70 @@
     "defaultPrintingId": "c7091f2e-1a10-48f0-881a-405b43634556"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "discount",
+        "description": "Creature spells you cast with power 4 or greater cost {2} less to cast.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cost-modifier",
+            "applies": {
+              "spells": {
+                "zone": "stack",
+                "object": "spell",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you",
+                "power": {
+                  ">=": 4
+                }
+              }
+            },
+            "reduce": 2
+          }
+        ]
+      },
+      {
+        "id": "attack-pump",
+        "description": "Whenever Goreclaw attacks, each creature you control with power 4 or greater gets +1/+1 and gains trample until end of turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "attacks",
+          "attacker": "source"
+        },
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you",
+                "power": {
+                  ">=": 4
+                }
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": 1,
+                "toughness": 1
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "trample"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

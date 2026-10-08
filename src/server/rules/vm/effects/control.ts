@@ -53,18 +53,22 @@ const optionalMove = (effect: EffectOfMay) =>
 type EffectOfMay = Extract<Effect, { kind: "may" }>;
 
 /**
- * "You may" an object instruction: one prompt where choosing nothing declines.
- * A `bind` flag records whether anything was done (`didPerform`).
+ * "You may": an object instruction asks for a selection where choosing
+ * nothing declines; any other instruction asks to confirm or decline. A
+ * `bind` flag records whether anything was done (`didPerform`).
  */
 export const may: EffectHandler<"may"> = {
   unsupported(effect) {
+    if (effect.player) return "A may another player decides";
     const inner = optionalMove(effect);
-    if (effect.player || !inner)
-      return "A may other than an optional move, destroy, exile or sacrifice";
-    return unsupportedMove(inner);
+    return inner ? unsupportedMove(inner) : nested.unsupported(effect.effects);
   },
   execute(effect, ctx) {
-    const inner = optionalMove(effect)!;
+    const inner = optionalMove(effect);
+    if (!inner) {
+      ctx.prompt({}, "Choose whether to do this optional effect.");
+      return { kind: "suspend", state: null };
+    }
     const ids = candidates(inner, ctx);
     if (ids.length) {
       promptMove(inner, ids, ctx, true);
@@ -75,8 +79,16 @@ export const may: EffectHandler<"may"> = {
     return done;
   },
   answer(effect, _state, input, ctx) {
+    const inner = optionalMove(effect);
+    if (!inner) {
+      if (input.selections || input.variables || input.targetIds)
+        throw new RuleViolation("Choose Yes or Decline.");
+      const accepted = input.confirm !== false;
+      if (effect.bind) ctx.bind(effect.bind, accepted ? 1 : 0);
+      return accepted ? { kind: "continue", effects: effect.effects } : done;
+    }
     const { ids } = selection(ctx, input);
-    performMove(optionalMove(effect)!, ids, ctx);
+    performMove(inner, ids, ctx);
     if (effect.bind) ctx.bind(effect.bind, ids.length ? 1 : 0);
     return done;
   },

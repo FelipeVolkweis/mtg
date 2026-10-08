@@ -26,6 +26,7 @@ export function placementPart(trigger: Trigger | ManaTrigger): PlacementPart {
     case "dies":
     case "cast":
     case "attacks":
+    case "blocks":
     case "deals-damage":
     case "draws":
     case "step":

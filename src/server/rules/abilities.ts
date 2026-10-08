@@ -11,6 +11,7 @@ import {
   type Effect,
   type MacroKeyword,
   type ManaProduction,
+  type Modes,
   type Predicate,
   type Replacement,
   type Selector,
@@ -37,13 +38,91 @@ import {
 // subset `support.ts` accepts, so these read only that subset. Static grants,
 // replacements and keywords declare that subset here, next to their readers.
 
-/** The ability's one target clause (the runtime supports one). */
-export function targetClause(ability?: Ability): TargetClause | undefined {
-  return ability && "targets" in ability ? ability.targets?.[0] : undefined;
+/** The ability's target clauses; chosen modes add theirs (`flattenModes`). */
+export function targetClauses(ability?: Ability): TargetClause[] {
+  return ability && "targets" in ability ? (ability.targets ?? []) : [];
 }
+
+/** How many targets a clause takes (CR 115.1d): one unless it says otherwise. */
+export function clauseRange(clause: TargetClause): {
+  min: number;
+  max: number;
+} {
+  return typeof clause.count === "number"
+    ? { min: clause.count, max: clause.count }
+    : (clause.count ?? { min: 1, max: 1 });
+}
+
+/** The modes a spell or ability chooses among (CR 700.2), if it has any. */
+export const modesOf = (ability?: Ability): Modes | undefined =>
+  ability && "modes" in ability ? ability.modes : undefined;
+
+/** How many modes may be chosen. */
+export function modeRange(modes: Modes): { min: number; max: number } {
+  return typeof modes.choose === "number"
+    ? { min: modes.choose, max: modes.choose }
+    : modes.choose;
+}
+
+/**
+ * The ability once its modes are chosen (CR 700.2): the modes' targets follow
+ * the common ones and their instructions run in printed order.
+ */
+export function flattenModes(ability: Ability, modeIds: string[]): Ability {
+  const modes = modesOf(ability)!;
+  const chosen = modes.options.filter((option) => modeIds.includes(option.id));
+  const { modes: _modes, ...rest } = ability as Ability & { modes: Modes };
+  const targets = [
+    ...(("targets" in ability && ability.targets) || []),
+    ...chosen.flatMap((option) => option.targets ?? []),
+  ];
+  return {
+    ...rest,
+    ...(targets.length ? { targets } : {}),
+    effects: chosen.flatMap((option) => option.effects),
+  } as Ability;
+}
+
+/** The first target clause: where the ability has exactly one (legacy readers). */
+export const targetClause = (ability?: Ability): TargetClause | undefined =>
+  targetClauses(ability)[0];
 
 export const targetFilter = (ability?: Ability) =>
   targetClause(ability)?.filter;
+
+/** Gift (CR 702.174): what the player promised may give an opponent: "card" or a token. */
+export function giftOf(abilities: Ability[]): string | undefined {
+  for (const ability of abilities)
+    if (
+      ability.kind === "keyword" &&
+      typeof ability.keyword === "object" &&
+      ability.keyword.name === "gift"
+    )
+      return ability.keyword.gift;
+  return undefined;
+}
+
+/** Escalate (CR 702.120): the cost paid for each mode chosen beyond the first. */
+export function escalateCosts(abilities: Ability[]): Cost[] | undefined {
+  for (const ability of abilities)
+    if (
+      ability.kind === "keyword" &&
+      typeof ability.keyword === "object" &&
+      ability.keyword.name === "escalate"
+    )
+      return ability.keyword.costs;
+  return undefined;
+}
+
+/** Damage divided as the spell is cast (CR 601.2d), if an instruction divides it. */
+export function dividedDamage(
+  ability?: Ability,
+): Extract<Effect, { kind: "damage" }> | undefined {
+  return effectsOf(ability).find(
+    (effect): effect is Extract<Effect, { kind: "damage" }> =>
+      effect.kind === "damage" && !!effect.divide,
+  );
+}
 
 /** The instructions a resolving ability runs. */
 export function effectsOf(ability?: Ability): Effect[] {
@@ -116,6 +195,28 @@ const grant = <K extends StaticGrant["kind"]>(abilities: Ability[], kind: K) =>
   abilities
     .flatMap(grantsOf)
     .filter((g): g is Extract<StaticGrant, { kind: K }> => g.kind === kind);
+
+/**
+ * The restrictions a static ability places on attacking and blocking (CR
+ * 508.1c, 509.1b, 509.1c), each with the ability's condition: it applies only
+ * while the condition holds.
+ */
+export function restrictionGrants<
+  K extends "cant-attack" | "cant-block" | "max-blockers" | "block-restriction",
+>(abilities: Ability[], kind: K) {
+  return abilities.flatMap((ability) =>
+    grantsOf(ability)
+      .filter((g): g is Extract<StaticGrant, { kind: K }> => g.kind === kind)
+      .map((grant) => ({
+        grant,
+        condition: ability.kind === "static" ? ability.condition : undefined,
+      })),
+  );
+}
+
+/** Additional land plays each turn (CR 305.2), as `count` values. */
+export const extraLandPlays = (abilities: Ability[]) =>
+  grant(abilities, "additional-land-plays");
 
 /** Enchant (CR 303.4a): what an Aura spell targets and enchants. */
 export function enchantFilter(abilities: Ability[]): Predicate | undefined {
@@ -291,6 +392,21 @@ const grantHandlers: {
             break;
           case "gain-control":
             check.unsupported("Gaining control");
+            break;
+          case "add-types":
+          case "set-types":
+          case "set-colors":
+          case "remove-abilities":
+          case "copy-linked":
+            break;
+          case "grant-ability":
+            // Granted abilities are read by `abilitiesOf`; a continuous
+            // effect of a granted static ability isn't gathered.
+            if (change.ability.kind === "static")
+              check.unsupported("A granted static ability");
+            break;
+          default:
+            check.unsupported(`The ${change.kind} change`);
         }
     },
   },
@@ -348,11 +464,39 @@ const grantHandlers: {
   },
   // Applied as keywords.
   "attack-requirement": { reader: grantKeyword, support: supported },
+  // A block restriction by Walls is a keyword; any other is read from the
+  // grant when blockers are declared (Combat.canBlock).
   "block-restriction": {
-    reader: grantKeyword,
+    reader: restrictionGrants,
     support(grant, check) {
-      if (grant.by && !grantKeyword(grant))
-        check.unsupported("A block restriction other than by Walls");
+      check.at("objects", () => check.objects(grant.objects));
+      if (grant.by && !grantKeyword(grant)) {
+        const by = grant.by;
+        check.at("by", () => check.filter(by, false));
+      }
+    },
+  },
+  "cant-attack": {
+    reader: restrictionGrants,
+    support: (grant, check) =>
+      check.at("objects", () => check.objects(grant.objects)),
+  },
+  "cant-block": {
+    reader: restrictionGrants,
+    support: (grant, check) =>
+      check.at("objects", () => check.objects(grant.objects)),
+  },
+  "max-blockers": {
+    reader: restrictionGrants,
+    support: (grant, check) =>
+      check.at("objects", () => check.objects(grant.objects)),
+  },
+  "additional-land-plays": {
+    reader: extraLandPlays,
+    support(grant, check) {
+      if (grant.player !== "you")
+        check.unsupported("Additional land plays for another player");
+      check.at("count", () => check.value(grant.count));
     },
   },
 };
@@ -405,6 +549,15 @@ const macroKeywordHandlers: {
       check.at("keyword.filter", () => check.filter(keyword.filter)),
   },
   improvise: { reader: hasImprovise, support: supported },
+  gift: { reader: giftOf, support: supported },
+  escalate: {
+    reader: escalateCosts,
+    support(keyword, check) {
+      if (keyword.costs.some((cost) => cost.kind !== "mana"))
+        check.unsupported("An escalate cost other than mana");
+      check.at("keyword.costs", () => check.costs(keyword.costs));
+    },
+  },
 };
 
 /** The keywords with parameters the runtime applies, with their support declarations. */

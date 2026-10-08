@@ -26,7 +26,93 @@
     "defaultPrintingId": "33516226-4b97-4cd1-a47f-a9b40631daea"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "ram",
+        "description": "Target creature you control deals damage equal to its power to target creature you don't control. If the creature you control has trample, excess damage is dealt to that creature's controller instead.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "rammer",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you"
+            }
+          },
+          {
+            "id": "victim",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "opponents"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "if",
+            "condition": {
+              "matches": {
+                "selector": {
+                  "target": "rammer"
+                },
+                "predicate": {
+                  "keyword": "trample"
+                }
+              }
+            },
+            "then": [
+              {
+                "kind": "damage",
+                "amount": {
+                  "stat": {
+                    "of": {
+                      "target": "rammer"
+                    },
+                    "name": "power"
+                  }
+                },
+                "to": {
+                  "target": "victim"
+                },
+                "source": {
+                  "target": "rammer"
+                },
+                "excessTo": {
+                  "controllerOf": {
+                    "target": "victim"
+                  }
+                }
+              }
+            ],
+            "else": [
+              {
+                "kind": "damage",
+                "amount": {
+                  "stat": {
+                    "of": {
+                      "target": "rammer"
+                    },
+                    "name": "power"
+                  }
+                },
+                "to": {
+                  "target": "victim"
+                },
+                "source": {
+                  "target": "rammer"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

@@ -1,0 +1,22 @@
+{
+  "id": "phyrexian-beast-4-4-green",
+  "characteristics": {
+    "name": "Phyrexian Beast",
+    "colors": [
+      "G"
+    ],
+    "supertypes": [],
+    "types": [
+      "Creature"
+    ],
+    "subtypes": [
+      "Phyrexian",
+      "Beast"
+    ],
+    "keywords": [],
+    "rulesText": "",
+    "power": "4",
+    "toughness": "4"
+  },
+  "abilities": []
+}

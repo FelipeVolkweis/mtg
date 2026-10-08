@@ -33,7 +33,31 @@
     "defaultPrintingId": "fb56d3be-40e8-42fc-9d07-c3effe757052"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "uncounterable",
+        "description": "This spell can't be countered.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "cant-be-countered",
+            "spells": "this"
+          }
+        ]
+      },
+      {
+        "id": "trample",
+        "description": "Trample",
+        "kind": "keyword",
+        "keyword": "trample"
+      },
+      {
+        "id": "hexproof",
+        "description": "hexproof",
+        "kind": "keyword",
+        "keyword": "hexproof"
+      }
+    ]
   }
 }

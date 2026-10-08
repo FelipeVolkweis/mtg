@@ -35,7 +35,100 @@
     "defaultPrintingId": "22f0a911-5a48-4da4-bb02-950babaead2c"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "trample",
+        "description": "Trample",
+        "kind": "keyword",
+        "keyword": "trample"
+      },
+      {
+        "id": "others-trample",
+        "description": "Other creatures you control have trample.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "and": [
+                  {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you"
+                  },
+                  {
+                    "not": {
+                      "is": "source"
+                    }
+                  }
+                ]
+              }
+            },
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "trample"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "entry-boost",
+        "description": "Whenever another nontoken creature you control enters, put a +1/+1 counter on it. It gains haste until end of turn.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": {
+            "and": [
+              {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you"
+              },
+              {
+                "not": {
+                  "object": "token"
+                }
+              },
+              {
+                "not": {
+                  "is": "source"
+                }
+              }
+            ]
+          }
+        },
+        "effects": [
+          {
+            "kind": "add-counters",
+            "objects": {
+              "event": "object"
+            },
+            "counter": "+1/+1",
+            "count": 1
+          },
+          {
+            "kind": "apply-continuous",
+            "objects": {
+              "event": "object"
+            },
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "haste"
+              }
+            ],
+            "duration": "end-of-turn"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -2,7 +2,6 @@ import type {
   Ability,
   ManaProduction,
   ManaType,
-  Predicate,
 } from "../../shared/card-dsl.js";
 import type { GameObject, MatchAction } from "../../shared/rules-state.js";
 import {
@@ -11,7 +10,6 @@ import {
   oncePerTurn,
   production,
   sorceryTiming,
-  targetFilter,
 } from "../rules/abilities.js";
 import type { RulesQuery } from "../rules/context.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
@@ -31,14 +29,20 @@ export interface ActionListingContext {
   /** Runs a read pass: characteristics are computed once per object. */
   reading<T>(read: () => T): T;
   canCastTiming(object: GameObject, playerId: string): boolean;
-  legalTargets(
+  /** The player has a land play left this turn (CR 305.2). */
+  canPlayLand(playerId: string): boolean;
+  targetsAvailable(
     playerId: string,
-    filter: Predicate,
+    ability: Ability,
     sourceId?: string,
-    selfId?: string,
-  ): string[];
+  ): boolean;
   abilities(object: GameObject): Ability[];
   canActivateFromZone(
+    source: GameObject,
+    playerId: string,
+    ability: Ability,
+  ): boolean;
+  activationAllowed(
     source: GameObject,
     playerId: string,
     ability: Ability,
@@ -88,21 +92,16 @@ function listActions(
         object.cardInstanceIds.some((id) => match.instances[id]?.commander));
     if (!pending && ownHand) {
       if (object.characteristics.types?.includes("Land")) {
-        if (
-          mainTiming(ctx.query, playerId) &&
-          !(rules.thisTurn.landsPlayed[playerId] ?? 0)
-        )
+        if (mainTiming(ctx.query, playerId) && ctx.canPlayLand(playerId))
           actions.push({
             label: `Play ${object.characteristics.name}`,
             action: { type: "play-land", objectId: object.id },
           });
       } else if (ctx.canCastTiming(object, playerId)) {
-        const target = targetFilter(
-          ctx.query
-            .definition(object)
-            ?.abilities.find((a) => a.kind === "spell"),
-        );
-        if (!target || ctx.legalTargets(playerId, target).length)
+        const spell = ctx.query
+          .definition(object)
+          ?.abilities.find((a) => a.kind === "spell");
+        if (!spell || ctx.targetsAvailable(playerId, spell))
           actions.push({
             label: `Cast ${object.characteristics.name}`,
             action: { type: "cast-spell", objectId: object.id },
@@ -118,9 +117,8 @@ function listActions(
         continue;
       if (sorceryTiming(ability) && !mainTiming(ctx.query, playerId)) continue;
       if (!ctx.canActivateFromZone(object, playerId, ability)) continue;
-      const target = targetFilter(ability);
-      if (target && !ctx.legalTargets(playerId, target, object.id).length)
-        continue;
+      if (!ctx.activationAllowed(object, playerId, ability)) continue;
+      if (!ctx.targetsAvailable(playerId, ability, object.id)) continue;
       if (
         costsOf(ability).some((cost) => cost.kind === "tap-source") &&
         !ctx.canPayTapSymbol(object, playerId)

@@ -6,6 +6,11 @@ import type {
   MatchState,
   ZoneState,
 } from "../../shared/rules-state.js";
+/** CR 613.7: the next timestamp, later than every one given so far. */
+export function nextTimestamp(match: MatchState) {
+  return (match.rules.timestamp = (match.rules.timestamp ?? 0) + 1);
+}
+
 export function gameObject(
   kind: GameObject["kind"],
   zoneId: string,
@@ -58,6 +63,7 @@ export function moveObject(
     object.components[0],
   );
   fresh.cardInstanceIds = object.cardInstanceIds;
+  fresh.timestamp = nextTimestamp(match);
   if (destination.kind !== "stack" && destination.kind !== "battlefield")
     fresh.controllerId = object.ownerId;
   fresh.components = object.components;
@@ -80,6 +86,10 @@ export function moveObject(
     if (other.attachmentTo === objectId) other.attachmentTo = null;
   }
   delete match.rules.markedDamage?.[objectId];
+  if (match.rules.deathtouchDamaged)
+    match.rules.deathtouchDamaged = match.rules.deathtouchDamaged.filter(
+      (id) => id !== objectId,
+    );
   delete match.rules.controlledSinceTurn[objectId];
   match.rules.temporaryEffects = match.rules.temporaryEffects?.filter(
     (effect) => effect.sourceId !== objectId,

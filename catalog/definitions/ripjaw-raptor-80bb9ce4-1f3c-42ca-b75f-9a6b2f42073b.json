@@ -32,7 +32,26 @@
     "defaultPrintingId": "0b384383-c069-40ab-b078-04d00c103963"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "enrage",
+        "description": "Enrage — Whenever this creature is dealt damage, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "deals-damage",
+          "source": {},
+          "to": {
+            "is": "source"
+          }
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

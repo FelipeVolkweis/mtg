@@ -22,7 +22,42 @@
     "defaultPrintingId": "a2f126c3-ef62-421b-8d3e-2ae2f2d4f000"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "mana",
+        "description": "{T}: Add one mana of any color in your commander's color identity.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": {
+            "commanderColors": "you"
+          }
+        }
+      },
+      {
+        "id": "draw",
+        "description": "Sacrifice this artifact: Draw a card.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "sacrifice-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

@@ -11,6 +11,7 @@ import {
   type EventPattern,
   type Keyword,
   type Layer,
+  type ManaProduction,
   type Modes,
   type PlayerRef,
   type Predicate,
@@ -60,9 +61,13 @@ type BindingType = "objects" | "number" | "flag" | "player";
 interface Scope {
   path: string;
   targets: string[];
+  /** The targets whose clause can choose more than one object. */
+  multiple: string[];
   bindings: Map<string, BindingType>;
   event: boolean;
   x: boolean;
+  /** A spell ability: values may be determined as the spell is cast. */
+  spell: boolean;
 }
 
 const selectorKeys = new Set([
@@ -103,7 +108,12 @@ const layers: Record<ContinuousChange["kind"], Layer[]> = {
   "copy-linked": ["4", "7b"],
   "gain-control": ["2"],
   "add-types": ["4"],
+  "set-types": ["4"],
+  "set-colors": ["5"],
+  "remove-abilities": ["6"],
+  "grant-ability": ["6"],
   "grant-keyword": ["6"],
+  "double-stats": ["7c"],
   "define-stats": ["7a"],
   "set-base-stats": ["7b"],
   "add-stats": ["7c"],
@@ -116,7 +126,14 @@ const coreMacroKeywords = new Set([
   "kicker",
   "escalate",
   "flashback",
+  "gift",
 ]);
+
+/** Can the clause choose more than one object? */
+const chooses = (clause: TargetClause) =>
+  typeof clause.count === "object"
+    ? clause.count.max > 1
+    : (clause.count ?? 1) > 1;
 
 function isSelector(value: unknown): value is Selector {
   if (typeof value === "string")
@@ -179,8 +196,7 @@ class Compiler {
       if (Array.isArray(node)) node.forEach(visit);
       else if (node && typeof node === "object") {
         const record = node as Record<string, unknown>;
-        if (record.kind === "exile" && typeof record.linkAs === "string")
-          this.links.add(record.linkAs);
+        if (typeof record.linkAs === "string") this.links.add(record.linkAs);
         Object.values(record).forEach(visit);
       }
     };
@@ -190,7 +206,8 @@ class Compiler {
         ability.kind === "keyword" &&
         typeof ability.keyword === "object" &&
         (ability.keyword.name === "kicker" ||
-          ability.keyword.name === "escalate")
+          ability.keyword.name === "escalate" ||
+          ability.keyword.name === "gift")
       )
         this.optionalCosts.add(ability.keyword.name);
   }
@@ -331,12 +348,14 @@ class Compiler {
   // ------------------------------------------------------------ abilities
 
   private ability(ability: Ability, path: string): CoreAbility {
-    const scope = (event: boolean, x: boolean): Scope => ({
+    const scope = (event: boolean, x: boolean, spell = false): Scope => ({
       path,
       targets: [],
+      multiple: [],
       bindings: new Map(),
       event,
       x,
+      spell,
     });
     const manaX = (costs: Cost[]) =>
       costs.some((c) => c.kind === "mana" && c.symbols.includes("{X}"));
@@ -345,6 +364,7 @@ class Compiler {
         const s = scope(
           false,
           this.source.components.some((c) => c.manaCost?.includes("{X}")),
+          true,
         );
         return { ...ability, ...this.body(ability, s) };
       }
@@ -353,7 +373,19 @@ class Compiler {
         const costs = ability.costs.map((cost, i) =>
           this.cost(cost, { ...s, path: `${path}.costs[${i}]` }),
         );
-        return { ...ability, costs, ...this.body(ability, s) };
+        return {
+          ...ability,
+          costs,
+          ...(ability.activateOnlyIf
+            ? {
+                activateOnlyIf: this.condition(ability.activateOnlyIf, {
+                  ...s,
+                  path: `${path}.activateOnlyIf`,
+                }),
+              }
+            : {}),
+          ...this.body(ability, s),
+        };
       }
       case "triggered": {
         const s = scope(true, false);
@@ -395,21 +427,44 @@ class Compiler {
                   }),
                 },
               };
-        const produce = ability.produce;
-        return {
-          ...ability,
-          activation,
-          produce: Array.isArray(produce.colors)
+        const production = (produce: ManaProduction, at: string) =>
+          Array.isArray(produce.colors)
             ? produce
             : {
                 ...produce,
                 colors: {
                   commanderColors: this.player(produce.colors.commanderColors, {
                     ...s,
-                    path: `${path}.produce.colors`,
+                    path: `${path}.${at}.colors`,
                   }),
                 },
-              },
+              };
+        return {
+          ...ability,
+          activation,
+          ...(ability.activateOnlyIf
+            ? {
+                activateOnlyIf: this.condition(ability.activateOnlyIf, {
+                  ...s,
+                  path: `${path}.activateOnlyIf`,
+                }),
+              }
+            : {}),
+          produce: production(ability.produce, "produce"),
+          ...(ability.instead
+            ? {
+                instead: {
+                  condition: this.condition(ability.instead.condition, {
+                    ...s,
+                    path: `${path}.instead.condition`,
+                  }),
+                  produce: production(
+                    ability.instead.produce,
+                    "instead.produce",
+                  ),
+                },
+              }
+            : {}),
         };
       }
       case "static": {
@@ -470,6 +525,11 @@ class Compiler {
     if (typeof keyword === "string") return keyword;
     if (keyword.name === "enchant")
       return { ...keyword, filter: this.predicate(keyword.filter, s) };
+    if (keyword.name === "gift") {
+      if (keyword.gift !== "card" && !this.registries.tokens[keyword.gift])
+        this.fail(s.path, `Unknown gift "${keyword.gift}".`);
+      return keyword;
+    }
     if ("costs" in keyword)
       return {
         ...keyword,
@@ -488,7 +548,11 @@ class Compiler {
     if (!ability.modes && !ability.effects)
       this.fail(s.path, "The ability needs effects or modes.");
     const targets = this.targets(ability.targets ?? [], s, `${s.path}.targets`);
-    const scoped = { ...s, targets: targets.map((t) => t.id) };
+    const scoped = {
+      ...s,
+      targets: targets.map((t) => t.id),
+      multiple: targets.filter(chooses).map((t) => t.id),
+    };
     const out: {
       targets?: TargetClause[];
       modes?: Modes;
@@ -520,6 +584,10 @@ class Compiler {
           const optionScope = {
             ...scoped,
             targets: [...scoped.targets, ...own.map((t) => t.id)],
+            multiple: [
+              ...scoped.multiple,
+              ...own.filter(chooses).map((t) => t.id),
+            ],
             bindings: new Map(scoped.bindings),
           };
           return {
@@ -630,7 +698,10 @@ class Compiler {
         return {
           ...effect,
           player: this.player(effect.player, at("player")),
-          count: this.value(effect.count, at("count")),
+          count:
+            typeof effect.count === "object" && "until" in effect.count
+              ? { until: this.predicate(effect.count.until, at("count.until")) }
+              : this.value(effect.count, at("count")),
           ...(effect.select
             ? {
                 select: {
@@ -711,6 +782,7 @@ class Compiler {
           amount: this.value(effect.amount, at("amount")),
         };
       case "damage":
+        if (effect.divide) this.divisible(effect.to, at("to"));
         return {
           ...effect,
           amount: this.value(effect.amount, at("amount")),
@@ -718,6 +790,28 @@ class Compiler {
           ...(effect.source
             ? { source: this.selector(effect.source, at("source")) }
             : {}),
+          ...(effect.excessTo
+            ? { excessTo: this.recipient(effect.excessTo, at("excessTo")) }
+            : {}),
+        };
+      case "fight":
+        return {
+          ...effect,
+          objects: this.selector(effect.objects, at("objects")),
+          against: this.selector(effect.against, at("against")),
+        };
+      case "add-mana":
+        return {
+          ...effect,
+          ...(effect.player
+            ? { player: this.player(effect.player, at("player")) }
+            : {}),
+          mana: this.production(effect.mana, at("mana")),
+        };
+      case "play":
+        return {
+          ...effect,
+          objects: this.selector(effect.objects, at("objects")),
         };
       case "add-counters":
       case "remove-counters":
@@ -762,6 +856,21 @@ class Compiler {
           grant: this.grant(effect.grant, at("grant"), false),
           duration: this.duration(effect.duration, at("duration")),
         };
+      case "apply-replacement": {
+        const own = { ...s, event: true };
+        return {
+          ...effect,
+          event: this.eventPattern(effect.event, {
+            ...own,
+            path: `${s.path}.event`,
+          }),
+          replace: this.replacement(effect.replace, {
+            ...own,
+            path: `${s.path}.replace`,
+          }),
+          duration: this.duration(effect.duration, at("duration")),
+        };
+      }
       case "reselect-defender":
         return {
           ...effect,
@@ -860,6 +969,31 @@ class Compiler {
         };
       }
     }
+  }
+
+  private production(produce: ManaProduction, s: Scope): ManaProduction {
+    if (Array.isArray(produce.colors)) return produce;
+    return {
+      ...produce,
+      colors: {
+        commanderColors: this.player(produce.colors.commanderColors, s),
+      },
+    };
+  }
+
+  /** Divided damage needs targets that can number more than one (CR 601.2d). */
+  private divisible(to: Selector | PlayerRef, s: Scope) {
+    const id =
+      to === "target"
+        ? s.targets[0]
+        : typeof to === "object" && "target" in to
+          ? to.target
+          : undefined;
+    if (id === undefined || !s.multiple.includes(id))
+      this.fail(
+        s.path,
+        "Divided damage needs a target clause that can choose more than one target.",
+      );
   }
 
   private recipient(to: Selector | PlayerRef, s: Scope): Selector | PlayerRef {
@@ -1052,10 +1186,18 @@ class Compiler {
           ),
         };
       case "attack-requirement":
+      case "cant-attack":
       case "cant-block":
+      case "max-blockers":
         return {
           ...grant,
           objects: this.selector(grant.objects, at("objects")),
+        };
+      case "additional-land-plays":
+        return {
+          ...grant,
+          player: this.player(grant.player, at("player")),
+          count: this.value(grant.count, at("count")),
         };
       case "block-restriction":
         return {
@@ -1111,6 +1253,19 @@ class Compiler {
       case "copy-linked":
         this.link(change.link, s);
         return { ...change, layer };
+      case "grant-ability": {
+        const [granted, ...more] = this.expand(change.ability, s.path);
+        if (more.length || granted.kind === "keyword")
+          this.fail(
+            s.path,
+            "A granted ability must be one ability, not a keyword.",
+          );
+        return {
+          ...change,
+          layer,
+          ability: this.ability({ ...granted, origin: "granted" }, s.path),
+        };
+      }
       default:
         return { ...change, layer };
     }
@@ -1157,6 +1312,8 @@ class Compiler {
         };
       case "attacks":
         return { ...trigger, attacker: object(trigger.attacker, "attacker") };
+      case "blocks":
+        return { ...trigger, blocker: object(trigger.blocker, "blocker") };
       case "deals-damage":
         return {
           ...trigger,
@@ -1195,7 +1352,15 @@ class Compiler {
       case "would-enter":
         return { ...pattern, object: this.subject(pattern.object, s) };
       case "would-be-dealt-damage":
-        return { ...pattern, recipient: this.subject(pattern.recipient, s) };
+        return {
+          ...pattern,
+          ...(pattern.recipient
+            ? { recipient: this.subject(pattern.recipient, s) }
+            : {}),
+          ...(pattern.source
+            ? { source: this.subject(pattern.source, s) }
+            : {}),
+        };
       case "leaves-battlefield":
         return { ...pattern, object: this.selector(pattern.object, s) };
       default:
@@ -1298,6 +1463,7 @@ class Compiler {
     if (fields.controller) out.controller = this.player(fields.controller, s);
     if (fields.owner) out.owner = this.player(fields.owner, s);
     if (fields.player) out.player = this.player(fields.player, s);
+    if (fields.attacking) out.attacking = this.player(fields.attacking, s);
     if (fields.is) out.is = this.selector(fields.is, s);
     if (fields.dealtDamageBy)
       out.dealtDamageBy = this.selector(fields.dealtDamageBy, s);
@@ -1305,7 +1471,7 @@ class Compiler {
       if (fields[stat] !== undefined)
         out[stat] = this.comparison(fields[stat], s);
     if (fields.counters) {
-      this.counter(fields.counters.kind, s);
+      if (fields.counters.kind) this.counter(fields.counters.kind, s);
       out.counters = {
         ...fields.counters,
         count: this.comparison(fields.counters.count, s),
@@ -1357,6 +1523,20 @@ class Compiler {
           of: this.selector(value.greatest.of, s),
         },
       };
+    if ("total" in value)
+      return {
+        total: { ...value.total, of: this.selector(value.total.of, s) },
+      };
+    if ("product" in value)
+      return { product: value.product.map((v) => this.value(v, s)) };
+    if ("atCast" in value) {
+      if (!s.spell)
+        this.fail(
+          s.path,
+          "atCast needs a spell ability: only a spell is cast (CR 601.2).",
+        );
+      return { atCast: this.value(value.atCast, s) };
+    }
     if ("cardsIn" in value)
       return {
         cardsIn: {

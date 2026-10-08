@@ -1,12 +1,25 @@
 import { randomUUID } from "node:crypto";
-import { type Effect, nextTurnStep } from "../../shared/card-dsl.js";
+import {
+  type Effect,
+  nextTurnStep,
+  type TurnStep,
+} from "../../shared/card-dsl.js";
 import type { GameObject, TurnRecord } from "../../shared/rules-state.js";
 import { restrictsUntap } from "../rules/abilities.js";
 import type { RulesMutator, RulesQuery } from "../rules/context.js";
 import type { PriorityGrant } from "../rules/priority/priority-checkpoint.js";
 import type { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import type { Combat } from "./combat.js";
+import { adjustCounters, dropEmptyCounters, hasCounters } from "./counters.js";
 import { emptyMana } from "./rules-engine.js";
+
+/** The steps whose beginning the trigger runtime observes. */
+const observedSteps: TurnStep[] = [
+  "upkeep",
+  "precombat-main",
+  "begin-combat",
+  "end",
+];
 
 /** A turn's bookkeeping before anything has happened in it. */
 export function newTurnRecord(): TurnRecord {
@@ -76,10 +89,16 @@ export class TurnStructure {
           .some(
             (a) =>
               a.attachmentTo === object.id &&
-              restrictsUntap(this.ctx.query.definition(a)?.abilities ?? []),
+              restrictsUntap(this.ctx.query.abilitiesOf(a)),
           );
-        if (!restricted || this.rules.monarchId === object.controllerId)
-          object.status.tapped = false;
+        if (!restricted || this.rules.monarchId === object.controllerId) {
+          // CR 122.1g: a tapped permanent with a stun counter doesn't untap;
+          // it loses a stun counter instead.
+          if (object.status.tapped && hasCounters(object.counters, "stun", 1)) {
+            adjustCounters(object, "stun", -1);
+            dropEmptyCounters(object);
+          } else object.status.tapped = false;
+        }
       }
     this.advance();
   }
@@ -94,11 +113,13 @@ export class TurnStructure {
     const next = nextTurnStep(turn.step);
     if (!next) throw new Error("The cleanup step has no next step.");
     turn.step = next;
-    if (turn.step === "upkeep")
+    // The beginning of these steps triggers abilities (CR 603.2, 503.1).
+    if (observedSteps.includes(turn.step))
       for (const source of ctx.battlefieldSources())
         ctx.triggers.collect(
           {
-            kind: "upkeep",
+            kind: turn.step === "upkeep" ? "upkeep" : "step",
+            step: turn.step,
             playerId: turn.activePlayerId,
             sourceId: source.id,
             affectedId: source.id,
@@ -163,6 +184,7 @@ export class TurnStructure {
     }
     // CR 514: after discarding, damage and end-of-turn changes end together.
     this.rules.markedDamage = {};
+    this.rules.deathtouchDamaged = [];
     ctx.endTemporaryEffects();
     ctx.checkpoint({ cleanup: true });
   }

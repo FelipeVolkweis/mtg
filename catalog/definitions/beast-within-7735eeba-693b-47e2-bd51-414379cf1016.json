@@ -26,7 +26,39 @@
     "defaultPrintingId": "cd6d61e9-239d-472b-a603-94290efbdad9"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "destroy",
+        "description": "Destroy target permanent. Its controller creates a 3/3 green Beast creature token.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "permanent",
+            "filter": {
+              "zone": "battlefield",
+              "object": "permanent"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "objects": {
+              "target": "permanent"
+            }
+          },
+          {
+            "kind": "create-token",
+            "token": "beast-3-3-green",
+            "controller": {
+              "controllerOf": {
+                "target": "permanent"
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 }

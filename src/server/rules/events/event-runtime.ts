@@ -4,13 +4,15 @@ import type {
   LastKnownInformation,
   ZoneState,
 } from "../../../shared/rules-state.js";
-import { moveObject } from "../../match/game-objects.js";
+import { moveObject, nextTimestamp } from "../../match/game-objects.js";
 import { removeCountersDownToZero } from "../../match/counters.js";
 import { changeLife } from "../../match/life.js";
 import { zoneById } from "../../match/zones.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import { EventTriggerObserver } from "../triggers/trigger-runtime.js";
+import { Evaluator } from "../vm/evaluate.js";
+import { isSelector } from "../ast.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import type {
   EventResult,
@@ -165,6 +167,7 @@ export class EventRuntime {
 
   private create(object: GameObject, zone: ZoneState) {
     const engine = this.engine;
+    object.timestamp = nextTimestamp(engine.match);
     engine.match.objects[object.id] = object;
     zone.objectIds.push(object.id);
     if (zone.kind === "battlefield") {
@@ -181,6 +184,29 @@ export class EventRuntime {
     const zone = zoneById(match, object.zoneId)!;
     zone.objectIds.splice(zone.objectIds.indexOf(id), 1);
     delete match.objects[id];
+  }
+
+  /** CR 615: a prevention effect in force stops this source's damage. */
+  private prevented(
+    source: GameObject,
+    live: GameObject | undefined,
+    combat: boolean,
+  ) {
+    const engine = this.engine;
+    return (engine.rules.preventions ?? []).some((prevention) => {
+      if (prevention.combat !== undefined && prevention.combat !== combat)
+        return false;
+      if (!prevention.source) return true;
+      if (!live) return false;
+      const evaluator = new Evaluator(engine.query, {
+        playerId: prevention.playerId,
+        sourceId: prevention.sourceId,
+      });
+      const from = prevention.source;
+      return isSelector(from)
+        ? evaluator.objects(from).includes(source.id)
+        : evaluator.matches(live, from);
+    });
   }
 
   private damage(assignments: DamageAssignment[], combat: boolean) {
@@ -210,6 +236,7 @@ export class EventRuntime {
         zoneId: engine.zone("battlefield").id,
         characteristics,
       };
+      if (this.prevented(source, live, combat)) continue;
       const recorded = { ...assignment, sourceId };
       const player = engine.match.players.find(
         (p) => p.id === assignment.recipientId,
@@ -244,6 +271,12 @@ export class EventRuntime {
           engine.rules.markedDamage ??= {};
           engine.rules.markedDamage[recipient.id] =
             (engine.rules.markedDamage[recipient.id] ?? 0) + assignment.amount;
+          // CR 702.2b: any damage from a deathtouch source is lethal.
+          if (characteristics.keywords?.includes("Deathtouch")) {
+            engine.rules.deathtouchDamaged ??= [];
+            if (!engine.rules.deathtouchDamaged.includes(recipient.id))
+              engine.rules.deathtouchDamaged.push(recipient.id);
+          }
         } else if (types.includes("Planeswalker") || types.includes("Battle")) {
           removeCountersDownToZero(
             recipient.counters,
@@ -252,6 +285,10 @@ export class EventRuntime {
           );
         } else continue;
       } else continue;
+      // CR 702.15b: damage from a lifelink source also gains its controller
+      // that much life, as the damage is dealt.
+      if (characteristics.keywords?.includes("Lifelink"))
+        this.lifeChange(source.controllerId, assignment.amount);
       engine.rules.thisTurn.damageEvents.push({
         ...recorded,
         sourceCharacteristics: structuredClone(characteristics),

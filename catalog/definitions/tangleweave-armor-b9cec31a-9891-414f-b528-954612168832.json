@@ -31,7 +31,80 @@
     "defaultPrintingId": "9fd7ac91-8f76-4fd1-afc5-9a3fd5ce6894"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "living-weapon",
+        "description": "Living weapon (When this Equipment enters, create a 0/0 black Phyrexian Germ creature token, then attach this to it.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "living-weapon"
+        }
+      },
+      {
+        "id": "equipped-bonus",
+        "description": "Equipped creature gets +X/+X, where X is the greatest mana value among your commanders.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "continuous",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "is": {
+                  "attachedTo": "source"
+                }
+              }
+            },
+            "changes": [
+              {
+                "kind": "add-stats",
+                "power": {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "owner": "you",
+                        "commander": true
+                      }
+                    },
+                    "name": "manaValue"
+                  }
+                },
+                "toughness": {
+                  "greatest": {
+                    "of": {
+                      "all": {
+                        "owner": "you",
+                        "commander": true
+                      }
+                    },
+                    "name": "manaValue"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "equip",
+        "description": "Equip {4}",
+        "kind": "keyword",
+        "keyword": {
+          "name": "equip",
+          "costs": [
+            {
+              "kind": "mana",
+              "symbols": [
+                "{4}"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

@@ -26,7 +26,44 @@
     "defaultPrintingId": "1d167110-e5dd-409f-8744-016c26a14f1d"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "protect",
+        "description": "Target permanent you control gains hexproof and indestructible until end of turn. You gain 2 life.",
+        "kind": "spell",
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "object": "permanent",
+              "controller": "you"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "apply-continuous",
+            "objects": "target",
+            "changes": [
+              {
+                "kind": "grant-keyword",
+                "keyword": "hexproof"
+              },
+              {
+                "kind": "grant-keyword",
+                "keyword": "indestructible"
+              }
+            ],
+            "duration": "end-of-turn"
+          },
+          {
+            "kind": "gain-life",
+            "amount": 2
+          }
+        ]
+      }
+    ]
   }
 }

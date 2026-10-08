@@ -26,7 +26,125 @@
     "defaultPrintingId": "94aff478-6040-4a13-be89-24e0edf1ffe5"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "hideaway",
+        "description": "Hideaway 4 (When this land enters, look at the top four cards of your library, exile one face down, then put the rest on the bottom in a random order.)",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "effects": [
+          {
+            "kind": "library-sequence",
+            "player": "you",
+            "count": 4,
+            "operation": "look",
+            "select": {
+              "max": 1,
+              "to": {
+                "zone": "exile",
+                "faceDown": true
+              },
+              "linkAs": "hideaway"
+            },
+            "rest": {
+              "to": {
+                "zone": "library",
+                "position": "bottom"
+              },
+              "order": "random"
+            }
+          }
+        ]
+      },
+      {
+        "id": "enter-tapped",
+        "description": "This land enters tapped.",
+        "kind": "replacement",
+        "event": {
+          "event": "would-enter",
+          "object": "source"
+        },
+        "replace": {
+          "kind": "enter-tapped"
+        }
+      },
+      {
+        "id": "mana",
+        "description": "{T}: Add {G}.",
+        "kind": "mana",
+        "activation": {
+          "costs": [
+            {
+              "kind": "tap-source"
+            }
+          ]
+        },
+        "produce": {
+          "quantity": 1,
+          "colors": [
+            "G"
+          ]
+        }
+      },
+      {
+        "id": "play-hidden",
+        "description": "{G}, {T}: You may play the exiled card without paying its mana cost if creatures you control have total power 10 or greater.",
+        "kind": "activated",
+        "costs": [
+          {
+            "kind": "mana",
+            "symbols": [
+              "{G}"
+            ]
+          },
+          {
+            "kind": "tap-source"
+          }
+        ],
+        "effects": [
+          {
+            "kind": "if",
+            "condition": {
+              "compare": [
+                {
+                  "total": {
+                    "of": {
+                      "all": {
+                        "zone": "battlefield",
+                        "type": [
+                          "Creature"
+                        ],
+                        "controller": "you"
+                      }
+                    },
+                    "name": "power"
+                  }
+                },
+                ">=",
+                10
+              ]
+            },
+            "then": [
+              {
+                "kind": "may",
+                "effects": [
+                  {
+                    "kind": "play",
+                    "objects": {
+                      "linked": "hideaway"
+                    },
+                    "payment": "free"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

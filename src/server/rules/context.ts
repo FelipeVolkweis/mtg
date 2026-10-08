@@ -1,5 +1,6 @@
 import type { CardDefinition, Catalog } from "../../shared/model.js";
 import type {
+  Ability,
   Characteristics,
   Predicate,
   ZoneKind,
@@ -23,6 +24,8 @@ export interface RulesQuery {
   zone(kind: ZoneKind, playerId?: string): ZoneState;
   effective(object: GameObject): Characteristics;
   definition(object: GameObject): CardDefinition | undefined;
+  /** The abilities the object has now: its card's, less and plus what effects change. */
+  abilitiesOf(object: GameObject): Ability[];
   /** Core AST predicate match, evaluated for `playerId` ("you"). */
   matches(
     object: GameObject,

@@ -17,7 +17,9 @@ test("the token registry loads from the catalog", async () => {
     "beast-3-3-green",
     "food",
     "myr-1-1",
+    "phyrexian-beast-4-4-green",
     "phyrexian-germ-0-0",
+    "spider-1-2-green-reach",
     "thopter-1-1-flying",
     "treasure",
     "zombie-2-2-black",
@@ -61,7 +63,7 @@ test("every catalog definition compiles, and every implemented one is executable
       failures.push(`${path}: ${JSON.stringify(support.errors)}`);
   }
   expect(failures).toEqual([]);
-  expect(implemented).toBe(67);
+  expect(implemented).toBe(134);
 });
 
 for (const path of files("tests/fixtures/dsl-v2"))

@@ -17,7 +17,7 @@ import {
 } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { interveningIf, production, triggerSubject } from "../abilities.js";
-import { isSourcePredicate } from "../ast.js";
+import { astEqual, isSourcePredicate } from "../ast.js";
 import type { Registry, SupportCheck } from "../support-check.js";
 import { Evaluator } from "../vm/evaluate.js";
 
@@ -58,9 +58,18 @@ export interface TriggerHandler<E extends AnyTrigger["event"]> {
     step: TurnStep,
   ): boolean;
   subject?(trigger: TriggerOf<E>): Predicate | undefined;
+  /** Damage triggers: what the damaged object must be (a player never is). */
+  recipient?(trigger: TriggerOf<E>): Predicate | undefined;
   /** Rejects the forms of this trigger the runtime can't run. */
   support(trigger: TriggerOf<E>, check: SupportCheck): void;
 }
+
+const observedSteps: TurnStep[] = [
+  "upkeep",
+  "precombat-main",
+  "begin-combat",
+  "end",
+];
 
 const during = (during: TurnStep | undefined, step: TurnStep) =>
   during === undefined || during === step;
@@ -71,9 +80,13 @@ function supportedPlayer(ref: PlayerRef, check: SupportCheck) {
     check.unsupported(`Trigger player ${JSON.stringify(ref)}`);
 }
 
-/** A trigger subject: the source on the Battlefield, or a supported filter. */
+/**
+ * A trigger subject: the source on the Battlefield, a supported filter, or
+ * the empty predicate, which any object matches.
+ */
 function supportedSubject(object: Selector | Predicate, check: SupportCheck) {
-  if (!isSourcePredicate(object)) check.filter(object as Predicate);
+  if (!isSourcePredicate(object) && !astEqual(object, {}))
+    check.filter(object as Predicate);
 }
 
 /**
@@ -157,11 +170,19 @@ const triggerHandlers: { [E in AnyTrigger["event"]]?: TriggerHandler<E> } = {
       (typeof trigger.to !== "string" ||
         event.damage?.recipientKind === trigger.to),
     subject: (trigger) => triggerSubject(trigger.source),
+    recipient: (trigger) =>
+      typeof trigger.to === "object" ? trigger.to : undefined,
     support(trigger, check) {
-      if (trigger.to && typeof trigger.to === "object")
-        check.unsupported("A damage trigger with a recipient predicate");
+      if (typeof trigger.to === "object")
+        check.at("to", () => supportedSubject(trigger.to as Predicate, check));
       check.at("source", () => supportedSubject(trigger.source, check));
     },
+  },
+  blocks: {
+    matches: (_trigger, event) => event.kind === "block",
+    subject: (trigger) => triggerSubject(trigger.blocker),
+    support: (trigger, check) =>
+      check.at("blocker", () => supportedSubject(trigger.blocker, check)),
   },
   draws: {
     matches: (trigger, event, controllerId) =>
@@ -171,14 +192,15 @@ const triggerHandlers: { [E in AnyTrigger["event"]]?: TriggerHandler<E> } = {
     support: (trigger, check) => supportedPlayer(trigger.player, check),
   },
   step: {
-    // Only the upkeep is observed as an event; the monarch's end step
-    // trigger is the designation's own (RulesEngine.monarchTrigger).
+    // Steps are observed as events (TurnStructure): the upkeep, the first
+    // main phase, the beginning of combat and the end step. The monarch's
+    // end step trigger is the designation's own (RulesEngine.monarchTrigger).
     matches: (trigger, event, controllerId) =>
-      event.kind === "upkeep" &&
-      trigger.step === "upkeep" &&
+      (event.kind === "upkeep" || event.kind === "step") &&
+      (event.kind === "upkeep" ? "upkeep" : event.step) === trigger.step &&
       playerMatches(trigger.player, event.playerId, controllerId),
     support(trigger, check) {
-      if (trigger.step !== "upkeep")
+      if (!observedSteps.includes(trigger.step))
         check.unsupported(`A ${trigger.step} step trigger`);
       if (trigger.player === "next")
         check.unsupported("A next-player step trigger");
@@ -293,6 +315,9 @@ function waitFor(
           ? (event.before ?? event.after)
           : engine.effective(source),
       ownerId: source.ownerId,
+      ...(source.proposal?.optionalCosts.length
+        ? { optionalCosts: [...source.proposal.optionalCosts] }
+        : {}),
     },
     ability: structuredClone(ability),
     event: structuredClone(event),
@@ -314,7 +339,7 @@ export class EventTriggerObserver {
   ) {
     const engine = this.engine;
     for (const source of sources) {
-      for (const ability of engine.definition(source)?.abilities ?? []) {
+      for (const ability of engine.abilitiesOf(source)) {
         const trigger = triggerOf(ability);
         if (
           !trigger ||
@@ -325,6 +350,7 @@ export class EventTriggerObserver {
             engine.match.turn.step,
           ) ||
           !this.subjectMatches(trigger, event, affected, source) ||
+          !this.recipientMatches(trigger, event, source) ||
           !this.interveningHolds(ability, source)
         )
           continue;
@@ -363,6 +389,25 @@ export class EventTriggerObserver {
     ).matches(affected, subject);
   }
 
+  /** A damage trigger's recipient: a player never satisfies a predicate. */
+  private recipientMatches(
+    trigger: Trigger | ManaTrigger,
+    event: SemanticEvent,
+    source: GameObject,
+  ) {
+    const predicate = triggerHandler(trigger)?.recipient?.(trigger);
+    if (!predicate) return true;
+    const recipient =
+      this.engine.match.objects[event.damage?.recipientId ?? ""];
+    return (
+      !!recipient &&
+      new Evaluator(this.engine.query, {
+        playerId: source.controllerId,
+        sourceId: source.id,
+      }).matches(recipient, predicate)
+    );
+  }
+
   /** CR 603.4: an intervening-if must be true when the event happens. */
   private interveningHolds(ability: Ability, source: GameObject) {
     const condition = interveningIf(ability);
@@ -383,7 +428,7 @@ export class StateTriggerObserver {
   collect() {
     const engine = this.engine;
     for (const source of engine.battlefieldSources()) {
-      for (const ability of engine.definition(source)?.abilities ?? []) {
+      for (const ability of engine.abilitiesOf(source)) {
         if (ability.kind !== "triggered" || ability.trigger.event !== "state")
           continue;
         if (

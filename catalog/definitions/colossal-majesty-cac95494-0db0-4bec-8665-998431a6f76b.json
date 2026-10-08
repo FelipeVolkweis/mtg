@@ -26,7 +26,38 @@
     "defaultPrintingId": "2f545da8-0f7d-40e3-ace1-3bb8522f5b29"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "upkeep-draw",
+        "description": "At the beginning of your upkeep, if you control a creature with power 4 or greater, draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "step",
+          "step": "upkeep",
+          "player": "you"
+        },
+        "interveningIf": {
+          "exists": {
+            "all": {
+              "zone": "battlefield",
+              "type": [
+                "Creature"
+              ],
+              "controller": "you",
+              "power": {
+                ">=": 4
+              }
+            }
+          }
+        },
+        "effects": [
+          {
+            "kind": "draw",
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }

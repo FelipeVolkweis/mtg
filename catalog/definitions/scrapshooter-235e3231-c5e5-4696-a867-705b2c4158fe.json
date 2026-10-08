@@ -34,7 +34,54 @@
     "defaultPrintingId": "54816109-6152-44d6-8d6f-8c73aaa58049"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "gift",
+        "description": "Gift a card (You may promise an opponent a gift as you cast this spell. If you do, when it enters, they draw a card.)",
+        "kind": "keyword",
+        "keyword": {
+          "name": "gift",
+          "gift": "card"
+        }
+      },
+      {
+        "id": "reach",
+        "description": "Reach",
+        "kind": "keyword",
+        "keyword": "reach"
+      },
+      {
+        "id": "gift-destroy",
+        "description": "When this creature enters, if the gift was promised, destroy target artifact or enchantment an opponent controls.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": "source"
+        },
+        "interveningIf": {
+          "paid": "gift"
+        },
+        "targets": [
+          {
+            "id": "target-0",
+            "filter": {
+              "zone": "battlefield",
+              "type": [
+                "Artifact",
+                "Enchantment"
+              ],
+              "controller": "opponents"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "kind": "destroy",
+            "objects": "target"
+          }
+        ]
+      }
+    ]
   }
 }

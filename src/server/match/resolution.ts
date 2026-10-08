@@ -32,14 +32,32 @@ export class Resolution {
   }
 
   /** Starts executing a resolving object's instructions; see `run`. */
-  start(object: GameObject, instructions: Effect[]): VMResult {
+  start(
+    object: GameObject,
+    instructions: Effect[],
+    targets?: Record<string, string[]>,
+  ): VMResult {
     this.engine.rules.resolving = newExecution(
       object.id,
       object.controllerId,
       instructions,
       { ...object.proposal?.variables },
     );
+    // The player a spell's gift was promised to (CR 702.174a).
+    if (object.proposal?.gift)
+      this.engine.rules.resolving.bindings["gift-recipient"] = {
+        kind: "player",
+        id: object.proposal.gift,
+      };
+    // Only the targets that are still legal are affected (CR 608.2b).
+    if (targets && Object.keys(targets).length)
+      this.engine.rules.resolving.targets = targets;
     return this.vm().run();
+  }
+
+  /** The waiting instruction is done (it cast a spell): continue after it. */
+  resume(): VMResult {
+    return this.vm().resume();
   }
 
   /** Answers the waiting instruction and continues. */
@@ -61,8 +79,16 @@ export class Resolution {
     return {
       playerId: execution.controllerId,
       sourceId: stack.sourceObjectId ?? stack.id,
-      targetIds: stack.resolution?.targetIds ?? [],
+      targetIds: execution.targets
+        ? Object.values(execution.targets).flat()
+        : (stack.resolution?.targetIds ?? []),
+      ...(execution.targets ? { targets: execution.targets } : {}),
+      ...(stack.resolution?.division
+        ? { division: stack.resolution.division }
+        : {}),
       event: stack.resolution?.event,
+      lastKnown: execution.lastKnown,
+      optionalCosts: stack.resolution?.sourceSnapshot?.optionalCosts,
       ...scopeBindings(execution),
     };
   }
@@ -76,7 +102,20 @@ export class Resolution {
     >;
     return {
       query: engine.query,
-      propose: (event: ProposedEvent) => engine.propose(event),
+      propose(event: ProposedEvent) {
+        const result = engine.propose(event);
+        // "Its controller" still names who controlled an object that left.
+        if (event.kind === "zone-change" && result.lastKnown)
+          (execution.lastKnown ??= {})[event.objectId] = {
+            controllerId: result.lastKnown.controllerId,
+            ownerId: result.lastKnown.ownerId,
+          };
+        return result;
+      },
+      playableFree: (playerId, id) => engine.playableFree(playerId, id),
+      playFree: (playerId, id) => engine.playFree(playerId, id),
+      addMana: (playerId, produce, color) =>
+        engine.produceMana(playerId, produce, color),
       addTemporaryEffect: (effect) => engine.addTemporaryEffect(effect),
       rules: engine.rules,
       playerId: execution.controllerId,

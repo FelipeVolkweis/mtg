@@ -15,7 +15,10 @@ export const zeroToughness: StateBasedRule = {
     ),
 };
 
-/** CR 704.5g: a creature with lethal damage marked on it is destroyed. */
+/**
+ * CR 704.5g, 704.5h: a creature with lethal damage marked on it, or dealt
+ * damage by a deathtouch source, is destroyed.
+ */
 export const lethalDamage: StateBasedRule = {
   id: "lethal-damage",
   evaluate: (query) =>
@@ -27,7 +30,10 @@ export const lethalDamage: StateBasedRule = {
             value !== undefined &&
             value > 0n &&
             !hasKeyword(query, object, "Indestructible") &&
-            BigInt(query.match.rules.markedDamage?.[object.id] ?? 0) >= value
+            (BigInt(query.match.rules.markedDamage?.[object.id] ?? 0) >=
+              value ||
+              // CR 704.5h: damage from a deathtouch source is lethal.
+              !!query.match.rules.deathtouchDamaged?.includes(object.id))
           );
         })
         .map((object) => ({ kind: "graveyard", objectId: object.id })),

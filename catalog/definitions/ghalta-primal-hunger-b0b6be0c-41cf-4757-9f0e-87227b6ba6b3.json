@@ -35,7 +35,40 @@
     "defaultPrintingId": "5d9951d1-3228-4d69-8e63-6e6f0a893a86"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "discount",
+        "description": "This spell costs {X} less to cast, where X is the total power of creatures you control.",
+        "kind": "static",
+        "activeFrom": "stack",
+        "grants": [
+          {
+            "kind": "cost-modifier",
+            "applies": "this",
+            "reduce": {
+              "total": {
+                "of": {
+                  "all": {
+                    "zone": "battlefield",
+                    "type": [
+                      "Creature"
+                    ],
+                    "controller": "you"
+                  }
+                },
+                "name": "power"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "trample",
+        "description": "Trample (This creature can deal excess combat damage to the player or planeswalker it's attacking.)",
+        "kind": "keyword",
+        "keyword": "trample"
+      }
+    ]
   }
 }

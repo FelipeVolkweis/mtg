@@ -20,6 +20,7 @@ export const counterKinds = {
   "-1/-1": { stats: { power: -1, toughness: -1 } },
   page: {},
   loyalty: {},
+  stun: {},
 } as const;
 export type CounterKind = keyof typeof counterKinds;
 

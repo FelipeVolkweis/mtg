@@ -30,7 +30,46 @@
     "defaultPrintingId": "0975d711-aebe-4e31-8e27-19368ec9873c"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "draw",
+        "description": "Whenever another creature you control with power 3 or greater enters, you may draw a card.",
+        "kind": "triggered",
+        "trigger": {
+          "event": "enters",
+          "object": {
+            "and": [
+              {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you",
+                "power": {
+                  ">=": 3
+                }
+              },
+              {
+                "not": {
+                  "is": "source"
+                }
+              }
+            ]
+          }
+        },
+        "effects": [
+          {
+            "kind": "may",
+            "effects": [
+              {
+                "kind": "draw",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }

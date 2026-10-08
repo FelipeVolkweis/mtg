@@ -30,7 +30,31 @@
     "defaultPrintingId": "eae3c792-cc9c-4442-a15a-7bab50a30dff"
   },
   "authored": {
-    "automationStatus": "unimplemented",
-    "abilities": []
+    "automationStatus": "implemented",
+    "abilities": [
+      {
+        "id": "one-blocker",
+        "description": "Each creature you control with power 4 or greater can't be blocked by more than one creature.",
+        "kind": "static",
+        "grants": [
+          {
+            "kind": "max-blockers",
+            "objects": {
+              "all": {
+                "zone": "battlefield",
+                "type": [
+                  "Creature"
+                ],
+                "controller": "you",
+                "power": {
+                  ">=": 4
+                }
+              }
+            },
+            "count": 1
+          }
+        ]
+      }
+    ]
   }
 }
