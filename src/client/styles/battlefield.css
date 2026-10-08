@@ -1,0 +1,72 @@
+.battlefield-groups {
+  position: absolute;
+  left: 215px;
+  right: calc(var(--rail-width) + 32px);
+  top: 18px;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  justify-content: center;
+  gap: 16px 36px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+.opponent-area .battlefield-groups {
+  top: 108px;
+}
+.battlefield-group {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  background: transparent;
+  border: 0;
+}
+.battlefield-group.group-land {
+  flex: 1 0 100%;
+  order: 10;
+}
+.opponent-area .battlefield-groups {
+  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+}
+.opponent-area .group-land {
+  flex: 0 1 auto;
+  order: -1;
+}
+.opponent-area .group-creature {
+  flex: 1 1 0;
+}
+.opponent-area .group-creature .group-cards {
+  justify-content: center;
+}
+.group-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 12px;
+  padding: 6px;
+  overflow: visible;
+  min-height: 0;
+}
+.card-pile,
+.permanent-with-attachments {
+  display: flex;
+  gap: 6px;
+  align-items: start;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.spread-pile {
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  outline: 1px solid #c4b08688;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+

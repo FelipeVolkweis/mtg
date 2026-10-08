@@ -1,4 +1,5 @@
 import type { MatchView, ObjectView, ZoneView } from "../shared/model";
+import type { MatchPlayer } from "../shared/rules-state";
 
 export const battlefieldTypes = [
   "Creature",
@@ -30,6 +31,27 @@ export function zoneObjects(
   )
     .map((id) => match.objects[id])
     .filter((o): o is ObjectView => !!o);
+}
+/** A player's own Zone of `kind`, or the shared one. */
+export function playerZone(
+  match: MatchView,
+  player: MatchPlayer,
+  kind: ZoneView["kind"],
+) {
+  return match.zones.find(
+    (z) => z.kind === kind && (z.ownerId === player.id || !z.ownerId),
+  );
+}
+/** The cards in a Zone that belong to `playerId` (all of them in an owned Zone). */
+export function playerZoneCards(
+  match: MatchView,
+  zone: ZoneView | undefined,
+  playerId: string,
+) {
+  const objects = zoneObjects(match, zone);
+  return zone?.ownerId
+    ? objects
+    : objects.filter((o) => objectOwner(match, o) === playerId);
 }
 export function objectOwner(match: MatchView, object: ObjectView): string {
   return object.ownerId;

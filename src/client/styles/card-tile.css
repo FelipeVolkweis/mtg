@@ -1,0 +1,140 @@
+.rules-tile {
+  width: var(--card-width);
+  height: var(--card-height);
+  flex: 0 0 var(--card-width);
+  padding: 0;
+  position: relative;
+  border: 1px solid #151e24;
+  border-radius: 5px;
+  background: #182d33;
+  overflow: visible;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 4px #0005;
+}
+.rules-tile[draggable="true"] {
+  cursor: grab;
+}
+.rules-tile > img,
+.rules-tile > .printing-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.printing-fallback {
+  padding: 4px;
+  font-size: 8px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+  background: #263f44;
+}
+.printing-fallback strong {
+  font-size: 10px;
+}
+.printing-fallback span {
+  display: block;
+}
+.card-state {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 100%;
+  max-height: 60%;
+  overflow: hidden;
+  padding: 2px 4px;
+  background: #15242de8;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.2;
+  pointer-events: none;
+  border-radius: 3px;
+}
+.rules-tile .card-state strong,
+.rules-tile .card-state > .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.rules-tile:has(> img) .card-state:has(> strong:only-child) {
+  background: transparent;
+  padding: 0;
+}
+.rules-tile.is-tapped {
+  width: var(--card-height);
+  height: var(--card-width);
+  flex-basis: var(--card-height);
+  margin-top: calc((var(--card-height) - var(--card-width)) / 2);
+  margin-bottom: calc((var(--card-height) - var(--card-width)) / 2);
+  background: transparent;
+  border: 0;
+}
+.is-tapped > img,
+.is-tapped > .printing-fallback {
+  width: var(--card-width);
+  height: var(--card-height);
+  position: absolute;
+  left: calc((var(--card-height) - var(--card-width)) / 2);
+  top: calc((var(--card-width) - var(--card-height)) / 2);
+  transform: rotate(90deg);
+}
+.folded-pile {
+  box-shadow:
+    3px -3px #768c8e,
+    5px -5px #20393e;
+}
+.pile-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #17272f;
+  border: 1px solid #7c8d91;
+  color: #f1e9d3;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.attachment-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 8px;
+  background: #14222fee;
+  color: #ffe39b;
+  pointer-events: none;
+}
+.permanent-with-attachments:has(.attachment-label) {
+  padding: 2px;
+  border: 1px solid #b7a4ce;
+  border-radius: 5px;
+}
+.rules-tile.legal-target,
+.player-target.legal-target {
+  outline: 2px solid #a2ecff;
+  outline-offset: 2px;
+}
+.rules-tile.chosen-card {
+  outline: 3px solid #ffe39b;
+  outline-offset: 2px;
+}
+.rules-tile:focus-visible,
+.zone-pile-control:focus-visible,
+.pass-priority:focus-visible {
+  outline: 2px solid #a2ecff;
+  outline-offset: 3px;
+}
