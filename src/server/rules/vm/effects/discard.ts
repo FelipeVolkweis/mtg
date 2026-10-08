@@ -99,7 +99,9 @@ function answer(
     new Set(ids).size !== ids.length ||
     ids.some((id) => !legal.objectIds.includes(id))
   )
-    throw new RuleViolation("Choose the required number of eligible, distinct cards.");
+    throw new RuleViolation(
+      "Choose the required number of eligible, distinct cards.",
+    );
   for (const id of ids)
     ctx.propose({
       kind: "zone-change",

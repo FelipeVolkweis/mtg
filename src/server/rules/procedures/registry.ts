@@ -184,7 +184,9 @@ const cleanupDiscard: ProcedureHandler = {
   input(engine, action) {
     const playerId = engine.rules.pending!.playerId;
     if (action.variables || action.targetIds)
-      throw new RuleViolation("Choose the required cards to discard for cleanup.");
+      throw new RuleViolation(
+        "Choose the required cards to discard for cleanup.",
+      );
     const hand = engine.zone("hand", playerId);
     const ids = action.selections?.discard ?? [];
     if (
@@ -192,7 +194,9 @@ const cleanupDiscard: ProcedureHandler = {
       new Set(ids).size !== ids.length ||
       ids.some((id) => !hand.objectIds.includes(id))
     )
-      throw new RuleViolation("Choose the required cards to discard for cleanup.");
+      throw new RuleViolation(
+        "Choose the required cards to discard for cleanup.",
+      );
     for (const id of ids)
       engine.propose({
         kind: "zone-change",

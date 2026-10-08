@@ -152,7 +152,9 @@ export class MatchService implements GameplayExecutor {
   ) {
     const participants = room.participants.filter((p) => p.ready && p.deck);
     if (![1, 2].includes(participants.length))
-      throw new RuleViolation("Commander requires one or two ready Room Participants.");
+      throw new RuleViolation(
+        "Commander requires one or two ready Room Participants.",
+      );
     const commanders = participants.map((p) =>
       validateCommanderDeck(p, catalog),
     );
@@ -160,7 +162,9 @@ export class MatchService implements GameplayExecutor {
       startingParticipantId &&
       !participants.some((p) => p.id === startingParticipantId)
     )
-      throw new RuleViolation("Choose a starting Room Participant who is ready.");
+      throw new RuleViolation(
+        "Choose a starting Room Participant who is ready.",
+      );
     return { participants, commanders };
   }
 
@@ -253,7 +257,9 @@ export class MatchService implements GameplayExecutor {
           action.variables ||
           action.targetIds
         )
-          throw new RuleViolation("Complete your current commander return choice.");
+          throw new RuleViolation(
+            "Complete your current commander return choice.",
+          );
         replay.answers[replay.key] = action.confirm;
         next.rules.pending = replay.previousPending;
         actor = { id: replay.participantId };

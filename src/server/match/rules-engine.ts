@@ -127,7 +127,9 @@ export class RulesEngine implements RulesMutator {
     } else if (this.rules.pending) {
       const pending = this.rules.pending;
       if (pending.playerId !== player.id)
-        throw new RuleViolation("Another player must complete the pending choice.");
+        throw new RuleViolation(
+          "Another player must complete the pending choice.",
+        );
       const handler = procedureHandler(pending);
       const current =
         "procedureId" in action && action.procedureId === pending.id;
@@ -195,7 +197,10 @@ export class RulesEngine implements RulesMutator {
       this.rules.setup.keptPlayerIds.push(player.id);
       if (this.rules.setup.keptPlayerIds.length === this.match.players.length)
         this.beginTurn();
-    } else throw new RuleViolation("Keep or mulligan your opening Hand before play.");
+    } else
+      throw new RuleViolation(
+        "Keep or mulligan your opening Hand before play.",
+      );
   }
   requirePriority(playerId: string) {
     if (this.match.priority?.playerId !== playerId)
@@ -584,7 +589,9 @@ export class RulesEngine implements RulesMutator {
     if (!authored) throw new RuleViolation("Ability not found.");
     const ability = structuredClone(authored);
     if (!this.canActivateFromZone(source, playerId, authored))
-      throw new RuleViolation("You cannot activate this source from that Zone.");
+      throw new RuleViolation(
+        "You cannot activate this source from that Zone.",
+      );
     if (
       oncePerTurn(ability) &&
       this.rules.activationUsage?.[`${source.id}:${authored.id}`]
@@ -596,7 +603,9 @@ export class RulesEngine implements RulesMutator {
     if (target && !this.legalTargets(playerId, target, source.id).length)
       throw new RuleViolation("No legal targets are available.");
     if (duringPayment && !isManaAbility(ability))
-      throw new RuleViolation("Only mana abilities may be used in the payment window.");
+      throw new RuleViolation(
+        "Only mana abilities may be used in the payment window.",
+      );
     const produce = production(ability);
     if (!produce) {
       new StackProposalProcedure(this).activate(
@@ -626,7 +635,9 @@ export class RulesEngine implements RulesMutator {
       this.lockCost(procedure);
       // Mana activations are atomic even when an enclosing cast is waiting.
       if (!this.pay(procedure))
-        throw new RuleViolation("The mana ability's complete costs cannot be paid.");
+        throw new RuleViolation(
+          "The mana ability's complete costs cannot be paid.",
+        );
       this.produceMana(playerId, produce, action.color);
       if (
         costs.some((c) => c.kind === "tap-source") &&

@@ -305,7 +305,9 @@ export function planPayment(
       improvise.length > payment.totalCost.generic ||
       improvise.some((id) => !option.objectIds.includes(id))
     )
-      throw new RuleViolation("Choose untapped artifacts you control for improvise.");
+      throw new RuleViolation(
+        "Choose untapped artifacts you control for improvise.",
+      );
     components.push(
       improvise.map((objectId): CostMutation => ({ kind: "tap", objectId })),
     );

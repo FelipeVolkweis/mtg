@@ -258,7 +258,9 @@ export class Combat {
           ).every((amount) => amount === 0),
         )
       )
-        throw new RuleViolation("An eligible creature must attack this combat.");
+        throw new RuleViolation(
+          "An eligible creature must attack this combat.",
+        );
     }
   }
   commitAttackers(selections: Record<string, string[]>, playerId: string) {
@@ -360,7 +362,9 @@ export class Combat {
         !choice?.recipientIds.includes(a.recipientId) ||
         pairs.has(pair)
       )
-        throw new RuleViolation("Choose legal combat damage recipients and amounts.");
+        throw new RuleViolation(
+          "Choose legal combat damage recipients and amounts.",
+        );
       pairs.add(pair);
     }
     for (const c of choices)

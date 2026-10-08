@@ -145,9 +145,13 @@ export class StackProposalProcedure {
     const symbols: string[] =
       source.characteristics.manaCost?.match(/\{[^{}]+\}/g) ?? [];
     if (!symbols.length)
-      throw new RuleViolation("A spell without a mana cost cannot be cast normally.");
+      throw new RuleViolation(
+        "A spell without a mana cost cannot be cast normally.",
+      );
     if (symbols.includes("{X}") && !choosesX(ability))
-      throw new RuleViolation("Variable mana costs require an authored chosen value.");
+      throw new RuleViolation(
+        "Variable mana costs require an authored chosen value.",
+      );
     const base = this.snapshot();
     const sourceZone = e.match.zones.find((z) => z.id === source.zoneId)!.kind;
     const spell = e.propose({
@@ -261,7 +265,9 @@ export class StackProposalProcedure {
         value > 1000 ||
         Object.keys(action.variables ?? {}).some((key) => key !== "X")
       )
-        throw new RuleViolation("Choose a nonnegative integer for X, at most 1000.");
+        throw new RuleViolation(
+          "Choose a nonnegative integer for X, at most 1000.",
+        );
       this.record().variables = { X: value };
       pending.totalCost = chosenCost(this.engine.costProposal(pending));
       const target = targetFilter(pending.ability);
