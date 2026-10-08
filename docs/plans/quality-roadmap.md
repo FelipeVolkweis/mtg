@@ -94,9 +94,10 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
   - [ ] `RulesEngine.apply` no longer returns a value nothing reads, and `notice` in `execute` is either produced or removed;
   - [ ] gates and `npm test` are green.
 
-### Q5. Schema migrations
+### Q5. Schema migrations (dropped)
 
 - **Issue:** #96
+- **Dropped:** the database is reset whenever the schema changes during development, so migrations are not needed yet. Revisit before the first deployment that must keep data.
 - **Depends:** Q1
 - **Read:** `src/server/storage/database.ts`; `RoomService.onModuleInit`; ADR-0012
 - **Scope:** `database.ts`, `room.service.ts` (`onModuleInit` only), a new `migrations/` directory, `Dockerfile` if the files must ship
@@ -154,7 +155,7 @@ Behavior stays the same unless an issue says otherwise. A test whose expectation
 ### Q9. Gateway reads and broadcasts
 
 - **Issue:** #100
-- **Depends:** Q4, Q5
+- **Depends:** Q4
 - **Read:** `src/server/room/room.gateway.ts`; `RoomService.command`, `view`, `viewer`, `disconnect`
 - **Scope:** `room.gateway.ts`, `room.service.ts`
 - **Why:** each command reads the Room three times and sends the acting client its view twice; the expiry timer rebroadcasts full views to every live Room every ≤30s even when nothing changed; `disconnect` swallows errors silently.
