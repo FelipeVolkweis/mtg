@@ -12,7 +12,8 @@ import type {
 import { Database } from "../storage/database.js";
 import { readCatalog } from "../catalog/catalog-files.js";
 import { MatchService } from "../match/match.service.js";
-import { DeckError, DeckService } from "../deck/deck.service.js";
+import { DeckService } from "../deck/deck.service.js";
+import { DeckError } from "../deck/deck-errors.js";
 import { deckIssues } from "../deck/format-rules.js";
 import { matchView } from "../match/match-view.js";
 import { currentSnapshotVersion, upgradeRoom } from "./room-upgrade.js";

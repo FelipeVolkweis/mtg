@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { DeckError, deckRequestError } from "../../src/server/deck/deck-errors";
 import { RulesEngine } from "../../src/server/match/rules-engine";
 import {
   playerMessage,
@@ -85,4 +87,20 @@ test("only a TabletopError or a RuleViolation has text a client may see", () => 
     undefined,
   ])
     expect(playerMessage(error)).toBeUndefined();
+});
+
+test("a Decklist request shows a DeckError's text and hides any other error", () => {
+  const missing = deckRequestError(new DeckError("Decklist not found."));
+  expect(missing).toBeInstanceOf(NotFoundException);
+  expect((missing as NotFoundException).message).toBe("Decklist not found.");
+  const full = deckRequestError(
+    new DeckError("You already have 100 Decklists."),
+  );
+  expect(full).toBeInstanceOf(BadRequestException);
+  expect((full as BadRequestException).message).toBe(
+    "You already have 100 Decklists.",
+  );
+  // A bug is rethrown as itself: Nest logs it and answers 500, not its text.
+  const bug = new Error('relation "decks" is locked');
+  expect(deckRequestError(bug)).toBe(bug);
 });
