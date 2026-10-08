@@ -5,6 +5,9 @@ import type {
   ZoneState,
 } from "../../../shared/rules-state.js";
 import { moveObject } from "../../match/game-objects.js";
+import { removeCountersDownToZero } from "../../match/counters.js";
+import { changeLife } from "../../match/life.js";
+import { zoneById } from "../../match/zones.js";
 import { entersTapped } from "../abilities.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import { EventTriggerObserver } from "../triggers/trigger-runtime.js";
@@ -73,7 +76,7 @@ export class EventRuntime {
   ): EventResult {
     const engine = this.engine;
     const object = engine.object(id);
-    const from = engine.match.zones.find((z) => z.id === object.zoneId)!;
+    const from = zoneById(engine.match, object.zoneId)!;
     // Moving within a Zone reorders it; it isn't a zone change (CR 400.7).
     const index = position === "top" ? 0 : undefined;
     if (from.id === to.id) {
@@ -135,9 +138,8 @@ export class EventRuntime {
       return {};
     }
     const card = moveObject(engine.match, library.objectIds[0], hand);
-    engine.rules.drawsThisTurn ??= {};
-    const ordinal = (engine.rules.drawsThisTurn[playerId] =
-      (engine.rules.drawsThisTurn[playerId] ?? 0) + 1);
+    const draws = engine.rules.thisTurn.draws;
+    const ordinal = (draws[playerId] = (draws[playerId] ?? 0) + 1);
     new EventTriggerObserver(engine).collect(
       {
         kind: "draw",
@@ -158,7 +160,7 @@ export class EventRuntime {
   private lifeChange(playerId: string, amount: number) {
     const player = this.engine.match.players.find((p) => p.id === playerId);
     if (!player) return;
-    player.life = String(BigInt(player.life) + BigInt(amount));
+    changeLife(player, amount);
   }
 
   private create(object: GameObject, zone: ZoneState) {
@@ -176,7 +178,7 @@ export class EventRuntime {
     const match = this.engine.match;
     const object = match.objects[id];
     if (!object) return;
-    const zone = match.zones.find((z) => z.id === object.zoneId)!;
+    const zone = zoneById(match, object.zoneId)!;
     zone.objectIds.splice(zone.objectIds.indexOf(id), 1);
     delete match.objects[id];
   }
@@ -243,21 +245,14 @@ export class EventRuntime {
           engine.rules.markedDamage[recipient.id] =
             (engine.rules.markedDamage[recipient.id] ?? 0) + assignment.amount;
         } else if (types.includes("Planeswalker") || types.includes("Battle")) {
-          const counter = recipient.counters.find(
-            (c) =>
-              c.kind ===
-              (types.includes("Planeswalker") ? "loyalty" : "defense"),
+          removeCountersDownToZero(
+            recipient.counters,
+            types.includes("Planeswalker") ? "loyalty" : "defense",
+            assignment.amount,
           );
-          if (counter)
-            counter.quantity = String(
-              BigInt(counter.quantity) > BigInt(assignment.amount)
-                ? BigInt(counter.quantity) - BigInt(assignment.amount)
-                : 0n,
-            );
         } else continue;
       } else continue;
-      engine.rules.damageEvents ??= [];
-      engine.rules.damageEvents.push({
+      engine.rules.thisTurn.damageEvents.push({
         ...recorded,
         sourceCharacteristics: structuredClone(characteristics),
         combat,

@@ -77,6 +77,7 @@ export class Resolution {
     return {
       query: engine.query,
       propose: (event: ProposedEvent) => engine.propose(event),
+      addTemporaryEffect: (effect) => engine.addTemporaryEffect(effect),
       rules: engine.rules,
       playerId: execution.controllerId,
       stackId: execution.stackObjectId,

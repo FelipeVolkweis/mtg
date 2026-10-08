@@ -1,12 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { type Effect, nextTurnStep } from "../../shared/card-dsl.js";
-import type { GameObject } from "../../shared/rules-state.js";
+import type { GameObject, TurnRecord } from "../../shared/rules-state.js";
 import { restrictsUntap } from "../rules/abilities.js";
 import type { RulesMutator, RulesQuery } from "../rules/context.js";
 import type { PriorityGrant } from "../rules/priority/priority-checkpoint.js";
 import type { EventTriggerObserver } from "../rules/triggers/trigger-runtime.js";
 import type { Combat } from "./combat.js";
 import { emptyMana } from "./rules-engine.js";
+
+/** A turn's bookkeeping before anything has happened in it. */
+export function newTurnRecord(): TurnRecord {
+  return { landsPlayed: {}, draws: {}, activationUsage: {}, damageEvents: [] };
+}
 
 /**
  * What the turn structure needs beyond proposing events: Priority grants,
@@ -17,6 +22,8 @@ export interface TurnContext extends RulesMutator {
   /** A player would receive Priority. */
   checkpoint(grant?: PriorityGrant): void;
   draw(playerId: string, count: number): void;
+  /** Until-end-of-turn effects end (CR 514.2). */
+  endTemporaryEffects(): void;
   battlefieldSources(): GameObject[];
   maximumHandSize(playerId: string): number;
   monarchTrigger(playerId: string, effects: Effect[], abilityId: string): void;
@@ -55,12 +62,9 @@ export class TurnStructure {
   /** The untap step (CR 502), then the upkeep step. */
   begin() {
     const { match, rules } = this;
-    rules.drawsThisTurn = {};
-    rules.activationUsage = {};
-    rules.damageEvents = [];
+    rules.thisTurn = newTurnRecord();
     match.turn.step = "untap";
     rules.turnStarted[match.turn.activePlayerId] = match.turn.number;
-    rules.landsPlayed = {};
     const battlefield = this.ctx.query.zone("battlefield").id;
     for (const object of Object.values(match.objects))
       if (
@@ -159,7 +163,7 @@ export class TurnStructure {
     }
     // CR 514: after discarding, damage and end-of-turn changes end together.
     this.rules.markedDamage = {};
-    this.rules.temporaryEffects = [];
+    ctx.endTemporaryEffects();
     ctx.checkpoint({ cleanup: true });
   }
 

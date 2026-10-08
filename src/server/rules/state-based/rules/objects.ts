@@ -1,3 +1,4 @@
+import { cancellableStatCounters } from "../../../match/counters.js";
 import { changes, type StateBasedRule } from "../types.js";
 import { battlefield } from "./support.js";
 
@@ -22,13 +23,8 @@ export const counterCancellation: StateBasedRule = {
   evaluate: (query) =>
     changes(
       battlefield(query).flatMap((object) => {
-        const plus = object.counters.find((c) => c.kind === "+1/+1");
-        const minus = object.counters.find((c) => c.kind === "-1/-1");
-        if (!plus || !minus) return [];
-        const common =
-          BigInt(plus.quantity) < BigInt(minus.quantity)
-            ? plus.quantity
-            : minus.quantity;
+        const common = cancellableStatCounters(object.counters);
+        if (common === undefined) return [];
         return [
           { kind: "cancel-counters", objectId: object.id, amount: common },
         ];

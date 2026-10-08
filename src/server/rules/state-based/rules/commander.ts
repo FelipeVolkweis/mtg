@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { zoneById } from "../../../match/zones.js";
 import type { RulesQuery } from "../../context.js";
 import { none, type StateBasedRule } from "../types.js";
 import { RuleViolation } from "../../rule-violation.js";
@@ -7,7 +8,7 @@ import { RuleViolation } from "../../rule-violation.js";
 function returnable(query: RulesQuery) {
   for (const id of query.match.rules.commanderReturns ?? []) {
     const object = query.match.objects[id];
-    const kind = query.match.zones.find((z) => z.id === object?.zoneId)?.kind;
+    const kind = object && zoneById(query.match, object.zoneId)?.kind;
     if (object && kind && ["graveyard", "exile"].includes(kind)) return object;
   }
   return undefined;

@@ -6,16 +6,26 @@ import type {
 } from "../../shared/model.js";
 import type { MatchState, PendingProcedure } from "../../shared/rules-state.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
-import { CharacteristicsCalculator } from "./characteristics.js";
 import { legalActions } from "./action-listing.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
-import { zoneFor } from "./zones.js";
+import { zoneById, zoneFor } from "./zones.js";
 
 export function matchView(
   match: MatchState,
   participantId: string,
   catalog?: Catalog,
+): MatchView {
+  if (!catalog) return project(match, participantId);
+  const engine = new RulesEngine(match, catalog);
+  // A view only reads: characteristics are computed once per object.
+  return engine.reading(() => project(match, participantId, engine));
+}
+
+function project(
+  match: MatchState,
+  participantId: string,
+  engine?: RulesEngine,
 ): MatchView {
   const playerId = match.players.find(
     (player) => player.participantId === participantId,
@@ -33,8 +43,8 @@ export function matchView(
         const object = match.objects[objectId];
         objects[objectId] = {
           ...object,
-          characteristics: catalog
-            ? new CharacteristicsCalculator(match, catalog).effective(object)
+          characteristics: engine
+            ? engine.effective(object)
             : object.characteristics,
         };
         for (const instanceId of object.cardInstanceIds)
@@ -64,11 +74,7 @@ export function matchView(
   }
   for (const id of match.rules.revealedHandIds ?? []) {
     const object = match.objects[id];
-    if (
-      !object ||
-      match.zones.find((z) => z.id === object.zoneId)?.kind !== "hand"
-    )
-      continue;
+    if (!object || zoneById(match, object.zoneId)?.kind !== "hand") continue;
     objects[id] = structuredClone(object);
     for (const instanceId of object.cardInstanceIds)
       instances[instanceId] = match.instances[instanceId];
@@ -113,13 +119,12 @@ export function matchView(
         revealedHandIds,
         ...rules
       } = match.rules;
-      const engine = catalog ? new RulesEngine(match, catalog) : undefined;
       return {
         rules: {
           ...rules,
           continuousEffects: engine
-            ? new CharacteristicsCalculator(match, catalog!)
-                .active()
+            ? engine
+                .continuousEffects()
                 .filter((effect) => !!objects[effect.sourceId])
             : [],
           waiting: pending
@@ -133,7 +138,7 @@ export function matchView(
             : undefined,
           prompt:
             pending && pending.playerId === choicePlayerId
-              ? prompt(match, pending, catalog)
+              ? prompt(engine ?? new RulesEngine(match, noCatalog), pending)
               : undefined,
         },
         actions:
@@ -165,11 +170,9 @@ const noCatalog: Catalog = {
  * or the proposal's rollback snapshot.
  */
 function prompt(
-  match: MatchState,
+  engine: RulesEngine,
   pending: PendingProcedure,
-  catalog: Catalog = noCatalog,
 ): ProcedurePrompt {
-  const engine = new RulesEngine(match, catalog);
   const handler = procedureHandler(pending);
   const { promptKind, title, targets } = handler.prompt(engine, pending);
   return {

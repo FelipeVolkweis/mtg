@@ -15,6 +15,7 @@ import { gameObject } from "./game-objects.js";
 import { CommanderRules, CommanderReplacement } from "./commander-rules.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
+import { newTurnRecord } from "./turn-structure.js";
 import { budget, RulesLoopError } from "../rules/loop-budget.js";
 import { MandatoryLoop } from "../rules/mandatory-loop.js";
 import {
@@ -56,7 +57,7 @@ export class MatchService implements GameplayExecutor {
         format: "commander",
         setup: { keptPlayerIds: [], startingPlayerId: "" },
         mana: {},
-        landsPlayed: {},
+        thisTurn: newTurnRecord(),
         controlledSinceTurn: {},
         turnStarted: {},
         commanders: {},

@@ -15,7 +15,7 @@ test("damage to a target creature is marked and lethal damage destroys it", asyn
     targetIds: [creature.id],
   });
   expect(game.match.objects[creature.id]).toBeUndefined();
-  expect(game.match.rules!.damageEvents).toMatchObject([
+  expect(game.match.rules!.thisTurn.damageEvents).toMatchObject([
     { sourceId: source.id, recipientId: creature.id, amount: 3, combat: false },
   ]);
 });

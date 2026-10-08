@@ -107,11 +107,11 @@ test("a draw moves the top card and counts the turn's draws; an empty Library re
   const { engine, match, zone } = await engineGame();
   const player = match.players[0].id;
   const top = zone("library", 0).objectIds[0];
-  const before = match.rules!.drawsThisTurn?.[player] ?? 0;
+  const before = match.rules!.thisTurn.draws[player] ?? 0;
   const { object } = engine.propose({ kind: "draw", playerId: player });
   expect(object!.zoneId).toBe(zone("hand", 0).id);
   expect(match.objects[top]).toBeUndefined();
-  expect(match.rules!.drawsThisTurn![player]).toBe(before + 1);
+  expect(match.rules!.thisTurn.draws[player]).toBe(before + 1);
   force.clearZone(match, "library", player);
   expect(
     engine.propose({ kind: "draw", playerId: player }).object,
@@ -133,7 +133,7 @@ test("damage marks creatures, lowers life and records the event", async () => {
   });
   expect(match.rules!.markedDamage![creature.id]).toBe(1);
   expect(match.players[1].life).toBe("37");
-  expect(match.rules!.damageEvents).toHaveLength(2);
+  expect(match.rules!.thisTurn.damageEvents).toHaveLength(2);
 });
 
 test("life changes add or subtract", async () => {

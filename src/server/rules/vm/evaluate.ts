@@ -10,6 +10,9 @@ import type {
   Value,
 } from "../../../shared/card-dsl.js";
 import type { RulesQuery } from "../context.js";
+import { counterCount } from "../../match/counters.js";
+import { lifeValue } from "../../match/life.js";
+import { zoneById, zoneOf } from "../../match/zones.js";
 
 // Evaluates Core AST selectors, predicates, values, player references and
 // conditions (dsl-redesign.md §4.2-4.4) against the current Match.
@@ -164,7 +167,7 @@ export class Evaluator {
 
   private fields(object: GameObject, p: PredicateFields): boolean {
     const match = this.match;
-    const zone = match.zones.find((z) => z.id === object.zoneId)!;
+    const zone = zoneById(match, object.zoneId)!;
     // A private Zone's objects are known only to its owner.
     if (zone.visibility === "private" && zone.ownerId !== this.scope.playerId)
       return false;
@@ -232,16 +235,15 @@ export class Evaluator {
       if (!this.compare(Number(c[stat]), p[stat]!)) return false;
     }
     if (p.counters) {
-      const counter = object.counters.find((x) => x.kind === p.counters!.kind);
-      if (!this.compare(Number(counter?.quantity ?? 0), p.counters.count))
-        return false;
+      const count = counterCount(object.counters, p.counters.kind);
+      if (!this.compare(count, p.counters.count)) return false;
     }
     if (p.dealtDamageBy) {
       // As the version 1 runtime reads it: the object's controller was dealt
       // combat damage by the source this turn (Steel Hellkite).
       const sources = this.objects(p.dealtDamageBy);
       if (
-        !match.rules.damageEvents?.some(
+        !match.rules.thisTurn.damageEvents.some(
           (e) =>
             sources.includes(e.sourceId) &&
             e.combat &&
@@ -307,9 +309,12 @@ export class Evaluator {
     }
     if ("cardsIn" in value) {
       const [playerId] = this.players(value.cardsIn.player);
-      const zone = match.zones.find(
-        (z) => z.kind === value.cardsIn.zone && z.ownerId === playerId,
-      );
+      // The player's own Zone of that kind; a shared Zone counts what they control.
+      const zone = playerId
+        ? zoneOf(match, value.cardsIn.zone, playerId)
+        : match.zones.find(
+            (z) => z.kind === value.cardsIn.zone && z.ownerId === playerId,
+          );
       if (zone) return zone.objectIds.length;
       return Object.values(match.objects).filter(
         (o) =>
@@ -319,7 +324,7 @@ export class Evaluator {
     }
     if ("lifeTotal" in value) {
       const [playerId] = this.players(value.lifeTotal);
-      return Number(match.players.find((p) => p.id === playerId)?.life ?? 0);
+      return lifeValue(match.players.find((p) => p.id === playerId));
     }
     if ("commanderColors" in value) {
       const [playerId] = this.players(value.commanderColors);

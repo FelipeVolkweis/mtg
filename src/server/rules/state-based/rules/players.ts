@@ -1,4 +1,5 @@
 import type { MatchPlayer } from "../../../../shared/rules-state.js";
+import { hasNoLife } from "../../../match/life.js";
 import type { RulesQuery } from "../../context.js";
 import { changes, type StateBasedRule } from "../types.js";
 
@@ -18,9 +19,8 @@ const loss = (
 });
 
 /** CR 704.5a: a player with 0 or less life loses. */
-export const zeroLifeLoss = loss(
-  "zero-life-loss",
-  (_, player) => BigInt(player.life) <= 0n,
+export const zeroLifeLoss = loss("zero-life-loss", (_, player) =>
+  hasNoLife(player),
 );
 
 /** CR 704.5b: a player who drew from an empty Library loses. */

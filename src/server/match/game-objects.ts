@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { zoneById } from "./zones.js";
 import type { Characteristics } from "../../shared/card-dsl.js";
 import type {
   GameObject,
@@ -39,7 +40,7 @@ export function moveObject(
 ): GameObject {
   const object = match.objects[objectId];
   if (!object) throw new Error("This Game Object has already moved.");
-  const source = match.zones.find((zone) => zone.id === object.zoneId)!;
+  const source = zoneById(match, object.zoneId)!;
   source.objectIds.splice(source.objectIds.indexOf(objectId), 1);
   if (source.id === destination.id) {
     destination.objectIds.splice(

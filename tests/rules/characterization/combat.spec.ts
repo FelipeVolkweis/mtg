@@ -151,7 +151,7 @@ test("combat damage assignments apply simultaneously, keep damage distinct and d
   for (const o of [attacker, a, b])
     expect(view().objects[o.id]).toBeUndefined();
   expect(view().players.map((p) => p.life)).toEqual(["40", "40"]);
-  expect(view().rules!.damageEvents!.map((e) => e.amount)).toEqual([
+  expect(view().rules!.thisTurn.damageEvents.map((e) => e.amount)).toEqual([
     1, 1, 2, 2,
   ]);
 });
@@ -183,7 +183,7 @@ test("an unblocked attacker deals damage before a zero-life loss completes the M
   expect(view().players.map((p) => p.outcome)).toEqual(["won", "lost"]);
   expect(view().outcome).toBe("complete");
   expect(view().priority).toBeUndefined();
-  expect(view().rules!.damageEvents!.at(-1)).toMatchObject({
+  expect(view().rules!.thisTurn.damageEvents.at(-1)).toMatchObject({
     sourceId: creature.id,
     recipientId: game.match.players[1].id,
     amount: 1,
@@ -235,7 +235,7 @@ test("an attacker stays blocked after its blocker leaves during the response win
   });
   pass();
   expect(view().players[1].life).toBe("40");
-  expect(view().rules!.damageEvents ?? []).toEqual([]);
+  expect(view().rules!.thisTurn.damageEvents).toEqual([]);
 });
 
 test("damage attribution expires at the next turn while surviving the current turn", async () => {
@@ -261,14 +261,14 @@ test("damage attribution expires at the next turn while surviving the current tu
     selections: {},
   });
   pass();
-  expect(view().rules!.damageEvents).toHaveLength(1);
+  expect(view().rules!.thisTurn.damageEvents).toHaveLength(1);
   pass();
   pass(); // End combat and postcombat main phase.
-  expect(view().rules!.damageEvents).toHaveLength(1);
+  expect(view().rules!.thisTurn.damageEvents).toHaveLength(1);
   pass();
   pass(); // Postcombat main, end step and cleanup, then next turn.
   expect(view().turn.number).toBe(2);
-  expect(view().rules!.damageEvents).toEqual([]);
+  expect(view().rules!.thisTurn.damageEvents).toEqual([]);
 });
 
 test("Battlesphere creates Myr and binds an optional attack payment across recovery", async () => {
@@ -528,7 +528,9 @@ test("Skysovereign's entry and attack damage use opponent targets and stay separ
   game.pass();
   expect(game.view().objects[victim.id]).toBeUndefined();
   expect(game.view().players[1].life).toBe("40");
-  expect(game.view().rules!.damageEvents!.every((e) => !e.combat)).toBe(true);
+  expect(game.view().rules!.thisTurn.damageEvents.every((e) => !e.combat)).toBe(
+    true,
+  );
 });
 
 test("Hellkite's fresh object lifetime has no prior combat recipients", async () => {
@@ -689,7 +691,7 @@ test("Battlesphere retains its selected bonus when the attacked planeswalker lea
   game.answer({ select: [myr.id] });
   expect(game.view().objects[sphere.id].characteristics.power).toBe("5");
   expect(game.view().players[1].life).toBe("40");
-  expect(game.view().rules!.damageEvents ?? []).toHaveLength(0);
+  expect(game.view().rules!.thisTurn.damageEvents).toHaveLength(0);
 });
 
 test("Signpost outside declare attackers has no redirection trigger and retains its blue mana ability", async () => {
@@ -798,7 +800,7 @@ for (const defenderKind of [
         kind: "loyalty",
         quantity: "7",
       });
-    expect(view.rules!.damageEvents).toContainEqual(
+    expect(view.rules!.thisTurn.damageEvents).toContainEqual(
       expect.objectContaining({
         sourceId: sphere.id,
         recipientId: walker?.id ?? g.match.players[1].id,

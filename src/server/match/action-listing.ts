@@ -28,6 +28,8 @@ export interface LegalAction {
  */
 export interface ActionListingContext {
   readonly query: RulesQuery;
+  /** Runs a read pass: characteristics are computed once per object. */
+  reading<T>(read: () => T): T;
   canCastTiming(object: GameObject, playerId: string): boolean;
   legalTargets(
     playerId: string,
@@ -50,6 +52,13 @@ export interface ActionListingContext {
  * activate an ability with Priority, or a mana ability in a payment window.
  */
 export function legalActions(
+  ctx: ActionListingContext,
+  playerId: string,
+): LegalAction[] {
+  return ctx.reading(() => listActions(ctx, playerId));
+}
+
+function listActions(
   ctx: ActionListingContext,
   playerId: string,
 ): LegalAction[] {
@@ -81,7 +90,7 @@ export function legalActions(
       if (object.characteristics.types?.includes("Land")) {
         if (
           mainTiming(ctx.query, playerId) &&
-          !(rules.landsPlayed[playerId] ?? 0)
+          !(rules.thisTurn.landsPlayed[playerId] ?? 0)
         )
           actions.push({
             label: `Play ${object.characteristics.name}`,
@@ -104,7 +113,7 @@ export function legalActions(
       if (pending && !isManaAbility(ability)) continue;
       if (
         oncePerTurn(ability) &&
-        rules.activationUsage?.[`${object.id}:${ability.id}`]
+        rules.thisTurn.activationUsage[`${object.id}:${ability.id}`]
       )
         continue;
       if (sorceryTiming(ability) && !mainTiming(ctx.query, playerId)) continue;

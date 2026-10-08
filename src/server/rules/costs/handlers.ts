@@ -10,6 +10,7 @@ import type {
   CostMutation,
 } from "./types.js";
 import { RuleViolation } from "../rule-violation.js";
+import { hasCounters } from "../../match/counters.js";
 import { astEqual, conjuncts } from "../ast.js";
 import {
   supported,
@@ -198,10 +199,7 @@ const handlers: { [K in Cost["kind"]]: CostHandler<Of<K>> } = {
         "Counter costs require a present permanent.",
       );
       if (cost.operation === "remove") {
-        const counter = ctx.source.counters.find(
-          (c) => c.kind === cost.counter,
-        );
-        if (!counter || BigInt(counter.quantity) < BigInt(cost.count))
+        if (!hasCounters(ctx.source.counters, cost.counter, cost.count))
           throw new RuleViolation(
             `Remove ${cost.count} ${cost.counter} counters.`,
           );

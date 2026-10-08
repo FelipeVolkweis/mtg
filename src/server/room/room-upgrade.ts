@@ -1,10 +1,10 @@
 import type { RoomState } from "../../shared/model.js";
 
 /**
- * The Room document shape this server writes (CM §5). Version 8 names the
- * Match's turn step (`turn.step`) instead of numbering it.
+ * The Room document shape this server writes (CM §5). Version 9 groups the
+ * per-turn rules state in `rules.thisTurn` (version 8 named the turn step).
  */
-export const currentSnapshotVersion = 8;
+export const currentSnapshotVersion = 9;
 
 /**
  * The oldest Room document shape this server reads. `RoomService.onModuleInit`

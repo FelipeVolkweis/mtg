@@ -14,6 +14,7 @@ import {
   targetFilter,
 } from "../abilities.js";
 import { gameObject } from "../../match/game-objects.js";
+import { zoneById } from "../../match/zones.js";
 import { CommanderRules } from "../../match/commander-rules.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import { baseCost, chosenCost } from "../costs/cost-runtime.js";
@@ -71,9 +72,9 @@ const spellProposal: Specialization = {
 const abilityProposal: Specialization = {
   finalize(engine, pending, object, sourceSnapshot) {
     if (oncePerTurn(pending.ability)) {
-      engine.rules.activationUsage ??= {};
-      engine.rules.activationUsage[`${pending.sourceId}:${pending.abilityId}`] =
-        1;
+      engine.rules.thisTurn.activationUsage[
+        `${pending.sourceId}:${pending.abilityId}`
+      ] = 1;
     }
     object.resolution = {
       sourceSnapshot,
@@ -153,7 +154,7 @@ export class StackProposalProcedure {
         "Variable mana costs require an authored chosen value.",
       );
     const base = this.snapshot();
-    const sourceZone = e.match.zones.find((z) => z.id === source.zoneId)!.kind;
+    const sourceZone = zoneById(e.match, source.zoneId)!.kind;
     const spell = e.propose({
       kind: "zone-change",
       objectId,

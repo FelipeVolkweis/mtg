@@ -1,5 +1,6 @@
 import type { PlayerRef, Selector } from "../../../../shared/card-dsl.js";
 import { gameObject } from "../../../match/game-objects.js";
+import { adjustCounters } from "../../../match/counters.js";
 import { tokenCharacteristics } from "../../../match/tokens.js";
 import { astEqual } from "../../ast.js";
 import { selection } from "./selection.js";
@@ -105,13 +106,7 @@ export const addCounters: EffectHandler<"add-counters"> = {
     for (const id of new Set(ctx.eval.objects(effect.objects))) {
       const object = ctx.query.match.objects[id];
       if (object?.zoneId !== battlefield || !count) continue;
-      const counter = object.counters.find((c) => c.kind === effect.counter);
-      if (counter)
-        counter.quantity = (
-          BigInt(counter.quantity) + BigInt(count)
-        ).toString();
-      else
-        object.counters.push({ kind: effect.counter, quantity: String(count) });
+      adjustCounters(object, effect.counter, count);
       added += count;
     }
     if (effect.bind) ctx.bind(effect.bind, added);

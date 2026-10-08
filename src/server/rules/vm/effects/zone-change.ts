@@ -1,3 +1,4 @@
+import { zoneById } from "../../../match/zones.js";
 import { cantBeCountered } from "../../abilities.js";
 import type {
   Choice,
@@ -52,7 +53,7 @@ export function performMove(
   for (const id of new Set(ids)) {
     const object = match.objects[id];
     if (!object) continue;
-    const zone = match.zones.find((z) => z.id === object.zoneId)!;
+    const zone = zoneById(match, object.zoneId)!;
     if (
       (effect.kind === "destroy" || effect.kind === "sacrifice") &&
       zone.kind !== "battlefield"
