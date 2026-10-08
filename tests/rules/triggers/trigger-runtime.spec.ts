@@ -7,7 +7,7 @@ import {
   StateTriggerObserver,
 } from "../../../src/server/rules/triggers/trigger-runtime";
 import type { SemanticEvent } from "../../../src/shared/rules-state";
-import type { Trigger } from "../../../src/shared/card-dsl";
+import type { Trigger, TurnStep } from "../../../src/shared/card-dsl";
 import { author } from "../../support/authored";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";
@@ -34,7 +34,7 @@ function event(
   } as SemanticEvent;
 }
 
-const upkeep = 1;
+const upkeep: TurnStep = "upkeep";
 const matches = (trigger: Trigger, e: SemanticEvent, step = upkeep) =>
   eventMatches(trigger, e, you, step);
 

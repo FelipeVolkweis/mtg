@@ -304,9 +304,10 @@ export class StackProposalProcedure {
       characteristics: e.effective(source),
       ownerId: e.owner(source),
     };
-    if (!e.pay(pending)) return false;
+    const spent = e.pay(pending);
+    if (!spent) return false;
     const stacked = e.object(pending.proposal.stackObjectId);
-    stacked.proposal!.manaSpent = e.lastManaSpent;
+    stacked.proposal!.manaSpent = spent;
     specializations[pending.kind as "cast" | "activate"].finalize(
       e,
       pending,

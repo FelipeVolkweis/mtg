@@ -2,7 +2,8 @@ import { useLayoutEffect, useState } from "react";
 import { RulesBoard, type BoardSelection } from "./RulesBoard";
 import type { MatchAction } from "../shared/rules-state";
 import type { PromptKind, RoomView } from "../shared/model";
-import { phaseSteps } from "../shared/model";
+import { phaseSteps, turnPhases } from "../shared/model";
+import { nextTurnStep } from "../shared/card-dsl";
 import type { Send } from "./Lobby";
 import { CardChoices } from "./prompts/CardChoices";
 import { CombatPrompt } from "./prompts/CombatPrompt";
@@ -53,7 +54,7 @@ export function RulesTabletop({
     prompt?.promptKind === "choose-targets" ||
     prompt?.promptKind === "trigger-targets";
   const legalTargets = prompt?.targets[0]?.legalIds ?? [];
-  const [phase, step] = phaseSteps[match.turn.stepIndex];
+  const [phase, step] = phaseSteps[match.turn.step];
   const name = (id: string) =>
     match.objects[id]?.characteristics.name ??
     match.players.find((p) => p.id === id)?.name ??
@@ -122,7 +123,8 @@ export function RulesTabletop({
       : phase === "Postcombat main"
         ? "Second main"
         : phase;
-  const nextStep = phaseSteps[match.turn.stepIndex + 1];
+  const following = nextTurnStep(match.turn.step);
+  const nextStep = following && phaseSteps[following];
   const nextLabel = nextStep
     ? nextStep[1] === "Main"
       ? nextStep[0] === "Precombat main"
@@ -130,16 +132,7 @@ export function RulesTabletop({
         : "Second main"
       : nextStep[1]
     : "Next turn";
-  const phaseIndex =
-    match.turn.stepIndex < 3
-      ? 0
-      : match.turn.stepIndex === 3
-        ? 1
-        : match.turn.stepIndex < 9
-          ? 2
-          : match.turn.stepIndex === 9
-            ? 3
-            : 4;
+  const phaseIndex = turnPhases.indexOf(phase);
   return (
     <main data-testid="match" className="tabletop rules-tabletop">
       <h1 className="sr-only">Commander Match</h1>

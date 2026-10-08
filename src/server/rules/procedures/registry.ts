@@ -204,7 +204,7 @@ const cleanupDiscard: ProcedureHandler = {
         to: engine.zone("graveyard", playerId),
       });
     delete engine.rules.pending;
-    engine.cleanup();
+    engine.turn.cleanup();
   },
   manaWindow: never,
   options(engine, pending) {

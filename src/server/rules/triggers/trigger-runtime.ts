@@ -12,7 +12,7 @@ import {
   type PredicateFields,
   type Selector,
   type Trigger,
-  turnSteps,
+  type TurnStep,
   type Value,
 } from "../../../shared/card-dsl.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
@@ -47,23 +47,23 @@ type TriggerOf<E extends AnyTrigger["event"]> = Extract<
 /**
  * How the runtime runs one trigger event, and which of its forms it supports.
  * `matches` says whether a semantic event is the kind the trigger waits for,
- * before its subject filter and intervening-if; `stepIndex` is the current
- * turn step. `subject` is what the event's object must be (CR 603.2).
+ * before its subject filter and intervening-if; `step` is the current turn
+ * step. `subject` is what the event's object must be (CR 603.2).
  */
 export interface TriggerHandler<E extends AnyTrigger["event"]> {
   matches(
     trigger: TriggerOf<E>,
     event: SemanticEvent,
     controllerId: string,
-    stepIndex: number,
+    step: TurnStep,
   ): boolean;
   subject?(trigger: TriggerOf<E>): Predicate | undefined;
   /** Rejects the forms of this trigger the runtime can't run. */
   support(trigger: TriggerOf<E>, check: SupportCheck): void;
 }
 
-const during = (step: string | undefined, stepIndex: number) =>
-  step === undefined || turnSteps.indexOf(step as never) === stepIndex;
+const during = (during: TurnStep | undefined, step: TurnStep) =>
+  during === undefined || during === step;
 
 /** The players a supported trigger can name: you or your opponents. */
 function supportedPlayer(ref: PlayerRef, check: SupportCheck) {
@@ -94,14 +94,14 @@ const lowered = {
  */
 const triggerHandlers: { [E in AnyTrigger["event"]]?: TriggerHandler<E> } = {
   "zone-change": {
-    matches(trigger, event, _controllerId, stepIndex) {
+    matches(trigger, event, _controllerId, step) {
       if (trigger.to === "battlefield" && !trigger.from)
-        return event.kind === "enter" && during(trigger.during, stepIndex);
+        return event.kind === "enter" && during(trigger.during, step);
       return (
         event.kind === "zone-change" &&
         (!trigger.from || event.from === trigger.from) &&
         (!trigger.to || event.to === trigger.to) &&
-        during(trigger.during, stepIndex)
+        during(trigger.during, step)
       );
     },
     subject: (trigger) => triggerSubject(trigger.object),
@@ -118,8 +118,8 @@ const triggerHandlers: { [E in AnyTrigger["event"]]?: TriggerHandler<E> } = {
     },
   },
   enters: {
-    matches: (trigger, event, _controllerId, stepIndex) =>
-      event.kind === "enter" && during(trigger.during, stepIndex),
+    matches: (trigger, event, _controllerId, step) =>
+      event.kind === "enter" && during(trigger.during, step),
     ...lowered,
   },
   dies: {
@@ -240,16 +240,16 @@ export function triggerSupport(trigger: AnyTrigger, check: SupportCheck) {
 
 /**
  * Whether a semantic event is the kind a trigger waits for, before its
- * subject filter and intervening-if. `stepIndex` is the current turn step.
+ * subject filter and intervening-if. `step` is the current turn step.
  */
 export function eventMatches(
   trigger: AnyTrigger,
   event: SemanticEvent,
   controllerId: string,
-  stepIndex: number,
+  step: TurnStep,
 ): boolean {
   return (
-    triggerHandler(trigger)?.matches(trigger, event, controllerId, stepIndex) ??
+    triggerHandler(trigger)?.matches(trigger, event, controllerId, step) ??
     false
   );
 }
@@ -322,7 +322,7 @@ export class EventTriggerObserver {
             trigger,
             event,
             source.controllerId,
-            engine.match.turn.stepIndex,
+            engine.match.turn.step,
           ) ||
           !this.subjectMatches(trigger, event, affected, source) ||
           !this.interveningHolds(ability, source)

@@ -5,6 +5,7 @@ import { registerStateBasedRule } from "../../../src/server/rules/state-based/re
 import { stateBasedRules } from "../../../src/server/rules/state-based/registry";
 import type { StateBasedRule } from "../../../src/server/rules/state-based/types";
 import type { GameObject, MatchState } from "../../../src/shared/rules-state";
+import type { TurnStep } from "../../../src/shared/card-dsl";
 import { author } from "../../support/authored";
 import { effectGame } from "../../support/effects";
 import { force } from "../../support/force";
@@ -248,7 +249,7 @@ test("every Priority grant through a turn follows a stable checkpoint", async ()
   force.rules(game.match, { markedDamage: { [creature.id]: 5 } });
   // The forced state reaches Priority the way the engine does.
   engine(game).checkpoint();
-  const seen = new Set<number>();
+  const seen = new Set<TurnStep>();
   // Pass through every step to the next turn, resolving what triggers.
   for (let i = 0; i < 60 && game.match.turn.number < 3; i++) {
     const pending = game.match.rules!.pending;
@@ -274,7 +275,7 @@ test("every Priority grant through a turn follows a stable checkpoint", async ()
     const priority = game.match.priority!;
     expect(priority).toBeDefined();
     expectStable(game);
-    seen.add(game.match.turn.stepIndex);
+    seen.add(game.match.turn.step);
     const seat = game.match.players.findIndex(
       (p) => p.id === priority.playerId,
     );

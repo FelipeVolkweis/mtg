@@ -8,7 +8,6 @@ import type {
   MatchState,
   PendingProcedure,
   SelectionOption,
-  ZoneState,
 } from "../../shared/rules-state.js";
 import type {
   Ability,
@@ -32,7 +31,6 @@ import {
   manaSymbols,
   oncePerTurn,
   production,
-  restrictsUntap,
   sorceryTiming,
   targetFilter,
   unlimitedHandSize,
@@ -51,8 +49,8 @@ import { manaCost } from "./mana.js";
 import { Library } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { Combat } from "./combat.js";
+import { mainTiming, TurnStructure } from "./turn-structure.js";
 import { actingPlayer } from "./match-players.js";
-import { CommanderRules } from "./commander-rules.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
 import { StackProposalProcedure } from "../rules/proposals/stack-proposal.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
@@ -196,7 +194,7 @@ export class RulesEngine implements RulesMutator {
         });
       this.rules.setup.keptPlayerIds.push(player.id);
       if (this.rules.setup.keptPlayerIds.length === this.match.players.length)
-        this.beginTurn();
+        this.turn.begin();
     } else
       throw new RuleViolation(
         "Keep or mulligan your opening Hand before play.",
@@ -229,99 +227,8 @@ export class RulesEngine implements RulesMutator {
       this.resolve();
       return;
     }
-    if (this.match.turn.stepIndex === 11) this.cleanup();
-    else this.advanceStep();
-  }
-  actions(playerId: string): { label: string; action: MatchAction }[] {
-    if (
-      this.match.outcome !== "ongoing" ||
-      this.rules.setup.keptPlayerIds.length < this.match.players.length
-    )
-      return [];
-    const pending = this.rules.pending;
-    if (
-      pending &&
-      (pending.playerId !== playerId ||
-        !procedureHandler(pending).manaWindow(pending))
-    )
-      return [];
-    if (!pending && this.match.priority?.playerId !== playerId) return [];
-    const actions: { label: string; action: MatchAction }[] = pending
-      ? []
-      : [{ label: "Pass Priority", action: { type: "pass-priority" } }];
-    for (const object of Object.values(this.match.objects)) {
-      if (object.controllerId !== playerId) continue;
-      const ownHand =
-        object.zoneId === this.zone("hand", playerId).id ||
-        (object.zoneId === this.zone("command").id &&
-          !!new CommanderRules(this).instance(object));
-      if (!pending && ownHand) {
-        if (object.characteristics.types?.includes("Land")) {
-          if (
-            this.mainTiming(playerId) &&
-            !(this.rules.landsPlayed[playerId] ?? 0)
-          )
-            actions.push({
-              label: `Play ${object.characteristics.name}`,
-              action: { type: "play-land", objectId: object.id },
-            });
-        } else if (this.canCastTiming(object, playerId)) {
-          const target = targetFilter(
-            this.definition(object)?.abilities.find((a) => a.kind === "spell"),
-          );
-          if (!target || this.legalTargets(playerId, target).length)
-            actions.push({
-              label: `Cast ${object.characteristics.name}`,
-              action: { type: "cast-spell", objectId: object.id },
-            });
-        }
-      }
-      for (const ability of this.abilities(object)) {
-        if (pending && !isManaAbility(ability)) continue;
-        if (
-          oncePerTurn(ability) &&
-          this.rules.activationUsage?.[`${object.id}:${ability.id}`]
-        )
-          continue;
-        if (sorceryTiming(ability) && !this.mainTiming(playerId)) continue;
-        if (!this.canActivateFromZone(object, playerId, ability)) continue;
-        const target = targetFilter(ability);
-        if (target && !this.legalTargets(playerId, target, object.id).length)
-          continue;
-        if (
-          costsOf(ability).some((cost) => cost.kind === "tap-source") &&
-          !this.canPayTapSymbol(object, playerId)
-        )
-          continue;
-        const produce = production(ability);
-        if (produce) {
-          const colors = this.manaColors(produce, playerId);
-          for (const color of colors)
-            actions.push({
-              label: ability.description
-                ? `${ability.description}${colors.length > 1 ? ` Choose {${color}}.` : ""}`
-                : `${object.characteristics.name}: add ${produce.quantity} ${color}`,
-              action: {
-                type: "activate-ability",
-                objectId: object.id,
-                abilityId: ability.id,
-                color,
-              },
-            });
-        } else
-          actions.push({
-            label:
-              ability.description ??
-              `${object.characteristics.name}: ${ability.id}`,
-            action: {
-              type: "activate-ability",
-              objectId: object.id,
-              abilityId: ability.id,
-            },
-          });
-      }
-    }
-    return actions;
+    if (this.match.turn.step === "cleanup") this.turn.cleanup();
+    else this.turn.advance();
   }
   /** The choices a pending procedure offers its player. */
   selectionOptions(pending: PendingProcedure): Record<string, SelectionOption> {
@@ -350,13 +257,6 @@ export class RulesEngine implements RulesMutator {
       this.match.instances[object.cardInstanceIds[0]]?.definitionId
     ];
   }
-  mainTiming(playerId: string) {
-    return (
-      this.match.turn.activePlayerId === playerId &&
-      [3, 9].includes(this.match.turn.stepIndex) &&
-      !this.zone("stack").objectIds.length
-    );
-  }
   hasKeyword(object: GameObject, keyword: string) {
     return (
       this.effective(object).keywords?.some(
@@ -366,7 +266,7 @@ export class RulesEngine implements RulesMutator {
   }
   canCastTiming(object: GameObject, playerId: string) {
     return (
-      this.mainTiming(playerId) ||
+      mainTiming(this.query, playerId) ||
       this.effective(object).types?.includes("Instant") ||
       this.hasKeyword(object, "Flash") ||
       this.battlefieldSources().some(
@@ -394,7 +294,7 @@ export class RulesEngine implements RulesMutator {
     if (
       object.zoneId !== this.zone("hand", playerId).id ||
       !object.characteristics.types?.includes("Land") ||
-      !this.mainTiming(playerId)
+      !mainTiming(this.query, playerId)
     )
       throw new RuleViolation(
         "Play a land from your Hand during your main phase with an empty Stack.",
@@ -597,7 +497,7 @@ export class RulesEngine implements RulesMutator {
       this.rules.activationUsage?.[`${source.id}:${authored.id}`]
     )
       throw new RuleViolation("Activate this ability only once each turn.");
-    if (sorceryTiming(ability) && !this.mainTiming(playerId))
+    if (sorceryTiming(ability) && !mainTiming(this.query, playerId))
       throw new RuleViolation("Activate this ability only as a sorcery.");
     const target = targetFilter(ability);
     if (target && !this.legalTargets(playerId, target, source.id).length)
@@ -685,9 +585,11 @@ export class RulesEngine implements RulesMutator {
   lockCost(pending: PendingProcedure) {
     pending.totalCost = determineCost(this, this.costProposal(pending));
   }
-  lastManaSpent: ManaType[] = [];
-  /** Pays the locked total cost through the Cost Runtime; false until it can. */
-  pay(pending: PendingProcedure) {
+  /**
+   * Pays the locked total cost through the Cost Runtime: the mana spent, or
+   * undefined, changing nothing, until it can be paid.
+   */
+  pay(pending: PendingProcedure): ManaType[] | undefined {
     const produce = production(pending.ability);
     if (produce) {
       const allowed = this.manaColors(produce, pending.playerId);
@@ -704,9 +606,7 @@ export class RulesEngine implements RulesMutator {
       totalCost: pending.totalCost,
       selections: pending.selections,
     });
-    if (!spent) return false;
-    this.lastManaSpent = spent;
-    return true;
+    return spent;
   }
   manaColors(produce: ManaProduction, playerId: string): ManaType[] {
     return Array.isArray(produce.colors)
@@ -749,113 +649,15 @@ export class RulesEngine implements RulesMutator {
     for (let i = 0; i < count; i++)
       if (!this.propose({ kind: "draw", playerId }).object) break;
   }
-  beginTurn() {
-    this.rules.drawsThisTurn = {};
-    this.rules.activationUsage = {};
-    this.rules.damageEvents = [];
-    this.match.turn.stepIndex = 0;
-    this.rules.turnStarted[this.match.turn.activePlayerId] =
-      this.match.turn.number;
-    this.rules.landsPlayed = {};
-    for (const object of Object.values(this.match.objects))
-      if (
-        object.zoneId === this.zone("battlefield").id &&
-        object.controllerId === this.match.turn.activePlayerId
-      ) {
-        const restricted = this.battlefieldSources().some(
-          (a) =>
-            a.attachmentTo === object.id &&
-            restrictsUntap(this.definition(a)?.abilities ?? []),
-        );
-        if (!restricted || this.rules.monarchId === object.controllerId)
-          object.status.tapped = false;
-      }
-    this.advanceStep();
+  /** Starts a combat step's turn-based actions. */
+  get combat() {
+    return new Combat(this);
   }
-  advanceStep() {
-    for (const player of this.match.players)
-      this.rules.mana[player.id] = emptyMana();
-    this.rules.restrictedMana = {};
-    this.match.turn.stepIndex++;
-    if (this.match.turn.stepIndex === 1) {
-      for (const source of this.battlefieldSources())
-        new EventTriggerObserver(this).collect(
-          {
-            kind: "upkeep",
-            playerId: this.match.turn.activePlayerId,
-            sourceId: source.id,
-            affectedId: source.id,
-            controllerId: source.controllerId,
-            ownerId: this.owner(source),
-            after: this.effective(source),
-          },
-          source,
-          [source],
-        );
-    }
-    if (this.match.turn.stepIndex === 5) {
-      new Combat(this).beginAttackers();
-      return;
-    }
-    if (this.match.turn.stepIndex === 6) {
-      if (!this.rules.combat?.attackers.length) this.match.turn.stepIndex = 8;
-      else {
-        new Combat(this).beginBlockers();
-        return;
-      }
-    }
-    if (this.match.turn.stepIndex === 7) {
-      new Combat(this).beginDamage();
-      return;
-    }
-    if (this.match.turn.stepIndex === 9) delete this.rules.combat;
-    if (
-      this.match.turn.stepIndex === 10 &&
-      this.rules.monarchId === this.match.turn.activePlayerId
-    )
-      this.monarchTrigger(
-        this.rules.monarchId,
-        [{ kind: "draw", count: 1 }],
-        "monarch-draw",
-      );
-    if (this.match.turn.stepIndex === 11) {
-      this.cleanup();
-      return;
-    }
-    if (this.match.turn.stepIndex === 2 && this.match.turn.number !== 1)
-      this.draw(this.match.turn.activePlayerId, 1);
-    this.checkpoint();
+  /** Event trigger observation. */
+  get triggers() {
+    return new EventTriggerObserver(this);
   }
-  cleanup() {
-    const playerId = this.match.turn.activePlayerId;
-    if (
-      this.zone("hand", playerId).objectIds.length >
-      this.maximumHandSize(playerId)
-    ) {
-      this.rules.pending = {
-        id: randomUUID(),
-        playerId,
-        kind: "cleanup",
-        stage: "selection",
-        targetIds: [],
-        selections: {},
-        totalCost: { ...emptyMana(), generic: 0 },
-      };
-      delete this.match.priority;
-      return;
-    }
-    // CR 514: after discarding, damage and end-of-turn changes end together.
-    this.rules.markedDamage = {};
-    this.rules.temporaryEffects = [];
-    this.checkpoint({ cleanup: true });
-  }
-  nextTurn() {
-    const turn = this.match.turn;
-    turn.number++;
-    turn.activePlayerId =
-      turn.order[
-        (turn.order.indexOf(turn.activePlayerId) + 1) % turn.order.length
-      ];
-    this.beginTurn();
+  get turn() {
+    return new TurnStructure(this);
   }
 }

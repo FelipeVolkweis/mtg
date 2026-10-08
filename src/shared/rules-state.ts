@@ -7,6 +7,7 @@ import {
   type ManaType,
   manaTypes,
   type Selector,
+  type TurnStep,
   type ZoneKind,
 } from "./card-dsl.js";
 
@@ -392,7 +393,7 @@ export interface MatchState {
   turn: {
     activePlayerId: string;
     number: number;
-    stepIndex: number;
+    step: TurnStep;
     order: string[];
   };
   outcome: "ongoing" | "complete" | "draw";

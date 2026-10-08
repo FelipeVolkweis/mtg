@@ -10,7 +10,7 @@ const zoneOf = (
 
 test("rulesGame starts in the first main phase with the active player holding Priority", async () => {
   const { match } = await rulesGame();
-  expect(match.turn.stepIndex).toBe(3);
+  expect(match.turn.step).toBe("precombat-main");
   expect(match.priority?.playerId).toBe(match.turn.activePlayerId);
 });
 
@@ -47,9 +47,9 @@ test("force.mana merges into the pool and fills missing colors", async () => {
 test("force.step sets the named step and force.activePlayer/priority hand over the turn", async () => {
   const { match } = await rulesGame();
   force.step(match, "cleanup");
-  expect(match.turn.stepIndex).toBe(11);
+  expect(match.turn.step).toBe("cleanup");
   force.step(match, "declare-attackers");
-  expect(match.turn.stepIndex).toBe(5);
+  expect(match.turn.step).toBe("declare-attackers");
   const other = match.players[1].id;
   force.activePlayer(match, other);
   force.priority(match, other);

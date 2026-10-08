@@ -23,6 +23,7 @@ Reviewed against repository code and specs on 2026-10-05. This index tracks deci
 | [0017 — Automatic groups](0017-automatic-battlefield-groups.md) | Accepted | Current types drive groups; attachments follow hosts and layout does not affect rules. |
 | [0019 — Users and Deck Catalog](0019-user-accounts-and-deck-catalog.md) | Accepted | Username and password accounts; Rooms require a User; each User's Decks have a Format; only legal Commander Decks are playable. |
 | [0018 — Supported runtime capacity](0018-runtime-model-carries-supported-capacity.md) | Proposed | The catalog keeps full form modeling; the runtime model drops unsupported and manual-mode fields. Accepted when the card model refactor ships with runtime milestone M1. |
+| [0020 — Single instance](0020-single-server-instance.md) | Accepted | Connections, broadcast bookkeeping and rate limits are in memory, so the server runs as one instance. |
 
 ## Verification sources
 

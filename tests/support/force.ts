@@ -8,28 +8,11 @@ import type {
   MatchState,
   RulesState,
 } from "../../src/shared/rules-state";
-import type { ZoneKind } from "../../src/shared/card-dsl";
+import type { TurnStep, ZoneKind } from "../../src/shared/card-dsl";
 
 // Force helpers set up states that would be tedious or impossible to reach
 // through Match commands (rules test plan §16). The name says it: they bypass
 // the rules on purpose. Use them only for scenario setup, never to act.
-
-/** Turn steps in order; the index is the current `turn.stepIndex`. */
-export const turnSteps = [
-  "untap",
-  "upkeep",
-  "draw",
-  "precombat-main",
-  "begin-combat",
-  "declare-attackers",
-  "declare-blockers",
-  "combat-damage",
-  "end-combat",
-  "postcombat-main",
-  "end",
-  "cleanup",
-] as const;
-export type TurnStep = (typeof turnSteps)[number];
 
 function rules(match: MatchState): RulesState {
   if (!match.rules) throw new Error("force helpers need a rules Match.");
@@ -49,7 +32,7 @@ export const force = {
 
   /** Jumps to a turn step without performing turn-based actions. */
   step(match: MatchState, step: TurnStep) {
-    match.turn.stepIndex = turnSteps.indexOf(step);
+    match.turn.step = step;
   },
 
   /** Makes a seat the active player without changing Priority. */

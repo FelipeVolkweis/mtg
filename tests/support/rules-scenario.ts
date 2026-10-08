@@ -106,7 +106,7 @@ export async function seedRulesScenario(
     match.rules!.setup.keptPlayerIds = match.players.map((player) => player.id);
     match.rules!.turnStarted[player.id] = 1;
     match.turn.activePlayerId = player.id;
-    match.turn.stepIndex = scenario === "flash" ? 4 : 3;
+    match.turn.step = scenario === "flash" ? "begin-combat" : "precombat-main";
     match.priority = { playerId: player.id, passedPlayerIds: [] };
     match.rules!.mana[player.id].U = combat ? 0 : spellName ? 5 : 2;
     if (scenario === "draw") {

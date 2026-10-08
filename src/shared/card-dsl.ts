@@ -62,6 +62,10 @@ export const turnSteps = [
   "cleanup",
 ] as const;
 export type TurnStep = (typeof turnSteps)[number];
+/** The step after `step` in a turn; the cleanup step is the last. */
+export function nextTurnStep(step: TurnStep): TurnStep | undefined {
+  return turnSteps[turnSteps.indexOf(step) + 1];
+}
 
 export const statuses = [
   "tapped",
