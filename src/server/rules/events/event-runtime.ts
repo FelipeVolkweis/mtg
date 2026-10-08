@@ -267,7 +267,7 @@ export class EventRuntime {
           affectedId: source.id,
           controllerId: source.controllerId,
           ownerId: live
-            ? engine.owner(source)
+            ? source.ownerId
             : (stackSource.resolution?.sourceSnapshot ?? source).ownerId,
           after: characteristics,
           damage: {

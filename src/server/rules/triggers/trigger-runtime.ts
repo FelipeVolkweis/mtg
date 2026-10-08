@@ -284,7 +284,7 @@ function waitFor(
 ) {
   waitTrigger(engine, {
     playerId: source.controllerId,
-    sourceId: source.id,
+    source: { kind: "object", id: source.id },
     abilityId: ability.id,
     sourceName: source.characteristics.name,
     sourceSnapshot: {
@@ -292,7 +292,7 @@ function waitFor(
         source.id === event.sourceId
           ? (event.before ?? event.after)
           : engine.effective(source),
-      ownerId: engine.owner(source),
+      ownerId: source.ownerId,
     },
     ability: structuredClone(ability),
     event: structuredClone(event),
@@ -400,7 +400,7 @@ export class StateTriggerObserver {
           sourceId: source.id,
           affectedId: source.id,
           controllerId: source.controllerId,
-          ownerId: engine.owner(source),
+          ownerId: source.ownerId,
           after: engine.effective(source),
         });
       }
@@ -414,7 +414,12 @@ export class StateTriggerObserver {
       [
         ...(rules.waitingTriggers ?? []),
         ...(rules.triggerPlacement ?? []),
-      ].some((t) => t.sourceId === source.id && t.abilityId === ability.id) ||
+      ].some(
+        (t) =>
+          t.source.kind === "object" &&
+          t.source.id === source.id &&
+          t.abilityId === ability.id,
+      ) ||
       engine.zone("stack").objectIds.some((id) => {
         const object = engine.object(id);
         return (

@@ -1,10 +1,11 @@
 import type { RoomState } from "../../shared/model.js";
 
 /**
- * The Room document shape this server writes (CM §5). Version 9 groups the
- * per-turn rules state in `rules.thisTurn` (version 8 named the turn step).
+ * The Room document shape this server writes (CM §5). Version 10 gives a
+ * waiting trigger a typed `source`, an object or the monarch designation
+ * (version 9 grouped the per-turn rules state in `rules.thisTurn`).
  */
-export const currentSnapshotVersion = 9;
+export const currentSnapshotVersion = 10;
 
 /**
  * The oldest Room document shape this server reads. `RoomService.onModuleInit`

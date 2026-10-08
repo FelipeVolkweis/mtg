@@ -50,7 +50,7 @@ function waiting(
   return {
     id: crypto.randomUUID(),
     playerId: game.player(seat),
-    sourceId: `source-${abilityId}`,
+    source: { kind: "object", id: `source-${abilityId}` },
     abilityId,
     sourceName: "Test",
     ability: ability(abilityId, targeted),

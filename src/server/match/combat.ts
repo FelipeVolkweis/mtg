@@ -285,7 +285,7 @@ export class Combat {
           sourceId: id,
           affectedId: id,
           controllerId: playerId,
-          ownerId: e.owner(attacker),
+          ownerId: attacker.ownerId,
           after: e.effective(attacker),
         },
         attacker,

@@ -13,7 +13,10 @@ import { cardDefinitionFileSchema } from "../../../src/shared/card-dsl";
 test("constructs the current runtime can't run fail with a clear error", async () => {
   const card = cardDefinitionFileSchema.parse(
     JSON.parse(
-      readFileSync("tests/fixtures/dsl-v2/austere-command.json", "utf8"),
+      readFileSync(
+        "tests/fixtures/dsl-expressiveness/austere-command.json",
+        "utf8",
+      ),
     ),
   );
   const compiled = compileCard(

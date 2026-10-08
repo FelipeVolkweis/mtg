@@ -36,7 +36,6 @@ export function queryOver(
       if (!zone) throw new Error("Zone not found.");
       return zone;
     },
-    owner: (object) => object.ownerId,
     effective,
     definition: (object) =>
       catalog.definitions[

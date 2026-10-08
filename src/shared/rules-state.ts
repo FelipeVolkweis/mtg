@@ -313,6 +313,14 @@ export interface LastKnownInformation {
   attachmentTo: string | null;
   tapped: boolean;
 }
+/** A designation a player can have (CR 724: the monarch). */
+export type Designation = "monarch";
+
+/** What a triggered ability triggered from: an object, or a player's designation. */
+export type TriggerSource =
+  | { kind: "object"; id: string }
+  | { kind: "designation"; designation: Designation };
+
 export interface WaitingTrigger {
   sourceSnapshot?: {
     characteristics: Characteristics;
@@ -320,7 +328,7 @@ export interface WaitingTrigger {
   };
   id: string;
   playerId: string;
-  sourceId: string;
+  source: TriggerSource;
   abilityId: string;
   sourceName: string;
   ability: Ability;

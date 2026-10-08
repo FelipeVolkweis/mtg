@@ -39,6 +39,7 @@ import type {
   RulesMutator,
   RulesQuery,
 } from "../rules/context.js";
+import { intrinsicManaAbilities } from "../rules/basic-land-mana.js";
 import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { scopeBindings } from "../rules/vm/rule-vm.js";
@@ -125,7 +126,6 @@ export class RulesEngine implements RulesMutator {
       catalog: this.catalog,
       object: (id) => this.object(id),
       zone: (kind, playerId) => this.zone(kind, playerId),
-      owner: (object) => this.owner(object),
       effective: (object) => this.effective(object),
       definition: (object) => this.definition(object),
       matches: (object, predicate, playerId, sourceId) =>
@@ -420,7 +420,7 @@ export class RulesEngine implements RulesMutator {
   ) {
     waitTrigger(this, {
       playerId,
-      sourceId: "monarch",
+      source: { kind: "designation", designation: "monarch" },
       abilityId,
       sourceName: "Monarch",
       // The monarch's designation triggers (CR 724.2): at your end step, and
@@ -438,10 +438,11 @@ export class RulesEngine implements RulesMutator {
           : { event: "step", step: "end", player: "you" },
         effects,
       },
+      // The event's object is the damaging creature, or else the monarch.
       event: {
         kind: "state",
-        sourceId: creature?.id ?? "monarch",
-        affectedId: creature?.id ?? "monarch",
+        sourceId: creature?.id ?? playerId,
+        affectedId: creature?.id ?? playerId,
         controllerId: creature?.controllerId ?? playerId,
         ownerId: playerId,
         after: {
@@ -485,30 +486,12 @@ export class RulesEngine implements RulesMutator {
         .map((object) => object.id),
     );
   }
+  /** The object's activated abilities, with its basic land types' mana abilities. */
   abilities(object: GameObject) {
-    const abilities = (this.definition(object)?.abilities ?? []).filter(
-      activatable,
-    );
-    if (object.characteristics.types?.includes("Land")) {
-      const colors: Record<string, ManaType> = {
-        Plains: "W",
-        Island: "U",
-        Swamp: "B",
-        Mountain: "R",
-        Forest: "G",
-      };
-      for (const subtype of object.characteristics.subtypes ?? [])
-        if (colors[subtype])
-          abilities.push({
-            id: `intrinsic-${subtype}`,
-            kind: "mana",
-            // CR 305.6: a basic land type's mana ability is intrinsic.
-            origin: "printed",
-            activation: { costs: [{ kind: "tap-source" }] },
-            produce: { quantity: 1, colors: [colors[subtype]] },
-          });
-    }
-    return abilities;
+    return [
+      ...(this.definition(object)?.abilities ?? []).filter(activatable),
+      ...intrinsicManaAbilities(object.characteristics),
+    ];
   }
   canActivateFromZone(source: GameObject, playerId: string, ability: Ability) {
     const kind = activationZone(ability);
@@ -600,7 +583,7 @@ export class RulesEngine implements RulesMutator {
             sourceId: source.id,
             affectedId: source.id,
             controllerId: playerId,
-            ownerId: this.owner(source),
+            ownerId: source.ownerId,
             after: this.effective(source),
           },
           source,
@@ -621,7 +604,7 @@ export class RulesEngine implements RulesMutator {
           sourceId: target.id,
           affectedId: target.id,
           controllerId: target.controllerId,
-          ownerId: this.owner(target),
+          ownerId: target.ownerId,
           after: this.effective(target),
         },
         target,
@@ -674,9 +657,6 @@ export class RulesEngine implements RulesMutator {
         restriction: structuredClone(produce.restriction),
       });
     }
-  }
-  owner(object: GameObject) {
-    return object.ownerId;
   }
   /** An ability ceases to exist; a card goes to its owner's Graveyard. */
   toGraveyard(object: GameObject) {

@@ -21,7 +21,6 @@ export interface RulesQuery {
   readonly catalog: Catalog;
   object(id: string): GameObject;
   zone(kind: ZoneKind, playerId?: string): ZoneState;
-  owner(object: GameObject): string;
   effective(object: GameObject): Characteristics;
   definition(object: GameObject): CardDefinition | undefined;
   /** Core AST predicate match, evaluated for `playerId` ("you"). */

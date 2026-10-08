@@ -303,7 +303,7 @@ export class StackProposalProcedure {
     const source = e.object(pending.sourceId!);
     const sourceSnapshot = {
       characteristics: e.effective(source),
-      ownerId: e.owner(source),
+      ownerId: source.ownerId,
     };
     const spent = e.pay(pending);
     if (!spent) return false;

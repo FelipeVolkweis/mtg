@@ -75,7 +75,7 @@ export function performMove(
           : "graveyard";
     const destination = query.zone(
       kind,
-      ownedZones.has(kind) ? query.owner(object) : undefined,
+      ownedZones.has(kind) ? object.ownerId : undefined,
     );
     const { object: fresh } = ctx.propose({
       kind: "zone-change",
@@ -84,7 +84,7 @@ export function performMove(
       simultaneous: { sources, before: snapshots.get(id) },
     });
     if (!fresh) continue;
-    if (kind !== "battlefield") fresh.controllerId = query.owner(fresh);
+    if (kind !== "battlefield") fresh.controllerId = fresh.ownerId;
     moved.push(fresh.id);
     if (
       effect.kind === "exile" &&
@@ -180,7 +180,7 @@ export const counter: EffectHandler<"counter"> = {
         ctx.propose({
           kind: "zone-change",
           objectId: id,
-          to: query.zone("graveyard", query.owner(object)),
+          to: query.zone("graveyard", object.ownerId),
         });
       countered.push(id);
     }

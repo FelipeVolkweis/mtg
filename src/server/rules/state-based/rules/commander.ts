@@ -28,7 +28,7 @@ export const commanderReturn: StateBasedRule = {
       kind: "choice",
       procedure: {
         id: randomUUID(),
-        playerId: query.owner(object),
+        playerId: object.ownerId,
         kind: "commander-return",
         stage: "selection",
         sourceId: object.id,

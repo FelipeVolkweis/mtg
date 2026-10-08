@@ -120,7 +120,7 @@ test("an authored error fails the load with the card and path", async () => {
 test("an implemented card the runtime can't run fails to load; unimplemented loads without runtime abilities", async () => {
   const registries = await readRegistries("catalog");
   const file = cardDefinitionFileSchema.parse(
-    await json("tests/fixtures/dsl-v2/austere-command.json"),
+    await json("tests/fixtures/dsl-expressiveness/austere-command.json"),
   );
   expect(() =>
     definitionFromFile(

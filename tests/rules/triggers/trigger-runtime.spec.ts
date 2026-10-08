@@ -189,7 +189,7 @@ test("a state trigger triggers when its condition becomes true, once while it wa
   observe();
   expect(waiting()).toHaveLength(1);
   expect(waiting()[0]).toMatchObject({
-    sourceId: tome.id,
+    source: { kind: "object", id: tome.id },
     event: { kind: "state" },
   });
   observe();
