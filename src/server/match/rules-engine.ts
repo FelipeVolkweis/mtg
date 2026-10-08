@@ -24,13 +24,17 @@ import {
   activatable,
   activationZone,
   castPermissions,
+  extraLandPlays,
   costsOf,
   isDiesTrigger,
   isManaAbility,
   oncePerTurn,
   production,
+  clauseRange,
+  modeRange,
+  modesOf,
   sorceryTiming,
-  targetFilter,
+  targetClauses,
   unlimitedHandSize,
 } from "../rules/abilities.js";
 import type {
@@ -43,9 +47,10 @@ import { intrinsicManaAbilities } from "../rules/basic-land-mana.js";
 import { EventRuntime } from "../rules/events/event-runtime.js";
 import { Evaluator } from "../rules/vm/evaluate.js";
 import { scopeBindings } from "../rules/vm/rule-vm.js";
-import { Library, zoneOf } from "./zones.js";
+import { Library, zoneById, zoneOf } from "./zones.js";
 import { CharacteristicsCalculator } from "./characteristics.js";
 import { Combat } from "./combat.js";
+import { nextTimestamp } from "./game-objects.js";
 import { mainTiming, TurnStructure } from "./turn-structure.js";
 import { actingPlayer } from "./match-players.js";
 import { StackResolutionRuntime } from "../rules/stack/stack-resolution.js";
@@ -128,6 +133,7 @@ export class RulesEngine implements RulesMutator {
       zone: (kind, playerId) => this.zone(kind, playerId),
       effective: (object) => this.effective(object),
       definition: (object) => this.definition(object),
+      abilitiesOf: (object) => this.abilitiesOf(object),
       matches: (object, predicate, playerId, sourceId) =>
         new Evaluator(this.query, { playerId, sourceId }).matches(
           object,
@@ -146,12 +152,16 @@ export class RulesEngine implements RulesMutator {
   /** An until-end-of-turn continuous effect starts (CR 611.2). */
   addTemporaryEffect(effect: ActiveContinuousEffect) {
     this.rules.temporaryEffects ??= [];
-    this.rules.temporaryEffects.push(effect);
+    this.rules.temporaryEffects.push({
+      ...effect,
+      timestamp: nextTimestamp(this.match),
+    });
     this.changed();
   }
   /** Until-end-of-turn effects end in the cleanup step (CR 514.2). */
   endTemporaryEffects() {
     this.rules.temporaryEffects = [];
+    this.rules.preventions = [];
     this.changed();
   }
   /** The continuous effects in force. */
@@ -293,6 +303,8 @@ export class RulesEngine implements RulesMutator {
       ability: pending.ability!,
       variables: record?.variables,
       sourceZone: record?.sourceZone,
+      modes: record?.modes,
+      alternativeCost: record?.alternativeCost,
     };
   }
   object(id: string) {
@@ -304,6 +316,10 @@ export class RulesEngine implements RulesMutator {
     return this.catalog.definitions[
       this.match.instances[object.cardInstanceIds[0]]?.definitionId
     ];
+  }
+  /** The abilities the object has now (CR 113.3, 613.1f). */
+  abilitiesOf(object: GameObject): Ability[] {
+    return this.characteristics().abilitiesOf(object);
   }
   hasKeyword(object: GameObject, keyword: string) {
     return (
@@ -320,8 +336,8 @@ export class RulesEngine implements RulesMutator {
       this.battlefieldSources().some(
         (source) =>
           source.controllerId === playerId &&
-          castPermissions(this.definition(source)?.abilities ?? []).some(
-            (spells) => this.matches(object, spells, playerId, source.id),
+          castPermissions(this.abilitiesOf(source)).some((spells) =>
+            this.matches(object, spells, playerId, source.id),
           ),
       )
     );
@@ -337,6 +353,55 @@ export class RulesEngine implements RulesMutator {
       (object.controllerId === playerId || !this.hasKeyword(object, "Hexproof"))
     );
   }
+  /** CR 305.2: one land each turn, plus the additional plays in force. */
+  canPlayLand(playerId: string) {
+    const allowed = this.battlefieldSources()
+      .filter((source) => source.controllerId === playerId)
+      .flatMap((source) =>
+        extraLandPlays(this.abilitiesOf(source)).map((grant) =>
+          this.value(grant.count, playerId, source.id),
+        ),
+      )
+      .reduce((sum, count) => sum + count, 1);
+    return (this.rules.thisTurn.landsPlayed[playerId] ?? 0) < allowed;
+  }
+  /**
+   * Can an effect let the player play this card without paying its mana cost
+   * (CR 118.9, 305.1)? A card in their Hand or exiled, a land when they have a
+   * land play left, a spell whose targets can be chosen.
+   */
+  playableFree(playerId: string, id: string) {
+    const object = this.match.objects[id];
+    if (!object || object.ownerId !== playerId) return false;
+    const kind = zoneById(this.match, object.zoneId)?.kind;
+    if (kind !== "hand" && kind !== "exile") return false;
+    if (object.characteristics.types?.includes("Land"))
+      return this.canPlayLand(playerId);
+    const spell = this.definition(object)?.abilities.find(
+      (ability) => ability.kind === "spell",
+    );
+    return !spell || this.targetsAvailable(playerId, spell);
+  }
+  /**
+   * Plays the card without paying its mana cost: a land is put onto the
+   * Battlefield as a land play; a spell is cast, which leaves its choices
+   * pending when it has any.
+   */
+  playFree(playerId: string, id: string): "pending" | "done" {
+    const object = this.object(id);
+    if (object.characteristics.types?.includes("Land")) {
+      this.propose({
+        kind: "zone-change",
+        objectId: id,
+        to: this.zone("battlefield"),
+      });
+      this.rules.thisTurn.landsPlayed[playerId] =
+        (this.rules.thisTurn.landsPlayed[playerId] ?? 0) + 1;
+      return "done";
+    }
+    new StackProposalProcedure(this).cast(playerId, id, { free: true });
+    return this.rules.pending?.proposal ? "pending" : "done";
+  }
   playLand(playerId: string, id: string) {
     const object = this.object(id);
     if (
@@ -347,14 +412,15 @@ export class RulesEngine implements RulesMutator {
       throw new RuleViolation(
         "Play a land from your Hand during your main phase with an empty Stack.",
       );
-    if ((this.rules.thisTurn.landsPlayed[playerId] ?? 0) >= 1)
+    if (!this.canPlayLand(playerId))
       throw new RuleViolation("You have already played a land this turn.");
     this.propose({
       kind: "zone-change",
       objectId: object.id,
       to: this.zone("battlefield"),
     });
-    this.rules.thisTurn.landsPlayed[playerId] = 1;
+    this.rules.thisTurn.landsPlayed[playerId] =
+      (this.rules.thisTurn.landsPlayed[playerId] ?? 0) + 1;
     this.checkpoint({ playerId });
   }
   battlefieldSources() {
@@ -457,8 +523,7 @@ export class RulesEngine implements RulesMutator {
   maximumHandSize(playerId: string) {
     return this.battlefieldSources().some(
       (o) =>
-        o.controllerId === playerId &&
-        unlimitedHandSize(this.definition(o)?.abilities ?? []),
+        o.controllerId === playerId && unlimitedHandSize(this.abilitiesOf(o)),
     )
       ? Infinity
       : 7;
@@ -486,12 +551,48 @@ export class RulesEngine implements RulesMutator {
         .map((object) => object.id),
     );
   }
+  /**
+   * Can the targets the ability needs be chosen (CR 601.2c)? Every target
+   * clause that takes at least one target needs that many legal ones; a modal
+   * ability needs enough modes whose targets can be chosen.
+   */
+  targetsAvailable(
+    playerId: string,
+    ability: Ability,
+    sourceId?: string,
+    selfId?: string,
+  ) {
+    const possible = (clauses: ReturnType<typeof targetClauses>) =>
+      clauses.every(
+        (clause) =>
+          this.legalTargets(playerId, clause.filter, sourceId, selfId).length >=
+          clauseRange(clause).min,
+      );
+    const modes = modesOf(ability);
+    if (!modes) return possible(targetClauses(ability));
+    const common = targetClauses(ability);
+    return (
+      possible(common) &&
+      modes.options.filter((option) => possible(option.targets ?? [])).length >=
+        modeRange(modes).min
+    );
+  }
   /** The object's activated abilities, with its basic land types' mana abilities. */
   abilities(object: GameObject) {
     return [
-      ...(this.definition(object)?.abilities ?? []).filter(activatable),
+      ...this.abilitiesOf(object).filter(activatable),
       ...intrinsicManaAbilities(object.characteristics),
     ];
+  }
+  /** CR 602.5b: "Activate only if …" restricts when the ability may be activated. */
+  activationAllowed(source: GameObject, playerId: string, ability: Ability) {
+    const condition =
+      ability.kind === "activated" || ability.kind === "mana"
+        ? ability.activateOnlyIf
+        : undefined;
+    return (
+      !condition || this.conditionSatisfied(condition, playerId, source.id)
+    );
   }
   canActivateFromZone(source: GameObject, playerId: string, ability: Ability) {
     const kind = activationZone(ability);
@@ -530,8 +631,11 @@ export class RulesEngine implements RulesMutator {
       throw new RuleViolation("Activate this ability only once each turn.");
     if (sorceryTiming(ability) && !mainTiming(this.query, playerId))
       throw new RuleViolation("Activate this ability only as a sorcery.");
-    const target = targetFilter(ability);
-    if (target && !this.legalTargets(playerId, target, source.id).length)
+    if (!this.activationAllowed(source, playerId, authored))
+      throw new RuleViolation(
+        "The condition for activating this ability isn't met.",
+      );
+    if (!this.targetsAvailable(playerId, ability, source.id))
       throw new RuleViolation("No legal targets are available.");
     if (duringPayment && !isManaAbility(ability))
       throw new RuleViolation(
@@ -569,7 +673,14 @@ export class RulesEngine implements RulesMutator {
         throw new RuleViolation(
           "The mana ability's complete costs cannot be paid.",
         );
-      this.produceMana(playerId, produce, action.color);
+      // "If …, add … instead": the condition is checked as the ability resolves.
+      const instead =
+        ability.kind === "mana" &&
+        ability.instead &&
+        this.conditionSatisfied(ability.instead.condition, playerId, source.id)
+          ? ability.instead.produce
+          : produce;
+      this.produceMana(playerId, instead, action.color);
       if (
         costs.some((c) => c.kind === "tap-source") &&
         (action.color ??

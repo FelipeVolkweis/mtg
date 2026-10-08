@@ -9,7 +9,8 @@ import type {
   Selector,
   Value,
 } from "../../../shared/card-dsl.js";
-import { unrunPredicateFields } from "../ast.js";
+import { atCastKey, unrunPredicateFields } from "../ast.js";
+import { runtimeKeyword } from "../abilities.js";
 import type { RulesQuery } from "../context.js";
 import { counterCount } from "../../match/counters.js";
 import { lifeValue } from "../../match/life.js";
@@ -24,10 +25,18 @@ export interface Scope {
   playerId: string;
   /** "source": the ability's source object, or the spell itself. */
   sourceId?: string;
-  /** The chosen targets. The runtime supports one target clause. */
+  /** Every chosen target. */
   targetIds?: string[];
+  /** The chosen targets of each target clause, by clause id. */
+  targets?: Record<string, string[]>;
+  /** Damage divided as the spell was cast, by recipient (CR 601.2d). */
+  division?: Record<string, number>;
   /** The triggering event. */
   event?: SemanticEvent;
+  /** The optional costs the source was cast with, once it has left. */
+  optionalCosts?: string[];
+  /** Who last controlled and owned the objects that left during resolution. */
+  lastKnown?: Record<string, { controllerId: string; ownerId: string }>;
   bindings?: Record<string, number>;
   objects?: Record<string, string[]>;
   players?: Record<string, string>;
@@ -45,6 +54,12 @@ export class Evaluator {
     return this.query.match;
   }
 
+  /** The targets chosen for a target clause. */
+  private targetsOf(clauseId: string): string[] {
+    const { targets, targetIds } = this.scope;
+    return [...(targets ? (targets[clauseId] ?? []) : (targetIds ?? []))];
+  }
+
   /** Player ids a reference names. */
   players(ref: PlayerRef): string[] {
     const { playerId } = this.scope;
@@ -54,7 +69,7 @@ export class Evaluator {
     if (ref === "each-player") return [...this.match.turn.order];
     if (ref === "active-player") return [this.match.turn.activePlayerId];
     if ("target" in ref)
-      return (this.scope.targetIds ?? []).filter((id) => all.includes(id));
+      return this.targetsOf(ref.target).filter((id) => all.includes(id));
     if ("event" in ref)
       return this.scope.event?.playerId ? [this.scope.event.playerId] : [];
     if ("binding" in ref) {
@@ -74,6 +89,9 @@ export class Evaluator {
               "controllerOf" in ref ? object.controllerId : object.ownerId,
             ];
           // Last known information for an object that has left (CR 608.2h).
+          const known = this.scope.lastKnown?.[id];
+          if (known)
+            return ["controllerOf" in ref ? known.controllerId : known.ownerId];
           if (event && (id === event.affectedId || id === event.sourceId))
             return ["controllerOf" in ref ? event.controllerId : event.ownerId];
           return [];
@@ -90,7 +108,7 @@ export class Evaluator {
     const { scope, match } = this;
     if (selector === "source") return scope.sourceId ? [scope.sourceId] : [];
     if (selector === "target") return [...(scope.targetIds ?? [])];
-    if ("target" in selector) return [...(scope.targetIds ?? [])];
+    if ("target" in selector) return this.targetsOf(selector.target);
     if ("all" in selector)
       return Object.values(match.objects)
         .filter((object) => this.matches(object, selector.all))
@@ -230,6 +248,29 @@ export class Evaluator {
         if (!ok) return false;
       }
     if (p.is && !this.objects(p.is).includes(object.id)) return false;
+    // The commander designation belongs to the Card Instance (CR 903.3).
+    if (
+      p.commander &&
+      !object.cardInstanceIds.some((id) => match.instances[id]?.commander)
+    )
+      return false;
+    if (
+      p.keyword !== undefined &&
+      !list(p.keyword).some((keyword) =>
+        c.keywords?.includes(runtimeKeyword(keyword) ?? keyword),
+      )
+    )
+      return false;
+    // Attacking a player (CR 506.3), not a planeswalker that player controls.
+    if (
+      p.attacking !== undefined &&
+      !(match.rules.combat?.attackers ?? []).some(
+        (a) =>
+          a.objectId === object.id &&
+          this.players(p.attacking!).includes(a.defenderId),
+      )
+    )
+      return false;
     if (
       p.manaValue !== undefined &&
       !this.compare(c.manaValue ?? 0, p.manaValue)
@@ -301,8 +342,21 @@ export class Evaluator {
     if ("count" in value) return this.objects(value.count).length;
     if ("sum" in value)
       return value.sum.reduce<number>((sum, v) => sum + this.value(v), 0);
-    if ("stat" in value || "greatest" in value) {
-      const { of, name } = "stat" in value ? value.stat : value.greatest;
+    if ("product" in value)
+      return value.product.reduce<number>((all, v) => all * this.value(v), 1);
+    // CR 601.2: a value fixed as the spell was cast reads what the cast
+    // recorded (`atCastKey`).
+    if ("atCast" in value) {
+      const key = atCastKey(value.atCast);
+      return this.number(key, scope.bindings?.[key]);
+    }
+    if ("stat" in value || "greatest" in value || "total" in value) {
+      const { of, name } =
+        "stat" in value
+          ? value.stat
+          : "greatest" in value
+            ? value.greatest
+            : value.total;
       const stats = this.objects(of)
         .map((id) => match.objects[id])
         .filter(Boolean)
@@ -311,7 +365,11 @@ export class Evaluator {
           return name === "manaValue" ? (c.manaValue ?? 0) : Number(c[name]);
         })
         .filter((n) => Number.isFinite(n));
-      return "stat" in value ? (stats[0] ?? 0) : Math.max(0, ...stats);
+      return "stat" in value
+        ? (stats[0] ?? 0)
+        : "greatest" in value
+          ? Math.max(0, ...stats)
+          : stats.reduce((sum, n) => sum + n, 0);
     }
     if ("cardsIn" in value) {
       const [playerId] = this.players(value.cardsIn.player);
@@ -337,10 +395,6 @@ export class Evaluator {
       return match.rules.commanders[playerId]?.colorIdentity.length ?? 0;
     }
     if ("eventAmount" in value) return scope.event?.damage?.amount ?? 0;
-    if ("total" in value || "product" in value || "atCast" in value)
-      throw new Error(
-        `The ${Object.keys(value)[0]} value is not supported by the current runtime.`,
-      );
     return this.condition(value.if)
       ? this.value(value.then)
       : this.value(value.else);
@@ -375,6 +429,15 @@ export class Evaluator {
       );
     if ("didPerform" in condition)
       return !!this.scope.bindings?.[condition.didPerform];
+    // An optional cost the source was cast with: read from the object, or from
+    // what a trigger recorded of it when it has left (CR 603.10).
+    if ("paid" in condition)
+      return (
+        this.match.objects[this.scope.sourceId ?? ""]?.proposal
+          ?.optionalCosts ??
+        this.scope.optionalCosts ??
+        []
+      ).includes(condition.paid);
     throw new Error(
       `The ${Object.keys(condition)[0]} condition is not supported by the current runtime.`,
     );
@@ -389,6 +452,5 @@ export function unsupportedCondition(condition: Condition): string | undefined {
       .find(Boolean);
   if ("not" in condition) return unsupportedCondition(condition.not);
   if ("happened" in condition) return "A turn-history condition";
-  if ("paid" in condition) return "An optional-cost condition";
   return undefined;
 }

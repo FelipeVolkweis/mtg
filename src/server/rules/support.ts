@@ -1,12 +1,15 @@
 import type {
   Ability,
+  Comparison,
   Condition,
   Cost,
   Effect,
+  Modes,
   PlayerRef,
   Predicate,
   PredicateFields,
   Selector,
+  StaticGrant,
   TargetClause,
   Value,
 } from "../../shared/card-dsl.js";
@@ -51,6 +54,14 @@ class Unsupported extends Error {
   }
 }
 
+/** The static grants whose ability condition the engine reads as they apply. */
+const conditionalGrantKinds: StaticGrant["kind"][] = [
+  "cant-attack",
+  "cant-block",
+  "max-blockers",
+  "block-restriction",
+];
+
 class Walker implements SupportCheck {
   private path = "";
 
@@ -81,13 +92,16 @@ class Walker implements SupportCheck {
       case "keyword":
         return keywordSupport(ability.keyword, this);
       case "mana": {
-        if (ability.activateOnlyIf)
-          this.unsupported("An activation restriction");
-        if (ability.instead) this.unsupported("An instead mana production");
-        const produce = ability.produce;
-        if (produce.colors && !Array.isArray(produce.colors))
-          if (produce.colors.commanderColors !== "you")
-            this.unsupported("Commander colors of another player");
+        this.restriction(ability.activateOnlyIf);
+        this.production(ability.produce);
+        if (ability.instead) {
+          const instead = ability.instead;
+          this.at("instead.condition", () => this.condition(instead.condition));
+          this.at("instead.produce", () => this.production(instead.produce));
+          // The same colors to choose from, so the choice made applies to both.
+          if (!astEqual(instead.produce.colors, ability.produce.colors))
+            this.unsupported("An instead production of other colors");
+        }
         if ("costs" in ability.activation) {
           const costs = ability.activation.costs;
           return this.at("activation.costs", () => this.costs(costs));
@@ -107,12 +121,11 @@ class Walker implements SupportCheck {
         this.at("trigger", () => triggerSupport(ability.trigger, this));
         if (ability.interveningIf)
           this.at("interveningIf", () =>
-            this.intervening(ability.interveningIf!),
+            this.condition(ability.interveningIf!),
           );
         return this.body(ability);
       case "activated":
-        if (ability.activateOnlyIf)
-          this.unsupported("An activation restriction");
+        this.restriction(ability.activateOnlyIf);
         this.at("costs", () => this.costs(ability.costs));
         if (ability.limit && ability.limit.perTurn !== 1)
           this.unsupported("A limit other than once per turn");
@@ -120,6 +133,17 @@ class Walker implements SupportCheck {
           this.unsupported(`Activation from ${ability.activeFrom}`);
         return this.body(ability);
     }
+  }
+
+  /** CR 602.5b: an activation restriction is a condition the player's action reads. */
+  private restriction(condition?: Condition) {
+    if (condition) this.at("activateOnlyIf", () => this.condition(condition));
+  }
+
+  private production(produce: Extract<Ability, { kind: "mana" }>["produce"]) {
+    if (produce.colors && !Array.isArray(produce.colors))
+      if (produce.colors.commanderColors !== "you")
+        this.unsupported("Commander colors of another player");
   }
 
   keyword(keyword: string) {
@@ -149,65 +173,78 @@ class Walker implements SupportCheck {
     if (changes) {
       this.at("grants.objects", () => this.objects(objects!));
       if (ability.condition)
-        this.at("condition", () => this.staticCondition(ability.condition!));
-    } else if (ability.condition || ability.characteristicDefining)
+        this.at("condition", () => this.condition(ability.condition!));
+    } else if (ability.characteristicDefining)
       this.unsupported(
         "A condition on a static ability without continuous changes",
       );
-  }
-
-  private staticCondition(condition: Condition) {
-    if (
-      "compare" in condition &&
-      condition.compare[1] === ">=" &&
-      typeof condition.compare[2] === "number"
-    )
-      return this.value(condition.compare[0]);
-    return this.unsupported("A static condition other than value ≥ number");
-  }
-
-  private intervening(condition: Condition) {
-    const compare = (c: Condition) => {
-      if (!("compare" in c) || c.compare[1] !== ">=")
-        this.unsupported("An intervening-if other than value ≥ value");
-      const [left, , right] = (c as { compare: [Value, string, Value] })
-        .compare;
-      this.value(left);
-      this.value(right);
-    };
-    if ("and" in condition) {
-      const [first, second] = condition.and;
-      if (condition.and.length !== 2 || !("exists" in second))
-        return this.unsupported("This intervening-if");
-      const exists = second.exists;
-      if (typeof exists !== "object" || !("all" in exists))
-        return this.unsupported("This intervening-if");
-      compare(first);
-      return this.filter(exists.all);
+    else if (ability.condition) {
+      // Restrictions are read when the player acts, with the engine's
+      // characteristics (Combat), so a condition can gate them.
+      if (!ability.grants.every((g) => conditionalGrantKinds.includes(g.kind)))
+        this.unsupported(
+          "A condition on a static ability without continuous changes",
+        );
+      this.at("condition", () => this.condition(ability.condition!));
     }
-    return compare(condition);
+  }
+
+  /** A condition the evaluator decides: every form but turn history and optional costs. */
+  condition(condition: Condition): void {
+    if ("and" in condition)
+      return condition.and.forEach((c) => this.condition(c));
+    if ("or" in condition)
+      return condition.or.forEach((c) => this.condition(c));
+    if ("not" in condition) return this.condition(condition.not);
+    if ("compare" in condition) {
+      this.value(condition.compare[0]);
+      return this.value(condition.compare[2]);
+    }
+    if ("exists" in condition)
+      return this.selector(condition.exists, "Existence of");
+    if ("matches" in condition) {
+      this.selector(condition.matches.selector, "Matching");
+      return this.filter(condition.matches.predicate, false);
+    }
+    if (
+      "monarch" in condition ||
+      "didPerform" in condition ||
+      "paid" in condition
+    )
+      return;
+    const [form] = Object.keys(condition);
+    return this.unsupported(`The ${form} condition`);
   }
 
   private body(ability: {
     targets?: TargetClause[];
-    modes?: unknown;
+    modes?: Modes;
     effects?: Effect[];
   }) {
-    if (ability.modes) this.unsupported("Modes");
-    if ((ability.targets?.length ?? 0) > 1)
-      this.unsupported("More than one target clause");
-    const [target] = ability.targets ?? [];
-    if (target?.count !== undefined && target.count !== 1)
-      this.unsupported("A target clause with a count");
+    this.instructions(ability.targets, ability.effects);
+    ability.modes?.options.forEach((option, i) =>
+      this.at(`modes.options[${i}]`, () =>
+        this.instructions(option.targets, option.effects),
+      ),
+    );
+  }
+
+  /** The target clauses and instructions of an ability or one of its modes. */
+  private instructions(
+    targets: TargetClause[] | undefined,
+    effects: Effect[] | undefined,
+  ) {
     this.at("effects", () =>
-      (ability.effects ?? []).forEach((effect, i) =>
+      (effects ?? []).forEach((effect, i) =>
         this.at(`[${i}]`, () => {
           const what = unsupportedEffect(effect);
           if (what) this.unsupported(what);
         }),
       ),
     );
-    if (target) this.at("targets[0].filter", () => this.filter(target.filter));
+    (targets ?? []).forEach((clause, i) =>
+      this.at(`targets[${i}].filter`, () => this.filter(clause.filter)),
+    );
   }
 
   // -------------------------------------------------- costs, values, filters
@@ -221,24 +258,60 @@ class Walker implements SupportCheck {
   value(value: Value): void {
     if (typeof value === "number") return;
     if ("variable" in value || "binding" in value) return;
-    if ("count" in value) {
-      const selector = value.count;
-      if (typeof selector === "object" && "binding" in selector) return;
-      if (typeof selector === "object" && "all" in selector)
-        return this.filter(selector.all);
-      return this.unsupported(`Counting ${JSON.stringify(selector)}`);
-    }
+    if ("count" in value) return this.selector(value.count, "Counting");
     if ("sum" in value) return value.sum.forEach((v) => this.value(v));
+    if ("product" in value) return value.product.forEach((v) => this.value(v));
+    // Fixed as the spell is cast; the compiler allows it in a spell only.
+    if ("atCast" in value) return this.value(value.atCast);
     if (
       "cardsIn" in value &&
       astEqual(value.cardsIn, { zone: "hand", player: "you" })
     )
       return;
-    if ("greatest" in value && value.greatest.name === "manaValue") {
-      const of = value.greatest.of;
-      if (typeof of === "object" && "all" in of) return this.filter(of.all);
+    if ("stat" in value) return this.selector(value.stat.of, "The stat of");
+    if ("greatest" in value)
+      return this.selector(value.greatest.of, "The greatest of");
+    if ("total" in value) return this.selector(value.total.of, "The total of");
+    if ("lifeTotal" in value || "commanderColors" in value) {
+      const player =
+        "lifeTotal" in value ? value.lifeTotal : value.commanderColors;
+      if (player !== "you" && player !== "opponents")
+        this.unsupported(`The player ${JSON.stringify(player)}`);
+      return;
+    }
+    if ("eventAmount" in value) return;
+    if ("if" in value) {
+      this.condition(value.if);
+      this.value(value.then);
+      return this.value(value.else);
     }
     return this.unsupported(`The value ${JSON.stringify(value)}`);
+  }
+
+  /** A selector a value reads: a binding, an event or target reference, or a filter. */
+  private selector(selector: Selector, what: string) {
+    if (typeof selector === "object" && "all" in selector)
+      return this.filter(selector.all);
+    if (
+      selector === "source" ||
+      selector === "target" ||
+      (typeof selector === "object" &&
+        ("binding" in selector || "target" in selector || "event" in selector))
+    )
+      return;
+    return this.unsupported(`${what} ${JSON.stringify(selector)}`);
+  }
+
+  /** A comparison: a value, or one operator over a value. */
+  private comparison(comparison: Comparison) {
+    const keys = typeof comparison === "object" ? Object.keys(comparison) : [];
+    const operator =
+      keys.length === 1 && ["<", "<=", "=", ">=", ">"].includes(keys[0]);
+    this.value(
+      operator
+        ? (Object.values(comparison)[0] as Value)
+        : (comparison as Value),
+    );
   }
 
   objects(selector: Selector) {
@@ -248,7 +321,7 @@ class Walker implements SupportCheck {
     return this.unsupported(`The objects ${JSON.stringify(selector)}`);
   }
 
-  filter(predicate: Predicate) {
+  filter(predicate: Predicate, requireZone = true) {
     if ("or" in predicate || "not" in predicate)
       this.unsupported("A top-level or/not predicate");
     const [base, ...rest] = "and" in predicate ? predicate.and : [predicate];
@@ -273,7 +346,9 @@ class Walker implements SupportCheck {
         this.fields(fields, seen);
       }
     }
-    if (!seen.has("zone")) this.unsupported("A predicate without a zone");
+    // A commander is found by its designation in any Zone it can be in.
+    if (requireZone && !seen.has("zone") && !seen.has("commander"))
+      this.unsupported("A predicate without a zone");
   }
   private fields(p: PredicateFields, seen: Set<string>) {
     const set = (key: string) => {
@@ -316,9 +391,7 @@ class Walker implements SupportCheck {
           else this.unsupported(`is: ${JSON.stringify(p.is)}`);
           break;
         case "color":
-          if (p.color === "any") set("colored");
-          else if (p.color === "colorless") set("colorless");
-          else this.unsupported("A specific color");
+          set("colors");
           break;
         case "status":
           for (const status of list(p.status!))
@@ -326,13 +399,30 @@ class Walker implements SupportCheck {
             else this.unsupported(`status: ${status}`);
           break;
         case "manaValue": {
-          const comparison = p.manaValue as { "="?: Value };
-          if (comparison["="] === undefined)
-            this.unsupported("A mana value comparison other than =");
-          this.value(comparison["="]);
+          this.comparison(p.manaValue!);
           set("manaValue");
           break;
         }
+        case "power":
+        case "toughness":
+          this.comparison(p[key as "power" | "toughness"]!);
+          set(key);
+          break;
+        case "counters":
+          this.comparison(p.counters!.count);
+          set("counters");
+          break;
+        case "commander":
+          set("commander");
+          break;
+        case "keyword":
+          for (const keyword of list(p.keyword!)) this.keyword(keyword);
+          set("keyword");
+          break;
+        case "attacking":
+          player(p.attacking!);
+          set("attackingPlayer");
+          break;
         case "dealtDamageBy":
           if (p.dealtDamageBy !== "source")
             this.unsupported("Damage dealt by another object");

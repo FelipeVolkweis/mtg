@@ -26,7 +26,7 @@
     "defaultPrintingId": "33516226-4b97-4cd1-a47f-a9b40631daea"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "ram",

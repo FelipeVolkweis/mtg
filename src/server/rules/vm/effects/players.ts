@@ -1,3 +1,4 @@
+import type { ManaType } from "../../../../shared/card-dsl.js";
 import { done, type EffectHandler } from "./types.js";
 
 // Player instructions: draw (CR 121), life (CR 119) and the monarch (CR 724).
@@ -46,6 +47,22 @@ export const becomeMonarch: EffectHandler<"become-monarch"> = {
   execute(effect, ctx) {
     const [playerId] = ctx.eval.players(effect.player);
     if (playerId) ctx.rules.monarchId = playerId;
+    return done;
+  },
+};
+
+/** Mana an effect adds to a mana pool (CR 106.4); it empties as the step ends. */
+export const addMana: EffectHandler<"add-mana"> = {
+  unsupported: (effect) =>
+    Array.isArray(effect.mana.colors) && effect.mana.colors.length === 1
+      ? undefined
+      : "Mana of a color chosen as it is added",
+  execute(effect, ctx) {
+    const [type] = effect.mana.colors as ManaType[];
+    const players = effect.player
+      ? ctx.eval.players(effect.player)
+      : [ctx.playerId];
+    for (const playerId of players) ctx.addMana(playerId, effect.mana, type);
     return done;
   },
 };

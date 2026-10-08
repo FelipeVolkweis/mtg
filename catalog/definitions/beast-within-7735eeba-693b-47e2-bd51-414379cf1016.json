@@ -26,7 +26,7 @@
     "defaultPrintingId": "cd6d61e9-239d-472b-a603-94290efbdad9"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "destroy",

@@ -172,8 +172,10 @@ test("every effect kind has a handler or is reported as unsupported", () => {
   expect(handledEffectKinds.sort()).toEqual(
     [
       "add-counters",
+      "add-mana",
       "apply-continuous",
       "apply-grant",
+      "apply-replacement",
       "attach",
       "become-monarch",
       "choose-one",
@@ -184,6 +186,7 @@ test("every effect kind has a handler or is reported as unsupported", () => {
       "discard",
       "draw",
       "exile",
+      "fight",
       "for-each-player",
       "gain-life",
       "if",
@@ -192,6 +195,7 @@ test("every effect kind has a handler or is reported as unsupported", () => {
       "may",
       "may-pay",
       "move",
+      "play",
       "reselect-defender",
       "sacrifice",
       "sequence",

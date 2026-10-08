@@ -14,7 +14,7 @@ test("constructs the current runtime can't run fail with a clear error", async (
   const card = cardDefinitionFileSchema.parse(
     JSON.parse(
       readFileSync(
-        "tests/fixtures/dsl-expressiveness/austere-command.json",
+        "tests/fixtures/dsl-expressiveness/ajani-s-pridemate.json",
         "utf8",
       ),
     ),
@@ -31,8 +31,9 @@ test("constructs the current runtime can't run fail with a clear error", async (
     ok: false,
     errors: [
       {
-        path: "abilities[0]",
-        message: "Modes is not supported by the current runtime.",
+        path: "abilities[0].trigger",
+        message:
+          "The gains-life trigger is not supported by the current runtime.",
       },
     ],
   });
@@ -69,17 +70,9 @@ test("targets, triggers, costs and grants outside the runtime are named", () => 
   const cases: [Parameters<typeof checkSupport>[0][number], string, string][] =
     [
       [
-        {
-          id: "two",
-          kind: "spell",
-          targets: [
-            { id: "a", filter: { zone: "battlefield" } },
-            { id: "b", filter: { zone: "battlefield" } },
-          ],
-          effects: [],
-        },
+        { id: "strike", kind: "keyword", keyword: "first strike" },
         "abilities[0]",
-        "More than one target clause",
+        "The first strike keyword",
       ],
       [
         {

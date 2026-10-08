@@ -17,7 +17,8 @@ export function CombatPrompt({
   const prompt = match.rules.prompt!;
   const [amounts, setAmounts] = useState<Record<string, number>>({});
   const attacking = prompt.promptKind === "declare-attackers";
-  const damage = prompt.promptKind === "combat-damage";
+  const dividing = prompt.promptKind === "divide-damage";
+  const damage = prompt.promptKind === "combat-damage" || dividing;
   const name = (id: string) =>
     match.objects[id]?.characteristics.name ??
     match.players.find((p) => p.id === id)?.name ??
@@ -54,7 +55,14 @@ export function CombatPrompt({
           (prompt.damageChoices ?? []).map((choice) => (
             <fieldset key={choice.sourceId}>
               <legend>
-                {name(choice.sourceId)}: assign {choice.amount} damage
+                {name(choice.sourceId)}: {dividing ? "divide" : "assign"}{" "}
+                {choice.amount} damage
+                {choice.trample &&
+                  ` (trample: lethal damage first — ${Object.entries(
+                    choice.trample.lethal,
+                  )
+                    .map(([id, lethal]) => `${name(id)} ${lethal}`)
+                    .join(", ")})`}
               </legend>
               {choice.recipientIds.map((id) => (
                 <label key={id}>
@@ -62,7 +70,7 @@ export function CombatPrompt({
                   <input
                     aria-label={`Damage from ${name(choice.sourceId)} to ${name(id)}`}
                     type="number"
-                    min={0}
+                    min={dividing ? 1 : 0}
                     max={choice.amount}
                     step={1}
                     required

@@ -35,7 +35,7 @@
     "defaultPrintingId": "22f0a911-5a48-4da4-bb02-950babaead2c"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "trample",

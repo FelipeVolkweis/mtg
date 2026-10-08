@@ -26,7 +26,7 @@
     "defaultPrintingId": "0cc5faf4-c42b-4bbe-bd1f-92be522330b3"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "spiders",

@@ -33,7 +33,7 @@
     "defaultPrintingId": "fb56d3be-40e8-42fc-9d07-c3effe757052"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "uncounterable",

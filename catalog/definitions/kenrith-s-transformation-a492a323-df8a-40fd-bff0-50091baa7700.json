@@ -30,7 +30,7 @@
     "defaultPrintingId": "f265caeb-d1d2-4d95-ba38-9425482746e7"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "enchant",

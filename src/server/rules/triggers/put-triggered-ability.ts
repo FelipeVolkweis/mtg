@@ -1,38 +1,53 @@
 import { randomUUID } from "node:crypto";
 import type {
+  GameObject,
   MatchAction,
   WaitingTrigger,
 } from "../../../shared/rules-state.js";
 import { gameObject } from "../../match/game-objects.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
-import { isDiesTrigger, targetFilter } from "../abilities.js";
+import {
+  flattenModes,
+  isDiesTrigger,
+  modeRange,
+  modesOf,
+  targetClauses,
+} from "../abilities.js";
+import { chosenTargets, flatTargets } from "../targets.js";
 import { RuleViolation } from "../rule-violation.js";
 
 // PutTriggeredAbilityOnStackProcedure (CR 603.3): a
 // waiting trigger becomes an Ability Game Object on the Stack, and its
-// controller chooses its targets. A triggered ability isn't cast, so it pays
-// no costs. Modes and divisions aren't supported by any triggered ability the
-// runtime runs yet.
+// controller chooses its modes (CR 700.2b) and targets. A triggered ability
+// isn't cast, so it pays no costs. Divisions aren't supported by any
+// triggered ability the runtime runs yet.
 
 export class PutTriggeredAbilityOnStackProcedure {
   constructor(readonly engine: RulesEngine) {}
 
+  /** The source whose ability's filters are read: a "dies" trigger's dead object. */
+  private sourceOf(trigger: WaitingTrigger) {
+    const sourceId =
+      trigger.source.kind === "object" ? trigger.source.id : undefined;
+    return isDiesTrigger(trigger.ability) ? trigger.event.affectedId : sourceId;
+  }
+
   /**
-   * Puts the trigger on the Stack; a target choice leaves a pending
+   * Puts the trigger on the Stack; a mode or target choice leaves a pending
    * procedure. A trigger with no legal target is removed (CR 603.3d).
    */
   start(trigger: WaitingTrigger) {
     const engine = this.engine;
     const sourceId =
       trigger.source.kind === "object" ? trigger.source.id : undefined;
-    const target = targetFilter(trigger.ability);
+    const modal = !!modesOf(trigger.ability);
     if (
-      target &&
-      !engine.legalTargets(
+      !modal &&
+      !engine.targetsAvailable(
         trigger.playerId,
-        target,
-        isDiesTrigger(trigger.ability) ? trigger.event.affectedId : sourceId,
-      ).length
+        trigger.ability,
+        this.sourceOf(trigger),
+      )
     )
       return;
     const object = gameObject(
@@ -57,14 +72,23 @@ export class PutTriggeredAbilityOnStackProcedure {
       targetIds: [],
     };
     engine.propose({ kind: "create", object, zone: engine.zone("stack") });
-    if (!target) return;
+    if (modal) {
+      this.ask(object, "modes");
+      return;
+    }
+    if (targetClauses(trigger.ability).length) this.ask(object, "targets");
+  }
+
+  /** A pending choice for the trigger on the Stack. */
+  private ask(object: GameObject, stage: "modes" | "targets") {
+    const engine = this.engine;
     engine.rules.pending = {
       id: randomUUID(),
-      playerId: trigger.playerId,
+      playerId: object.controllerId,
       kind: "trigger-target",
-      stage: "targets",
+      stage,
       sourceId: object.id,
-      ability: trigger.ability,
+      ability: object.resolution!.ability,
       targetIds: [],
       selections: {},
       totalCost: { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 },
@@ -72,25 +96,69 @@ export class PutTriggeredAbilityOnStackProcedure {
     delete engine.match.priority;
   }
 
-  /** Records the chosen target; becoming a target may trigger (next batch). */
+  /**
+   * Records the chosen modes or targets; becoming a target may trigger (next
+   * batch).
+   */
   answer(action: Extract<MatchAction, { type: "rules-input" }>) {
     const engine = this.engine;
     const pending = engine.rules.pending!;
     const object = engine.object(pending.sourceId!);
-    const ids = action.targetIds ?? [];
-    if (
-      ids.length !== 1 ||
-      !engine
-        .legalTargets(
-          pending.playerId,
-          targetFilter(pending.ability)!,
-          engine.targetSource(pending),
-        )
-        .includes(ids[0])
-    )
-      throw new RuleViolation("Choose one legal trigger target.");
-    object.resolution!.targetIds = ids;
+    if (pending.stage === "modes") {
+      this.chooseModes(object, action);
+      return;
+    }
+    const chosen = chosenTargets(
+      engine,
+      action,
+      pending.ability,
+      pending.playerId,
+      engine.targetSource(pending),
+      undefined,
+      "trigger target",
+    );
+    object.resolution!.targets = chosen;
+    object.resolution!.targetIds = flatTargets(chosen);
     engine.targeted(object);
     delete engine.rules.pending;
+  }
+
+  /** CR 700.2b: the modes are chosen as the trigger is put on the Stack. */
+  private chooseModes(
+    object: GameObject,
+    action: Extract<MatchAction, { type: "rules-input" }>,
+  ) {
+    const engine = this.engine;
+    const pending = engine.rules.pending!;
+    const modes = modesOf(pending.ability)!;
+    const ids = action.modes ?? [];
+    const { min, max } = modeRange(modes);
+    if (
+      ids.length < min ||
+      ids.length > max ||
+      new Set(ids).size !== ids.length ||
+      ids.some((id) => !modes.options.some((option) => option.id === id))
+    )
+      throw new RuleViolation(
+        `Choose ${min === max ? min : `${min} to ${max}`} distinct modes.`,
+      );
+    const ability = flattenModes(pending.ability!, ids);
+    object.resolution!.ability = ability;
+    delete engine.rules.pending;
+    // CR 603.3d: a trigger whose chosen modes have no legal targets is removed.
+    if (
+      !engine.targetsAvailable(
+        object.controllerId,
+        ability,
+        object.resolution!.event && isDiesTrigger(ability)
+          ? object.resolution!.event.affectedId
+          : object.sourceObjectId,
+        object.id,
+      )
+    ) {
+      engine.propose({ kind: "cease", objectId: object.id });
+      return;
+    }
+    if (targetClauses(ability).length) this.ask(object, "targets");
   }
 }

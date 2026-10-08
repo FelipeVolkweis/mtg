@@ -30,7 +30,7 @@
     "defaultPrintingId": "0975d711-aebe-4e31-8e27-19368ec9873c"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "draw",

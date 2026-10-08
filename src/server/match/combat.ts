@@ -1,4 +1,6 @@
-import { attackTax } from "../rules/abilities.js";
+import { attackTax, restrictionGrants } from "../rules/abilities.js";
+import { lethalDamage } from "../rules/damage.js";
+import { Evaluator } from "../rules/vm/evaluate.js";
 import { randomUUID } from "node:crypto";
 import type {
   DamageAssignment,
@@ -16,6 +18,26 @@ import { RuleViolation } from "../rules/rule-violation.js";
 // Declarations are turn-based actions. Their choices finish before Priority is offered.
 export class Combat {
   constructor(readonly engine: RulesEngine) {}
+  /**
+   * The restriction grants of the given kind in force: each battlefield
+   * source's grants whose ability condition holds, with an evaluator for the
+   * source's controller (CR 508.1c, 509.1b, 509.1c).
+   */
+  private restrictions<
+    K extends
+      "cant-attack" | "cant-block" | "max-blockers" | "block-restriction",
+  >(kind: K) {
+    const e = this.engine;
+    return e.battlefieldSources().flatMap((source) => {
+      const evaluator = new Evaluator(e.query, {
+        playerId: source.controllerId,
+        sourceId: source.id,
+      });
+      return restrictionGrants(e.abilitiesOf(source), kind)
+        .filter(({ condition }) => !condition || evaluator.condition(condition))
+        .map(({ grant }) => ({ grant, evaluator }));
+    });
+  }
   eligible(object: GameObject, playerId: string, attacking = false) {
     const e = this.engine;
     return (
@@ -23,6 +45,10 @@ export class Combat {
       object.zoneId === e.zone("battlefield").id &&
       !object.status.tapped &&
       e.effective(object).types?.includes("Creature") &&
+      !this.restrictions(attacking ? "cant-attack" : "cant-block").some(
+        ({ grant, evaluator }) =>
+          evaluator.objects(grant.objects).includes(object.id),
+      ) &&
       (!attacking ||
         (!e.hasKeyword(object, "Defender") &&
           e.canPayTapSymbol(object, playerId)))
@@ -112,8 +138,23 @@ export class Combat {
         e.hasKeyword(blocker, "Flying") ||
         e.hasKeyword(blocker, "Reach")) &&
       (!e.hasKeyword(attacker, "Cannot be blocked by Walls") ||
-        !e.effective(blocker).subtypes?.includes("Wall"))
+        !e.effective(blocker).subtypes?.includes("Wall")) &&
+      !this.restrictions("block-restriction").some(
+        ({ grant, evaluator }) =>
+          !!grant.by &&
+          evaluator.objects(grant.objects).includes(attacker.id) &&
+          evaluator.matches(blocker, grant.by),
+      )
     );
+  }
+  /** CR 509.1b: an attacker that can't be blocked by more than some number of creatures. */
+  private tooManyBlockers(attackerId: string, blockers: number) {
+    const limits = this.restrictions("max-blockers")
+      .filter(({ grant, evaluator }) =>
+        evaluator.objects(grant.objects).includes(attackerId),
+      )
+      .map(({ grant }) => grant.count);
+    return limits.length > 0 && blockers > Math.min(...limits);
   }
   beginBlockers() {
     const e = this.engine,
@@ -196,7 +237,24 @@ export class Combat {
           throw new RuleViolation("Choose a legal blocker.");
         attacker.blockerIds.push(id);
         attacker.blocked = true;
+        new EventTriggerObserver(e).collect(
+          {
+            kind: "block",
+            sourceId: id,
+            affectedId: id,
+            controllerId: blocker.controllerId,
+            ownerId: blocker.ownerId,
+            after: e.effective(blocker),
+          },
+          blocker,
+          e.battlefieldSources(),
+        );
       }
+      for (const attacker of combat.attackers)
+        if (this.tooManyBlockers(attacker.objectId, attacker.blockerIds.length))
+          throw new RuleViolation(
+            "This attacker can't be blocked by that many creatures.",
+          );
       combat.remainingDefenderIds.shift();
     }
     delete e.rules.pending;
@@ -220,7 +278,7 @@ export class Combat {
           source.controllerId === playerId
         )
           continue;
-        for (const ability of e.definition(source)?.abilities ?? []) {
+        for (const ability of e.abilitiesOf(source)) {
           const tax = attackTax([ability]);
           if (!tax) continue;
           const cost = manaCost(tax);
@@ -309,20 +367,54 @@ export class Combat {
     const e = this.engine;
     this.prune();
     return (e.rules.combat?.attackers ?? []).flatMap((a) => {
-      const power = Math.max(
-        0,
-        Number(e.effective(e.object(a.objectId)).power) || 0,
-      );
-      const recipientIds = a.blocked
-        ? a.blockerIds
-        : e.match.players.some((p) => p.id === a.defenderId) ||
-            e.match.objects[a.defenderId]
-          ? [a.defenderId]
+      const attacker = e.object(a.objectId);
+      const power = Math.max(0, Number(e.effective(attacker).power) || 0);
+      const defended =
+        e.match.players.some((p) => p.id === a.defenderId) ||
+        !!e.match.objects[a.defenderId];
+      if (!power) return [];
+      if (!a.blocked)
+        return defended
+          ? [
+              {
+                sourceId: a.objectId,
+                amount: power,
+                recipientIds: [a.defenderId],
+              },
+            ]
           : [];
-      return power && recipientIds.length
-        ? [{ sourceId: a.objectId, amount: power, recipientIds }]
-        : [];
+      // CR 702.19b: a blocked creature with trample assigns the damage beyond
+      // the blockers' lethal damage to the player or planeswalker it attacks;
+      // a trampler whose blockers all left assigns all of it there.
+      if (!e.hasKeyword(attacker, "Trample") || !defended)
+        return a.blockerIds.length
+          ? [
+              {
+                sourceId: a.objectId,
+                amount: power,
+                recipientIds: a.blockerIds,
+              },
+            ]
+          : [];
+      const deathtouch = e.hasKeyword(attacker, "Deathtouch");
+      return [
+        {
+          sourceId: a.objectId,
+          amount: power,
+          recipientIds: [...a.blockerIds, a.defenderId],
+          trample: {
+            defenderId: a.defenderId,
+            lethal: Object.fromEntries(
+              a.blockerIds.map((id) => [id, this.lethal(id, deathtouch)]),
+            ),
+          },
+        },
+      ];
     });
+  }
+  /** CR 120.6: the damage that is lethal to a creature, given its marked damage. */
+  lethal(creatureId: string, deathtouch: boolean) {
+    return lethalDamage(this.engine.query, creatureId, deathtouch);
   }
   beginDamage() {
     const e = this.engine,
@@ -367,13 +459,29 @@ export class Combat {
         );
       pairs.add(pair);
     }
-    for (const c of choices)
+    for (const c of choices) {
+      const assigned = (id: string) =>
+        assignments
+          .filter((a) => a.sourceId === c.sourceId && a.recipientId === id)
+          .reduce((sum, a) => sum + a.amount, 0);
       if (
         assignments
           .filter((a) => a.sourceId === c.sourceId)
           .reduce((sum, a) => sum + a.amount, 0) !== c.amount
       )
         throw new RuleViolation("Assign all available combat damage.");
+      // CR 702.19b: lethal damage to every blocker before any to the defender.
+      if (
+        c.trample &&
+        assigned(c.trample.defenderId) > 0 &&
+        Object.entries(c.trample.lethal).some(
+          ([blockerId, lethal]) => assigned(blockerId) < lethal,
+        )
+      )
+        throw new RuleViolation(
+          "Assign lethal damage to each blocker before assigning damage to the defender.",
+        );
+    }
     delete this.engine.rules.pending;
     this.applyDamage(assignments);
   }

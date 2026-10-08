@@ -1,4 +1,5 @@
 import type {
+  Condition,
   Cost,
   Predicate,
   Selector,
@@ -15,8 +16,10 @@ export interface SupportCheck {
   unsupported(what: string): never;
   /** Runs `run` with `field` appended to the reported path. */
   at<T>(field: string, run: () => T): T;
-  /** An object filter the evaluator supports. */
-  filter(predicate: Predicate): void;
+  /** An object filter the evaluator supports; a Zone is required unless `requireZone` is false. */
+  filter(predicate: Predicate, requireZone?: boolean): void;
+  /** A condition the evaluator decides. */
+  condition(condition: Condition): void;
   /** A value the evaluator supports. */
   value(value: Value): void;
   /** The objects a static ability applies to. */

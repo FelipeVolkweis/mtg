@@ -33,7 +33,7 @@
     "defaultPrintingId": "f542fbf8-3700-4b86-83d8-d8bdf8f14285"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "entry-counters",

@@ -26,7 +26,7 @@
     "defaultPrintingId": "179344e8-ffb5-4bc1-9e35-307b390da01f"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "bite",

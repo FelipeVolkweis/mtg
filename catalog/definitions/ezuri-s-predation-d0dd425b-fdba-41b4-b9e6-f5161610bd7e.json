@@ -28,7 +28,7 @@
     "defaultPrintingId": "d43ef6eb-99ed-45a6-aee1-e87d3780d094"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "predation",

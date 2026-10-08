@@ -26,6 +26,18 @@ export function PromptPanel({
   const [selections, setSelections] = useState(prompt.selections);
   const resolution = kind === "resolution-choice";
   const legalTargets = prompt.targets[0]?.legalIds ?? [];
+  const [chosenTargets, setChosenTargets] = useState<Record<string, string[]>>(
+    {},
+  );
+  const [chosenModes, setChosenModes] = useState<string[]>([]);
+  const singleTarget =
+    prompt.targets.length === 1 &&
+    prompt.targets[0].min === 1 &&
+    prompt.targets[0].max === 1;
+  const nameOf = (id: string) =>
+    match.objects[id]?.characteristics.name ??
+    match.players.find((p) => p.id === id)?.name ??
+    id;
   return (
     <section aria-label="Pending rules choice">
       <h2>{prompt.title}</h2>
@@ -114,6 +126,114 @@ export function PromptPanel({
           </label>
           <button>Confirm X</button>
         </form>
+      ) : kind === "promise-gift" ? (
+        <div>
+          {prompt.options.gift.objectIds.map((id) => (
+            <button
+              key={id}
+              onClick={() =>
+                act({
+                  type: "rules-input",
+                  procedureId: prompt.procedureId,
+                  confirm: true,
+                  selections: { gift: [id] },
+                })
+              }
+            >
+              Promise a gift to {nameOf(id)}
+            </button>
+          ))}
+          <button
+            onClick={() =>
+              act({
+                type: "rules-input",
+                procedureId: prompt.procedureId,
+                confirm: false,
+              })
+            }
+          >
+            Don't promise a gift
+          </button>
+        </div>
+      ) : kind === "choose-modes" ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            act({
+              type: "rules-input",
+              procedureId: prompt.procedureId,
+              modes: chosenModes,
+            });
+          }}
+        >
+          <fieldset>
+            <legend>
+              Choose {prompt.options.modes.minCount ?? 0} to{" "}
+              {prompt.options.modes.count} modes
+            </legend>
+            {prompt.options.modes.objectIds.map((id) => (
+              <label key={id}>
+                <input
+                  type="checkbox"
+                  checked={chosenModes.includes(id)}
+                  onChange={(event) =>
+                    setChosenModes(
+                      event.target.checked
+                        ? [...chosenModes, id]
+                        : chosenModes.filter((mode) => mode !== id),
+                    )
+                  }
+                />
+                {prompt.options.modes.labels?.[id] ?? id}
+              </label>
+            ))}
+          </fieldset>
+          <button>Confirm modes</button>
+        </form>
+      ) : (kind === "choose-targets" || kind === "trigger-targets") &&
+        !singleTarget ? (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            act({
+              type: "rules-input",
+              procedureId: prompt.procedureId,
+              targets: Object.fromEntries(
+                prompt.targets.map((clause) => [
+                  clause.clauseId,
+                  chosenTargets[clause.clauseId] ?? [],
+                ]),
+              ),
+            });
+          }}
+        >
+          {prompt.targets.map((clause) => (
+            <label key={clause.clauseId}>
+              Targets for {clause.clauseId} ({clause.min}
+              {clause.max === clause.min ? "" : ` to ${clause.max}`})
+              <select
+                multiple
+                value={chosenTargets[clause.clauseId] ?? []}
+                onChange={(event) =>
+                  setChosenTargets({
+                    ...chosenTargets,
+                    [clause.clauseId]: Array.from(
+                      event.target.selectedOptions,
+                      (option) => option.value,
+                    ),
+                  })
+                }
+              >
+                {clause.legalIds.map((id) => (
+                  <option key={id} value={id}>
+                    {nameOf(id)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ))}
+          <button>Confirm targets</button>
+        </form>
       ) : kind === "choose-targets" || kind === "trigger-targets" ? (
         <form
           onSubmit={(event) => {
@@ -146,7 +266,8 @@ export function PromptPanel({
         </form>
       ) : (
         <>
-          {kind === "resolution-payment" && (
+          {(kind === "resolution-payment" ||
+            (resolution && Object.keys(prompt.options).length === 0)) && (
             <button
               onClick={() =>
                 act({
@@ -156,7 +277,7 @@ export function PromptPanel({
                 })
               }
             >
-              Decline payment
+              {kind === "resolution-payment" ? "Decline payment" : "Decline"}
             </button>
           )}
           {prompt.lockedCost && (

@@ -31,7 +31,7 @@
     "defaultPrintingId": "9fd7ac91-8f76-4fd1-afc5-9a3fd5ce6894"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "living-weapon",

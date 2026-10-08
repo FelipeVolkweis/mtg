@@ -26,7 +26,7 @@
     "defaultPrintingId": "99ae5d53-3485-4773-850f-61d30293280f"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "onslaught",

@@ -26,7 +26,7 @@
     "defaultPrintingId": "94aff478-6040-4a13-be89-24e0edf1ffe5"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "hideaway",

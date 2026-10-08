@@ -26,7 +26,7 @@
     "defaultPrintingId": "2dd48f09-e9c7-4e93-b811-2158ae24c9fc"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "stampede",

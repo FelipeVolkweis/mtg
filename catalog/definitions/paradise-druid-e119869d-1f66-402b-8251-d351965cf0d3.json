@@ -31,7 +31,7 @@
     "defaultPrintingId": "0e8f1205-fbe0-4a60-a215-172d94eba349"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "hexproof-untapped",

@@ -28,7 +28,7 @@
     "defaultPrintingId": "db3b5708-9f41-48f7-99b5-cb30b191ee71"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "revelation",

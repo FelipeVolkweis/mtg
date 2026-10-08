@@ -4,12 +4,35 @@ import type {
   ObjectView,
   ProcedurePrompt,
 } from "../../shared/model.js";
-import type { MatchState, PendingProcedure } from "../../shared/rules-state.js";
+import type {
+  GameObject,
+  MatchState,
+  PendingProcedure,
+} from "../../shared/rules-state.js";
 import { procedureHandler } from "../rules/procedures/registry.js";
 import { legalActions } from "./action-listing.js";
 import { actingPlayer } from "./match-players.js";
 import { RulesEngine } from "./rules-engine.js";
 import { zoneById, zoneFor } from "./zones.js";
+
+/** What others see of a face-down card: that it is there. */
+function hidden(object: GameObject): ObjectView {
+  return {
+    ...object,
+    characteristics: {
+      name: "Face-down card",
+      colors: [],
+      typeLine: "",
+      rulesText: "",
+    },
+    components: [],
+    cardInstanceIds: [],
+    artwork: [],
+    counters: [],
+    links: [],
+    proposal: null,
+  };
+}
 
 export function matchView(
   match: MatchState,
@@ -41,6 +64,11 @@ function project(
     if (visible)
       for (const objectId of zone.objectIds) {
         const object = match.objects[objectId];
+        // CR 406.3: a face-down card is known to its owner only.
+        if (object.status.faceDown && object.ownerId !== choicePlayerId) {
+          objects[objectId] = hidden(object);
+          continue;
+        }
         objects[objectId] = {
           ...object,
           characteristics: engine

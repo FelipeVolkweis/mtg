@@ -50,9 +50,14 @@ export function RulesTabletop({
   const declaration =
     prompt &&
     ["declare-attackers", "declare-blockers"].includes(prompt.promptKind);
+  // A single target is chosen on the board; several clauses or a number of
+  // targets are chosen in the prompt panel.
   const targeting =
-    prompt?.promptKind === "choose-targets" ||
-    prompt?.promptKind === "trigger-targets";
+    (prompt?.promptKind === "choose-targets" ||
+      prompt?.promptKind === "trigger-targets") &&
+    prompt.targets.length === 1 &&
+    prompt.targets[0].min === 1 &&
+    prompt.targets[0].max === 1;
   const legalTargets = prompt?.targets[0]?.legalIds ?? [];
   const [phase, step] = phaseSteps[match.turn.step];
   const name = (id: string) =>
@@ -256,6 +261,7 @@ export function RulesTabletop({
                 "declare-attackers",
                 "declare-blockers",
                 "combat-damage",
+                "divide-damage",
               ].includes(prompt.promptKind) ? (
                 <>
                   <p>

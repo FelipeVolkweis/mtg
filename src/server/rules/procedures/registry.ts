@@ -6,7 +6,12 @@ import type {
 import type { PromptKind, PromptTargets } from "../../../shared/model.js";
 import { Combat } from "../../match/combat.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
-import { targetClause } from "../abilities.js";
+import {
+  clauseRange,
+  modeRange,
+  modesOf,
+  targetClauses,
+} from "../abilities.js";
 import { costOptions } from "../costs/cost-runtime.js";
 import { PriorityCheckpoint } from "../priority/priority-checkpoint.js";
 import { StackProposalProcedure } from "../proposals/stack-proposal.js";
@@ -56,24 +61,68 @@ const ask = (promptKind: PromptKind, title: string) => (): PromptBasics => ({
   title,
 });
 
-/** Legal targets for the waiting target clause, by clause id. */
+/** Legal targets for each target clause of the waiting ability, by clause id. */
 function clauseTargets(
   engine: RulesEngine,
   pending: PendingProcedure,
 ): PromptTargets[] {
-  const clause = targetClause(pending.ability);
-  if (!clause || pending.stage !== "targets") return [];
-  return [
-    {
-      clauseId: clause.id,
-      legalIds: engine.legalTargets(
-        pending.playerId,
-        clause.filter,
-        engine.targetSource(pending),
-        pending.proposal?.stackObjectId,
+  if (pending.stage !== "targets") return [];
+  return targetClauses(pending.ability).map((clause) => ({
+    clauseId: clause.id,
+    legalIds: engine.legalTargets(
+      pending.playerId,
+      clause.filter,
+      engine.targetSource(pending),
+      pending.proposal?.stackObjectId,
+    ),
+    ...clauseRange(clause),
+  }));
+}
+
+/** "Choose target" for the usual one target, "Choose targets" otherwise. */
+function targetsTitle(targets: PromptTargets[]) {
+  return targets.length === 1 && targets[0].max === 1
+    ? "Choose target"
+    : "Choose targets";
+}
+
+/** The opponents a gift could be promised to, as a choice among player ids. */
+function giftOptions(engine: RulesEngine): Record<string, SelectionOption> {
+  const recipients = new StackProposalProcedure(engine).giftRecipients();
+  return {
+    gift: {
+      count: 1,
+      minCount: 0,
+      objectIds: recipients,
+      labels: Object.fromEntries(
+        recipients.map((id) => [
+          id,
+          engine.match.players.find((p) => p.id === id)!.name,
+        ]),
       ),
+      label: "Promise a gift to",
     },
-  ];
+  };
+}
+
+/** The modes a waiting ability offers, as a choice among mode ids. */
+function modeOptions(
+  pending: PendingProcedure,
+): Record<string, SelectionOption> {
+  const modes = modesOf(pending.ability);
+  if (!modes || pending.stage !== "modes") return {};
+  const { min, max } = modeRange(modes);
+  return {
+    modes: {
+      count: max,
+      minCount: min,
+      objectIds: modes.options.map((option) => option.id),
+      labels: Object.fromEntries(
+        modes.options.map((option) => [option.id, option.label]),
+      ),
+      label: "Choose modes",
+    },
+  };
 }
 
 const stored = (_: RulesEngine, pending: PendingProcedure) =>
@@ -88,20 +137,33 @@ const proposal: ProcedureHandler = {
   reverse: (engine) => new StackProposalProcedure(engine).reverse(),
   manaWindow: paying,
   options: (engine, pending) =>
-    costOptions(engine, {
-      ...engine.costProposal(pending),
-      totalCost: pending.totalCost,
-    }),
+    pending.stage === "gift"
+      ? giftOptions(engine)
+      : pending.stage === "modes"
+        ? modeOptions(pending)
+        : costOptions(engine, {
+            ...engine.costProposal(pending),
+            totalCost: pending.totalCost,
+          }),
   prompt: (engine, pending) =>
-    pending.stage === "variable"
-      ? { promptKind: "choose-x", title: "Choose X" }
-      : pending.stage === "targets"
-        ? {
-            promptKind: "choose-targets",
-            title: "Choose target",
-            targets: clauseTargets(engine, pending),
-          }
-        : { promptKind: "pay-costs", title: "Pay costs" },
+    pending.stage === "gift"
+      ? { promptKind: "promise-gift", title: "Promise a gift?" }
+      : pending.stage === "modes"
+        ? { promptKind: "choose-modes", title: "Choose modes" }
+        : pending.stage === "variable"
+          ? { promptKind: "choose-x", title: "Choose X" }
+          : pending.stage === "targets"
+            ? (() => {
+                const targets = clauseTargets(engine, pending);
+                return {
+                  promptKind: "choose-targets" as const,
+                  title: targetsTitle(targets),
+                  targets,
+                };
+              })()
+            : pending.stage === "division"
+              ? { promptKind: "divide-damage", title: "Divide damage" }
+              : { promptKind: "pay-costs", title: "Pay costs" },
   canAbort: (pending) => !pending.proposal?.locked,
   canReverse: (pending) => !!pending.proposal?.locked,
 };
@@ -129,12 +191,19 @@ const triggerTarget: ProcedureHandler = {
   input: (engine, action) =>
     new PriorityCheckpoint(engine).answerTriggerTarget(action),
   manaWindow: never,
-  options: stored,
-  prompt: (engine, pending) => ({
-    promptKind: "trigger-targets",
-    title: "Choose target",
-    targets: clauseTargets(engine, pending),
-  }),
+  options: (_, pending) =>
+    pending.stage === "modes" ? modeOptions(pending) : {},
+  prompt: (engine, pending) =>
+    pending.stage === "modes"
+      ? { promptKind: "choose-modes", title: "Choose modes" }
+      : (() => {
+          const targets = clauseTargets(engine, pending);
+          return {
+            promptKind: "trigger-targets" as const,
+            title: targetsTitle(targets),
+            targets,
+          };
+        })(),
 };
 
 /** A State-Based Rule's choice, such as a commander return (CR 903.9a). */

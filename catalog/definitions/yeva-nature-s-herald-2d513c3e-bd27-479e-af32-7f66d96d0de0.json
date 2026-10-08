@@ -35,7 +35,7 @@
     "defaultPrintingId": "15f742a6-7dbe-4d13-b25b-0b5a50f4550f"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "flash",
@@ -51,8 +51,7 @@
           {
             "kind": "cast-timing",
             "spells": {
-              "zone": "stack",
-              "object": "spell",
+              "zone": "hand",
               "type": [
                 "Creature"
               ],

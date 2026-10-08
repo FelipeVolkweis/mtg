@@ -3,17 +3,24 @@ import { unrunForm } from "../../../src/server/rules/ast";
 import { checkSupport } from "../../../src/server/rules/support";
 import type { PredicateFields } from "../../../src/shared/card-dsl";
 
-// The Mono-G port added constructs the compiler accepts and the runtime
-// doesn't run yet (docs/plans/mono-g-port.md). Each must fail the support
-// check naming the construct and its path, so a card using one stays
-// unimplemented instead of running with part of its text ignored.
+// The Mono-G port added constructs to the card DSL (docs/plans/mono-g-port.md),
+// then the runtime to run them. Each is accepted by the support check, and
+// the forms the runtime still doesn't run are rejected naming the construct
+// and its path, so a card using one stays unimplemented instead of running
+// with part of its text ignored.
 
 type Ability = Parameters<typeof checkSupport>[0][number];
 const spell = (effects: unknown[], extra: object = {}) =>
   ({ id: "spell", kind: "spell", effects, ...extra }) as Ability;
 const creatures: PredicateFields = { zone: "battlefield", type: ["Creature"] };
+const mana: Extract<Ability, { kind: "mana" }> = {
+  id: "mana",
+  kind: "mana",
+  activation: { costs: [{ kind: "tap-source" }] },
+  produce: { quantity: 1, colors: ["G"] },
+};
 
-const cases: [string, Ability, string, string][] = [
+const supported: [string, Ability][] = [
   [
     "a product value in an effect",
     spell([
@@ -22,8 +29,6 @@ const cases: [string, Ability, string, string][] = [
         amount: { product: [4, { count: { all: creatures } }] },
       },
     ]),
-    "abilities[0].effects[0].amount",
-    "The product value",
   ],
   [
     "a total value in a cost modifier",
@@ -39,8 +44,6 @@ const cases: [string, Ability, string, string][] = [
         },
       ],
     },
-    "abilities[0].grants[0].reduce",
-    "The total value",
   ],
   [
     "an atCast value",
@@ -52,8 +55,6 @@ const cases: [string, Ability, string, string][] = [
         },
       },
     ]),
-    "abilities[0].effects[0].amount",
-    "The atCast value",
   ],
   [
     "a keyword predicate in an effect's objects",
@@ -63,16 +64,12 @@ const cases: [string, Ability, string, string][] = [
         objects: { all: { ...creatures, keyword: "flying" } },
       },
     ]),
-    "abilities[0].effects[0].objects.all",
-    "The predicate field keyword",
   ],
   [
     "a commander predicate in a target filter",
     spell([{ kind: "draw", count: 1 }], {
       targets: [{ id: "t", filter: { zone: "battlefield", commander: true } }],
     }),
-    "abilities[0].targets[0].filter",
-    "The predicate field commander",
   ],
   [
     "an attacking predicate in a value",
@@ -82,8 +79,17 @@ const cases: [string, Ability, string, string][] = [
         count: { count: { all: { ...creatures, attacking: "you" } } },
       },
     ]),
-    "abilities[0].effects[0].count.count.all",
-    "The predicate field attacking",
+  ],
+  [
+    "a power and a specific color predicate",
+    spell([{ kind: "draw", count: 1 }], {
+      targets: [
+        {
+          id: "t",
+          filter: { ...creatures, color: "G", power: { ">=": 4 } },
+        },
+      ],
+    }),
   ],
   [
     "an activation restriction on an activated ability",
@@ -94,35 +100,24 @@ const cases: [string, Ability, string, string][] = [
       activateOnlyIf: { exists: { all: creatures } },
       effects: [{ kind: "draw", count: 1 }],
     },
-    "abilities[0]",
-    "An activation restriction",
   ],
   [
     "an activation restriction on a mana ability",
     {
-      id: "mana",
-      kind: "mana",
-      activation: { costs: [{ kind: "tap-source" }] },
+      ...mana,
       activateOnlyIf: { exists: { all: creatures } },
       produce: { quantity: 2, colors: ["G"] },
     },
-    "abilities[0]",
-    "An activation restriction",
   ],
   [
     "an instead mana production",
     {
-      id: "mana",
-      kind: "mana",
-      activation: { costs: [{ kind: "tap-source" }] },
-      produce: { quantity: 1, colors: ["G"] },
+      ...mana,
       instead: {
         condition: { exists: { all: creatures } },
         produce: { quantity: 2, colors: ["G"] },
       },
     },
-    "abilities[0]",
-    "An instead mana production",
   ],
   [
     "a blocks trigger",
@@ -132,18 +127,15 @@ const cases: [string, Ability, string, string][] = [
       trigger: { event: "blocks", blocker: { is: "source" } },
       effects: [{ kind: "draw", count: 1 }],
     },
-    "abilities[0].trigger",
-    "The blocks trigger",
   ],
   [
-    "a cant-attack grant",
+    "a conditional cant-attack grant",
     {
       id: "grant",
       kind: "static",
+      condition: { not: { exists: { all: creatures } } },
       grants: [{ kind: "cant-attack", objects: "source" }],
     },
-    "abilities[0].grants[0]",
-    "The cant-attack grant",
   ],
   [
     "a max-blockers grant",
@@ -152,8 +144,20 @@ const cases: [string, Ability, string, string][] = [
       kind: "static",
       grants: [{ kind: "max-blockers", objects: "source", count: 1 }],
     },
-    "abilities[0].grants[0]",
-    "The max-blockers grant",
+  ],
+  [
+    "a block restriction by a predicate",
+    {
+      id: "grant",
+      kind: "static",
+      grants: [
+        {
+          kind: "block-restriction",
+          objects: "source",
+          by: { power: { "<=": 2 } },
+        },
+      ],
+    },
   ],
   [
     "an additional-land-plays grant",
@@ -162,63 +166,32 @@ const cases: [string, Ability, string, string][] = [
       kind: "static",
       grants: [{ kind: "additional-land-plays", player: "you", count: 1 }],
     },
-    "abilities[0].grants[0]",
-    "The additional-land-plays grant",
   ],
   ...(
     [
-      ["set-types", { kind: "set-types", types: ["Creature"] }],
-      ["set-colors", { kind: "set-colors", colors: ["G"] }],
-      ["remove-abilities", { kind: "remove-abilities" }],
-      ["double-stats", { kind: "double-stats", stats: ["power"] }],
-      [
-        "grant-ability",
-        {
-          kind: "grant-ability",
-          ability: {
-            id: "mana",
-            kind: "mana",
-            activation: { costs: [{ kind: "tap-source" }] },
-            produce: { quantity: 1, colors: ["G"] },
-          },
-        },
-      ],
-    ] as [string, object][]
-  ).map(([name, change]): [string, Ability, string, string] => [
-    `a ${name} change in a static ability`,
+      { kind: "set-types", types: ["Creature"] },
+      { kind: "set-colors", colors: ["G"] },
+      { kind: "remove-abilities" },
+      { kind: "grant-ability", ability: mana },
+    ] as object[]
+  ).map((change): [string, Ability] => [
+    `a ${(change as { kind: string }).kind} change in a static ability`,
     {
       id: "grant",
       kind: "static",
       grants: [{ kind: "continuous", objects: "source", changes: [change] }],
     } as Ability,
-    "abilities[0].grants[0]",
-    `The ${name} change`,
   ]),
-  ...(
-    [
-      ["set-types", { kind: "set-types", types: ["Creature"] }],
-      ["double-stats", { kind: "double-stats", stats: ["power"] }],
-    ] as [string, object][]
-  ).map(([name, change]): [string, Ability, string, string] => [
-    `a ${name} change applied by an effect`,
+  [
+    "a double-stats change applied by an effect",
     spell([
       {
         kind: "apply-continuous",
         objects: "source",
-        changes: [change],
+        changes: [{ kind: "double-stats", stats: ["power"] }],
         duration: "end-of-turn",
       },
     ]),
-    "abilities[0].effects[0]",
-    `The ${name} change`,
-  ]),
-  [
-    "divided damage",
-    spell([{ kind: "damage", amount: 3, to: { target: "t" }, divide: true }], {
-      targets: [{ id: "t", count: { min: 0, max: 3 }, filter: creatures }],
-    }),
-    "abilities[0]",
-    "A target clause with a count",
   ],
   [
     "excess damage",
@@ -233,29 +206,28 @@ const cases: [string, Ability, string, string][] = [
       ],
       { targets: [{ id: "t", filter: creatures }] },
     ),
-    "abilities[0].effects[0]",
-    "Excess damage dealt elsewhere",
+  ],
+  [
+    "divided damage among a number of targets",
+    spell([{ kind: "damage", amount: 3, to: { target: "t" }, divide: true }], {
+      targets: [{ id: "t", count: { min: 0, max: 3 }, filter: creatures }],
+    }),
   ],
   ...(
     [
-      ["fight", { kind: "fight", objects: "source", against: "source" }],
-      ["add-mana", { kind: "add-mana", mana: { quantity: 1, colors: ["G"] } }],
-      ["play", { kind: "play", objects: "source", payment: "free" }],
-      [
-        "apply-replacement",
-        {
-          kind: "apply-replacement",
-          event: { event: "would-be-dealt-damage" },
-          replace: { kind: "prevent" },
-          duration: "end-of-turn",
-        },
-      ],
-    ] as [string, object][]
-  ).map(([name, effect]): [string, Ability, string, string] => [
-    `the ${name} effect`,
+      { kind: "fight", objects: "source", against: "source" },
+      { kind: "add-mana", mana: { quantity: 1, colors: ["G"] } },
+      { kind: "play", objects: { linked: "hideaway" }, payment: "free" },
+      {
+        kind: "apply-replacement",
+        event: { event: "would-be-dealt-damage", combat: true },
+        replace: { kind: "prevent" },
+        duration: "end-of-turn",
+      },
+    ] as object[]
+  ).map((effect): [string, Ability] => [
+    `the ${(effect as { kind: string }).kind} effect`,
     spell([effect]),
-    "abilities[0].effects[0]",
-    `The ${name} effect`,
   ]),
   [
     "a library sequence that stops at a matching card",
@@ -269,11 +241,96 @@ const cases: [string, Ability, string, string][] = [
         rest: { to: { zone: "library", position: "bottom" }, order: "random" },
       },
     ]),
-    "abilities[0].effects[0]",
-    "This library sequence",
   ],
   [
-    "a library selection that links its card",
+    "a hideaway library sequence",
+    spell([
+      {
+        kind: "library-sequence",
+        player: "you",
+        operation: "look",
+        count: 4,
+        select: {
+          max: 1,
+          to: { zone: "exile", faceDown: true },
+          linkAs: "hideaway",
+        },
+        rest: { to: { zone: "library", position: "bottom" }, order: "random" },
+      },
+    ]),
+  ],
+  [
+    "the gift keyword and its condition",
+    {
+      id: "gift",
+      kind: "keyword",
+      keyword: { name: "gift", gift: "card" },
+    },
+  ],
+  [
+    "modes with several target clauses",
+    spell([], {
+      modes: {
+        choose: { min: 1, max: 2 },
+        options: [
+          {
+            id: "a",
+            label: "A",
+            targets: [{ id: "x", filter: creatures }],
+            effects: [{ kind: "destroy", objects: { target: "x" } }],
+          },
+          { id: "b", label: "B", effects: [{ kind: "draw", count: 1 }] },
+        ],
+      },
+    }),
+  ],
+];
+
+for (const [name, ability] of supported)
+  test(`the runtime supports ${name}`, () => {
+    expect(checkSupport([ability])).toEqual({ ok: true });
+  });
+
+const rejected: [string, Ability, string, string][] = [
+  [
+    "a double-stats change in a static ability",
+    {
+      id: "grant",
+      kind: "static",
+      grants: [
+        {
+          kind: "continuous",
+          objects: "source",
+          changes: [{ kind: "double-stats", stats: ["power"] }],
+        },
+      ],
+    },
+    "abilities[0].grants[0]",
+    "The double-stats change",
+  ],
+  [
+    "a granted static ability",
+    {
+      id: "grant",
+      kind: "static",
+      grants: [
+        {
+          kind: "continuous",
+          objects: "source",
+          changes: [
+            {
+              kind: "grant-ability",
+              ability: { id: "inner", kind: "static", grants: [] },
+            },
+          ],
+        },
+      ],
+    },
+    "abilities[0].grants[0]",
+    "A granted static ability",
+  ],
+  [
+    "a library selection that links a card put into the Hand",
     spell([
       {
         kind: "library-sequence",
@@ -293,18 +350,46 @@ const cases: [string, Ability, string, string][] = [
     "This library sequence",
   ],
   [
-    "the gift keyword",
+    "a replacement of damage to a recipient",
+    spell([
+      {
+        kind: "apply-replacement",
+        event: {
+          event: "would-be-dealt-damage",
+          recipient: { zone: "battlefield" },
+        },
+        replace: { kind: "prevent" },
+        duration: "end-of-turn",
+      },
+    ]),
+    "abilities[0].effects[0]",
+    "A prevent replacement of would-be-dealt-damage",
+  ],
+  [
+    "mana of a color chosen as it is added",
+    spell([
+      {
+        kind: "add-mana",
+        mana: { quantity: 1, colors: ["W", "U", "B", "R", "G"] },
+      },
+    ]),
+    "abilities[0].effects[0]",
+    "Mana of a color chosen as it is added",
+  ],
+  [
+    "a condition on a static ability that grants no restriction",
     {
-      id: "gift",
-      kind: "keyword",
-      keyword: { name: "gift", gift: "card" },
+      id: "grant",
+      kind: "static",
+      condition: { exists: { all: creatures } },
+      grants: [{ kind: "cast-timing", spells: creatures, as: "flash" }],
     },
     "abilities[0]",
-    "The gift keyword",
+    "A condition on a static ability without continuous changes",
   ],
 ];
 
-for (const [name, ability, path, what] of cases)
+for (const [name, ability, path, what] of rejected)
   test(`the runtime rejects ${name}`, () => {
     expect(checkSupport([ability])).toEqual({
       ok: false,
@@ -315,31 +400,44 @@ for (const [name, ability, path, what] of cases)
   });
 
 test("a keyword ability or a granted keyword is not mistaken for an unsupported predicate", () => {
+  const forms = { values: [], fields: ["keyword"] } as const;
   expect(
-    checkSupport([
-      { id: "flying", kind: "keyword", keyword: "flying" },
-      spell([
-        {
-          kind: "apply-continuous",
-          objects: "source",
-          changes: [{ kind: "grant-keyword", keyword: "flying" }],
-          duration: "end-of-turn",
-        },
-      ]),
-    ] as Ability[]),
-  ).toEqual({ ok: true });
+    unrunForm(
+      [
+        { id: "flying", kind: "keyword", keyword: "flying" },
+        spell([
+          {
+            kind: "apply-continuous",
+            objects: "source",
+            changes: [{ kind: "grant-keyword", keyword: "flying" }],
+            duration: "end-of-turn",
+          },
+        ]),
+      ],
+      "",
+      forms,
+    ),
+  ).toBeUndefined();
 });
 
-test("the scan names the first unsupported value or predicate field with its path", () => {
-  expect(unrunForm({ effects: [{ amount: { total: {} } }] })).toEqual({
-    what: "The total value",
-    path: "effects[0].amount",
-  });
-  expect(unrunForm([{ all: { commander: true } }])).toEqual({
+test("the scan names the first form the evaluator doesn't run, with its path", () => {
+  const forms = {
+    values: ["total"],
+    fields: ["commander"],
+  } as const;
+  expect(
+    unrunForm({ effects: [{ amount: { total: {} } }] }, "", forms),
+  ).toEqual({ what: "The total value", path: "effects[0].amount" });
+  expect(unrunForm([{ all: { commander: true } }], "", forms)).toEqual({
     what: "The predicate field commander",
     path: "[0].all",
   });
-  expect(unrunForm({ kind: "keyword", keyword: "flying" })).toBeUndefined();
-  expect(unrunForm({ id: "x", keyword: "flying" })).toBeUndefined();
-  expect(unrunForm({ sum: [1, { count: "source" }] })).toBeUndefined();
+  expect(
+    unrunForm({ kind: "keyword", keyword: "commander" }, "", forms),
+  ).toBeUndefined();
+  expect(
+    unrunForm({ sum: [1, { count: "source" }] }, "", forms),
+  ).toBeUndefined();
+  // The runtime runs every form of the DSL today.
+  expect(unrunForm({ total: {}, commander: true })).toBeUndefined();
 });

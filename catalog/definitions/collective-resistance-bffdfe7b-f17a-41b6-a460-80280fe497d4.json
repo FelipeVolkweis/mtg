@@ -28,7 +28,7 @@
     "defaultPrintingId": "1fa97b3c-7780-4f53-9b74-20e7f8e41602"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "escalate",

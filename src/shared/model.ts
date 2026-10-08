@@ -212,8 +212,11 @@ export interface ObjectView extends Partial<GameObject> {
  * stage names (docs/rules-engine.md).
  */
 export type PromptKind =
+  | "promise-gift"
+  | "choose-modes"
   | "choose-x"
   | "choose-targets"
+  | "divide-damage"
   | "pay-costs"
   | "resolution-choice"
   | "resolution-payment"
@@ -230,6 +233,9 @@ export type PromptKind =
 export interface PromptTargets {
   clauseId: string;
   legalIds: string[];
+  /** How many targets the clause takes. */
+  min: number;
+  max: number;
 }
 /**
  * The acting player's projected prompt: what is asked, its options and

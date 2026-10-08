@@ -33,7 +33,7 @@
     "defaultPrintingId": "b3efa417-b093-4924-9ff3-be9c43c963a1"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "extra-land",

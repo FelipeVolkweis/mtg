@@ -30,7 +30,7 @@
     "defaultPrintingId": "eae3c792-cc9c-4442-a15a-7bab50a30dff"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "one-blocker",

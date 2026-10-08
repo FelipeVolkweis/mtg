@@ -22,7 +22,7 @@
     "defaultPrintingId": "60461a4f-a337-46b0-908f-fbd7479c235a"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "mana",

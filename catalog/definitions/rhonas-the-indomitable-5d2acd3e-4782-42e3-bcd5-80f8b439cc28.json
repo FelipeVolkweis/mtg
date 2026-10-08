@@ -35,7 +35,7 @@
     "defaultPrintingId": "3bd07126-f507-4c8a-952f-d564bbb6526d"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "deathtouch",

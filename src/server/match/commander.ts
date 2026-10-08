@@ -10,6 +10,8 @@ import {
   costsOf,
   effectsOf,
   enchantFilter,
+  escalateCosts,
+  giftOf,
   hasImprovise,
   ownKeyword,
   triggerSubject,
@@ -38,6 +40,48 @@ function flatten(effects: Effect[]): Effect[] {
     ),
   ]);
 }
+
+/** CR 207.2c: ability words, which appear in keyword lists but mean nothing. */
+const abilityWords = new Set([
+  "adamant",
+  "addendum",
+  "alliance",
+  "battalion",
+  "bloodrush",
+  "channel",
+  "chroma",
+  "cohort",
+  "constellation",
+  "converge",
+  "coven",
+  "delirium",
+  "domain",
+  "eminence",
+  "enrage",
+  "fateful hour",
+  "ferocious",
+  "formidable",
+  "grandeur",
+  "hellbent",
+  "heroic",
+  "inspired",
+  "kinship",
+  "landfall",
+  "lieutenant",
+  "magecraft",
+  "metalcraft",
+  "morbid",
+  "parley",
+  "radiance",
+  "raid",
+  "rally",
+  "revolt",
+  "spell mastery",
+  "strive",
+  "sweep",
+  "threshold",
+  "undergrowth",
+]);
 
 const supported = (effects: Effect[]) =>
   effects.every((effect) => !unsupportedEffect(effect));
@@ -120,6 +164,22 @@ export function automationEligible(card: CardDefinition): boolean {
                 "binding" in e.to,
             )
           );
+        if (name === "hideaway")
+          return effects.some(
+            (e) => e.kind === "library-sequence" && !!e.select?.linkAs,
+          );
+        if (name === "escalate") return !!escalateCosts([ability]);
+        if (name === "gift") return !!giftOf([ability]);
+        if (name === "fight") return effects.some((e) => e.kind === "fight");
+        if (name === "double")
+          return effects.some(
+            (e) =>
+              e.kind === "apply-continuous" &&
+              e.changes.some((change) => change.kind === "double-stats"),
+          );
+        // An ability word labels abilities and has no rules of its own
+        // (CR 207.2c): the abilities it labels are checked themselves.
+        if (abilityWords.has(name)) return true;
         if (name === "enchant") return !!enchantFilter([ability]);
         if (name === "equip")
           return (

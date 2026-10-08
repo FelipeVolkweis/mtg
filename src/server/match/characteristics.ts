@@ -5,6 +5,7 @@ import type {
   GameObject,
   MatchState,
 } from "../../shared/rules-state.js";
+import type { Ability } from "../../shared/card-dsl.js";
 import { ownKeyword, staticContinuous } from "../rules/abilities.js";
 import { netStatCounters } from "./counters.js";
 import type { RulesQuery } from "../rules/context.js";
@@ -41,6 +42,8 @@ export function queryOver(
       catalog.definitions[
         match.instances[object.cardInstanceIds[0]]?.definitionId
       ],
+    // Inside the layer system an object has its card's abilities.
+    abilitiesOf: (object) => query.definition(object)?.abilities ?? [],
     matches: (object, predicate, playerId, sourceId) =>
       new Evaluator(query, { playerId, sourceId }).matches(object, predicate),
   };
@@ -111,7 +114,7 @@ export class CharacteristicsCalculator {
     return [...this.activeEffects];
   }
   private inForce(): ActiveContinuousEffect[] {
-    return [
+    const candidates: ActiveContinuousEffect[] = [
       ...(this.match.rules.temporaryEffects ?? []).filter(
         (effect) => !!this.match.objects[effect.sourceId],
       ),
@@ -138,6 +141,7 @@ export class CharacteristicsCalculator {
             return [];
           return [
             {
+              timestamp: source.timestamp ?? 0,
               sourceId: source.id,
               abilityId: ability.id,
               playerId: source.controllerId,
@@ -151,16 +155,92 @@ export class CharacteristicsCalculator {
         });
       }),
     ];
+    // CR 613.1f: a permanent that loses all abilities no longer has the static
+    // abilities its card prints. (Abilities granted to it by an effect are
+    // read by `abilitiesOf`; none of them is static.)
+    const removers = candidates.filter((effect) =>
+      effect.changes.some((change) => change.kind === "remove-abilities"),
+    );
+    if (!removers.length) return candidates;
+    return candidates.filter((effect) => {
+      if (effect.applicability === "until-end-of-turn") return true;
+      const source = this.match.objects[effect.sourceId];
+      return (
+        !source ||
+        !removers.some(
+          (remover) =>
+            remover !== effect &&
+            this.applies(remover, source, source.characteristics),
+        )
+      );
+    });
+  }
+  /**
+   * The abilities an object has (CR 113.3, 613.1f): its card's, unless an
+   * effect removes them all, and the abilities effects grant it, in
+   * timestamp order (CR 613.7). Off the Battlefield they are its card's.
+   */
+  abilitiesOf(object: GameObject): Ability[] {
+    const definition =
+      this.catalog.definitions[
+        this.match.instances[object.cardInstanceIds[0]]?.definitionId
+      ];
+    let abilities = definition?.abilities ?? [];
+    if (
+      zoneById(this.match, object.zoneId)?.kind !== "battlefield" ||
+      !this.active().some((effect) =>
+        effect.changes.some(
+          (change) =>
+            change.kind === "remove-abilities" ||
+            change.kind === "grant-ability",
+        ),
+      )
+    )
+      return abilities;
+    const characteristics = this.typeCharacteristics(object);
+    for (const { change } of this.changesTo(object, characteristics)) {
+      if (change.kind === "remove-abilities") abilities = [];
+      else if (change.kind === "grant-ability")
+        abilities = [...abilities, change.ability];
+    }
+    return abilities;
+  }
+  /** The changes of the effects that affect an object, in timestamp order. */
+  private changesTo(object: GameObject, characteristics: Characteristics) {
+    return [...this.active()]
+      .sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0))
+      .flatMap((effect) =>
+        (
+          effect.applicability === "characteristic-defining"
+            ? effect.sourceId === object.id
+            : this.applies(effect, object, characteristics)
+        )
+          ? effect.changes.map((change) => ({ effect, change }))
+          : [],
+      );
   }
   typeCharacteristics(
     object: GameObject,
     active = this.active(),
   ): Characteristics {
     const result = structuredClone(object.characteristics);
-    for (const effect of active)
-      if (this.applies(effect, object, result))
+    let changed = false;
+    // CR 613.1d: type-changing effects, in timestamp order. An effect that
+    // affects "creatures" waits for the effect that makes the object one
+    // (CR 613.8): each applies once, in the first pass where it affects it.
+    const ordered = [...active].sort(
+      (a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0),
+    );
+    const applied = new Set<ActiveContinuousEffect>();
+    for (let progress = true; progress;) {
+      progress = false;
+      for (const effect of ordered) {
+        if (applied.has(effect) || !this.applies(effect, object, result))
+          continue;
+        applied.add(effect);
         for (const change of effect.changes)
           if (change.kind === "add-types") {
+            changed = progress = true;
             result.types = [
               ...new Set([...(result.types ?? []), ...(change.types ?? [])]),
             ];
@@ -170,7 +250,18 @@ export class CharacteristicsCalculator {
                 ...(change.subtypes ?? []),
               ]),
             ];
+          } else if (change.kind === "set-types") {
+            // The card types and creature types it replaces (CR 205.1a).
+            changed = progress = true;
+            result.types = [...(change.types ?? [])];
+            result.subtypes = [...(change.subtypes ?? [])];
           }
+      }
+    }
+    if (changed)
+      result.typeLine =
+        [...(result.supertypes ?? []), ...(result.types ?? [])].join(" ") +
+        (result.subtypes?.length ? " — " + result.subtypes.join(" ") : "");
     return result;
   }
   effective(object: GameObject): Characteristics {
@@ -195,20 +286,33 @@ export class CharacteristicsCalculator {
       if (keyword)
         result.keywords = [...new Set([...(result.keywords ?? []), keyword])];
     }
-    const changes = active.flatMap((effect) => {
-      const applies =
-        effect.applicability === "characteristic-defining"
-          ? effect.sourceId === object.id
-          : this.applies(effect, object, result);
-      return applies
-        ? effect.changes.map((change) => ({ effect, change }))
-        : [];
-    });
+    const changes = [...active]
+      .sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0))
+      .flatMap((effect) => {
+        const applies =
+          effect.applicability === "characteristic-defining"
+            ? effect.sourceId === object.id
+            : this.applies(effect, object, result);
+        return applies
+          ? effect.changes.map((change) => ({ effect, change }))
+          : [];
+      });
+    // CR 613.1e: color-changing effects.
     for (const { change } of changes)
-      if (change.kind === "grant-keyword")
+      if (change.kind === "set-colors") result.colors = [...change.colors];
+    // CR 613.1f: ability-adding and -removing effects, in timestamp order
+    // (CR 613.7): what an effect removes is what the object has so far.
+    for (const { change } of changes)
+      if (change.kind === "remove-abilities") result.keywords = [];
+      else if (change.kind === "grant-keyword")
         result.keywords = [
           ...new Set([...(result.keywords ?? []), change.keyword]),
         ];
+      else if (change.kind === "grant-ability") {
+        const keyword = ownKeyword(change.ability);
+        if (keyword)
+          result.keywords = [...new Set([...(result.keywords ?? []), keyword])];
+      }
     // CR 613: characteristic-defining values precede additive modifications;
     // counters contribute in the modification sublayer, after base values.
     for (const { effect, change } of changes.filter(
@@ -268,10 +372,6 @@ export class CharacteristicsCalculator {
           this.value(change.toughness, effect.playerId, effect.sourceId),
         );
       }
-    if (changes.some(({ change }) => change.kind === "add-types"))
-      result.typeLine =
-        [...(result.supertypes ?? []), ...(result.types ?? [])].join(" ") +
-        (result.subtypes?.length ? " — " + result.subtypes.join(" ") : "");
     for (const stat of ["power", "toughness"] as const) {
       if (!/^-?\d+$/.test(result[stat] ?? "")) continue;
       let amount = BigInt(result[stat]!);

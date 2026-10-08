@@ -6,7 +6,11 @@ import type {
   RulesState,
   SelectionOption,
 } from "../../../../shared/rules-state.js";
-import type { Effect } from "../../../../shared/card-dsl.js";
+import type {
+  Effect,
+  ManaProduction,
+  ManaType,
+} from "../../../../shared/card-dsl.js";
 import type { RulesMutator } from "../../context.js";
 import type { Evaluator, Scope } from "../evaluate.js";
 
@@ -47,6 +51,12 @@ export interface EffectContext extends RulesMutator {
   readonly eval: Evaluator;
   /** An evaluator with extra bindings, e.g. `for-each-player`'s player. */
   scoped(extra: Partial<Scope>): Evaluator;
+  /** Can an effect let the player play this card without paying its mana cost? */
+  playableFree(playerId: string, objectId: string): boolean;
+  /** Plays the card without paying its mana cost; "pending" while its casting waits for choices. */
+  playFree(playerId: string, objectId: string): "pending" | "done";
+  /** Mana is added to a player's pool (CR 106.4). */
+  addMana(playerId: string, produce: ManaProduction, color: ManaType): void;
   /** An until-end-of-turn continuous effect starts (CR 611.2). */
   addTemporaryEffect(effect: ActiveContinuousEffect): void;
   /** Names an instruction's result: a number or an object set. */

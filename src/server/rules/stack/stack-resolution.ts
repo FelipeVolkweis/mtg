@@ -1,4 +1,7 @@
 import type { GameObject, MatchAction } from "../../../shared/rules-state.js";
+import type { Effect, PlayerRef } from "../../../shared/card-dsl.js";
+import { giftOf } from "../abilities.js";
+import { waitTrigger } from "../triggers/trigger-runtime.js";
 import { Resolution } from "../../match/resolution.js";
 import type { RulesEngine } from "../../match/rules-engine.js";
 import {
@@ -6,7 +9,7 @@ import {
   enchantFilter,
   interveningIf,
   isDiesTrigger,
-  targetFilter,
+  targetClauses,
 } from "../abilities.js";
 import type { VMResult } from "../vm/rule-vm.js";
 
@@ -16,6 +19,20 @@ import type { VMResult } from "../vm/rule-vm.js";
 // permanent spell enters the Battlefield (no effect program), and an instant,
 // sorcery or ability runs its instructions through the Rule VM. Then the
 // Stack is cleaned up and the game proceeds toward Priority.
+
+/**
+ * The gift as an instruction (CR 702.174): the chosen player draws a card or
+ * gets the token. Delivered by a trigger the chosen player is the event's
+ * player of; a resolving spell names them.
+ */
+function giftInstruction(gift: string, recipientId?: string): Effect {
+  const player: PlayerRef = recipientId
+    ? { binding: "gift-recipient" }
+    : { event: "player" };
+  return gift === "card"
+    ? { kind: "draw", player, count: 1 }
+    : { kind: "create-token", token: gift, controller: player };
+}
 
 export type ResolutionPath = "fizzle" | "permanent" | "program";
 
@@ -38,12 +55,27 @@ export class StackResolutionRuntime {
       engine.checkpoint();
       return;
     }
+    const gift = object.proposal?.gift
+      ? giftOf(engine.abilitiesOf(object))
+      : undefined;
+    // CR 702.174a: an instant or sorcery gives its gift as it resolves, before
+    // its own instructions.
+    const instructions = [
+      ...(gift ? [giftInstruction(gift, object.proposal!.gift)] : []),
+      ...effectsOf(object.resolution?.ability),
+    ];
     this.after(
       new Resolution(engine).start(
         object,
-        effectsOf(object.resolution?.ability),
+        instructions,
+        this.legalTargets(object),
       ),
     );
+  }
+
+  /** A spell cast by the waiting instruction is on the Stack: carry on. */
+  resume() {
+    this.after(new Resolution(this.engine).resume());
   }
 
   /** Answers the resolving program's waiting instruction. */
@@ -76,25 +108,52 @@ export class StackResolutionRuntime {
     );
   }
 
-  /** CR 608.2b: an object with targets resolves if any target is still legal. */
-  someTargetLegal(object: GameObject) {
+  /**
+   * The chosen targets still legal, by target clause id (CR 608.2b). An
+   * object stored with a flat list has one target clause.
+   */
+  legalTargets(object: GameObject): Record<string, string[]> {
     const engine = this.engine;
     const resolution = object.resolution;
-    const filter = targetFilter(resolution?.ability);
-    if (!resolution || !filter) return true;
+    const clauses = targetClauses(resolution?.ability);
+    if (!resolution || !clauses.length) return {};
     const sourceId = isDiesTrigger(resolution.ability)
       ? resolution.event?.affectedId
       : (object.sourceObjectId ?? object.id);
-    return resolution.targetIds.some(
-      (id) =>
-        engine.match.objects[id] &&
-        engine.targetEligible(
-          engine.match.objects[id],
-          filter,
-          object.controllerId,
-          sourceId,
-        ),
+    return Object.fromEntries(
+      clauses.map((clause) => {
+        const chosen =
+          resolution.targets?.[clause.id] ??
+          (clauses.length === 1 ? resolution.targetIds : []);
+        return [
+          clause.id,
+          chosen.filter(
+            (id) =>
+              engine.match.objects[id] &&
+              engine.targetEligible(
+                engine.match.objects[id],
+                clause.filter,
+                object.controllerId,
+                sourceId,
+              ),
+          ),
+        ];
+      }),
     );
+  }
+
+  /**
+   * CR 608.2b: an object with targets resolves if any target is still legal;
+   * one that chose no targets (up to zero) isn't affected by this rule.
+   */
+  someTargetLegal(object: GameObject) {
+    const resolution = object.resolution;
+    if (
+      !resolution?.targetIds.length ||
+      !targetClauses(resolution.ability).length
+    )
+      return true;
+    return Object.values(this.legalTargets(object)).some((ids) => ids.length);
   }
 
   isPermanentSpell(object: GameObject) {
@@ -106,6 +165,43 @@ export class StackResolutionRuntime {
     );
   }
 
+  /**
+   * CR 702.174b: when a permanent whose gift was promised enters, the chosen
+   * player gets the gift. (An instant or sorcery gives it as it resolves:
+   * the program's first instruction, `giftInstruction`.)
+   */
+  private promiseKept(permanent: GameObject) {
+    const engine = this.engine;
+    const recipient = permanent.proposal?.gift;
+    const gift = giftOf(engine.abilitiesOf(permanent));
+    if (!recipient || !gift) return;
+    waitTrigger(engine, {
+      playerId: permanent.controllerId,
+      source: { kind: "object", id: permanent.id },
+      abilityId: "gift",
+      sourceName: permanent.characteristics.name,
+      sourceSnapshot: {
+        characteristics: engine.effective(permanent),
+        ownerId: permanent.ownerId,
+      },
+      ability: {
+        id: "gift",
+        kind: "triggered",
+        trigger: { event: "enters", object: "source" },
+        effects: [giftInstruction(gift)],
+      },
+      event: {
+        kind: "state",
+        playerId: recipient,
+        sourceId: permanent.id,
+        affectedId: permanent.id,
+        controllerId: permanent.controllerId,
+        ownerId: permanent.ownerId,
+        after: engine.effective(permanent),
+      },
+    });
+  }
+
   /** CR 608.3: a permanent spell becomes a permanent; an Aura attaches. */
   resolvePermanent(object: GameObject) {
     const engine = this.engine;
@@ -115,6 +211,7 @@ export class StackResolutionRuntime {
       objectId: object.id,
       to: engine.zone("battlefield"),
     }).object!;
+    this.promiseKept(permanent);
     if (enchantFilter(engine.definition(permanent)?.abilities ?? []))
       permanent.attachmentTo = targets[0];
   }

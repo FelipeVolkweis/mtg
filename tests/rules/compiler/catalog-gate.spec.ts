@@ -63,7 +63,7 @@ test("every catalog definition compiles, and every implemented one is executable
       failures.push(`${path}: ${JSON.stringify(support.errors)}`);
   }
   expect(failures).toEqual([]);
-  expect(implemented).toBe(89);
+  expect(implemented).toBe(134);
 });
 
 for (const path of files("tests/fixtures/dsl-v2"))

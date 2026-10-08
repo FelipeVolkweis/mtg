@@ -17,7 +17,7 @@ import { done, type EffectContext, type EffectHandler } from "./types.js";
 
 function apply(
   objects: Selector,
-  changes: (ctx: EffectContext) => AppliedChange[],
+  changes: (objectId: string) => AppliedChange[],
   ctx: EffectContext,
 ) {
   const { query } = ctx;
@@ -31,7 +31,7 @@ function apply(
       abilityId: stack?.sourceAbilityId ?? "animation",
       playerId: ctx.playerId,
       objects: { all: { zone: "battlefield", is: "source" } },
-      changes: changes(ctx),
+      changes: changes(id),
       applicability: "until-end-of-turn",
     });
   }
@@ -45,14 +45,8 @@ const unsupportedDuration = (duration: Duration) =>
 
 function unsupportedChange(change: ContinuousChange) {
   if (change.kind === "gain-control") return "Gaining control";
-  if (
-    change.kind === "set-types" ||
-    change.kind === "set-colors" ||
-    change.kind === "remove-abilities" ||
-    change.kind === "grant-ability" ||
-    change.kind === "double-stats"
-  )
-    return `The ${change.kind} change`;
+  if (change.kind === "grant-ability" && change.ability.kind === "static")
+    return "A granted static ability";
   if (change.kind === "grant-keyword" && !runtimeKeyword(change.keyword))
     return `The ${change.keyword} keyword`;
   return undefined;
@@ -74,16 +68,49 @@ function locked(change: ContinuousChange, ctx: EffectContext): AppliedChange {
   return applied;
 }
 
+/**
+ * Doubling (CR 701.10): the creature gets +X/+X, where X is the value it has
+ * as the effect applies, so it is worked out for each creature.
+ */
+function doubled(
+  change: Extract<ContinuousChange, { kind: "double-stats" }>,
+  ctx: EffectContext,
+  objectId: string,
+): AppliedChange {
+  const characteristics = ctx.query.effective(ctx.query.object(objectId));
+  const value = (stat: "power" | "toughness") =>
+    change.stats.includes(stat) ? Number(characteristics[stat]) || 0 : 0;
+  return {
+    kind: "add-stats",
+    power: value("power"),
+    toughness: value("toughness"),
+  };
+}
+
 export const applyContinuous: EffectHandler<"apply-continuous"> = {
   unsupported: (effect) =>
     unsupportedDuration(effect.duration) ??
     effect.changes.map(unsupportedChange).find(Boolean),
-  execute: (effect, ctx) =>
-    apply(
+  execute(effect, ctx) {
+    // The values are determined once, before any object changes (CR 611.2c).
+    const fixed = effect.changes.map((change) =>
+      change.kind === "double-stats" ? undefined : locked(change, ctx),
+    );
+    return apply(
       effect.objects,
-      (c) => effect.changes.map((change) => locked(change, c)),
+      (id) =>
+        effect.changes.map(
+          (change, i) =>
+            (fixed[i] && structuredClone(fixed[i])) ??
+            doubled(
+              change as Extract<ContinuousChange, { kind: "double-stats" }>,
+              ctx,
+              id,
+            ),
+        ),
       ctx,
-    ),
+    );
+  },
 };
 
 export const applyGrant: EffectHandler<"apply-grant"> = {
@@ -101,5 +128,32 @@ export const applyGrant: EffectHandler<"apply-grant"> = {
       () => [{ kind: "grant-keyword", keyword: keyword.keyword }],
       ctx,
     );
+  },
+};
+
+/**
+ * A temporary prevention effect (CR 615): "prevent all combat damage that
+ * would be dealt this turn by …". It lasts until the cleanup step.
+ */
+export const applyReplacement: EffectHandler<"apply-replacement"> = {
+  unsupported: (effect) =>
+    effect.event.event !== "would-be-dealt-damage" ||
+    effect.replace.kind !== "prevent" ||
+    effect.event.recipient !== undefined
+      ? `A ${effect.replace.kind} replacement of ${effect.event.event}`
+      : unsupportedDuration(effect.duration),
+  execute(effect, ctx) {
+    const event = effect.event as Extract<
+      typeof effect.event,
+      { event: "would-be-dealt-damage" }
+    >;
+    ctx.rules.preventions ??= [];
+    ctx.rules.preventions.push({
+      sourceId: ctx.sourceId,
+      playerId: ctx.playerId,
+      ...(event.source ? { source: event.source } : {}),
+      ...(event.combat === undefined ? {} : { combat: event.combat }),
+    });
+    return done;
   },
 };

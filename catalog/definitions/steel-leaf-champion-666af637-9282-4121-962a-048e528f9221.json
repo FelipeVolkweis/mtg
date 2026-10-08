@@ -31,7 +31,7 @@
     "defaultPrintingId": "d5362bf5-de79-4ad8-866a-1c590998fc96"
   },
   "authored": {
-    "automationStatus": "unimplemented",
+    "automationStatus": "implemented",
     "abilities": [
       {
         "id": "evasion",
